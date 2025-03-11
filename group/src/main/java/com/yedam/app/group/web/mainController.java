@@ -9,4 +9,8 @@ public class mainController {
 	    public String mainPage() {
 	        return "test";  // mainPage.html을 반환
 	    }
+	 @GetMapping("/subscribe")
+	    public String subscribePage() {
+	        return "subscribePage";  // mainPage.html을 반환
+	    }
 }
