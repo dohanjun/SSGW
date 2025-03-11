@@ -40,4 +40,9 @@ public class EdmsController {
     public String edmsWriting() {
         return "group/edms/edms_writing";
     }
+	
+	@GetMapping("form")
+    public String test222() {
+        return "group/edms/form";
+    }
 }
