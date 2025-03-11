@@ -4,12 +4,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
 @Controller
 public class mainController {
-	 @GetMapping("/main")
+	 @GetMapping("main")
 	    public String mainPage() {
-
 	        return "group/mainPage";  // mainPage.html을 반환
 	    }
 	 @GetMapping("/subscribe")
