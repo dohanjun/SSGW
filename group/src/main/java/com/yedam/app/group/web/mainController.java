@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class mainController {
 	 @GetMapping("/main")
 	    public String mainPage() {
-	        return "group/mainPage";
+
+	        return "group/mainPage";  // mainPage.html을 반환
 	    }
 	 @GetMapping("/subscribe")
 	    public String subscribePage() {
