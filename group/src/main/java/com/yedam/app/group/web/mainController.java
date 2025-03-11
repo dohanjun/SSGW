@@ -9,15 +9,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class mainController {
 	 @GetMapping("/main")
 	    public String mainPage() {
-	        return "group/mainPage";  // mainPage.html을 반환
+	        return "group/mainPage";
 	    }
 	 @GetMapping("/subscribe")
-
-
-	 
-
 	    public String subscribePage() {
-	        return "subscribePage";  // mainPage.html을 반환
+	        return "externalPages/subscribePage";
+	    }
+	 @GetMapping("/manual")
+	    public String manualPage() {
+	        return "externalPages/manualPage";
+	    }
+	 @GetMapping("/login")
+	    public String loginPage() {
+	        return "externalPages/loginPage";
 	    }
 
 }
