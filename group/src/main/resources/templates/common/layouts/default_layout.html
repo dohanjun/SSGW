@@ -3,14 +3,18 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <body>
 
-<!-- 헤더 -->
-<div th:replace="~{common/fragments/default_header :: header}"></div>
+<div id="wrapper" class="d-flex">
+<th:block th:replace="~{common/fragments/default_sidebar :: sidebar}"></th:block>
 
+<div id="content-wrapper" class="d-flex flex-column">
+<!-- 헤더 -->
+<th:block th:replace="~{common/fragments/default_header :: header}"></th:block>
 <!-- 페이지 콘텐츠 -->
-<div layout:fragment="content"></div>
+<th:block layout:fragment="content"></th:block>
 
 <!-- 푸터 -->
-<div th:replace="~{common/fragments/default_footer :: footer}"></div>
-
+<th:block th:replace="~{common/fragments/default_footer :: footer}"></th:block>
+</div>
+</div>
 </body>
 </html>

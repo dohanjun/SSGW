@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class mainController {
 	 @GetMapping("/main")
 	    public String mainPage() {
-	        return "mainPage";  // mainPage.html을 반환
+	        return "test";  // mainPage.html을 반환
 	    }
 	 @GetMapping("/subscribe")
 	    public String subscribePage() {
