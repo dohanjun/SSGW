@@ -12,12 +12,9 @@ public class mainController {
 	        return "group/mainPage";  // mainPage.html을 반환
 	    }
 	 @GetMapping("/subscribe")
-
-
-	 
-
-	    public String subscribePage() {
+        public String subscribePage() {
 	        return "subscribePage";  // mainPage.html을 반환
+
 	    }
 
 }
