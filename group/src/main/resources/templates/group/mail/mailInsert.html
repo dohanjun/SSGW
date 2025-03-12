@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{common/layouts/default_layout}"
+	  layout:fragment="content">
+	 <h3>메일쓰기</h3>
+	  <div>
+	     <a href="login.html" class="btn btn-primary btn-user btn-block">
+      		보내기
+        </a>
+	  </div>
+	  <div>
+	     <a href="login.html" class="btn btn-primary btn-user btn-block">
+      		임시저장
+        </a>
+	  </div>
+	  
+  <form class="user">
+     <div class="form-group row">
+          <div class="col-sm-6 mb-3 mb-sm-0"><a>받는사람</a>
+          <input type="text" class="form-control form-control-user" id="exampleFirstName" placeholder="받는사람">
+         </div>   
+          <div class="col-sm-6 mb-3 mb-sm-0"><a>참조</a>   
+           <input type="email" class="form-control form-control-user" id="exampleInputEmail" placeholder="참조">
+        </div>  
+        <div class="col-sm-6 mb-3 mb-sm-0"><a>제목</a> 
+           <input type="email" class="form-control form-control-user" id="exampleInputEmail" placeholder="제목">
+        </div> 
+        <div class="col-sm-6 mb-3 mb-sm-0"><a>파일첨부</a> 
+           <input type="email" class="form-control form-control-user" id="exampleInputEmail" placeholder="파일첨부">
+        </div> 
+        <div class="col-sm-6 mb-3 mb-sm-0"><a>내용</a>  
+           <input type="email" class="form-control form-control-user" id="exampleInputEmail" placeholder="내용">
+        </div> 
+        </div>
+  </form>
+	  </html>
