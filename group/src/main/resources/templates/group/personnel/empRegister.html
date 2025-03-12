@@ -4,11 +4,95 @@
 	  layout:decorate="~{common/layouts/default_layout}"
 	  layout:fragment="content">
 <head>
-<meta charset="UTF-8">
-<title>사원등록</title>
+    <meta charset="UTF-8">
+    <meta name="viewport">
+    <title>사원 등록</title>
 </head>
 <body>
-     <h3>사원등록</h3>
 
+    <div class="container text-center">
+        <h3>사원 등록</h3>
+    </div>    
+    <div class="container text-center">
+        <input type="file">
+    </div>
+
+    <div class="container text-center">
+        <form name="insertform" th:action="@{/}" method="post">
+        <table class="table table-boardered">
+           <tr>
+               <th>사원번호</th>
+               <td><input type="text" name="" readonly></td>
+           </tr>
+           <tr>
+               <th>ID</th>
+               <td><input type="text" name=""></td>
+           </tr>
+           <tr>
+               <th>이름</th>
+               <td><input type="text" name=""></td>
+           </tr>
+           <tr>
+               <th><label for="depa">부서</label></th>
+               <td>
+                   <select id="depa">
+                   <option value="">부서를 선택하세요</option>
+                   <option value="">경영기획부</option>
+                   <option value="">마케팅부</option>
+                   <option value="">인사팀</option>
+                   <option value="">회계팀</option>
+                   <option value="">프로젝트팀</option>
+                   <option value="">개발팀</option>
+                   </select>
+               </td>
+           </tr>
+           <tr>
+               <th><label for="rank">직급</label></th>
+               <td>
+                   <select id="rank">
+                   <option>직급을 선택하세요</option>
+                   <option value="">사원</option>
+                   <option value="">주임</option>
+                   <option value="">대리</option>
+                   <option value="">과장</option>
+                   <option value="">차장</option>
+                   <option value="">부장</option>
+                   <option value="">이사</option>
+                   <option value="">대표</option>
+                   </select>
+               </td>
+           </tr>
+           <tr>
+               <th><label for="auth">권한</label></th>
+               <td>
+                   <select id="auth">
+                   <option>권한을 선택하세요</option>
+                   <option>최고관리자</option>
+                   <option>인사관리자</option>
+                   <option>게시판관리자</option>
+                   <option>일반사용자</option>
+                   </select>
+               </td>
+           </tr>
+           <tr>
+               <th>연락처</th>
+               <td><input type="text" name=""></td>
+           </tr>
+           <tr>
+               <th>주소</th>
+               <td><input type="text" name=""></td>
+           </tr>
+           <tr>
+               <th>입사일</th>
+               <td><input type="date" name=""></td>
+           </tr>
+        </table>
+        <button type="submit" class="btn btn-primary">등록</button>
+        <button type="submit" class="btn btn-danger">취소</button>
+      </form>
+    </div>
+    <script>
+    
+    </script>
 </body>
 </html>
