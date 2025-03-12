@@ -5,18 +5,21 @@ Chart.defaults.global.defaultFontColor = '#858796';
 // Pie Chart Example
 var ctx = document.getElementById("myPieChart");
 var myPieChart = new Chart(ctx, {
-  type: 'doughnut',
+  type: 'pie',
   data: {
-    labels: ["Direct", "Referral", "Social"],
+    labels: ["정상", "지각", "연차","반차","병가","결근"],
     datasets: [{
-      data: [55, 30, 15],
-      backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc'],
-      hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf'],
+      data: [10, 10, 10, 10, 10, 10 ],
+      backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#37b9cc', '#46b9cc', '#47b9cc'],
+      hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf', '#2e48d9', '#17a623', '#2c7caf'],
       hoverBorderColor: "rgba(234, 236, 244, 1)",
     }],
   },
   options: {
-    maintainAspectRatio: false,
+    maintainAspectRatio: false,	
+	animation: {
+	   duration: 0, // 애니메이션을 없애면 바로 나타남
+	 },
     tooltips: {
       backgroundColor: "rgb(255,255,255)",
       bodyFontColor: "#858796",
@@ -30,6 +33,6 @@ var myPieChart = new Chart(ctx, {
     legend: {
       display: false
     },
-    cutoutPercentage: 80,
+    cutoutPercentage: 50,
   },
 });
