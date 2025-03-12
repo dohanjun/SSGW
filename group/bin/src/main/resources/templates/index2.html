@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>SSWG</title>
+<style>
+header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	background-color: #333;
+	color: white;
+	padding: 10px;
+}
+
+nav a {
+	color: white;
+	margin-right: 10px;
+	text-decoration: none;
+}
+
+nav a:last-child {
+	margin-right: 0;
+}
+
+#logo {
+	font-size: 1.5em;
+	font-weight: bold;
+}
+
+header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	background-color: #333;
+	color: white;
+	padding: 10px;
+}
+
+nav a {
+	color: white;
+	margin-right: 10px;
+	text-decoration: none;
+}
+
+nav a:last-child {
+	margin-right: 0;
+}
+
+#logo {
+	font-size: 1.5em;
+	font-weight: bold;
+}
+
+/* 슬라이더 스타일 */
+#slider {
+	width: 100%;
+	height: 800px;
+	overflow: hidden;
+	position: relative;
+	border: 1px solid black;
+}
+
+.slides {
+	display: flex;
+	transition: transform 0.5s ease-in-out;
+	width: 300%;
+}
+
+.slides img {
+	width: 100%;
+	height: 800px;
+}
+.buttons {
+	width: 100%;
+	position: absolute;
+	bottom: 50%;
+	left: 50%;
+	transform: translateX(-50%);
+	display: flex;
+	justify-content: space-between;
+}
+
+.buttons button {
+	padding: 10px;
+	border: none;
+	border-radius: 5px;
+	background-color: #333;
+	color: white;
+	cursor: pointer;
+	font-size: 14px;
+}
+
+.buttons button:hover {
+	background-color: #555;
+}
+
+#image-number {
+	text-align: center;
+	margin-top: 10px;
+	font-size: 16px;
+	color: #333;
+}
+</style>
+
+</head>
+<body>
+	<!-- 헤더 -->
+	<header>
+		<div id="logo">SSWG</div>
+		<nav id="menu">
+			<!-- 기본 메뉴 -->
+			<a href="/subscribe">구독하기</a> 
+			<a href="/manual">설명서</a> 
+			<a href="/login">로그인</a>
+		</nav>
+	</header>
+
+	<!-- 바디 -->
+	<main>
+		<!-- 이미지 슬라이더 -->
+		<div id="slider">
+			<div class="slides">
+				<img src="/img/1.jpg" alt="Slide 1"> 
+				<img src="/img/2.jpg" alt="Slide 2"> 
+				<img src="/img/3.jpg" alt="Slide 3">
+			</div>
+			<div class="buttons">
+				<button onclick="prevSlide()"><</button>
+				<button onclick="nextSlide()">></button>
+			</div>
+		</div>
+		<div id="image-number">현재 이미지: 1</div>
+	</main>
+
+	<!-- 푸터 -->
+	<footer
+		style="background-color: #333; color: white; padding: 10px; text-align: center;">
+		<p>&copy; 2025 (주)SSWG. 스트롱 서큐리티 그룹 웨어.</p>
+	</footer>
+
+	<script> 
+        // 현재 사용자가 누구냐에 따라 보여질 화면 일딴 매니져로 해놈
+        const currentUser = {
+            username: "mana" // 현재 로그인한 사용자 이름
+        };
+
+        // 헤더 수정됨
+        const menu = document.getElementById('menu');
+
+        if (currentUser.username === "manager") {
+            menu.innerHTML = `
+                <a href="/module-management">모듈관리</a>
+                <a href="/subscription-status">구독현황</a>
+                <a href="/qna">Q&A</a>
+            `;
+        }
+        
+        // 슬라이더
+        let currentIndex = 0;
+
+        function showSlide(index) {
+            const slides = document.querySelector('.slides');
+            const slideWidth = slides.clientWidth / slides.children.length;
+            slides.style.transform = `translateX(-${index * slideWidth}px)`;
+
+            // 이미지 번호 업데이트
+            const imageNumber = document.getElementById('image-number');
+            imageNumber.textContent = `현재 이미지: ${index + 1}`;
+        }
+
+        function prevSlide() {
+            const slides = document.querySelectorAll('.slides img');
+            currentIndex = (currentIndex > 0) ? currentIndex - 1 : slides.length - 1;
+            showSlide(currentIndex);
+        }
+
+        function nextSlide() {
+            const slides = document.querySelectorAll('.slides img');
+            currentIndex = (currentIndex < slides.length - 1) ? currentIndex + 1 : 0;
+            showSlide(currentIndex);
+        }
+
+        // 초기 슬라이드 표시
+        showSlide(currentIndex);
+    </script>
+</body>
+</html>

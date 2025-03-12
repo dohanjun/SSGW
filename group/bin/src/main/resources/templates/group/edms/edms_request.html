@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{common/layouts/default_layout}"
+	layout:fragment="content">
+<head>
+<meta charset="UTF-8">
+<title></title>
+</head>
+<body>
+	<div class="container-fluid">
+		<h1 class="h3 mb-2 text-gray-800">결재요청함</h1>
+		<div class="card shadow mb-4">
+			<div class="card-header py-3">
+				<form action="" method="">
+					<p>문서제목<input>기안일<input>진행상태<input><button type="submit" class="float-right">검색</button></p>
+				</form>
+			</div>
+			<div class="card-body">
+				<div class="table-responsive">
+					<table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+						<thead>
+							<tr>
+								<th>문서번호</th>
+								<th>기안부서</th>
+								<th>기안자</th>
+								<th>문서제목</th>
+								<th>상신일</th>
+								<th>진행상태</th>
+							</tr>
+						</thead>
+						<tbody>
+							<th:block each=" : ">
+								<tr>
+									<td>1</td>
+									<td>인사</td>
+									<td>홍길동</td>
+									<td>지출결의서입니다</td>
+									<td>2025-03-11</td>
+									<td>대기</td>
+								</tr>
+							</th:block>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+	</div>
+</body>
+</html>
