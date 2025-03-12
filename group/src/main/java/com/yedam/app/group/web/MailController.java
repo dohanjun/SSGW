@@ -21,8 +21,8 @@ public class MailController {
 	
 	//메일목록
 	 @GetMapping("/mail")
-	    public String mainPage() {
-	        return "group/mail";  // mainPage.html을 반환
+	    public String mailPage() {
+	        return "group/mail/mail";  // mainPage.html을 반환
 	    }	
 	
 	//Service
@@ -39,6 +39,11 @@ public class MailController {
 	
 	//등록 - 페이지
 	
+	//메일등록
+	 @GetMapping("/mailInsert")
+	    public String mailInsertPage() {
+	        return "group/mail/mailInsert";  // mainPage.html을 반환
+	    }	
 	
 	//Service
 	
