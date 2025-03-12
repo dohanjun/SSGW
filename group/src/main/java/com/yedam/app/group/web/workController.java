@@ -6,6 +6,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class workController {
 	 @GetMapping("/charts")
 	    public String mainPage() {
-	        return "group/workPage/charts";  // mainPage.html을 반환
+	        return "group/workPage/chartsManager";  // mainPage.html을 반환
+	    }
+	 @GetMapping("/table")
+	    public String tables() {
+	        return "group/workPage/tables";  // mainPage.html을 반환
+	    }
+	 @GetMapping("/blank")
+	    public String blank() {
+	        return "group/workPage/blank";  // mainPage.html을 반환
 	    }
 }
