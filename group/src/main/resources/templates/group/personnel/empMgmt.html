@@ -5,10 +5,36 @@
 	  layout:fragment="content">
 <head>
 <meta charset="UTF-8">
-<title>사원관리</title>
+<title></title>
 </head>
 <body>
-     <h3>사원관리</h3>
-     
+     <div class="container text-center">
+         <h3>사원 관리</h3>
+         <table class="table">
+            <thead>
+                <tr>
+                   <th>사원번호</th>
+                   <th>부서</th>
+                   <th>직급</th>
+                   <th>이름</th>
+                   <th>연락처</th>
+                </tr>
+            </thead>
+            <tbody>                                   
+              <th:block th:each=" post : ${boards} ">
+                   <!--/* post(BoardVO) => <tr/> 로 바꿔야함 */-->
+                   <!--/* boardInfo?bno=1 여기로 온클릭 /*-->
+                <tr th:id="${post.bno}"
+                    th:onclick="|='@{/(=${})}'|">       <!--/* text는 [[]] 이중괄호에 ${}변수 가져올거 */-->
+                   <td>[[${}]]</td>                   
+                   <td>[[${}]]</td>
+                   <td>[[${}]]</td>
+                   <td>[[${}]]</td>
+                   <td>[[${}]]</td>
+                </tr>    
+              </th:block>
+            </tbody>
+         </table>
+     </div>
 </body>
 </html>
