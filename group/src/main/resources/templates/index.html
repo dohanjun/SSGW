@@ -9,7 +9,6 @@
 	height: 800px;
 	overflow: hidden;
 	position: relative;
-	border: 1px solid black;
 }
 
 .slides {
@@ -36,7 +35,7 @@
 .buttons button {
 	padding: 10px;
 	border: none;
-	border-radius: 5px; 
+	border-radius: 5px;
 	background-color: #333;
 	color: white;
 	cursor: pointer;
@@ -53,21 +52,42 @@
 	font-size: 16px;
 	color: #333;
 }
+.imgsBtn {
+	position: absolute;
+	bottom: 1%;
+	left: 50%;
+	transform: translateX(-50%);
+	display: flex;
+	gap : 5px;
+}
+
+.imgsBtn button{
+	width : 16px;
+	height: 16px;
+	background-color : #6C757C;
+	border: none;
+	border-radius: 50%;
+}
+
+.imgsBtn button.active {
+	background-color: red;
+}
 </style>
 <header>
 	<main>
 		<!-- 이미지 슬라이더 -->
 		<div id="slider">
 			<div class="slides">
-				<img src="/img/1.jpg" alt="Slide 1"> <img src="/img/2.jpg"
-					alt="Slide 2"> <img src="/img/3.jpg" alt="Slide 3">
 			</div>
 			<div class="buttons">
 				<button onclick="prevSlide()"><</button>
 				<button onclick="nextSlide()">></button>
 			</div>
+			<div class="imgsBtn">
+
+			</div>
 		</div>
-		<div id="image-number">현재 이미지: 1</div>
+
 	</main>
 </header>
 <script> 
@@ -88,31 +108,64 @@
         }
         
         // 슬라이더
-        let currentIndex = 0;
+		const imageList = [
+		    "/img/1.jpg",
+		    "/img/2.jpg",
+		    "/img/3.jpg",
+		    "/img/4.jpg",
+		    "/img/5.jpg",
+		    "/img/6.jpg"
+		];
+		let currentIndex = 0;
+		
+		imageList.forEach((e,index)=>{
+			document.querySelector('.imgsBtn').innerHTML += `<button id=${index}></button>`
+		})
 
-        function showSlide(index) {
-            const slides = document.querySelector('.slides');
-            const slideWidth = slides.clientWidth / slides.children.length;
-            slides.style.transform = `translateX(-${index * slideWidth}px)`;
+		document.querySelectorAll('.imgsBtn button').forEach(e=>{
+			if(e.id == currentIndex){
+				e.classList.add('active');
+			}
+			
+		    e.addEventListener('click', event => {
+		    	document.querySelectorAll('.imgsBtn button').forEach(b => b.classList.remove('active'));
+		    	currentIndex = event.target.id
+		    	showSlide(currentIndex);
+		    });
+		})
+		
+		
+		
+		const slidesContainer = document.querySelector('.slides');
+		slidesContainer.innerHTML = imageList.map(src => `<img src="${src}" alt="Slide">`).join('');
+		slidesContainer.style.width = `${imageList.length * 100}%`;
+		
+		
+		
+		function showSlide(index) {
+		    const slideWidth = document.querySelector('.slides img').clientWidth;
+		    slidesContainer.style.transform = `translateX(-${index * slideWidth}px)`;
+		    document.querySelectorAll('.imgsBtn button').forEach(b => b.classList.remove('active'));
+		    document.querySelector(`.imgsBtn button[id="${index}"]`).classList.add('active');
+		}
+		
+		function prevSlide() {
+		    currentIndex = (currentIndex > 0) ? currentIndex - 1 : imageList.length - 1;
+		    showSlide(currentIndex);
+		}
 
-            // 이미지 번호 업데이트
-            const imageNumber = document.getElementById('image-number');
-            imageNumber.textContent = `현재 이미지: ${index + 1}`;
-        }
-
-        function prevSlide() {
-            const slides = document.querySelectorAll('.slides img');
-            currentIndex = (currentIndex > 0) ? currentIndex - 1 : slides.length - 1;
-            showSlide(currentIndex);
-        }
-
-        function nextSlide() {
-            const slides = document.querySelectorAll('.slides img');
-            currentIndex = (currentIndex < slides.length - 1) ? currentIndex + 1 : 0;
-            showSlide(currentIndex);
-        }
-
-        // 초기 슬라이드 표시
-        showSlide(currentIndex);
+		function nextSlide() {
+		    currentIndex = (currentIndex < imageList.length - 1) ? currentIndex + 1 : 0;
+		    showSlide(currentIndex);
+		}
+		
+		showSlide(currentIndex);
+		setInterval(nextSlide, 2000);
+		
+		document.querySelectorAll('.slides img').forEach(e=>{
+			e.addEventListener('click', event => {
+				location.href = "/subscribe";
+			})
+		})
     </script>
 </html>

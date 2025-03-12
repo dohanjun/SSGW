@@ -1,10 +1,152 @@
 <!DOCTYPE html>
-<html xmlns:th="https://www.thymeleaf.org/">
-<head>
-<meta charset="UTF-8">
-<title></title>
-</head>
-<body>
-	<h1>구독페이지</h1>
-</body>
+<html xmlns:th="https://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{common/layouts/main_layout}"
+	layout:fragment="content">
+<style>
+
+.basicModule {
+	justify-content: center;
+	margin:10% 0;
+	display: flex;
+	gap: 200px;
+}
+
+.selectModule {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+	justify-content: center;
+	gap: 100px;
+}
+
+.selectItem {
+	justify-content: center;
+    display: flex;
+    gap: 20px;
+}
+
+
+.selectItem div {
+    background-color: #d8b4fe;
+    border: 1px solid #a855f7;
+    border-radius: 10px;
+    width: 300px; 
+    line-height: 100px;
+    display: flex;
+    justify-content: center;
+    box-sizing: border-box;
+	font-size: 56px;
+}
+
+.selectModule .check{
+	background-color: red;
+	text-decoration: line-through;
+}
+
+.infoContainer{
+	display: grid;
+    grid-template-columns: repeat(3, 1fr);
+
+}
+
+.infoContainer .info{
+    justify-content: center;
+}
+
+.infoContainer input{
+    background-color: #d8b4fe;
+    border: 1px solid #a855f7;
+    border-radius: 10px;
+    width: 300px; 
+    line-height: 100px;
+
+}
+</style>
+<div class="container">
+	<form>
+		<div class="form-floating mb-3">
+			<input class="form-control" id="name" type="text"
+				placeholder="Enter your name..." data-sb-validations="required" />
+			<label for="name">사업자 이름</label>
+		</div>
+
+		<div class="form-floating mb-3">
+			<input class="form-control" id="name" type="text"
+				placeholder="Enter your name..." data-sb-validations="required" />
+			<label for="name">사업자 회사명</label>
+		</div>
+
+		<div class="form-floating mb-3">
+			<input class="form-control" id="name" type="text"
+				placeholder="Enter your name..." data-sb-validations="required" />
+			<label for="name">사업자 번호</label>
+		</div>
+
+		<div class="form-floating mb-3">
+			<input class="form-control" id="name" type="text"
+				placeholder="Enter your name..." data-sb-validations="required" />
+			<label for="name">사업자 연락처</label>
+		</div>
+
+		<div class="form-floating mb-3">
+			<input class="form-control" id="name" type="text"
+				placeholder="Enter your name..." data-sb-validations="required" />
+			<label for="name">사업자 이메일</label>
+		</div>
+
+		<div class="form-floating mb-3">
+			<input class="form-control" id="name" type="text"
+				placeholder="Enter your name..." data-sb-validations="required" />
+			<label for="name">사업자 아이디</label>
+		</div>
+
+		<div class="form-floating mb-3">
+			<input class="form-control" id="name" type="text"
+				placeholder="Enter your name..." data-sb-validations="required" />
+			<label for="name">사업자 비밀번호</label>
+		</div>
+
+		<div class="moduleContainer">
+			<div class="basicModule">
+				<div class="selectItem" th:each="item : ${basic}">
+			        <div th:for="'check-' + ${item}" th:text="${item}"></div>
+			    </div>
+			</div>
+				
+			<div class="selectModule">
+			    <div class="selectItem" th:each="item : ${select}">
+			        <div class="selectmd" th:for="'check-' + ${item}" th:text="${item}"></div>
+			    </div>
+			</div>
+		</div>
+		
+		<div class="infoContainer">
+			<div class="info">
+				<input type="selete"></input>
+			</div>
+			<div class="info">
+				<input type="selete"></input>
+			</div>
+			<div class="info">
+				<input type="selete"></input>
+			</div>
+			<div class="info">
+				<input type="selete"></input>
+			</div>
+			<div class="info">
+				<input type="selete"></input>
+			</div>
+		</div>
+	
+		<button type="submit">제출</button>
+	</form>
+</div>
+<script>
+	document.querySelectorAll('.selectModule .selectmd').forEach(e=>{
+		e.addEventListener('click',f=>{
+			f.target.classList.toggle('check')
+		})
+	})
+
+</script>
 </html>
