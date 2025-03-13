@@ -59,26 +59,59 @@
                 		</button>
             		</div>
             		<div class="approval-modal-body">
-            			<form action="" method="post" enctype="multipart/form-data">
+            			<form>
                 			<h3>도장이미지</h3>
                 			<div class="filebox">
     							<label for="file">파일찾기</label> 
     							<input type="file" id="file">
 							                          
             				<div class="modal-footer modalbtns">
-                				<button type="button" class="btn btn-secondary" data-dismiss="modal">등록</button>
-                				<button type="button" class="btn btn-primary">수정</button>
-                				<button type="button" class="btn btn-danger">삭제</button>
+                				<button type="button" class="btn btn-secondary" onclick="insertStamp()">등록</button>
+                				<button type="button" class="btn btn-primary" onclick="modifyStamp()">수정</button>
+                				<button type="button" class="btn btn-danger" onclick="deleteStamp()">삭제</button>
             				</div>
             				</div>
             			</form> 
         			</div>
     			</div>
 			</div>
+		  </div>
 		</body>
 <script>
 document.getElementById('stampInsertButton').addEventListener('click', function() {
     $('#stampModal').modal('show');
 });
+
+function insertStamp() {
+	
+    let file = document.getElementById('file').files[0];
+
+    if (!file) {
+        alert("파일을 선택하세요.");
+        return;
+    }
+
+    let formData = new FormData();
+    formData.append("file", file);
+
+    fetch('http://localhost:8099/aprv', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(result => console.log(result))
+    .catch(err => console.log(err));
+}
+
+function modifyStamp() {
+    let fileInput = document.getElementById('file');
+    let file = fileInput.files[0];
+
+}
+
+function deleteStamp() {
+   
+} 
+
 </script>
 </html>

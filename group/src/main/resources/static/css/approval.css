@@ -1,65 +1,197 @@
 @charset "UTF-8";
+
 .h555 {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
 
 .approval-modal-content {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  pointer-events: auto;
-  background-color: #fff;
-  background-clip: padding-box;
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  border-radius: 0.3rem;
-  outline: 0;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	pointer-events: auto;
+	background-color: #fff;
+	background-clip: padding-box;
+	border: 1px solid rgba(0, 0, 0, 0.2);
+	border-radius: 0.3rem;
+	outline: 0;
 }
 
 .approval-modal-body {
-  position: relative;
-  flex: 1 1 auto;
-  padding: 1rem;
-  text-align:center;
+	position: relative;
+	flex: 1 1 auto;
+	padding: 1rem;
+	text-align: center;
 }
 
 .filebox .upload-name {
-    display: inline-block;
-    height: 40px;
-    padding: 0 10px;
-    vertical-align: middle;
-    border: 1px solid #dddddd;
-    width: 78%;
-    color: #999999;
+	display: inline-block;
+	height: 40px;
+	padding: 0 10px;
+	vertical-align: middle;
+	border: 1px solid #dddddd;
+	width: 78%;
+	color: #999999;
 }
 
 .filebox label {
-    display: inline-block;
-    padding: 10px 20px;
-    color: #fff;
-    vertical-align: middle;
-    background-color: #999999;
-    cursor: pointer;
-    height: 40px;
-    margin-left: 10px;
+	display: inline-block;
+	padding: 10px 20px;
+	color: #fff;
+	vertical-align: middle;
+	background-color: #999999;
+	cursor: pointer;
+	height: 40px;
+	margin-left: 10px;
 }
 
 .filebox input[type="file"] {
-    position: absolute;
-    width: 0;
-    height: 0;
-    padding: 0;
-    overflow: hidden;
-    border: 0;
+	position: absolute;
+	width: 0;
+	height: 0;
+	padding: 0;
+	overflow: hidden;
+	border: 0;
 }
 
 .btns {
 	display: flex;
-    justify-content: space-around;
+	justify-content: space-around;
 }
 
 .btna {
 	border: none;
+	border-radius: 10px;
+}
+
+.btna1 {
+	border: none;
+	border-radius: 10px;
+	float: right;
+}
+
+/* 휴가원 */
+.vacationtable {
+	width: 800px;
+	border-collapse: collapse;
+	margin-top: 10px;
+}
+
+.vacationtable th, td {
+	border: 1px solid black;
+	padding: 5px;
+	text-align: left;
+}
+
+.vacationtable th {
+	background-color: #ddd;
+	text-align: center;
+}
+
+.vacationtitle {
+	font-size: 24px;
+	font-weight: bold;
+	text-align: center;
+	padding: 15px 0;
+}
+
+.vacationend {
+	text-align: center;
+	font-weight: bold;
+}
+
+/* 지출결의서 */
+.lettercontainer {
+	font-size: 14px;
+}
+
+.lettercontainer {
+	width: 800px;
+	margin: 0 auto;
+}
+
+.lettertable {
+	width: 100%;
+	border-collapse: collapse;
+	border: 1px solid black;
+}
+
+.lettertable th, td {
+	border: 1px solid black;
+	padding: 10px;
+	text-align: left;
+}
+
+.lettertable th {
+	background-color: #ddd;
+	text-align: center;
+	font-weight: bold;
+}
+
+.lettertitle {
+	font-size: 24px;
+	font-weight: bold;
+	text-align: center;
+	margin-bottom: 15px;
+}
+
+.lettercontainer .input-field {
+	width: 100%;
+	height: 25px;
+	border: 1px solid black;
+	padding-left: 5px;
+}
+
+.lettercontainer .date-field {
+	width: 95%;
+	height: 25px;
+	border: 1px solid black;
+	padding-left: 5px;
+}
+
+.lettercontainer .narrow-field {
+	width: 50px;
+	height: 25px;
+	border: 1px solid black;
+	text-align: center;
+}
+
+/* 품의서 */
+.disbur {
+	background-color: #ddd;
+	width: 802px;
+	font-size: 12px;
+	margin: 5px auto;
+}
+
+.disburtable {
+	width: 800px;
+	border-collapse: collapse;
+	margin: 20px auto;
+}
+
+.disburtable th, td {
+	border: 1px solid black;
+	padding: 8px;
+	text-align: left;
+}
+
+.disburtable th {
+	background-color: #f2f2f2;
+}
+
+.disburtable input {
+	width: 100%;
+	border: none;
+	outline: none;
+	text-align: center;
+}
+
+.disburheader {
+	text-align: center;
+	font-size: 24px;
+	font-weight: bold;
+	padding: 10px;
 }
