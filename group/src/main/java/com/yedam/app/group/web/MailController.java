@@ -36,7 +36,42 @@ public class MailController {
 	// suffix : .html
 	// classpath:/templates/group/.html
 	
+
+		//메일상세보기
+	 @GetMapping("/mailSelect")
+	    public String mailSelectPage() {
+	        return "group/mail/mailSelect";  // mainPage.html을 반환
+	    }	
 	
+	//Service
+	
+	
+	//Service => view
+	
+	
+	
+	// prefix : classpath:/templates/
+	// suffix : .html
+	// classpath:/templates/group/.html
+	 
+		//내 메일상세보기
+	 @GetMapping("/myMailSelect")
+	    public String myMailSelectPage() {
+	        return "group/mail/myMailSelect";  // mainPage.html을 반환
+	    }	
+	
+	//Service
+	
+	
+	//Service => view
+	
+	
+	
+	// prefix : classpath:/templates/
+	// suffix : .html
+	// classpath:/templates/group/.html
+	 
+	 
 	//등록 - 페이지
 	
 	//메일등록
@@ -72,7 +107,44 @@ public class MailController {
 	// suffix : .html
 	// classpath:/templates/group/.html
 	
-	
+		//수정 - 페이지
+		
+		//메일수정
+		 @GetMapping("/mailUpdate")
+		    public String mailUpdatePage() {
+		        return "group/mail/mailUpdate";  // mainPage.html을 반환
+		    }	
+		
+		//Service
+		
+		
+		//Service => view
+		
+		
+		
+		// prefix : classpath:/templates/
+		// suffix : .html
+		// classpath:/templates/group/.html
+	 
+	//답장
+	 
+	 @GetMapping("/mailReply")
+	    public String mailReplyPage() {
+	        return "group/mail/mailReply";  // mainPage.html을 반환
+	    }	
+	 
+		//Service
+		
+		
+		//Service => view
+		
+		
+		
+		// prefix : classpath:/templates/
+		// suffix : .html
+		// classpath:/templates/group/.html
+	 
+	 
 	//메일목록
 	
 	
