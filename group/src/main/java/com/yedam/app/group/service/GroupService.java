@@ -1,5 +1,7 @@
 package com.yedam.app.group.service;
 
-public interface GroupService {
+import java.util.List;
 
+public interface GroupService {
+	public List<GroupVO> findAllList();
 }

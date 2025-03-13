@@ -121,6 +121,7 @@
 		imageList.forEach((e,index)=>{
 			document.querySelector('.imgsBtn').innerHTML += `<button id=${index}></button>`
 		})
+		
 
 		document.querySelectorAll('.imgsBtn button').forEach(e=>{
 			if(e.id == currentIndex){
@@ -129,7 +130,7 @@
 			
 		    e.addEventListener('click', event => {
 		    	document.querySelectorAll('.imgsBtn button').forEach(b => b.classList.remove('active'));
-		    	currentIndex = event.target.id
+		    	currentIndex = event.target.id + 1
 		    	showSlide(currentIndex);
 		    });
 		})
