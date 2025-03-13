@@ -3,110 +3,94 @@
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	layout:decorate="~{common/layouts/main_layout}"
 	layout:fragment="content">
+<link rel="stylesheet" type="text/css" href="/css/subscribePage.css">
 <style>
-
-.basicModule {
-	justify-content: center;
-	margin:10% 0;
-	display: flex;
-	gap: 200px;
-}
-
-.selectModule {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-	justify-content: center;
-	gap: 100px;
-	margin : 5%;
-}
-
-.selectItem {
-	justify-content: center;
-    display: flex;
-    gap: 20px;
-}
-
-
-.selectItem div {
-    background-color: #d8b4fe;
-    border: 1px solid #a855f7;
-    border-radius: 10px;
-    width: 300px; 
-    line-height: 100px;
-    display: flex;
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
     justify-content: center;
-    box-sizing: border-box;
-	font-size: 56px;
+    align-items: center;
 }
 
-.selectModule .check{
-	background-color: red;
-	text-decoration: line-through;
+.modal-content {
+	background: white;
+	width: 70%;
+	height: 70%;
+	padding: 20px;
+	border-radius: 10px;
+	box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+	text-align: center;
 }
 
-.infoContainer{
-    margin : 5%;
+.modal-content button {
+	width: 150px;
+	height: 50px;
+	margin: 10px;
+	font-size: 16px;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
 }
 
-
-.infoContainer .top{
-	display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    text-align: center;
-    margin : 5%;
-	justify-items: center;
+#confirmPayment {
+	background-color: #4CAF50;
+	color: white;
 }
 
-.infoContainer .bottom{
-	display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    text-align: center;
-    margin : 5%;
-	justify-items: center;
+#cancelPayment {
+	background-color: #f44336;
+	color: white;
 }
 
-.infoContainer .info{
-	margin : 5%;
-    
+.price {
+	font-size: 30px;
+	text-align: right;
+	margin: 3%;
 }
 
-.infoContainer input,select{
-    background-color: #d8b4fe;
-    border: 1px solid #a855f7;
-    border-radius: 10px;
-    width: 300px; 
-    line-height: 100px;
-
+.clause, .clauseCheck {
+	font-size: 20px;
+	margin: 0 3%;
 }
 
-.countInputContainer{
-	position: relative;
-    display: flex;
+.clause {
+	text-align: justify;
 }
 
-.countInput{
-    text-align: center;
-    font-size: 56px;
+.clauseCheck {
+	text-align: right;
 }
 
-.countInputContainer button{
-    position: absolute;
-    top: 5px;
-    bottom: 5px;
-    border-radius: 15px;
-    border: none;
-    background: none;
-    font-size: 60px;
+.clauseCheck input[type="checkbox"] {
+	width: 16px;
+	height: 16px;
 }
 
-.countInputContainer .plusButton{
-    right: 15px;
+.clauseText {
+	margin: 1% 3%;
+	height: 300px;
+    width: 80%;
 }
 
-.countInputContainer .minusButton{
-
-    left: 15px;
+.payMent button {
+	width: 300px;
+	margin: 1% 3%;
+	border: 1px solid black;
+	background-color: black;
+	color: white;
 }
+.close {
+        position: absolute;
+        top: 10px;
+        right: 35px;
+        font-size: 35px;
+        cursor: pointer;
+    }
 </style>
 <div class="container">
 	<form>
@@ -131,12 +115,6 @@
 		<div class="form-floating mb-3">
 			<input class="form-control" id="name" type="text"
 				placeholder="Enter your name..." data-sb-validations="required" />
-			<label for="name">사업자 연락처</label>
-		</div>
-
-		<div class="form-floating mb-3">
-			<input class="form-control" id="name" type="text"
-				placeholder="Enter your name..." data-sb-validations="required" />
 			<label for="name">사업자 이메일</label>
 		</div>
 
@@ -155,50 +133,199 @@
 		<div class="moduleContainer">
 			<div class="basicModule">
 				<div class="selectItem" th:each="item : ${basic}">
-			        <div th:for="'check-' + ${item}" th:text="${item}"></div>
-			    </div>
+					<div th:for="'check-' + ${item}" th:text="${item}"></div>
+				</div>
 			</div>
-				
-			<div class="selectModule">
-			    <div class="selectItem" th:each="item : ${select}">
-			        <div class="selectmd" th:for="'check-' + ${item}" th:text="${item}"></div>
-			    </div>
-			</div>
-		</div>
-		
-		<div class="infoContainer">
-		<div class="info top">
-			<div class="info countInputContainer">
-				<button class="minusButton">-</button>
-				<input class="countInput" value=20 readonly	>
-				<button class="plusButton">+</button>
-			</div>
-			<div class="info">
-				<input value=20>
-			</div>
-			<div class="info">
-				<input value=20>
-			</div>
-		</div>
-		<div class="info bottom">
-			<div class="info">
-				<input value=20>
-			</div>
-			<div class="info">
-				<input value=20>
-			</div>
-		</div>
-		</div>
-	
-		<button type="submit">제출</button>
-	</form>
-</div>
-<script>
-	document.querySelectorAll('.selectModule .selectmd').forEach(e=>{
-		e.addEventListener('click',f=>{
-			f.target.classList.toggle('check')
-		})
-	})
 
+			<div class="selectModule">
+				<div class="selectItem" th:each="item : ${select}">
+					<div class="selectmd" th:for="'check-' + ${item}" th:text="${item}"></div>
+				</div>
+			</div>
+		</div>
+
+		<div class="infoContainer">
+			<div class="info top">
+				<div>
+					<h3>인원</h3>
+					<div class="countInputContainer">
+						<button class="minusButton">-</button>
+						<input class="countInput" value="50" readonly>
+						<button class="plusButton">+</button>
+					</div>
+				</div>
+
+				<div>
+					<h3>업로드 용량(MB)</h3>
+					<div class="countInputContainer uploadContainer">
+						<input class="countInput uploadInput" value="25" readonly>
+					</div>
+					<div class="uploadDropdown" style="display: none;">
+						<div class="uploadOption" data-value="10">10MB</div>
+						<div class="uploadOption" data-value="25">25MB</div>
+						<div class="uploadOption" data-value="50">50MB</div>
+						<div class="uploadOption" data-value="100">100MB</div>
+					</div>
+				</div>
+
+				<div>
+					<h3>저장소 용량(TB)</h3>
+					<div class="countInputContainer storageContainer">
+						<input class="countInput storageInput" value="3" readonly>
+					</div>
+					<div class="storageDropdown" style="display: none;">
+						<div class="storageOption" data-value="1">1TB</div>
+						<div class="storageOption" data-value="2">2TB</div>
+						<div class="storageOption" data-value="3">3TB</div>
+						<div class="storageOption" data-value="4">4TB</div>
+						<div class="storageOption" data-value="5">5TB</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="info bottom">
+				<div>
+					<h3>구독기간(월)</h3>
+					<div class="countInputContainer periodContainer">
+						<input class="countInput periodInput" value="1" readonly>
+					</div>
+					<div class="periodDropdown" style="display: none;">
+						<div class="periodOption" data-value="1">1개월</div>
+						<div class="periodOption" data-value="12">12개월</div>
+					</div>
+				</div>
+
+				<div>
+					<h3>결제일</h3>
+					<div class="countInputContainer paymentContainer">
+						<input class="countInput paymentInput" value="20" readonly>
+					</div>
+					<div class="paymentDropdown" style="display: none;">
+						<div class="paymentOption" data-value="10">10일</div>
+						<div class="paymentOption" data-value="15">15일</div>
+						<div class="paymentOption" data-value="20">20일</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="receipt">
+			<div>모듈 구독 가격 : 200000</div>
+			<div>인원 당 가격 : 200000</div>
+			<div>업로드 파일 제한(5MB) : 200000</div>
+			<div>저장소 용량(1TB): 200000</div>
+			<div>--------------------------------------------------</div>
+			<div>할인전 금액 : 200000</div>
+			<div>구독기간 할인(년) : 200000</div>
+			<div>첫 결재 할인(50%) : 200000</div>
+			<div>총 금액 : 200000</div>
+			<button type="submit">제출</button>
+		</div>
+
+
+	</form>
+	<div id="paymentModal" class="modal">
+		<div class="modal-content">
+			<span class="close">&times;</span>	
+			<div>
+			<h2>결제 진행</h2>
+			<div class="price">결제금액 : 50000</div>
+			<div class="clause">이용약관</div>
+			<textarea class="clauseText">
+			제1조 (목적)
+				본 약관은 [서비스명] (이하 "회사")가 제공하는 결제 서비스(이하 "서비스")를 이용하는 
+				고객(이하 "이용자")과 회사 간의 권리, 의무 및 책임사항을 규정함을 목적으로 합니다.
+				
+			제2조 (정의)
+				"이용자"란 본 약관에 동의하고 회사가 제공하는 결제 서비스를 이용하는 개인 또는 법인을 의미합니다.
+				"결제수단"이란 이용자가 서비스 이용을 위해 사용할 수 있는 
+				신용카드, 체크카드, 계좌이체, 간편결제 등의 수단을 의미합니다.
+				"정기결제"란 이용자가 서비스 이용 대금을 일정 주기(월, 연 등)마다 자동으로 결제하는 방식을 의미합니다.
+			
+			제3조 (서비스 제공 및 변경)
+				회사는 이용자에게 결제 서비스를 제공합니다.
+				회사는 필요할 경우 서비스의 일부 또는 전부를 변경할 수 있으며, 변경 사항은 사전에 공지합니다.
+				이용자는 서비스 이용 시 최신 약관을 숙지하고 동의해야 합니다.
+				
+			제4조 (이용 요금 및 결제 방식)
+				이용자는 회사가 정한 요금 및 결제 방식을 따릅니다.
+				결제는 이용자가 선택한 결제수단을 통해 이루어지며, 
+				결제 과정에서 발생하는 금융기관 수수료는 이용자가 부담할 수 있습니다.
+				정기결제를 신청한 이용자는 서비스 이용기간이 종료되기 전에 취소하지 않으면 
+				자동으로 연장 결제가 이루어집니다.
+				
+			제5조 (결제 취소 및 환불)
+				결제 취소 및 환불은 관련 법령 및 회사의 환불 정책에 따릅니다.
+				결제 후 이용자가 서비스 이용을 원하지 않는 경우, 
+				회사의 정책에 따라 일정 기간 내 환불이 가능합니다.
+				정기결제 이용자는 서비스 갱신 전에 정기결제 해지를 요청해야 하며, 
+				갱신 후에는 환불이 제한될 수 있습니다.
+				
+			제6조 (이용 제한 및 계약 해지)
+				이용자가 아래 사항에 해당하는 경우, 회사는 사전 통보 없이 서비스 이용을 제한하거나 계약을 해지할 수 있습니다.
+					- 타인의 정보를 도용하여 결제한 경우
+					- 허위 정보를 제공한 경우
+					- 불법적인 방법으로 결제를 시도한 경우
+					- 기타 회사의 운영에 심각한 영향을 미치는 행위를 한 경우
+				이용자는 서비스 이용을 원하지 않는 경우, 회사에 계약 해지를 요청할 수 있습니다.
+			
+			제7조 (개인정보 보호 및 관리)
+				회사는 결제 서비스 제공을 위해 필요한 최소한의 개인정보만을 수집하며, 
+				이를 보호하기 위해 최선의 노력을 다합니다.
+				이용자의 결제 정보는 관련 법률에 따라 안전하게 관리되며, 
+				이용자의 동의 없이 제3자에게 제공되지 않습니다.
+				
+			제8조 (책임의 한계)
+				회사는 이용자의 부주의나 결제 정보 관리 소홀로 인해 발생한 문제에 대해 책임을 지지 않습니다.
+				회사는 천재지변, 시스템 장애, 금융기관 문제 등의 
+				불가항력적인 사유로 인해 발생한 결제 지연 또는 실패에 대해 책임을 지지 않습니다.
+				
+			제9조 (준거법 및 관할법원)
+				본 약관과 관련된 분쟁은 대한민국 법률에 따르며, 관할 법원은 회사의 본사 소재지 관할 법원으로 합니다.
+				
+			부칙
+				본 약관은 2020년 3월 13일부터 적용됩니다.
+			</textarea>
+			<div class="clauseCheck">
+				<input type="checkbox">동의
+			</div>
+			<div class="payMent">
+				<button id="card">카드결재</button>
+				<button id="account">계좌이체</button>
+			</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="/js/subscribePage.js"></script>
+
+<script>
+	document.addEventListener("DOMContentLoaded", function() {
+	    let form = document.querySelector("form");
+	    let paymentModal = document.getElementById("paymentModal");
+	
+	    form.addEventListener("submit", function(event) {
+	        event.preventDefault();
+	        paymentModal.style.display = "flex"; // display 속성을 flex로 변경
+	    });
+	
+	    document.querySelectorAll(".payMent button").forEach(e => {
+	        e.addEventListener("click", btn => {
+	            if (!document.querySelector(".clauseCheck input[type='checkbox']").checked) {
+	                alert("이용약관에 동의해야 결제가 진행됩니다.");
+	                return;
+	            }
+	            if(btn.target.id=="card"){
+	            	alert("카드");
+	            }
+	            else if(btn.target.id=="account"){
+	            	alert("계좌이체");
+	            }
+	        });
+	    });
+	});
+    document.querySelector('.close').addEventListener('click', function() {
+        document.getElementById('paymentModal').style.display = 'none';
+    });
 </script>
 </html>

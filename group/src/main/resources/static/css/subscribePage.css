@@ -1,0 +1,156 @@
+.moduleContainer {
+	margin-bottom: 200px;
+}
+
+.selectModule {
+	color: #6c757d;
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	justify-content: center;
+	gap: 100px;
+	margin: 5%;
+}
+
+.selectItem {
+	justify-content: center;
+	display: flex;
+	gap: 20px;
+}
+
+.selectItem div {
+	border: 1px solid #ced4da;
+	border-radius: 10px;
+	width: 300px;
+	line-height: 100px;
+	display: flex;
+	justify-content: center;
+	box-sizing: border-box;
+	font-size: 56px;
+}
+
+.basicModule {
+	justify-content: center;
+	margin: 10% 0;
+	display: flex;
+	gap: 200px;
+	color: black;
+}
+
+.selectModule .check {
+	color: black;
+	border: 1px solid #ced4da;
+	text-decoration: line-through;
+	border: 1px solid #ced4da;
+}
+
+.infoContainer {
+	margin: 5%;
+}
+
+.infoContainer .top {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	text-align: center;
+	margin: 5%;
+	justify-items: center;
+}
+
+.infoContainer .bottom {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	text-align: center;
+	margin: 5%;
+	justify-items: center;
+}
+
+.infoContainer .info {
+	margin: 5%;
+}
+
+.infoContainer input {
+	border: 0.125rem solid #ced4da;
+	border-radius: 10px;
+	width: 300px;
+	line-height: 100px;
+}
+
+.countInputContainer {
+	position: relative;
+	display: flex;
+}
+
+.countInput {
+	text-align: center;
+	font-size: 56px;
+}
+
+.countInputContainer button {
+	position: absolute;
+	top: 5px;
+	bottom: 5px;
+	border-radius: 15px;
+	border: none;
+	background: none;
+	font-size: 60px;
+}
+
+.countInputContainer .plusButton {
+	right: 15px;
+}
+
+.countInputContainer .minusButton {
+	left: 15px;
+}
+
+.uploadDropdown,.storageDropdown,.periodDropdown,.paymentDropdown{
+	border: 1px solid #ced4da;
+	border-radius: 10px;
+	width: 300px;
+	background: white;
+	position: absolute;
+	z-index: 10;
+	margin-top: 5px;
+}
+
+.uploadDropdown,.storageDropdown,.periodDropdown,.paymentDropdown{
+	padding: 10px;
+	cursor: pointer;
+	text-align: center;
+}
+
+.uploadOption:hover,.storageOption:hover,.periodOption:hover,.paymentOption:hover{
+	background: #f1f1f1;
+}
+
+.receipt{
+	text-align: right;
+	font-size: 1.75rem;
+}
+
+.receipt div{
+	margin: 5px;
+}
+
+.receipt button {
+    width: 250px;
+    height: 80px;
+    margin: 20px 5px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #6c757d, #495057);
+    color: white;
+    font-size: 45px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+}
+.receipt button:hover {
+    background: linear-gradient(135deg, #495057, #343a40); 
+    transform: scale(1.05); /* 약간 확대 */
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+.receipt button:active {
+    transform: scale(0.98); 
+   }
