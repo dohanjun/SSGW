@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.yedam.app.approval.mapper.ApprovalMapper">
+<mapper namespace="com.yedam.app.group.mapper.ApprovalMapper">
 	<insert id="insertStamp" parameterType="ApprovalVO">
-		INSERT INTO stamp(stamp_id
+	<selectKey keyProperty="stampId"
+                       resultType="Integer"
+                       order="BEFORE">
+            	SELECT NVL(MAX(stamp_id), 1) + 1
+				FROM test123
+            </selectKey>
+		INSERT INTO test123(stamp_id
 		                  ,employee_no
 		                  ,stamp_img_path)
 		            VALUES(#{stampId}

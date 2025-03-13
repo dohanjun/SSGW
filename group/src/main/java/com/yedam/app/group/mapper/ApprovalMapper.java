@@ -1,8 +1,8 @@
-package com.yedam.app.approval.mapper;
+package com.yedam.app.group.mapper;
 
 import java.util.List;
 
-import com.yedam.app.approval.service.ApprovalVO;
+import com.yedam.app.group.service.ApprovalVO;
 
 public interface ApprovalMapper {
 	
