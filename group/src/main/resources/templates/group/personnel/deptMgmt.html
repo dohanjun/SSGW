@@ -8,7 +8,68 @@
 <title>부서관리</title>
 </head>
 <body>
-     <h3>부서관리</h3>
+     <div class="container text-center">
+         <h3>부서관리</h3>
+         <table class="table">
+            <thead>
+                <tr>
+                   <th>부서번호</th>
+                   <th>부서이름</th>
+                   <th>부서장</th>
+                   <th>부서총원</th>
+                </tr>
+            </thead>
+            <tbody>                                   
+                <tr><!-- 샘플 -->
+                   <td>1</td>
+                   <td>경영기획부</td>
+                   <td>김상연</td>
+                   <td>2</td>
+                </tr>
+                <tr>
+                   <td>2</td>
+                   <td>마케팅부</td>
+                   <td>이신영</td>
+                   <td>2</td>
+                </tr>
+                <tr>
+                   <td>3</td>
+                   <td>인사팀</td>
+                   <td>윤지원</td>
+                   <td>2</td>
+                </tr>
+                <tr>
+                   <td>4</td>
+                   <td>회계팀</td>
+                   <td>도한준</td>
+                   <td>2</td>
+                </tr>
+                <tr>
+                   <td>5</td>
+                   <td>프로젝트팀</td>
+                   <td>김예찬</td>
+                   <td>2</td>
+                </tr>
 
+              <th:block th:each=" post : ${boards} ">
+                   <!--/* post(BoardVO) => <tr/> 로 바꿔야함 */-->
+                   <!--/* boardInfo?bno=1 여기로 온클릭 /*-->
+                <tr th:id="${post.bno}"
+                    th:onclick="|='@{/(=${})}'|">       <!--/* text는 [[]] 이중괄호에 ${}변수 가져올거 */-->
+                   <!--<td>[[${}]]</td>                   
+                   <td>[[${}]]</td>
+                   <td>[[${}]]</td>
+                   <td>[[${}]]</td>
+                   <td>[[${}]]</td>-->
+                </tr>    
+              </th:block>
+            </tbody>
+         </table>
+        </div>
+     
+     <script>
+     // 사원 검색 기능
+
+     </script>
 </body>
 </html>

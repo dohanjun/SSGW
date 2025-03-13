@@ -5,11 +5,11 @@
 	  layout:fragment="content">
 <head>
 <meta charset="UTF-8">
-<title></title>
+<title>휴가조회</title>
 </head>
 <body>
      <div class="container text-center">
-         <h3>사원 관리</h3>
+         <h3>휴가조회</h3>
          <table class="table">
             <thead>
                 <tr>
@@ -18,7 +18,9 @@
                    <th>직급</th>
                    <th>이름</th>
                    <th>입사일</th>
-                   <th>연락처</th>
+                   <th>부여일</th>
+                   <th>잔여일</th>
+                   <th>사용일</th>
                 </tr>
             </thead>
             <tbody>                                   
@@ -26,9 +28,51 @@
                    <td>01</td>
                    <td>경영기획부</td>
                    <td>이사</td>
-                   <td>홍길동</td>
-                   <td>2025-03-01</td>
-                   <td>010-1111-1111</td>
+                   <td>김상연</td>
+                   <td>2020-03-01</td>
+                   <td>20</td>
+                   <td>10</td>
+                   <td>10</td>
+                </tr>
+                <tr>
+                   <td>02</td>
+                   <td>마케팅부</td>
+                   <td>이사</td>
+                   <td>이신영</td>
+                   <td>2021-03-01</td>
+                   <td>19</td>
+                   <td>10</td>
+                   <td>9</td>
+                </tr>
+                <tr>
+                   <td>03</td>
+                   <td>인사팀</td>
+                   <td>부장</td>
+                   <td>윤지원</td>
+                   <td>2020-03-01</td>
+                   <td>20</td>
+                   <td>10</td>
+                   <td>10</td>
+                </tr>
+                <tr>
+                   <td>04</td>
+                   <td>회계팀</td>
+                   <td>부장</td>
+                   <td>도한준</td>
+                   <td>2020-03-01</td>
+                   <td>20</td>
+                   <td>10</td>
+                   <td>10</td>
+                </tr>
+                <tr>
+                   <td>05</td>
+                   <td>프로젝트팀</td>
+                   <td>부장</td>
+                   <td>김예찬</td>
+                   <td>2020-03-01</td>
+                   <td>20</td>
+                   <td>10</td>
+                   <td>10</td>
                 </tr>
 
               <th:block th:each=" post : ${boards} ">

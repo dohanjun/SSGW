@@ -25,6 +25,26 @@
   text-align:center;
 }
 
+.collapseT-modal-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  pointer-events: auto;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 0.3rem;
+  outline: 0;
+}
+
+.collapseT-modal-body {
+  position: relative;
+  flex: 1 1 auto;
+  padding: 1rem;
+  text-align:center;
+}
+
 .filebox .upload-name {
     display: inline-block;
     height: 40px;

@@ -7,6 +7,15 @@
     <meta charset="UTF-8">
     <meta name="viewport">
     <title>사원 등록</title>
+    <style>
+            .profile-img {
+            width: 100px;
+            height: 100px;
+            background: #ddd;
+            display: block;
+            margin: 0 auto 10px;
+        }
+    </style>
 </head>
 <body>
 
@@ -14,19 +23,25 @@
         <h3>사원 등록</h3>
     </div>    
     <div class="container text-center">
+      <img id="imagePreview" class="profile-img" alt="">
+      <input type="file" id="photo" accept="image/*" onchange="empimg(event)">
+    </div>
+    
+    <div class="container text-center">
         <input type="file">
     </div>
+
 
     <div class="container text-center">
         <form name="insertform" th:action="@{/}" method="post">
         <table class="table table-boardered">
            <tr>
                <th>사원번호</th>
-               <td><input type="text" name="" readonly></td>
+               <td><input type="number" name="" readonly></td>
            </tr>
            <tr>
                <th>ID</th>
-               <td><input type="text" name=""></td>
+               <td><input type="text" name="" ></td>
            </tr>
            <tr>
                <th>이름</th>
@@ -52,10 +67,8 @@
                    <select id="rank">
                    <option>직급을 선택하세요</option>
                    <option value="">사원</option>
-                   <option value="">주임</option>
                    <option value="">대리</option>
                    <option value="">과장</option>
-                   <option value="">차장</option>
                    <option value="">부장</option>
                    <option value="">이사</option>
                    <option value="">대표</option>
@@ -88,11 +101,37 @@
            </tr>
         </table>
         <button type="submit" class="btn btn-primary">등록</button>
-        <button type="submit" class="btn btn-danger">취소</button>
+        <button type="button" class="btn btn-danger">취소</button>
       </form>
     </div>
     <script>
+    function empimg(event) {
+        const image = document.getElementById('imagePreview');
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                image.src = e.target.result;
+                image.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    }
     
+    document.querySelector('form[name="insertForm"]')
+    .addEventListener('submit', function(event){
+    	event.preventDefault();
+    	
+    	let name = insertForm.querySelector('[name="bookName"]')
+    	if(name.value == ''){
+    		alert('도서명이 입력되지 않았습니다.');
+    		name.focus();
+    		return;
+    	}
+    	
+    	alert('도서등록이 완료 되었습니다.');
+    	insertForm.submit();
+    });
     </script>
 </body>
 </html>

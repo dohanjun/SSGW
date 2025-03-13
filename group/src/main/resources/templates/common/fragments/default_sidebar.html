@@ -129,18 +129,22 @@
             
                                 <!-- Nav Item - Pages Collapse Menu -->
             <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseT"
                     aria-expanded="true" aria-controls="collapseTwo">
                     <i class="fas fa-fw fa-cog"></i>
                     <span>인사관리</span>
                 </a>
-                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                <div id="collapseT" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Custom Components:</h6>
-                        <a class="collapse-item" th:href="@{empRegister}">사원등록</a>
+                        <h6 class="collapse-header">인사관리</h6>
+                        <a class="collapse-item" th:href="@{empinsert}">사원등록</a>
                         <a class="collapse-item" th:href="@{empMgmt}">사원관리</a>
-                        <a class="collapse-item" th:href="@{leaveStatus}">휴가조회</a>
-                        <a class="collapse-item" th:href="@{deptMgmt}">부서관리</a>
+                        <h6 class="collapse-header">부서관리</h6>
+                        <a class="collapse-item" th:href="@{deptMgmt}">부서조회</a>
+                        <a class="collapse-item" th:href="@{deptInsert}">부서추가</a>
+                        <h6 class="collapse-header">휴가관리</h6>
+                        <a class="collapse-item" th:href="@{vacaList}">휴가조회</a>
+                        <a class="collapse-item" th:href="@{vacaInsert}">휴가유형등록</a>
                     </div>
                 </div>
             </li>
