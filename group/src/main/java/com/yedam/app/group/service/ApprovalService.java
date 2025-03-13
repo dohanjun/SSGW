@@ -1,4 +1,4 @@
-package com.yedam.app.approval.service;
+package com.yedam.app.group.service;
 
 public interface ApprovalService {
 	

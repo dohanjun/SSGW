@@ -60,10 +60,12 @@
             		</div>
             		<div class="approval-modal-body">
             			<form>
-                			<h3>도장이미지</h3>
+            				<div style="width:200px; height:200px; margin:3px auto; border:1px solid black">
+                			<img id="imgview" src="" alt="" style="display:none; width: 180px; height: 180px;"/>
+                			</div>
                 			<div class="filebox">
     							<label for="file">파일찾기</label> 
-    							<input type="file" id="file">
+    							<input type="file" id="file" accept="image/*" onchange="previewImage(event)">
 							                          
             				<div class="modal-footer modalbtns">
                 				<button type="button" class="btn btn-secondary" onclick="insertStamp()">등록</button>
@@ -94,16 +96,16 @@ function insertStamp() {
     let formData = new FormData();
     formData.append("file", file);
 
-    fetch('http://localhost:8099/aprv', {
+    fetch('http://localhost:8099/aprv/upload', {
         method: 'POST',
         body: formData
     })
-    .then(response => response.json())
+    .then(response => response.text())
     .then(result => console.log(result))
     .catch(err => console.log(err));
 }
 
-function modifyStamp() {
+/* function modifyStamp() {
     let fileInput = document.getElementById('file');
     let file = fileInput.files[0];
 
@@ -111,7 +113,23 @@ function modifyStamp() {
 
 function deleteStamp() {
    
-} 
+} */ 
+
+function previewImage(event) {
+    let file = event.target.files[0]; // 선택한 파일 가져오기
+    if (!file) {
+        document.getElementById('imgview').style.display = "none";
+        return;
+    }
+
+    let reader = new FileReader();
+    reader.onload = function(e) {
+        let imagePreview = document.getElementById('imgview');
+        imagePreview.src = e.target.result;
+        imagePreview.style.display = "block";
+    };
+    reader.readAsDataURL(file);
+}
 
 </script>
 </html>
