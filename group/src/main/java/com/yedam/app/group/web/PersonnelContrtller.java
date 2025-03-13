@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class PersonnelContrtller {
 	 
 	// 사원등록
-	@GetMapping("empRegister")
-	    public String empRegister() {
-	        return "group/personnel/empRegister";  // mainPage.html을 반환
+	@GetMapping("empinsert")
+	    public String empinsert() {
+	        return "group/personnel/empinsert";  // mainPage.html을 반환
 	    }
 	
 	// 사원관리
@@ -20,16 +20,42 @@ public class PersonnelContrtller {
 	        return "group/personnel/empMgmt";
 	    }
 	
+	
+	// 단건 상세조회
+	@GetMapping("empInfo")
+    public String empInfo() {
+        return "group/personnel/empInfo";
+    }
+	
+	// 사원 정보 수정
+	@GetMapping("empUpdate")
+    public String empUpdate() {
+        return "group/personnel/empUpdate";
+    }
+	
 	// 휴가조회
-	@GetMapping("leaveStatus")
-	    public String leaveStatus() {
-	        return "group/personnel/leaveStatus";
-	    }
+	@GetMapping("vacaList")
+	public String leaveStatus() {
+		return "group/personnel/vacaList";
+	}
+	
+	// 휴가유형 등록
+	@GetMapping("vacaInsert")
+	public String vacaInsert() {
+		return "group/personnel/vacaInsert";
+	}
 	
 	// 부서관리
 	@GetMapping("deptMgmt")
-	    public String deptMgmt() {
-	        return "group/personnel/deptMgmt";
-	    }
+	public String deptMgmt() {
+		return "group/personnel/deptMgmt";
+	}
 	
+	// 부서추가
+	@GetMapping("deptInsert")
+    public String deptInsert() {
+        return "group/personnel/deptInsert";
+    }
+	
+		
 }

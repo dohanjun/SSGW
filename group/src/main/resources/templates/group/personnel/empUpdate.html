@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/layouts/default_layout}"
+      layout:fragment="content">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사원정보 수정</title>
+    <style>
+        /* 메인 컨테이너*/
+        .content-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: calc(100vh - 100px);
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* 사원 상세정보 박스 크기 조정 */
+        .employee-container {
+            width: 700px;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .emph2 {
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .profile-img {
+            width: 100px;
+            height: 100px;
+            background: #ddd;
+            display: block;
+            margin: 0 auto 10px;
+        }
+
+        .form-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .form-group {
+            flex: 1 1 calc(50% - 10px);
+            min-width: 250px;
+            text-align: left;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            font-size: 14px;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            width: 48%;
+        }
+
+        .btn-update {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-cancel {
+            background: #dc3545;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="content-wrapper">
+        <div class="employee-container">
+            <h2 class="emph2">사원 정보수정</h2>
+            <img id="imagePreview" class="profile-img" alt="">
+            <input type="file" id="photo" accept="image/*" onchange="empimg(event)">
+            
+            <div class="form-container">
+                <div class="form-group">
+                    <label for="empid">ID</label>
+                    <input type="text" id="empid">
+                </div>
+                <div class="form-group">
+                    <label for="pw">PW</label>
+                    <input type="password" id="pw">
+                    <button type="button" onclick="resetPassword()">초기화</button>
+                </div>
+                <div class="form-group">
+                    <label for="number">사원번호</label>
+                    <input type="text" id="number" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="name">이름</label>
+                    <input type="text" id="name" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="department">부서</label>
+                    <select id="department">
+                        <option>부서를 선택하세요</option>
+                        <option>경영기획부</option>
+                        <option>마케팅부</option>
+                        <option>인사팀</option>
+                        <option>회계팀</option>
+                        <option>개발팀</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="position">직급</label>
+                    <select id="position">
+                        <option>직급을 선택하세요</option>
+                        <option>사원</option>
+                        <option>대리</option>
+                        <option>과장</option>
+                        <option>부장</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="role">권한</label>
+                    <select id="role">
+                        <option>권한을 선택하세요</option>
+                        <option>최고관리자</option>
+                        <option>인사관리자</option>
+                        <option>게시판관리자</option>
+                        <option>일반사용자</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="contact">연락처</label>
+                    <input type="text" id="contact">
+                </div>
+                <div class="form-group">
+                    <label for="address">주소</label>
+                    <input type="text" id="address">
+                </div>
+                <div class="form-group">
+                    <label for="hire-date">입사일</label>
+                    <input type="date" id="hire-date">
+                </div>
+                <div class="form-group">
+                    <label for="leave-date">퇴사일</label>
+                    <input type="date" id="leave-date">
+                </div>
+            </div>
+
+            <button type="button">엑셀 등록</button>
+
+            <div class="btn-group">
+                <button type="submit" class="btn btn-primary">수정</button>
+                <button type="button" class="btn btn-danger">취소</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function empimg(event) {
+            const image = document.getElementById('imagePreview');
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    image.src = e.target.result;
+                    image.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        function resetPassword() {
+            document.getElementById('pw').value = '12345678';
+        }
+    </script>
+</body>
+</html>

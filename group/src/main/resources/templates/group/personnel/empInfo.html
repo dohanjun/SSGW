@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/layouts/default_layout}"
+      layout:fragment="content">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사원 상세정보</title>
+    <style>
+        /* 메인 컨테이너를 가운데 정렬하고 화면에 맞게 조정 */
+        .content-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: calc(100vh - 100px); /* 상단 네비게이션 제외한 높이 */
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* 사원 상세정보 박스 크기 조정 */
+        .employee-container {
+            width: 600px; /* 기존 900px → 600px로 축소 */
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .emph2 {
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .profile-img {
+            width: 100px;
+            height: 100px;
+            background: #ddd;
+            display: block;
+            margin: 0 auto 10px;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+            text-align: left;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            font-size: 14px;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            width: 48%;
+        }
+
+        .btn-update {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-cancel {
+            background: #dc3545;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="content-wrapper">
+        <div class="employee-container">
+            <h2 class="emph2">사원 상세정보</h2>
+            <div class="profile-img"></div>
+            
+            <div class="form-group">
+                <label for="empid">사원번호</label>
+                <input type="text" id="empid" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="name">이름</label>
+                <input type="text" id="name" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="department">부서</label>
+                <input type="text" id="department" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="position">직급</label>
+                <input type="text" id="position" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="role">권한</label>
+                <input type="text" id="role" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="contact">연락처</label>
+                <input type="text" id="contact" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="address">주소</label>
+                <input type="text" id="address" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="hire-date">입사일</label>
+                <input type="date" id="hire-date" readonly>
+            </div>
+
+            <div class="btn-group">
+                <button type="submit" class="btn btn-primary">수정</button>
+                <button type="button" class="btn btn-danger">취소</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
