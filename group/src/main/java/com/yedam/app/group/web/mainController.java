@@ -13,15 +13,6 @@ public class mainController {
 	    public String mainPage() {
 	        return "group/mainPage";  
 	    }
-	 @GetMapping("/subscribe")
-	    public String subscribePage(Model model) {
-	        List<String> basic = Arrays.asList("기본1", "기본2");
-	        List<String> select = Arrays.asList("항목1", "항목2", "항목3","항목1", "항목2", "항목3");
-	        model.addAttribute("basic", basic);
-	        model.addAttribute("select", select);
-	        return "externalPages/subscribePage";
-	    }
-	 
 	 
 	 @GetMapping("/manual")
 	    public String manualPage() {

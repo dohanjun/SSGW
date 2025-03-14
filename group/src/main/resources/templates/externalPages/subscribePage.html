@@ -4,142 +4,62 @@
 	layout:decorate="~{common/layouts/main_layout}"
 	layout:fragment="content">
 <link rel="stylesheet" type="text/css" href="/css/subscribePage.css">
-<style>
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    justify-content: center;
-    align-items: center;
-}
-
-.modal-content {
-	background: white;
-	width: 70%;
-	height: 70%;
-	padding: 20px;
-	border-radius: 10px;
-	box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-	text-align: center;
-}
-
-.modal-content button {
-	width: 150px;
-	height: 50px;
-	margin: 10px;
-	font-size: 16px;
-	border: none;
-	border-radius: 5px;
-	cursor: pointer;
-}
-
-#confirmPayment {
-	background-color: #4CAF50;
-	color: white;
-}
-
-#cancelPayment {
-	background-color: #f44336;
-	color: white;
-}
-
-.price {
-	font-size: 30px;
-	text-align: right;
-	margin: 3%;
-}
-
-.clause, .clauseCheck {
-	font-size: 20px;
-	margin: 0 3%;
-}
-
-.clause {
-	text-align: justify;
-}
-
-.clauseCheck {
-	text-align: right;
-}
-
-.clauseCheck input[type="checkbox"] {
-	width: 16px;
-	height: 16px;
-}
-
-.clauseText {
-	margin: 1% 3%;
-	height: 300px;
-    width: 80%;
-}
-
-.payMent button {
-	width: 300px;
-	margin: 1% 3%;
-	border: 1px solid black;
-	background-color: black;
-	color: white;
-}
-.close {
-        position: absolute;
-        top: 10px;
-        right: 35px;
-        font-size: 35px;
-        cursor: pointer;
-    }
-</style>
+<style></style>
 <div class="container">
 	<form>
 		<div class="form-floating mb-3">
-			<input class="form-control" id="name" type="text"
+			<input class="form-control" id="subName" name="subName" type="text"
 				placeholder="Enter your name..." data-sb-validations="required" />
-			<label for="name">사업자 이름</label>
+			<label for="subName">이름</label>
 		</div>
 
 		<div class="form-floating mb-3">
-			<input class="form-control" id="name" type="text"
-				placeholder="Enter your name..." data-sb-validations="required" />
-			<label for="name">사업자 회사명</label>
+			<input class="form-control" id="companyName" name="companyName"
+				type="text" placeholder="Enter your name..."
+				data-sb-validations="required" /> 
+				<label for="companyName">회사명</label>
+		</div>
+		
+		<div class="form-floating mb-3">
+		    <input class="form-control" id="phoneNo" name="phoneNo"
+		        type="text" placeholder="Enter your phone number..."
+		        data-sb-validations="required" />
+		    <label for="phoneNo">전화번호</label>
 		</div>
 
 		<div class="form-floating mb-3">
-			<input class="form-control" id="name" type="text"
+			<input class="form-control" id="subEmail" name="subEmail" type="text"
 				placeholder="Enter your name..." data-sb-validations="required" />
-			<label for="name">사업자 번호</label>
+			<label for="subEmail">이메일</label>
 		</div>
 
 		<div class="form-floating mb-3">
-			<input class="form-control" id="name" type="text"
+			<input class="form-control" id="subId" name="subId" type="text"
 				placeholder="Enter your name..." data-sb-validations="required" />
-			<label for="name">사업자 이메일</label>
+			<label for="subId">아이디</label>
 		</div>
 
 		<div class="form-floating mb-3">
-			<input class="form-control" id="name" type="text"
+			<input class="form-control" id="subPw" name="subPw" type="text"
 				placeholder="Enter your name..." data-sb-validations="required" />
-			<label for="name">사업자 아이디</label>
+			<label for="subPw">비밀번호</label>
 		</div>
-
 		<div class="form-floating mb-3">
-			<input class="form-control" id="name" type="text"
-				placeholder="Enter your name..." data-sb-validations="required" />
-			<label for="name">사업자 비밀번호</label>
+			<input class="form-control" id="subBnisNo" name="subBnisNo"
+				type="text" placeholder="Enter your name..."
+				data-sb-validations="required" /> 
+				<label for="subBnisNo">사업자 번호</label>
 		</div>
-
 		<div class="moduleContainer">
 			<div class="basicModule">
-				<div class="selectItem" th:each="item : ${basic}">
-					<div th:for="'check-' + ${item}" th:text="${item}"></div>
+				<div class="selectItem" th:each="item : ${modules}" th:if="${#strings.equals(item.basicModule, 'Y')}">
+				    <div th:for="'check-' + ${item}"  th:text="${item.basicModule}"></div>
 				</div>
 			</div>
 
 			<div class="selectModule">
-				<div class="selectItem" th:each="item : ${select}">
-					<div class="selectmd" th:for="'check-' + ${item}" th:text="${item}"></div>
+				<div class="selectItem" th:each="item : ${modules}" th:if="${#strings.equals(item.basicModule, 'N')}">
+				    <div th:for="'check-' + ${item}"  th:text="${item.basicModule}"></div>
 				</div>
 			</div>
 		</div>
@@ -210,28 +130,25 @@
 		</div>
 
 		<div class="receipt">
-			<div>모듈 구독 가격 : 200000</div>
-			<div>인원 당 가격 : 200000</div>
-			<div>업로드 파일 제한(5MB) : 200000</div>
-			<div>저장소 용량(1TB): 200000</div>
+			<div> 모듈 구독 가격 : <span id="moculePrice">123</span></div>
+			<div> 인원 당 가격 : <span id="peoplePrice"></span></div>
+			<div> 업로드 파일 제한(5MB) : <span id="fileUploadPrice"></span></div>
+			<div> 저장소 용량(1TB) : <span id="fileRepositoryPrice"></span></div>
 			<div>--------------------------------------------------</div>
-			<div>할인전 금액 : 200000</div>
-			<div>구독기간 할인(년) : 200000</div>
-			<div>첫 결재 할인(50%) : 200000</div>
-			<div>총 금액 : 200000</div>
-			<button type="submit">제출</button>
+			<div> 할인전 금액 : <span id="tPrice"></span></div>
+			<div> 구독기간 할인(년) : <span id="ysale"></span></div>
+			<div> 총 금액 : <span id="endPrice"></span> </div>
+			<button type="submit">결제</button>
 		</div>
-
-
 	</form>
 	<div id="paymentModal" class="modal">
 		<div class="modal-content">
-			<span class="close">&times;</span>	
+			<span class="close">&times;</span>
 			<div>
-			<h2>결제 진행</h2>
-			<div class="price">결제금액 : 50000</div>
-			<div class="clause">이용약관</div>
-			<textarea class="clauseText">
+				<h2>결제 진행</h2>
+				<div class="price">결제금액 : <span id="modalPrice"></span></div>
+				<div class="clause">이용약관</div>
+				<textarea class="clauseText">
 			제1조 (목적)
 				본 약관은 [서비스명] (이하 "회사")가 제공하는 결제 서비스(이하 "서비스")를 이용하는 
 				고객(이하 "이용자")과 회사 간의 권리, 의무 및 책임사항을 규정함을 목적으로 합니다.
@@ -286,46 +203,20 @@
 			부칙
 				본 약관은 2020년 3월 13일부터 적용됩니다.
 			</textarea>
-			<div class="clauseCheck">
-				<input type="checkbox">동의
-			</div>
-			<div class="payMent">
-				<button id="card">카드결재</button>
-				<button id="account">계좌이체</button>
-			</div>
+				<div class="clauseCheck">
+					<input type="checkbox">동의
+				</div>
+				<div class="payMent">
+					<button id="card">카드결재</button>
+					<button id="trans">계좌이체</button>
+				</div>
 			</div>
 		</div>
 	</div>
 </div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+<script src="https://cdn.iamport.kr/v1/iamport.js"></script>
 <script type="text/javascript" src="/js/subscribePage.js"></script>
 
-<script>
-	document.addEventListener("DOMContentLoaded", function() {
-	    let form = document.querySelector("form");
-	    let paymentModal = document.getElementById("paymentModal");
-	
-	    form.addEventListener("submit", function(event) {
-	        event.preventDefault();
-	        paymentModal.style.display = "flex"; // display 속성을 flex로 변경
-	    });
-	
-	    document.querySelectorAll(".payMent button").forEach(e => {
-	        e.addEventListener("click", btn => {
-	            if (!document.querySelector(".clauseCheck input[type='checkbox']").checked) {
-	                alert("이용약관에 동의해야 결제가 진행됩니다.");
-	                return;
-	            }
-	            if(btn.target.id=="card"){
-	            	alert("카드");
-	            }
-	            else if(btn.target.id=="account"){
-	            	alert("계좌이체");
-	            }
-	        });
-	    });
-	});
-    document.querySelector('.close').addEventListener('click', function() {
-        document.getElementById('paymentModal').style.display = 'none';
-    });
-</script>
 </html>

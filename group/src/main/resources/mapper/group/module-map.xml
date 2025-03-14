@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yedam.app.group.mapper.ModuleMapper">
+	<select id="getAllModules" resultType="com.yedam.app.group.service.ModuleVO">
+		SELECT 
+	        MODULE_NO,
+	        MODULE_NAME,
+	        MODULE_PRICE,
+	        VERSION,
+	        BASIC_MODULE,
+	        ACTIVATE,
+	        EXPLANATION
+	    FROM MODULE
+    </select>
+</mapper>
