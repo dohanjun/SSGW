@@ -21,7 +21,6 @@ public class EmpVO {
 	private int suberNo;			  // 회사번호
 	private int rankId;			      // 직급Id
 	private int rightsId;			  // 권한Id 
-	private int manager;			  // 매니저Id 
-	
+	private int manager;			  // 매니저Id			
 
 }
