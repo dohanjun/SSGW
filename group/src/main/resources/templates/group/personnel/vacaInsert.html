@@ -1,12 +1,118 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{common/layouts/default_layout}"
+	  layout:fragment="content">
 <head>
-<meta charset="UTF-8">
-<title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>휴가 유형 등록</title>
+    <style>
+        .content-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .leave-form-container {
+            width: 400px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+        }
+
+        .form-group input[type="checkbox"] {
+            width: auto;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            width: 48%;
+        }
+
+        .btn-register {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-back {
+            background: #dc3545;
+            color: white;
+        }
+    </style>
 </head>
 <body>
-     <h3>휴가 유형등록</h3>
+    <div class="content-wrapper">
+        <div class="leave-form-container">
+            <h2>휴가 유형 등록</h2>
+            <form th:action="@{/leave/register}" method="post">
+                <div class="form-group">
+                    <label for="leaveType">휴가 유형</label>
+                    <select id="leaveType" name="leaveType">
+                        <option value="">휴가 유형 선택</option>
+                        <option value="">연차</option>
+                        <option value="">반차</option>
+                        <option value="">병가</option>
+                        <option value="">결혼</option>
+                        <option value="">근조</option>
+                                                
+                    </select>
+                </div>
 
+                <div class="form-group">
+                    <label for="leaveDays">휴가 일수</label>
+                    <input type="number" id="leaveDays" name="leaveDays" min="1" value="1">
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" name="proofRequired"> 증빙 서류 필요
+                    </label>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-register">등록</button>
+                    <button type="button" class="btn btn-back" onclick="window.history.back()">뒤로</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </body>
 </html>
