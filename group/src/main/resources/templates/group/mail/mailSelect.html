@@ -10,15 +10,18 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
 </head>
 <style>
-#flo{
-	float : left;
-	display : flex;
-	justify-content : center;
-	}
-
+	#flo{
+		float : left;
+		display : flex;
+		justify-content : center;
+		}
+	.container{
+		margin: 0 auto;
+		}
 </style>
 <!-- 메일상세보기 페이지-->
   <body>
+  <div class="container">
 	<div>
 	  <div>
 	  <a href="#" lcon="home"></a>
@@ -33,7 +36,6 @@
 	  </div>
 	</div>
 	<!-- 메일상세기능 -->
-	
 	<form name="form" method="post">
 	<table class="flo">
 		<tr>
@@ -49,10 +51,7 @@
 			<td><input name="" value="${}" readonly="readonly"></td>
 		</tr>
 		<tr>
-			<td>첨부파일</td>
-		<div>
-			<a href="login.html" class="btn btn-primary">모두저장</a>
-		</div>
+			<td>첨부파일</td><button type="button" href="#" class="btn btn-primary">모두저장</button>
 		</tr>
 		<tr>
 			<td>파일첨부</td>
@@ -63,8 +62,8 @@
 			<td><input name="" value="${}"></td>
 		</tr>
 	</table>
-
 	</form>
 	<!-- 메일상세기능 마침 -->
+	</div>
   </body>
 </html>
