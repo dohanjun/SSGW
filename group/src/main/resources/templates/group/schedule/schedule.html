@@ -1,56 +1,40 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="~{common/layouts/default_layout}"
-	layout:fragment="content">
-  <head>
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{common/layouts/default_layout}"
+    layout:fragment="content">
+<head>
     <meta charset='utf-8' />
     <script th:src='@{https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js}'></script>
     <script layout:fragment="script" type="text/javascript" src="/lib/jquery-3.7.1.min.js"></script>
-  </head>
-  <div class="form-group">
-    <div id='calendar-container'>
-        <div id="calendar"></div>
+</head>
+<body>
+    <div class="form-group">
+        <div id='calendar-container'>
+            <div id="calendar"></div>
+        </div>
     </div>
-</div>
-<script>
-      document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-          locale: 'ko',
-          initialView: 'dayGridMonth'
+
+    <script>
+    $(document).ready(function () {
+        let calendarTag = $('#calendar')[0]; // full-calendar 생성하기
+        let calendar = new FullCalendar.Calendar(calendarTag, {
+            locale: 'ko', // 한국어 설정
+            height: '550px', // calendar 높이 설정
+            expandRows: true, // 화면에 맞게 높이 재설정
+            // 주간 및 일간 뷰에서 시간 범위 조정
+            slotMinTime: '09:00:00', // 시작 시간 9AM
+            slotMaxTime: '19:00:00', // 종료 시간 7PM
+            headerToolbar: {                              
+                left: 'prevYear,prev,next,nextYear today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+            },
+            initialView: 'dayGridMonth', // 기본 뷰를 주간으로 설정 (필요하면 변경 가능)
         });
+        // 캘린더 랜더링
         calendar.render();
-      });
-      
-      console.log($)
-      
-      
-      /////////////
-      
-      $(document).ready(function () {
-    let calendarTag = $('#calendar')[0];                    // full-calendar 생성하기
-    let calendar = new FullCalendar.Calendar(calendarTag, {
-        height: '550px',                        // calendar 높이 설정
-        expandRows: true,                       // 화면에 맞게 높이 재설정
-        slotMinTime: '00:00',                   // Day 캘린더에서 시작 시간
-        slotMaxTime: '23:59',                   // Day 캘린더에서 종료 시간
-
-        customButtons: {                        
-            testButton: {
-                text: "테스트버튼"
-            }
-        },
-        headerToolbar: {                              
-            left: 'prevYear,prev,next,nextYear today',  
-            // left: 'prev,next,today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
-        }
     });
-    // 캘린더 랜더링
-    calendar.render();
-
-});
     </script>
+</body>
 </html>

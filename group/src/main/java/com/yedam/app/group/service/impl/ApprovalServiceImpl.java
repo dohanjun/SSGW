@@ -1,5 +1,7 @@
 package com.yedam.app.group.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,18 @@ public class ApprovalServiceImpl implements ApprovalService {
 	        throw new IllegalArgumentException("파일 경로가 필요합니다.");
 	    }
 	    return approvalMapper.insertStamp(aprvVO);
+	}
+
+	@Override
+	public ApprovalVO findBaicsForm(ApprovalVO aprvVO) {
+		return approvalMapper.selectBasicsForm(aprvVO);
+	}
+	
+	
+	// 전체조회
+	@Override
+	public List<ApprovalVO> findAllList() {
+		return approvalMapper.selectAprvList();
 	}
 
 

@@ -1,18 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yedam.app.group.mapper.ApprovalMapper">
+	<!-- 결재대기함 -->
+	<select id="selectAprvList" resultType="ApprovalVO">
+		SELECT  DRAFT_NO
+				,TITLE
+				,CONTENT
+				,APRV_STATUS
+				,REJECT_REASON
+				,DRAFT_DATE
+				,EMPLOYEE_NO
+				,APRV_DATE
+				,FORM_ID
+				,BASICS_FORM_ID
+				,SUBER_NO
+		FROM    aprv_documents
+	</select>
+
+	<!-- 도장등록 -->
 	<insert id="insertStamp" parameterType="ApprovalVO">
 	<selectKey keyProperty="stampId"
                        resultType="Integer"
                        order="BEFORE">
             	SELECT NVL(MAX(stamp_id), 1) + 1
-				FROM test123
+				FROM stamp
             </selectKey>
-		INSERT INTO test123(stamp_id
+		INSERT INTO stamp(stamp_id
 		                  ,employee_no
-		                  ,stamp_img_path)
+		                  ,stamp_img_path
+		                  ,active
+		                  ,stamp_order)
 		            VALUES(#{stampId}
 		                   ,#{employeeNo}
-		                   ,#{stampImgPath})
+		                   ,#{stampImgPath}
+		                   ,'1'
+		                   ,'1')
 	</insert>
+	<!-- 기본양식 불러오기 -->
+	<select id="selectBasicsForm"
+	        resultType="ApprovalVO"
+	        parameterType="ApprovalVO">
+		SELECT basics_form_id
+		       ,content
+		       ,version
+		       ,form_type
+		       <if test="remarks != null">
+		       ,remarks
+		       </if>
+		FROM basics_form
+		WHERE form_type = #{formType}
+	</select>
 </mapper>
