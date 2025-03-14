@@ -20,9 +20,14 @@ public class fileController {
         return "group/file/individualfile";
     }
 	
-	@GetMapping("/button")
-    public String button() {
-        return "etc/buttons";
+	@GetMapping("/detailfile")
+    public String detailfile() {
+        return "group/file/detailfile";
+    }
+	
+	@GetMapping("/repositoryInsert")
+    public String repositoryInsert() {
+        return "group/file/repositoryInsert";
     }
 	
 }
