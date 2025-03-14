@@ -1,4 +1,3 @@
 package com.yedam.app.group.service;
 
-public class GroupVO {
-}
+public class GroupVO {}

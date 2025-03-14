@@ -1,4 +1,3 @@
 package com.yedam.app.group.web;
 
-public class GroupController {
-}
+public class GroupController {}
