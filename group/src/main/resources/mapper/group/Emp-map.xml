@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yedam.app.group.service.EmpService">
+      
+      <!-- 전체 조회 -->
+      <select id="findAllEmp"
+              resultType="EmpVO">
+              
+              SELECT EMPLOYEE_NO
+					 , EMPLOYEE_NAME
+					 , EMPLOYEE_ID
+					 , EMPLOYEE_PW
+					 , RESIGNATION_STATUS
+					 , TEMP_IP
+					 , PASSWORD_CHANGED
+					 , HIRE_DATE
+					 , EXIT_DATE
+					 , PHONE_NUMBER
+					 , ADDRESS
+					 , PROFILE_IMAGE
+					 , SUBER_NO
+					 , RANK_ID
+					 , RIGHTS_ID
+					 , MANAGER
+              
+      </select>
+
+
+</mapper>
