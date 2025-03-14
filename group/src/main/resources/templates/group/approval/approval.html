@@ -33,15 +33,13 @@
 							</tr>
 						</thead>
 						<tbody>
-							<th:block each=" : ">
-								<tr>
-									<td>rr</td>
-									<td>ddd</td>
-									<td>ssss</td>
-									<td>dddd</td>
-									<td>ssss</td>
+								<tr th:each="aprv : ${aprvs}">
+									<td>[[${aprv.draftNo}]]</td>
+									<td>[[${aprv.aprvStatus}]]</td>
+									<td>[[${aprv.employeeNO}]]</td>
+									<td>[[${aprv.title}]]</td>
+									<td>[[${aprv.draftDate}]]</td>
 								</tr>
-							</th:block>
 						</tbody>
 					</table>
 				</div>

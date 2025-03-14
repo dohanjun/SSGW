@@ -122,7 +122,7 @@
 	font-weight: bold;
 }
 
-/* 지출결의서 */
+/* 품의서 */
 .lettercontainer {
 	font-size: 14px;
 }
@@ -130,6 +130,7 @@
 .lettercontainer {
 	width: 800px;
 	margin: 0 auto;
+	border: 1px solid black;
 }
 
 .lettertable {
@@ -178,40 +179,27 @@
 	text-align: center;
 }
 
-/* 품의서 */
+/* 지출결의서 */
 .disbur {
-	background-color: #ddd;
-	width: 802px;
-	font-size: 12px;
+	width:800px;
 	margin: 5px auto;
-}
-
-.disburtable {
-	width: 800px;
-	border-collapse: collapse;
-	margin: 20px auto;
-}
-
-.disburtable th, td {
 	border: 1px solid black;
-	padding: 8px;
+	background-color: #ddd;
+	border-collapse: collapse;
+}
+
+.disbur th {
+	text-align: center;
+	font-weight: bold;
+}
+
+.distable th, 
+.distable td{
+	border: 1px solid black;
+	padding: 10px;
 	text-align: left;
 }
 
-.disburtable th {
-	background-color: #f2f2f2;
-}
-
-.disburtable input {
-	width: 100%;
-	border: none;
-	outline: none;
-	text-align: center;
-}
-
-.disburheader {
-	text-align: center;
-	font-size: 24px;
-	font-weight: bold;
-	padding: 10px;
+.disburtr th{
+	border: 1px solid black !important;
 }

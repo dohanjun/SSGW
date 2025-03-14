@@ -1,35 +1,67 @@
-<div class="disbur">
-        <table class="disburtable">
-        <tr>
-            <td colspan="2" class="disburheader">품의서</td>
-        </tr>
-        <tr>
-            <td style="width: 100px; text-align: center; font-weight: bold;">기안자</td>
-            <td><input type="text" name="draftUser"></td>
-        </tr>
-        <tr>
-            <td style="text-align: center; font-weight: bold;">소속</td>
-            <td><input type="text" name="draftDept"></td>
-        </tr>
-        <tr>
-            <td style="text-align: center; font-weight: bold;">기안일</td>
-            <td><input type="date" name="draftDate"></td>
-        </tr>
-        <tr>
-            <td style="text-align: center; font-weight: bold;">문서번호</td>
-            <td><input type="text" name="docNo"></td>
-        </tr>
-    </table>
-    <table class="disburtable">
-        <tr>
-            <td colspan="2" style="text-align: center; font-weight: bold;">
-                아래와 같이 보고하오니 검토 후 재가 바랍니다.<br><br>- 아&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;래 -
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <textarea name="content" rows="8" style="width: 100%; border: none; resize: none;"></textarea>
-            </td>
-        </tr>
-    </table>
-    </div>
+﻿<div class="container mt-5 disbur">
+	<h2 class="text-center">지출결의서</h2>
+	<table class="table table-bordered distable">
+		<tbody>
+			<tr>
+				<td class="bg-light text-center font-weight-bold">문서번호</td>
+				<td><input type="text" class="form-control" name="docNo"></td>
+			</tr>
+			<tr>
+				<td class="bg-light text-center font-weight-bold">작성일</td>
+				<td><input type="date" class="form-control" name="draftDate"></td>
+			</tr>
+			<tr>
+				<td class="bg-light text-center font-weight-bold">작성부서</td>
+				<td><input type="text" class="form-control" name="draftDept"></td>
+			</tr>
+			<tr>
+				<td class="bg-light text-center font-weight-bold">작성자</td>
+				<td><input type="text" class="form-control" name="draftUser"></td>
+			</tr>
+			<tr>
+				<td class="bg-light text-center font-weight-bold">검토의견</td>
+				<td><input type="text" class="form-control" name="reviewComment"></td>
+			</tr>
+		</tbody>
+	</table>
+
+	<h4 class="mt-4">지출 내역</h4>
+	<table class="table table-bordered distable">
+		<thead class="thead-light">
+			<tr class="disburtr">
+				<th>거래처</th>
+				<th>사용내역 및 용도</th>
+				<th>금액</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td><input type="text" class="form-control" name="vendor"></td>
+				<td><input type="text" class="form-control" name="usage"></td>
+				<td><input type="number" class="form-control text-right" name="amount"></td>
+			</tr>
+			<tr>
+				<td><input type="text" class="form-control" name="vendor"></td>
+				<td><input type="text" class="form-control" name="usage"></td>
+				<td><input type="number" class="form-control text-right" name="amount"></td>
+			</tr>
+		</tbody>
+	</table>
+
+	<table class="table table-bordered distable">
+		<tbody>
+			<tr>
+				<td class="bg-light text-center font-weight-bold">합계</td>
+				<td><input type="number" class="form-control text-right" name="totalAmount"></td>
+			</tr>
+			<tr>
+				<td class="bg-light text-center font-weight-bold">부가가치세</td>
+				<td><input type="number" class="form-control text-right" name="vat"></td>
+			</tr>
+			<tr>
+				<td class="bg-light text-center font-weight-bold">총 지출 합계</td>
+				<td><input type="number" class="form-control text-right" name="grandTotal"></td>
+			</tr>
+		</tbody>
+	</table>
+</div>

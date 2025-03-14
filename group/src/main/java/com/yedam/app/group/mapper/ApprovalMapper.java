@@ -9,6 +9,9 @@ public interface ApprovalMapper {
 	// 전체조회(결재대기함)
 	public List<ApprovalVO> selectAprvList();
 	
+	// 기본양식불러오기(기안문작성페이지)
+	public ApprovalVO selectBasicsForm(ApprovalVO aprvVO);
+	
 	// 도장등록
 	public int insertStamp(ApprovalVO aprvVO);
 	
