@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 public class EmpVO {
-	private Integer employeeNO;		  // 사원번호
+	private Integer employeeNo;		  // 사원번호
 	private String employeeName;	  // 사원이름
 	private String employeeId;        // 사원 아이디
 	private String employeePw;     	  // 사원 비밀번호

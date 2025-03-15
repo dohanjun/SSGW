@@ -9,10 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class PersonnelContrtller {
 	 
 	// 사원등록
-	@GetMapping("empinsert")
-	    public String empinsert() {
-	        return "group/personnel/empinsert";  // mainPage.html을 반환
-	    }
+
 	
 	// 사원관리
 	@GetMapping("empMgmt")

@@ -7,7 +7,7 @@ import java.util.Map;
 public interface EmpService {
 	
 	// 사원등록
-	public int AllEmpInfo(EmpVO empVO);
+	public int createEmpInfo(EmpVO empVO);
 	
 	// 사원전체 조회
 	public List<EmpVO> findAllEmp();
@@ -17,7 +17,7 @@ public interface EmpService {
 	
 	// 사원정보 수정
 	public Map<String, Object>
-	                  removempInfo(EmpVO empVO);	
+	             modifyEmpInfo(EmpVO empVO);	
 	
 
 }
