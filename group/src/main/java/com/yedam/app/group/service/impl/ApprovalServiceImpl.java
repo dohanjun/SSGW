@@ -39,5 +39,11 @@ public class ApprovalServiceImpl implements ApprovalService {
 		return approvalMapper.selectAprvList();
 	}
 
+	@Override
+	public List<ApprovalVO> searchApprovalList(ApprovalVO aprv) {
+	    return approvalMapper.searchAprvList(aprv);
+	}
+
+	
 
 }

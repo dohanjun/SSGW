@@ -16,6 +16,35 @@
 				,SUBER_NO
 		FROM    aprv_documents
 	</select>
+	 
+	 <!-- 결재대기함(검색) -->
+	<select id="searchAprvList" resultType="ApprovalVO" parameterType="ApprovalVO">
+    SELECT d.DRAFT_NO
+           , d.TITLE
+           , d.CONTENT
+           , d.APRV_STATUS
+           , d.REJECT_REASON
+           , d.DRAFT_DATE
+           , e.EMPLOYEE_NAME
+           , d.APRV_DATE
+           , d.FORM_ID
+           , d.BASICS_FORM_ID
+           , d.SUBER_NO
+    FROM aprv_documents d
+    JOIN employees e 
+       ON d.EMPLOYEE_NO = e.EMPLOYEE_NO
+    WHERE 1=1
+    <if test="employeeName != null and employeeName != ''">
+        AND e.EMPLOYEE_NAME LIKE '%' || #{employeeName} || '%'
+    </if>
+    <if test="title != null and title != ''">
+        AND d.TITLE LIKE '%' || #{title} || '%'
+    </if>
+    <if test="draftDate != null">
+        AND d.DRAFT_DATE = #{draftDate}
+    </if>
+</select>
+
 
 	<!-- 도장등록 -->
 	<insert id="insertStamp" parameterType="ApprovalVO">
