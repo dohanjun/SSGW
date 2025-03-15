@@ -42,13 +42,14 @@
     	width: 300px;
     	height: 860px;
     	text-align: center;
+    	font-size: xx-large;
     }
     .side-bar:hover{
     	transform: translate(calc(var(--side-bar-width) * 10),0);
     }
     #sta{
     	position: relative;
-		top: -750px;
+		top: -800px;
     }
     .p{
     	clear: left;
@@ -62,7 +63,7 @@
 		position: static;
 		text-align: center;
 		padding: 20px;
-		padding-left: 120px;
+		padding-left: 370px;
 	}
 	
 </style>
@@ -132,6 +133,7 @@
 <div class="p">
 	<form name="form" method="post">
 	<table border="1" class="table">
+		<th:block th:each="info : ${mails}">
 		<tr>
 			<td></td>
 			<td scope="col">이미지</td>
@@ -141,109 +143,82 @@
 		</tr>
 		<tr>
 		    <td><input type="checkbox"></td>
-			<td><src img="1.jpg" width="10" height="10"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
+			<td>[[ ${info.mailId} ]]</td>
+			<td>[[ ${info.getUser} ]]</td>
+			<td>[[ ${info.title} ]]</td>
+		  	<td>[[ ${ #dates.format(info.sentDate, 'yyyy/MM/dd') } ]]</td>
 		</tr>
 		<tr>
 		    <td><input type="checkbox"></td>
-			<td><src img="1.jpg" width="10" height="10"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
+			<td>[[ ${info.mailId} ]]</td>
+			<td>[[ ${info.getUser} ]]</td>
+			<td>[[ ${info.title} ]]</td>
+		  	<td>[[ ${ #dates.format(info.sentDate, 'yyyy/MM/dd') } ]]</td>
 		</tr>
 		<tr>
 		    <td><input type="checkbox"></td>
-			<td><src img="1.jpg" width="10" height="10"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
+			<td>[[ ${info.mailId} ]]</td>
+			<td>[[ ${info.getUser} ]]</td>
+			<td>[[ ${info.title} ]]</td>
+		  	<td>[[ ${ #dates.format(info.sentDate, 'yyyy/MM/dd') } ]]</td>
 		</tr>
 		<tr>
 		    <td><input type="checkbox"></td>
-			<td><src img="1.jpg" width="10" height="10"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
+			<td>[[ ${info.mailId} ]]</td>
+			<td>[[ ${info.getUser} ]]</td>
+			<td>[[ ${info.title} ]]</td>
+		  	<td>[[ ${ #dates.format(info.sentDate, 'yyyy/MM/dd') } ]]</td>
 		</tr>
 		<tr>
 		    <td><input type="checkbox"></td>
-			<td><src img="1.jpg" width="10" height="10"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
+			<td>[[ ${info.mailId} ]]</td>
+			<td>[[ ${info.getUser} ]]</td>
+			<td>[[ ${info.title} ]]</td>
+		  	<td>[[ ${ #dates.format(info.sentDate, 'yyyy/MM/dd') } ]]</td>
 		</tr>
 		<tr>
 		    <td><input type="checkbox"></td>
-			<td><src img="1.jpg" width="10" height="10"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
+			<td>[[ ${info.mailId} ]]</td>
+			<td>[[ ${info.getUser} ]]</td>
+			<td>[[ ${info.title} ]]</td>
+		  	<td>[[ ${ #dates.format(info.sentDate, 'yyyy/MM/dd') } ]]</td>
 		</tr>
 		<tr>
 		    <td><input type="checkbox"></td>
-			<td><src img="1.jpg" width="10" height="10"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
+			<td>[[ ${info.mailId} ]]</td>
+			<td>[[ ${info.getUser} ]]</td>
+			<td>[[ ${info.title} ]]</td>
+		  	<td>[[ ${ #dates.format(info.sentDate, 'yyyy/MM/dd') } ]]</td>
 		</tr>
 		<tr>
 		    <td><input type="checkbox"></td>
-			<td><src img="1.jpg" width="10" height="10"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
+			<td>[[ ${info.mailId} ]]</td>
+			<td>[[ ${info.getUser} ]]</td>
+			<td>[[ ${info.title} ]]</td>
+		  	<td>[[ ${ #dates.format(info.sentDate, 'yyyy/MM/dd') } ]]</td>
 		</tr>
 		<tr>
 		    <td><input type="checkbox"></td>
-			<td><src img="1.jpg" width="10" height="10"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
+			<td>[[ ${info.mailId} ]]</td>
+			<td>[[ ${info.getUser} ]]</td>
+			<td>[[ ${info.title} ]]</td>
+		  	<td>[[ ${ #dates.format(info.sentDate, 'yyyy/MM/dd') } ]]</td>
 		</tr>
 		<tr>
 		    <td><input type="checkbox"></td>
-			<td><src img="1.jpg" width="10" height="10"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
+			<td>[[ ${info.mailId} ]]</td>
+			<td>[[ ${info.getUser} ]]</td>
+			<td>[[ ${info.title} ]]</td>
+		  	<td>[[ ${ #dates.format(info.sentDate, 'yyyy/MM/dd') } ]]</td>
 		</tr>
 		<tr>
 		    <td><input type="checkbox"></td>
-			<td><src img="1.jpg" width="10" height="10"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
+			<td>[[ ${info.mailId} ]]</td>
+			<td>[[ ${info.getUser} ]]</td>
+			<td>[[ ${info.title} ]]</td>
+		  	<td>[[ ${ #dates.format(info.sentDate, 'yyyy/MM/dd') } ]]</td>
 		</tr>
-		<tr>
-		    <td><input type="checkbox"></td>
-			<td><src img="1.jpg" width="10" height="10"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-		</tr>
-		<tr>
-		    <td><input type="checkbox"></td>
-			<td><src img="1.jpg" width="10" height="10"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-		</tr>
-		<tr>
-		    <td><input type="checkbox"></td>
-			<td><src img="1.jpg" width="10" height="10"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-		</tr>
-		<tr>
-		    <td><input type="checkbox"></td>
-			<td><src img="1.jpg" width="10" height="10"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-		</tr>
+ 	  </th:block>
 	</table>
 	</form>
 	<!-- 메일상세기능 마침 -->
