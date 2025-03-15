@@ -4,11 +4,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -32,7 +34,7 @@ public class ApprovalController {
 	}
 	
 	// 결재대기함
-	@GetMapping("waiting")
+	@GetMapping("aprv")
 	public String aprvList(Model model) {
 		List<ApprovalVO> list = approvalService.findAllList();
 		
@@ -40,6 +42,31 @@ public class ApprovalController {
 		
 		return "group/approval/approval";
 	}
+	
+	// 결재대기함(검색)
+	@GetMapping("aprv/search")
+	public String searchApprovalList(
+	    @RequestParam(required = false) String employeeName,
+	    @RequestParam(required = false) String title,
+	    @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date draftDate,
+	    Model model
+	) {
+	    ApprovalVO aprv = new ApprovalVO();
+	    aprv.setEmployeeName(employeeName);
+	    aprv.setTitle(title);
+	    aprv.setDraftDate(draftDate);
+
+	    List<ApprovalVO> searchResults = approvalService.searchApprovalList(aprv);
+	    
+	    if (searchResults == null || searchResults.isEmpty()) {
+	        model.addAttribute("message", "검색 결과가 없습니다.");
+	    } else {
+	        model.addAttribute("aprvs", searchResults);
+	    }
+	    
+	    return "group/approval/approval";
+	}
+
 	
 	// 도장등록
 	@PostMapping("aprv/upload")

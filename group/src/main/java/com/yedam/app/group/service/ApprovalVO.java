@@ -2,6 +2,8 @@ package com.yedam.app.group.service;
 
 import java.util.Date;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import lombok.Data;
 
 @Data
@@ -24,8 +26,11 @@ public class ApprovalVO {
 	private String title;         // 제목
 	private String aprvStatus;    // 결재상태
 	private String rejectReason;  // 반려사유
+	@DateTimeFormat(pattern = "yyyy/MM/dd")
 	private Date draftDate;       // 상신일
 	private Date aprvDate;        // 결재일
 	private int formId;           // 양식번호
 	private int suberNo;          // 회사번호
+	
+	private String employeeName;
 }

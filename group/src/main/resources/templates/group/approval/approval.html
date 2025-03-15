@@ -6,7 +6,7 @@
 <head>
 <meta charset="UTF-8">
 <title></title>
-<link href="css/approval.css" rel="stylesheet">
+<link rel="stylesheet" th:href="@{/css/approval.css}">
 </head>
 <body>
 	<div class="container-fluid">
@@ -16,8 +16,8 @@
 	  </div>
 		<div class="card shadow mb-4">
 			<div class="card-header py-3">
-				<form action="" method="">
-					<p>기안자<input>문서제목<input>상신일<input><button type="submit" class="float-right">검색</button></p>
+				<form th:action="@{/aprv/search}" method="GET">
+					<p>기안자<input type="text" name="employeeName">문서제목<input type="text" name="title">상신일<input type="date" name="draftDate"><button type="submit" class="float-right">검색</button></p>
 				</form>
 			</div>
 			<div class="card-body">
@@ -33,12 +33,12 @@
 							</tr>
 						</thead>
 						<tbody>
-								<tr th:each="aprv : ${aprvs}">
+								<tr th:each="aprv : ${aprvs}" th:if="${aprvs != null}">
 									<td>[[${aprv.draftNo}]]</td>
 									<td>[[${aprv.aprvStatus}]]</td>
-									<td>[[${aprv.employeeNO}]]</td>
+									<td>[[${aprv.employeeNo}]]</td>
 									<td>[[${aprv.title}]]</td>
-									<td>[[${aprv.draftDate}]]</td>
+									<td>[[${#dates.format(aprv.draftDate, "yyyy년 MM월 dd일")}]]</td>
 								</tr>
 						</tbody>
 					</table>
