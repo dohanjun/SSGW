@@ -1,19 +1,26 @@
 let formattedTPrice = 0;
+let dataList = []; 
 $(document).ready(updatePrice);
 function updatePrice() {
+	let totalModulePrice = 0;
+	dataList.forEach(e=>{
+		 totalModulePrice += Number(e.modulePrice);
+	})
 	let countValue = $('.countInput')[0].value;
 	let uploadValue = $('.uploadInput')[0].value;
 	let storageValue = $('.storageInput')[0].value;
-	let modulePrice = Number($('#moculePrice')[0].innerHTML);
 	let periodValue = $('.periodInput')[0].value;
 
+	let mPrice = totalModulePrice.toLocaleString('ko-KR');
+	
 	let pPrice = (countValue / 10 * 100000).toLocaleString('ko-KR');
 	let fuPrice = (uploadValue / 5 * 10000).toLocaleString('ko-KR');
 	let fRPrice = (storageValue * 100000).toLocaleString('ko-KR');
-
-	let tPrice = (countValue / 10 * 100000) + (uploadValue / 5 * 10000) + (storageValue * 100000) + modulePrice;
+	let tPrice = (countValue / 10 * 100000) + (uploadValue / 5 * 10000) + (storageValue * 100000)  + totalModulePrice;
+	
 	formattedTPrice = tPrice.toLocaleString('ko-KR');
-
+	
+	$('#moculePrice')[0].innerHTML = mPrice;
 	$('#peoplePrice')[0].innerHTML = pPrice;
 	$('#fileUploadPrice')[0].innerHTML = fuPrice;
 	$('#fileRepositoryPrice')[0].innerHTML = fRPrice;
@@ -30,55 +37,83 @@ function updatePrice() {
 }
 
 
-let count = document.querySelector('.countInput').value;
+document.querySelectorAll('.selectModule .selectItem *').forEach(e => {
 
-document.querySelectorAll('.selectModule .selectmd').forEach(e => {
-	e.addEventListener('click', f => {
-		f.target.classList.toggle('check')
-	})
-})
+    e.addEventListener('click', f => {
+
+        f.currentTarget.classList.toggle('check');
+
+        let attrValue = f.target.getAttribute('for');
+        if (attrValue) {
+            let data = {};
+			let cleanedAttrValue = attrValue.replace(/^[^\(]*\(|\)$/g, ''); 
+
+			cleanedAttrValue.split(', ').forEach(pair => {
+			    let [key, value] = pair.split('=');
+			    if (value) {
+			        data[key] = value;
+			    }
+			});
+
+            if (f.target.classList.contains('check')) {
+                dataList.push(data);
+            } else {
+				dataList = dataList.filter(item => item.moduleNo !== data.moduleNo);
+            }
+            updatePrice();
+        }
+    });
+});
+
 
 document.querySelector('.plusButton').addEventListener('click', event => {
 	event.preventDefault();
+	let countInput = document.querySelector('.countInput');
+	let count = Number(countInput.value);
+
 	if (count < 100) {
-		count = Number(count) + 10
-		document.querySelector('.countInput').value = count
-		updatePrice()
+		count += 10; 
+		countInput.value = count; 
+		updatePrice();
 	}
-})
+});
 
 document.querySelector('.minusButton').addEventListener('click', event => {
 	event.preventDefault();
+	let countInput = document.querySelector('.countInput');
+	let count = Number(countInput.value);
+
 	if (count > 10) {
-		count = Number(count) - 10
-		document.querySelector('.countInput').value = count
-		updatePrice()
+		count -= 10;
+		countInput.value = count;
+		updatePrice();
 	}
-})
+});
+
 
 function setupDropdown(inputClass, dropdownClass, optionClass) {
-	let input = document.querySelector(inputClass);
-	let dropdown = document.querySelector(dropdownClass);
+    let input = document.querySelector(inputClass);
+    let dropdown = document.querySelector(dropdownClass);
 
-	input.addEventListener('click', function() {
-		dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
-	});
+    input.addEventListener('click', function(event) {
+        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+        event.stopPropagation();
+    });
 
-	document.querySelectorAll(optionClass).forEach(option => {
-		option.addEventListener('click', function() {
-			input.value = this.dataset.value;
-			dropdown.style.display = 'none';
-		});
-	});
-
-	document.addEventListener('click', function(event) {
-		if (!input.contains(event.target) && !dropdown.contains(event.target)) {
-			dropdown.style.display = 'none';
-			updatePrice()
-		}
-	});
+    document.querySelectorAll(optionClass).forEach(option => {
+        option.addEventListener('click', function(event) {
+            input.value = this.dataset.value;
+            dropdown.style.display = 'none';
+            updatePrice();
+            event.stopPropagation();
+        });
+    });
 }
 
+document.addEventListener('click', function(event) {
+    document.querySelectorAll('.uploadDropdown, .storageDropdown, .periodDropdown, .paymentDropdown')
+        .forEach(dropdown => dropdown.style.display = 'none');
+});
 document.addEventListener("DOMContentLoaded", function() {
 	let form = document.querySelector("form");
 	let paymentModal = document.getElementById("paymentModal");
@@ -95,6 +130,7 @@ document.addEventListener("DOMContentLoaded", function() {
 				return;
 			}
 		}
+		$('#modalPrice')[0].innerHTML = formattedTPrice
 		paymentModal.style.display = "flex";
 	});
 
@@ -123,6 +159,7 @@ function payment(type) {
 	var userEmail = $("#subEmail").val();
 	var userPhone = $("#phoneNo").val();
 	let num = Number(formattedTPrice.replace(/,/g, ''));
+	console.log(num)
 	IMP.init('imp07168373');
 
 	IMP.request_pay(
@@ -140,7 +177,44 @@ function payment(type) {
 		},
 		function(rsp) {
 			if (rsp.success) {
-				console.log(rsp)
+					
+				$.ajax({
+				    type: "POST",
+				    url: "/save",
+					data: JSON.stringify({
+					        subscriber: {
+								domain : "@"+$("#subId").val(),
+								firstIp:first_ip,
+					            subName: $("#subName").val(),
+					            subId: $("#subId").val(),
+								subUid:"UID" + Date.now().toString() + Math.floor(Math.random() * 1000).toString().padStart(3, "0"),
+					            subPw: $("#subPw").val(),
+					            companyName: $("#companyName").val(),
+					            subEmail: $("#subEmail").val(),
+					            subBnisNo: $("#subBnisNo").val(),
+					            maxCount: $(".countInput").val(),
+					            maxSize: $(".storageInput").val(), 
+					            maxUpSize: $(".uploadInput").val()
+					        },
+					       /* payment: {
+					            amount: $("#amount").val(),
+					            method: $("#paymentMethod").val()
+					        },
+					        modules: [
+					            { moduleId: 1, moduleName: "인사관리" },
+					            { moduleId: 2, moduleName: "근태관리" }
+					        ]*/
+					    }),
+				    contentType: "application/json",
+				    success: function(response) {
+				        alert("결제 정보가 정상적으로 저장되었습니다.");
+				        console.log(response);
+				    },
+				    error: function(xhr, status, error) {
+				        alert("결제 정보 저장 중 오류가 발생했습니다.");
+				        console.error(xhr.responseText);
+				    }
+				});
 			}
 			else {
 				var mesg = '결제를 실패하였습니다.';
@@ -150,6 +224,9 @@ function payment(type) {
 		}
 	);
 }
+
+
+
 
 setupDropdown('.uploadInput', '.uploadDropdown', '.uploadOption');
 setupDropdown('.storageInput', '.storageDropdown', '.storageOption');

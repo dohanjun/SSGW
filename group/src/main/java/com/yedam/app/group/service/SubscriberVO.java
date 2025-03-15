@@ -7,6 +7,7 @@ import lombok.Data;
 
 @Data
 public class SubscriberVO {
+	//회사 테이블
     private int suberNo;         // 회사번호
     private String subId;        // 구독자 아이디
     private String subPw;        // 구독자 비밀번호
@@ -25,4 +26,5 @@ public class SubscriberVO {
     private Date delDay;         // 데이터 삭제일 
     private String domain;       // 도메인
     private Character locked;    // 잠김 여부 
+    private double maxUpSize;
 }

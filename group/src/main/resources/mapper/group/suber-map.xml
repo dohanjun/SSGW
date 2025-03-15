@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yedam.app.group.mapper.SubscriberMapper">
+    <insert id="insertSubscriber" useGeneratedKeys="true" keyProperty="suberNo">
+        <selectKey keyProperty="suberNo" resultType="int" order="BEFORE">
+            SELECT NVL(MAX(suber_no), 0) + 1 FROM SUBER
+        </selectKey>
+        INSERT INTO SUBER(
+            suber_no, sub_uid, sub_id, sub_pw, sub_name, sub_email, sub_bnis_no, 
+            max_count, max_size, company_name, first_ip, domain
+        ) VALUES (
+            #{suberNo}, #{subUid}, #{subId}, #{subPw}, #{subName}, #{subEmail}, #{subBnisNo}, 
+            #{maxCount}, #{maxSize}, #{companyName},#{firstIp},#{domain}
+        )
+    </insert>
+</mapper>
