@@ -53,13 +53,13 @@
 		<div class="moduleContainer">
 			<div class="basicModule">
 				<div class="selectItem" th:each="item : ${modules}" th:if="${#strings.equals(item.basicModule, 'Y')}">
-				    <div th:for="'check-' + ${item}"  th:text="${item.basicModule}"></div>
+				    <div th:for="'check-' + ${item}"  th:text="${item.moduleName}"></div>
 				</div>
 			</div>
 
 			<div class="selectModule">
 				<div class="selectItem" th:each="item : ${modules}" th:if="${#strings.equals(item.basicModule, 'N')}">
-				    <div th:for="'check-' + ${item}"  th:text="${item.basicModule}"></div>
+				    <div th:for="'check-' + ${item}"  th:text="${item.moduleName}"></div>
 				</div>
 			</div>
 		</div>
@@ -130,7 +130,7 @@
 		</div>
 
 		<div class="receipt">
-			<div> 모듈 구독 가격 : <span id="moculePrice">123</span></div>
+			<div> 모듈 구독 가격 : <span id="moculePrice"></span></div>
 			<div> 인원 당 가격 : <span id="peoplePrice"></span></div>
 			<div> 업로드 파일 제한(5MB) : <span id="fileUploadPrice"></span></div>
 			<div> 저장소 용량(1TB) : <span id="fileRepositoryPrice"></span></div>
@@ -215,6 +215,14 @@
 	</div>
 </div>
 
+
+<script type="application/javascript">
+	let first_ip;
+  function getIP(json) {
+	  first_ip=json.ip;
+  }
+</script>
+<script type="application/javascript" src="http://ipinfo.io/?format=jsonp&callback=getIP"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
 <script type="text/javascript" src="/js/subscribePage.js"></script>
