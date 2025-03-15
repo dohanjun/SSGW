@@ -15,14 +15,44 @@
 		display : flex;
 		justify-content : center;
 		}
-	.container{
-		margin: 0 auto;
-		}
+		     /* 메인 컨테이너를 가운데 정렬하고 화면에 맞게 조정 */
+        .content-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: calc(100vh - 100px); /* 상단 네비게이션 제외한 높이 */
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+         /* 사원 상세정보 박스 크기 조정 */
+        .employee-container {
+            width: 600px; /* 기존 900px → 600px로 축소 */
+            height: 600px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        
+        #center{
+        	width: 100%;
+        	height: 100%;
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            font-size: 14px;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
 </style>
 <!-- 내 메일상세보기 페이지-->
   <body>
-  <div class="container">
-	<div>
+  <div class="content-wrapper">
+	<div class="employee-container">
 	  <div>
 	  <a href="#" lcon="home"></a>
 	<h1>메일상세보기</h1>
@@ -35,11 +65,11 @@
 			<a href="#">삭제</a>
 		<hr>
 	  </div>
-	</div>
+
 	<!-- 내 메일상세기능 -->
 	
 	<form name="form" method="post">
-	<table class="flo">
+	<table class="table">
 		<tr>
 			<td>제목</td>
 			<td><input name="" value="${}" readonly="readonly"></td>
@@ -68,6 +98,7 @@
 
 	</form>
 	<!-- 내 메일상세기능 마침 -->
+		</div>
 	</div>
   </body>
 </html>
