@@ -5,129 +5,35 @@
 	layout:fragment="content">
 <head>
 <meta charset="UTF-8">
-<title></title>
-<link rel="stylesheet" th:href="@{/css/approval.css}">
+<title>결재 상세 페이지</title>
+<link th:href="@{/css/approval.css}" rel="stylesheet">
 </head>
 <body>
-	<div class="container-fluid">
-	  <div class="h555">
-		<h1 class="h3 mb-2 text-gray-800">결재대기함</h1>
-		<button id="stampInsertButton">도장등록</button>
-	  </div>
-		<div class="card shadow mb-4">
-			<div class="card-header py-3">
-				<form th:action="@{/aprv/search}" method="GET">
-					<p>기안자<input type="text" name="employeeName">문서제목<input type="text" name="title">상신일<input type="date" name="draftDate"><button type="submit" class="float-right">검색</button></p>
-				</form>
-			</div>
-			<div class="card-body">
-				<div class="table-responsive">
-					<table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-						<thead>
-							<tr>
-								<th>문서번호</th>
-								<th>기안부서</th>
-								<th>기안자</th>
-								<th>문서제목</th>
-								<th>상신일</th>
-							</tr>
-						</thead>
-						<tbody>
-								<tr th:each="aprv : ${aprvs}" th:if="${aprvs != null}">
-									<td>[[${aprv.draftNo}]]</td>
-									<td>[[${aprv.aprvStatus}]]</td>
-									<td>[[${aprv.employeeNo}]]</td>
-									<td>[[${aprv.title}]]</td>
-									<td>[[${#dates.format(aprv.draftDate, "yyyy년 MM월 dd일")}]]</td>
-								</tr>
-						</tbody>
-					</table>
-				</div>
-			</div>
-		</div>
+
+	<h3>결재자</h3>
+	<div>
+	    <th:block th:if="${aprv.stampImgPath != null}">
+          <img th:src="@{${aprv.stampImgPath}}" alt="결재 도장" width="100px" height="100px" style="border: 1px solid #ccc; padding: 5px;">
+        </th:block>
 	</div>
-	
-	<div class="modal fade" id="stampModal" tabindex="-1" role="dialog" aria-labelledby="stampModalLabel" aria-hidden="true">
-    	<div class="modal-dialog" role="document">
-        	<div class="approval-modal-content">
-            		<div class="modal-header">
-                		<h5 class="modal-title" id="stampModalLabel">도장 등록</h5>
-                		<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    	<span aria-hidden="true">&times;</span>
-                		</button>
-            		</div>
-            		<div class="approval-modal-body">
-            			<form>
-            				<div style="width:200px; height:200px; margin:3px auto; border:1px solid black">
-                			<img id="imgview" src="" alt="" style="display:none; width: 180px; height: 180px;"/>
-                			</div>
-                			<div class="filebox">
-    							<label for="file">파일찾기</label> 
-    							<input type="file" id="file" accept="image/*" onchange="previewImage(event)">
-							                          
-            				<div class="modal-footer modalbtns">
-                				<button type="button" class="btn btn-secondary" onclick="insertStamp()">등록</button>
-                				<button type="button" class="btn btn-primary" onclick="modifyStamp()">수정</button>
-                				<button type="button" class="btn btn-danger" onclick="deleteStamp()">삭제</button>
-            				</div>
-            				</div>
-            			</form> 
-        			</div>
-    			</div>
-			</div>
-		  </div>
-		</body>
-<script>
-document.getElementById('stampInsertButton').addEventListener('click', function() {
-    $('#stampModal').modal('show');
-});
 
-function insertStamp() {
-	
-    let file = document.getElementById('file').files[0];
+	<h2>문서 제목 : [[${aprv.title}]]</h2>
 
-    if (!file) {
-        alert("파일을 선택하세요.");
-        return;
-    }
+    <table border="1">
+        <tr>
+            <th>내용</th>
+            <td th:utext="${aprv.content}" style="padding: 10px;"></td>
+        </tr>
+        <tr>
+            <th>상신일</th>
+            <td th:text="${#dates.format(aprv.draftDate, 'yyyy-MM-dd')}" style="padding: 10px;"></td>
+        </tr>
+    </table>
 
-    let formData = new FormData();
-    formData.append("file", file);
+	<!-- 수정: 뒤로가기 버튼 스타일 개선 -->
+    <div style="margin-top: 20px;">
+        <a href="/aprv" style="padding: 10px 15px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">뒤로가기</a>
+    </div>
 
-    fetch('http://localhost:8099/aprv/upload', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.text())
-    .then(result => console.log(result))
-    .catch(err => console.log(err));
-}
-
-/* function modifyStamp() {
-    let fileInput = document.getElementById('file');
-    let file = fileInput.files[0];
-
-}
-
-function deleteStamp() {
-   
-} */ 
-
-function previewImage(event) {
-    let file = event.target.files[0]; // 선택한 파일 가져오기
-    if (!file) {
-        document.getElementById('imgview').style.display = "none";
-        return;
-    }
-
-    let reader = new FileReader();
-    reader.onload = function(e) {
-        let imagePreview = document.getElementById('imgview');
-        imagePreview.src = e.target.result;
-        imagePreview.style.display = "block";
-    };
-    reader.readAsDataURL(file);
-}
-
-</script>
+</body>
 </html>

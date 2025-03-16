@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{common/layouts/default_layout}"
+	layout:fragment="content">
+<head>
+<meta charset="UTF-8">
+<title>결재 대기함</title>
+<link rel="stylesheet" th:href="@{/css/approval.css}">
+</head>
+<body>
+	<div class="container-fluid">
+	  <div class="h555">
+		<h1 class="h3 mb-2 text-gray-800">결재대기함</h1>
+		<button id="stampInsertButton">도장등록</button>
+	  </div>
+		<div class="card shadow mb-4">
+			<div class="card-header py-3">
+				<form th:action="@{/aprv/search}" method="GET">
+					<p>기안자<input type="text" name="employeeName">문서제목<input type="text" name="title">상신일<input type="date" name="draftDate"><button type="submit" class="float-right">검색</button></p>
+				</form>
+			</div>
+			<div class="card-body">
+				<div class="table-responsive">
+					<table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+						<thead>
+							<tr>
+								<th>문서번호</th>
+								<th>기안부서</th>
+								<th>기안자</th>
+								<th>문서제목</th>
+								<th>상신일</th>
+							</tr>
+						</thead>
+						<tbody>
+								<tr th:each="aprv : ${aprvs}" th:onclick="|location.href='@{/aprv/info(draftNo=${aprv.draftNo})}'|">
+									<td>[[${aprv.draftNo}]]</td>
+									<td>[[${aprv.aprvStatus}]]</td>
+									<td>[[${aprv.employeeName}]]</td>
+									<td>[[${aprv.title}]]</td>
+									<td>[[${#dates.format(aprv.draftDate, "yyyy년 MM월 dd일")}]]</td>
+								</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- 수정: 로그인한 사용자의 employeeNo를 가져오기 위한 hidden input 추가 -->
+	<input type="hidden" id="employeeNo" th:value="${session.employeeNo}"> 
+
+	<div class="modal fade" id="stampModal" tabindex="-1" role="dialog" aria-labelledby="stampModalLabel" aria-hidden="true">
+    	<div class="modal-dialog" role="document">
+        	<div class="approval-modal-content">
+            		<div class="modal-header">
+                		<h5 class="modal-title" id="stampModalLabel">도장 등록</h5>
+                		<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    	<span aria-hidden="true">&times;</span>
+                		</button>
+            		</div>
+            		<div class="approval-modal-body">
+            			<form>
+            				<div style="width:200px; height:200px; margin:3px auto; border:1px solid black">
+                			<img id="imgview" src="" alt="등록된 도장" style="display:none; width: 180px; height: 180px;"/>
+                			</div>
+                			<div class="filebox">
+    							<label for="file">파일찾기</label> 
+    							<input type="file" id="file" accept="image/*" onchange="previewImage(event)">
+							                          
+            				<div class="modal-footer modalbtns">
+                				<button type="button" class="btn btn-secondary" onclick="insertStamp()">등록</button>
+            				</div>
+            				</div>
+            			</form> 
+        			</div>
+    			</div>
+			</div>
+	</div>
+
+<script>
+// 수정: 모달을 열 때 로그인한 사용자의 employeeNo를 포함하여 요청
+document.getElementById('stampInsertButton').addEventListener('click', function() {
+    let employeeNo = document.getElementById('employeeNo').value; // 수정: 현재 로그인한 사용자의 ID 가져오기
+
+    fetch(`/aprv/getStamp?employeeNo=${employeeNo}`)  // 수정: employeeNo를 포함하여 요청
+    .then(response => response.json())
+    .then(data => {
+        let imgView = document.getElementById('imgview');
+        if (data.stampImage) {
+            imgView.src = data.stampImage;  // 기존 도장 이미지 적용
+            imgView.style.display = "block";
+        } else {
+            imgView.style.display = "none";
+        }
+        $('#stampModal').modal('show');
+    })
+    .catch(err => console.error('Error loading stamp:', err));
+});
+
+// 도장 등록 기능
+function insertStamp() {
+    let file = document.getElementById('file').files[0];
+
+    if (!file) {
+        alert("파일을 선택하세요.");
+        return;
+    }
+
+    let formData = new FormData();
+    let employeeNo = document.getElementById('employeeNo').value; // 수정: 로그인한 사용자의 employeeNo 추가
+    formData.append("file", file);
+    formData.append("employeeNo", employeeNo); // 수정: employeeNo를 함께 전송
+
+    fetch('/aprv/upload', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json()) 
+    .then(result => {
+        if (result.success) {
+            alert("도장 등록 성공!");
+
+            // 도장 이미지 업데이트
+            let imgView = document.getElementById('imgview');
+            imgView.src = result.imageUrl;
+            imgView.style.display = "block";
+
+            setTimeout(() => {
+                $('#stampModal').modal('hide');
+            }, 1000);
+        } else {
+            alert("도장 등록 실패!");
+        }
+    })
+    .catch(err => console.error("Error:", err));
+}
+</script>
+
+</body>
+</html>
