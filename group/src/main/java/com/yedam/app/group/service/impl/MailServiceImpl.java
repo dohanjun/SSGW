@@ -1,6 +1,8 @@
 package com.yedam.app.group.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,38 +29,91 @@ public class MailServiceImpl implements MailService {
 	
 	//메일상세조회
 	@Override
-	public MailVO findMailId() {
-		return mailMapper.selectMailId();
+	public MailVO findMailId(MailVO mailVO) {
+		return mailMapper.selectMailId(mailVO.getMailId());
 	}
 	
 	//나의메일상세조회
 	@Override
-	public MailVO MyFindMailId() {
-		return mailMapper.MySelectMailId();
+	public MailVO MyFindMailId(MailVO mailVO) {
+		return mailMapper.MySelectMailId(mailVO.getMailId());
 	}
 
 	//메일등록
 	@Override
 	public int addInfo(MailVO mailVO) {
-		return mailMapper.insertMailInfo(mailVO);
+		int result = mailMapper.insertMailInfo(mailVO);
+		
+		return result == 1 ? mailVO.getMailId() : -1;
+	}
+	
+	//메일검색기록
+	@Override
+	public int RecodeInfo(MailVO mailVO) {
+		return mailMapper.RecodeMail(mailVO);
 	}
 
 	//메일수정
 	@Override
-	public int UpdInfo(MailVO mailVO) {
-		return mailMapper.UpdateMail(mailVO);
+	public Map<String, Object> modifyUpdInfo(MailVO mailVO) {
+		Map<String, Object> map = new HashMap<>();
+		boolean isSuccessed = false;
+		
+		int result = mailMapper.UpdateMail(mailVO);
+		
+		if(result == 1) {
+			isSuccessed = true;
+		}
+		
+		map.put("result", isSuccessed);
+		map.put("target", mailVO);
+		
+		MailVO findVO = (MailVO) map.get("target");
+		
+		return map;
 	}
 
 	//메일답장
 	@Override
 	public int PutInfo(MailVO mailVO) {
-		return mailMapper.PutDateMail(mailVO);
+		int result = mailMapper.PutDateMail(mailVO);
+		
+		return result == 1 ? mailVO.getMailId() : -1;
+	}
+	
+	//메일전달
+	
+	@Override
+	public Map<String, Object> VeryInfo(MailVO mailVO) {
+		Map<String, Object> map = new HashMap<>();
+		boolean isSuccessed = false;
+		
+		int result = mailMapper.VeryDateMail(mailVO);
+		
+		if(result == 1) {
+			isSuccessed = true;
+		}
+		
+		map.put("result", isSuccessed);
+		map.put("target", mailVO);
+		
+		MailVO findVO = (MailVO) map.get("target");
+		
+		return map;
 	}
 
 	//메일삭제
 	@Override
-	public int DelInfo(MailVO mailVO) {
-		return mailMapper.DeleteMail(mailVO);
+	public Map<String, Object> removeDelInfo(int mailId) {
+		Map<String, Object> map = new HashMap<>();
+		
+		int result = mailMapper.DeleteMail(mailId);
+		
+		if(result == 1) {
+			map.put("mailId", mailId);
+		}
+		
+		return map;
 	}
 
 }
