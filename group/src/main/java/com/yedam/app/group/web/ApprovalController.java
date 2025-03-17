@@ -40,7 +40,7 @@ public class ApprovalController {
 		
 		model.addAttribute("aprvs", list);
 		
-		return "group/approval/approval";
+		return "group/approval/pending_document";
 	}
 	
 	// 결재대기함(검색)
@@ -64,13 +64,36 @@ public class ApprovalController {
 	        model.addAttribute("aprvs", searchResults);
 	    }
 	    
-	    return "group/approval/approval";
+	    return "group/approval/pending_document";
+	}
+	
+	
+	// 결재페이지로 이동
+	@GetMapping("aprv/info")
+	public String aprvInfo(@RequestParam("draftNo") Integer draftNo, Model model) {
+	    ApprovalVO aprvVO = new ApprovalVO();
+	    aprvVO.setDraftNo(draftNo);
+	    
+	    ApprovalVO findVO = approvalService.findAprvInfo(aprvVO);
+	    
+	    if (findVO == null) {
+	        return "error/404"; // 문서가 없을 경우 404 페이지로 이동
+	    }
+	    
+	    model.addAttribute("aprv", findVO);
+
+	    // 수정: 결재자의 도장 이미지 가져오기
+	    String stampImage = approvalService.getStampImage(findVO.getEmployeeNo());
+	    model.addAttribute("stampImage", stampImage); // 도장 이미지 추가
+
+	    return "group/approval/approval"; // 올바른 HTML 파일로 이동
 	}
 
 	
 	// 도장등록
 	@PostMapping("aprv/upload")
-	public ResponseEntity<Map<String, Object>> uploadStamp(@RequestParam("file") MultipartFile file) {
+	public ResponseEntity<Map<String, Object>> uploadStamp(@RequestParam("file") MultipartFile file, 
+                                                           @RequestParam("employeeNo") int employeeNo) {
 	    Map<String, Object> response = new HashMap<>();
 	    
 	    if (file.isEmpty()) {
@@ -90,21 +113,30 @@ public class ApprovalController {
 	        Files.createDirectories(filePath.getParent());
 	        Files.write(filePath, file.getBytes());
 	        
-	        // db에 등록
-	        ApprovalVO aprvVO = new ApprovalVO();
-	        aprvVO.setStampImgPath(filePath.toString());
-	        aprvVO.setEmployeeNo(12);  // 
-
-	        approvalService.createStamp(aprvVO);
+	        // 수정: DB에 도장 이미지 저장
+	        approvalService.saveStampImage(employeeNo, "/uploads/" + fileName);
 
 	        response.put("success", true);
-	        response.put("message", "파일이 업로드되었습니다.");
+	        response.put("imageUrl", "/uploads/" + fileName); // 클라이언트에서 사용 가능하도록 URL 반환
 	        return ResponseEntity.ok(response);
 	    } catch (IOException e) {
 	        response.put("success", false);
 	        response.put("message", "파일 저장 중 오류 발생: " + e.getMessage());
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 	    }
+	}
+
+	
+	// 수정: 도장 이미지 조회 API 추가
+	@GetMapping("/aprv/getStamp")
+	@ResponseBody
+	public Map<String, Object> getStamp(@RequestParam("employeeNo") Integer employeeNo) {
+	    Map<String, Object> response = new HashMap<>();
+	    
+	    String stampImage = approvalService.getStampImage(employeeNo);
+	    response.put("stampImage", (stampImage != null) ? stampImage : null);
+	    
+	    return response;
 	}
 	
 	// 작성페이지 불러오기
@@ -136,43 +168,28 @@ public class ApprovalController {
 		return "group/schedule/schedule";
 	}
 	
-//	
-//	// 전자결재 대기함
-//	@GetMapping("aprv")
-//    public List<ApprovalVO> approvalList(){
-//        return approvalService.findAllApproval();
-//    }
-//	
-//	
-//	
 	@GetMapping("approvalRequest")
     public String edmsRequest() {
         return "group/approval/approval_request";
     }
-//	
-//	@GetMapping("approvalProgress")
-//    public String edmsProgress() {
-//        return "group/approval/approval_progress";
-//    }
-//	
-//	@GetMapping("approvalComplete")
-//    public String edmsComplete() {
-//        return "group/approval/approval_complete";
-//    }
-//	
-//	@GetMapping("approvalReturn")
-//    public String edmsReturn() {
-//        return "group/approval/approval_return";
-//    }
-//	
-//	@GetMapping("approvalReference")
-//    public String edmsReference() {
-//        return "group/approval/approval_reference";
-//    }
-//	
 	
-//	@GetMapping("test11")
-//    public String test222() {
-//        return "etc/register";
-//    }
+	@GetMapping("approvalProgress")
+    public String edmsProgress() {
+        return "group/approval/approval_progress";
+    }
+	
+	@GetMapping("approvalComplete")
+    public String edmsComplete() {
+        return "group/approval/approval_complete";
+    }
+	
+	@GetMapping("approvalReturn")
+    public String edmsReturn() {
+        return "group/approval/approval_return";
+    }
+	
+	@GetMapping("approvalReference")
+    public String edmsReference() {
+        return "group/approval/approval_reference";
+    }
 }

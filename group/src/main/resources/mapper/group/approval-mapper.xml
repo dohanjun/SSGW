@@ -1,82 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yedam.app.group.mapper.ApprovalMapper">
+
 	<!-- 결재대기함 -->
 	<select id="selectAprvList" resultType="ApprovalVO">
-		SELECT  DRAFT_NO
-				,TITLE
-				,CONTENT
-				,APRV_STATUS
-				,REJECT_REASON
-				,DRAFT_DATE
-				,EMPLOYEE_NO
-				,APRV_DATE
-				,FORM_ID
-				,BASICS_FORM_ID
-				,SUBER_NO
-		FROM    aprv_documents
+		SELECT d.DRAFT_NO,
+		d.TITLE, d.CONTENT, d.APRV_STATUS, d.REJECT_REASON, d.DRAFT_DATE,
+		e.EMPLOYEE_NAME, d.APRV_DATE, d.FORM_ID, d.BASICS_FORM_ID, d.SUBER_NO
+		FROM aprv_documents d
+		JOIN employees e ON d.EMPLOYEE_NO = e.EMPLOYEE_NO
 	</select>
-	 
-	 <!-- 결재대기함(검색) -->
-	<select id="searchAprvList" resultType="ApprovalVO" parameterType="ApprovalVO">
-    SELECT d.DRAFT_NO
-           , d.TITLE
-           , d.CONTENT
-           , d.APRV_STATUS
-           , d.REJECT_REASON
-           , d.DRAFT_DATE
-           , e.EMPLOYEE_NAME
-           , d.APRV_DATE
-           , d.FORM_ID
-           , d.BASICS_FORM_ID
-           , d.SUBER_NO
-    FROM aprv_documents d
-    JOIN employees e 
-       ON d.EMPLOYEE_NO = e.EMPLOYEE_NO
-    WHERE 1=1
-    <if test="employeeName != null and employeeName != ''">
-        AND e.EMPLOYEE_NAME LIKE '%' || #{employeeName} || '%'
-    </if>
-    <if test="title != null and title != ''">
-        AND d.TITLE LIKE '%' || #{title} || '%'
-    </if>
-    <if test="draftDate != null">
-        AND d.DRAFT_DATE = #{draftDate}
-    </if>
-</select>
+
+	<!-- 결재대기함(검색) -->
+	<select id="searchAprvList" resultType="ApprovalVO"
+		parameterType="ApprovalVO">
+		SELECT d.DRAFT_NO, d.TITLE, d.CONTENT, d.APRV_STATUS, d.REJECT_REASON,
+		d.DRAFT_DATE,
+		e.EMPLOYEE_NAME, d.APRV_DATE, d.FORM_ID,
+		d.BASICS_FORM_ID, d.SUBER_NO
+		FROM
+		aprv_documents d
+		JOIN employees e ON
+		d.EMPLOYEE_NO = e.EMPLOYEE_NO
+		WHERE 1=1
+		<if test="employeeName != null and employeeName != ''">
+			AND e.EMPLOYEE_NAME LIKE '%' || #{employeeName} || '%'
+		</if>
+		<if test="title != null and title != ''">
+			AND d.TITLE LIKE '%' || #{title} || '%'
+		</if>
+		<if test="draftDate != null">
+			AND d.DRAFT_DATE = #{draftDate}
+		</if>
+	</select>
+
+	<!-- 수정: 결재 상세 조회 (도장 정보 포함) -->
+	<select id="selectAprvInfo"
+		resultType="com.yedam.app.group.service.ApprovalVO"
+		parameterType="Integer">
+		SELECT d.DRAFT_NO
+		       , d.EMPLOYEE_NO
+		       , d.TITLE
+		       , d.CONTENT
+		       , d.APRV_STATUS
+		       , d.REJECT_REASON
+		       , d.DRAFT_DATE
+		       , d.APRV_DATE
+		       , s.STAMP_IMG_PATH
+		FROM aprv_documents d
+		LEFT JOIN stamp s
+		ON d.EMPLOYEE_NO = s.EMPLOYEE_NO 
+		AND s.ACTIVE = '1'
+		WHERE d.DRAFT_NO = #{draftNo}
+	</select>
+
+	<!-- 수정: 도장 이미지 저장 (기존 데이터 있으면 UPDATE, 없으면 INSERT) -->
+	<update id="updateStampImage">
+		UPDATE stamp
+		SET STAMP_IMG_PATH = #{stampImgPath},
+		ACTIVE = #{active},
+		STAMP_ORDER = #{stampOrder}
+		WHERE EMPLOYEE_NO = #{employeeNo}
+	</update>
 
 
-	<!-- 도장등록 -->
-	<insert id="insertStamp" parameterType="ApprovalVO">
-	<selectKey keyProperty="stampId"
-                       resultType="Integer"
-                       order="BEFORE">
-            	SELECT NVL(MAX(stamp_id), 1) + 1
-				FROM stamp
-            </selectKey>
-		INSERT INTO stamp(stamp_id
-		                  ,employee_no
-		                  ,stamp_img_path
-		                  ,active
-		                  ,stamp_order)
-		            VALUES(#{stampId}
-		                   ,#{employeeNo}
-		                   ,#{stampImgPath}
-		                   ,'1'
-		                   ,'1')
-	</insert>
-	<!-- 기본양식 불러오기 -->
-	<select id="selectBasicsForm"
-	        resultType="ApprovalVO"
-	        parameterType="ApprovalVO">
-		SELECT basics_form_id
-		       ,content
-		       ,version
-		       ,form_type
-		       <if test="remarks != null">
-		       ,remarks
-		       </if>
-		FROM basics_form
-		WHERE form_type = #{formType}
+
+	<!-- 수정: 특정 사원의 활성화된 도장 조회 -->
+	<select id="selectStampImage" resultType="String">
+		SELECT STAMP_IMG_PATH
+		FROM stamp WHERE EMPLOYEE_NO = #{employeeNo} AND
+		ACTIVE = 'Y'
 	</select>
+
 </mapper>

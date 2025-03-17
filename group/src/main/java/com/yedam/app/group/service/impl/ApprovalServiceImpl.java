@@ -43,7 +43,28 @@ public class ApprovalServiceImpl implements ApprovalService {
 	public List<ApprovalVO> searchApprovalList(ApprovalVO aprv) {
 	    return approvalMapper.searchAprvList(aprv);
 	}
-
 	
+	
+	// 결재 상세 조회
+	@Override
+	public ApprovalVO findAprvInfo(ApprovalVO aprvVO) {
+		return approvalMapper.selectAprvInfo(aprvVO);
+	}
 
+	// 수정: 도장 이미지 저장
+	@Override
+	public void saveStampImage(int employeeNo, String stampImgPath) {
+	    String active = "1"; // 기본값 설정
+	    int stampOrder = 1; // 기본값 설정 (필요하면 동적으로 변경 가능)
+	    approvalMapper.updateStampImage(employeeNo, stampImgPath, active, stampOrder);
+	}
+
+
+
+
+	// 수정: 도장 이미지 조회
+	@Override
+	public String getStampImage(int employeeNo) {
+	    return approvalMapper.selectStampImage(employeeNo);
+	}
 }
