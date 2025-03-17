@@ -140,6 +140,38 @@
                     </div>
                 </div>
             </li>
+            
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#board"
+                    aria-expanded="true" aria-controls="collapseTwo">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span>게시판</span>
+                </a>
+                <div id="board" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item" th:href="@{noticeBoard}">공지 게시판</a>
+                        <a class="collapse-item" th:href="@{departmentBoard}">부서 게시판</a>
+                        <a class="collapse-item" th:href="@{freeBoard}">자유 게시판</a>
+                    </div>
+                </div>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#repository"
+                    aria-expanded="true" aria-controls="collapseTwo">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span>자료실</span>
+                </a>
+                <div id="repository" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item" th:href="@{totalfile}">전체 자료실</a>
+                        <a class="collapse-item" th:href="@{departmentfile}">부서 자료실</a>
+                        <a class="collapse-item" th:href="@{individualfile}">개인 자료실</a>
+                        <a class="collapse-item" th:href="@{basket}">휴지통</a>
+                    </div>
+                </div>
+            </li>
+            
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
 
