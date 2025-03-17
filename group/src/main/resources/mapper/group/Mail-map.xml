@@ -20,36 +20,131 @@
 	</select>
 
 	<!-- 메일단건조회 -->
-	<select id="jej" resultType="MailVO">
-	
+	<select id="selectMailId" resultType="MailVO">
+	SELECT   mail_id
+	        ,title
+	        ,content
+	        ,sent_state
+	        ,sent_date
+	        ,employee_id
+	        ,attached_file_name
+	        ,get_user
+	        ,cc
+	        ,recode
+	        ,mail_type
+	FROM Mail
+	WHERE mail_id = #{mailId}
 	</select>
 	
 	<!-- 나의메일단건조회 -->
-	<select id="agde" resultType="MailVO">
-	
+	<select id="MySelectMailId" resultType="MailVO">
+	SELECT   mail_id
+	        ,title
+	        ,content
+	        ,sent_state
+	        ,sent_date
+	        ,employee_id
+	        ,attached_file_name
+	        ,get_user
+	        ,cc
+	        ,recode
+	        ,mail_type
+	FROM Mail
+	WHERE mail_id = #{mailId}
 	</select>
 	
 	<!-- 메일등록 -->
-	<insert id="wetew" parameterType="MailVO">
+	<insert id="InsertMailInfo" parameterType="MailVO">
+	<selectKey keyProperty="mailId" resultType="Integer" order="BEFORE">
+	SELECT NVL(MAX(mail_id) + 1, 100) as mail_id
+	FROM Mail
+	</selectKey>
+	INSERT INTO Mail(
+                  mail_id
+                 ,title
+                 ,content
+                 ,sent_state
+                 ,sent_date
+                 ,employee_id
+                 ,attached_file_name
+                 ,get_user
+                 ,cc
+                 ,mail_type)
+    VALUES(
+    			 #{mailId}
+    			 ,#{title}
+    			 ,#{content}
+    			 ,#{sentState}
+    			 <choose>
+    			   <when test="sentDate !=null">
+    			 	,#{sentDate}
+    			   </when>
+    			    <otherwise>
+    			   		,sysdate
+    			    </otherwise>
+   				 </choose>
+    			 ,#{employeeId}
+    			 ,#{attachedFileName}
+    			 ,#{getUser}
+    			 ,#{cc}
+    			 ,#{mailType})
+	</insert>
 	
+	<!-- 메일검색기록 -->
+	<insert id="RecodeMail" parameterType="MailVO">
+	INSERT INTO Mail recode
+    VALUES      #{recode}
 	</insert>
 	
 	<!-- 메일수정 -->
-	<update id="saf" parameterType="MailVO">
-	
-	
+	<update id="UpdateMail" parameterType="MailVO">
+	UPDATE  Mail
+	   SET  get_user = #{getUser}
+	       ,cc = #{cc}
+	       ,title = #{title}
+	       ,attached_file_name = #{attachedFileName}
+	       ,content = #{content}
+    WHERE   Mail_id = #{mailId}
 	</update>
 	
 	<!-- 메일답장 -->
-	<update id="dsfds" parameterType="MailVO">
+	<update id="PutDateMail" parameterType="MailVO">
+	UPDATE  Mail
+	   SET  get_user = #{getUser}
+	       ,cc = #{cc}
+	       ,content = #{content}
+    WHERE   Mail_id = #{mailId}
+	</update>
 	
-	
+	<!-- 메일전달 -->
+	<update id="VeryMail" parameterType="MailVO">
+	<selectKey keyProperty="mailId" resultType="Integer" order="BEFORE">
+	SELECT NVL(MAX(mail_id) + 1, 100) as mail_id
+	FROM Mail
+
+	SELECT   mail_id
+	        ,title
+	        ,content
+	        ,sent_state
+	        ,sent_date
+	        ,employee_id
+	        ,attached_file_name
+	        ,get_user
+	        ,cc
+	        ,recode
+	        ,mail_type
+	FROM Mail
+	WHERE mail_id = #{mailId}
+	</selectKey>
+	UPDATE content
+	FROM Mail
+	WHERE mail_id = #{mailId}
 	</update>
 	
 	<!-- 메일삭제 -->
-	<delete id="dsf" parameterType="MailVO">
-	
-	
+	<delete id="DeleteMail" parameterType="int">
+	DELETE FROM Mail
+	WHERE mail_id = #{mailId}
 	</delete>
 	
 </mapper>

@@ -1,28 +1,35 @@
 package com.yedam.app.group.service;
 
 import java.util.List;
+import java.util.Map;
 
 public interface MailService {
 	
 	//메일전체조회
 	public List<MailVO> findAll();
 	
-	//메일상세조회
-	public MailVO findMailId();
+	//메일단건조회
+	public MailVO findMailId(MailVO mailVO);
 	
-	//나의 메일상세조회
-	public MailVO MyFindMailId();
+	//나의메일단건조회
+	public MailVO MyFindMailId(MailVO mailVO);
 	
 	//메일등록
 	public int addInfo(MailVO mailVO);
 	
 	//메일수정
-	public int UpdInfo(MailVO mailVO);
+	public Map<String, Object> modifyUpdInfo(MailVO mailVO);
+	
+	//메일검색기록
+	public int RecodeInfo(MailVO mailVO);
 	
 	//메일답장
 	public int PutInfo(MailVO mailVO);
 	
+	//메일전달
+	public Map<String, Object> VeryInfo(MailVO mailVO);
+	
 	//메일삭제
-	public int DelInfo(MailVO mailVO);
+	public Map<String, Object> removeDelInfo(int mailId);
 	
 }

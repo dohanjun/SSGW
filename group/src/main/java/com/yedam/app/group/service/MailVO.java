@@ -8,7 +8,7 @@ import lombok.Data;
 
 @Data
 public class MailVO {
-	private int mailId;
+	private Integer mailId;
 	private String title;
 	private String content;
 	private int sentState;

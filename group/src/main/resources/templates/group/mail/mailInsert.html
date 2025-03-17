@@ -53,6 +53,7 @@
 
 <!-- 메일쓰기 페이지-->
 <body>
+<h3>메일등록화면</h3>
 	<div class="content-wrapper">
 	<div class="employee-container" id="center">
 	 <h3>메일쓰기</h3>
@@ -65,29 +66,28 @@
         </a>
 
 	  
-  <form class="user">
+  <form th:action="@{/mailInsert}" method="post" class="user">
      <div class="form-group row" id="cen">
-        <p>
-          <div class="col-sm-6 mb-3 mb-sm-0"><a>받는사람</a>
-          <input type="text" class="form-control form-control-user" id="exampleFirstName" placeholder="받는사람">
-		</p>
-		<p>
-		<a>참조</a>   
-           <input type="email" class="form-control form-control-user" id="exampleInputEmail" placeholder="참조">
-        </p>
-        <p>
-        <a>제목</a> 
-           <input type="email" class="form-control form-control-user" id="exampleInputEmail" placeholder="제목">
-        </p>
-        <p>
-        <a>파일첨부</a> 
-           <input type="file"  class="form-control">
-        </p>
-        <p>
-        <a>내용</a>  
-           <input type="email" class="form-control form-control-user" id="exampleInputEmail" placeholder="내용">
-        </div>
-        </p>
+		<div>
+			<label for="getName">받는사람</label>
+			<input type="text" id="getName" name="getName">
+		</div>
+		<div>
+			<label for="cc">참조</label>
+			<input type="text" id="cc" name="cc">
+		</div>
+		<div>
+			<label for="title">제목</label>
+			<input type="text" id="title" name="title">
+		</div>
+		<div>
+			<label for="file">파일내용</label>
+			<input type="file" id="file" name="file">
+		</div>
+		<div>
+			<label for="content">내용</label>
+			<input type="text" id="content" name="content">
+		</div>
       </div>
   </form>
   </div>

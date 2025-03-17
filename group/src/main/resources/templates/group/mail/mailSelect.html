@@ -49,52 +49,54 @@
             font-size: 20px;
         }
 </style>
-<!-- 메일상세보기 페이지-->
+<!-- 메일상세화면 페이지-->
   <body>
   <div class="content-wrapper" id="center">
 	<div class="employee-container">
 	  <div>
 	  <a href="#" lcon="home"></a>
-	<h1>메일상세보기</h1>
+	<h1>메일상세화면</h1>
 	</div>
 	  <div>
 	    <hr>
-			<a href="#">답장</a>
-			<a href="#">전달</a>
-			<a href="#">삭제</a>
+			<button type="button"
+			th:onclick="|location.href='@{/mailReply(mailId=${mail.mailId})}'|">답장</button>
+			<button type="button"
+			th:onclick="|location.href='@{/mailVery(mailId=${mail.mailId})}'|">전달</button>
+			<button type="button"
+			th:onclick="|location.href='@{/mailDelete(mailId=${mail.mailId},country=Kor)}'|">삭제</button>
 		<hr>
 	  </div>
 
 	<!-- 메일상세기능 -->
-	<form name="form" method="post">
-	<table class="table">
-		<tr>
-			<td>제목</td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-		</tr>
-		<tr>
-			<td>보낸사람</td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-		</tr>
-		<tr>
-			<td>받는사람</td>
-			<td><input name="" value="${}" readonly="readonly"></td>
-		</tr>
-		<tr>
-			<td>첨부파일</td><button type="button" href="#" class="btn btn-primary">모두저장</button>
-		</tr>
-		<tr>
-			<td>파일첨부</td>
-			<td><input name="file" value="${}"></td>
-		</tr>
-		<tr>
-			<td>내용</td>
-			<td><input name="" value="${}"></td>
-		</tr>
-	</table>
-	</form>
-	<!-- 메일상세기능 마침 -->
+	<div>
+		<div>
+			<label for="mid">제목</label>
+			<input type="text" id="mid" th:value="${mail.title}" readonly>
 		</div>
+		<div>
+			<label for="giveName">보낸사람</label>
+			<input type="text" id="giveName" th:value="${mail.employeeId}" readonly>
+		</div>
+		<div>
+			<label for="getName">받는사람</label>
+			<input type="text" id="getName" th:value="${mail.getUser}" readonly>
+		</div>
+		<div>
+			<label for="file">첨부파일</label>
+			<button type="button" class="btn btn-primary">모두저장</button>
+		</div>
+		<div>
+			<label for="file">파일첨부</label>
+			<input type="file" id="file" th:value="${mail.attachedFileName}">
+		</div>
+		<div>
+			<label for="content">내용</label>
+			<input type="text" id="content" th:value="${mail.content}">
+		</div>
+	</div>
+	<!-- 메일상세기능 마침 -->
+	</div>
 	</div>
   </body>
 </html>
