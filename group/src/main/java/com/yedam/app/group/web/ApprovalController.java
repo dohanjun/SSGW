@@ -18,9 +18,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.yedam.app.group.service.ApprovalFormVO;
 import com.yedam.app.group.service.ApprovalService;
 import com.yedam.app.group.service.ApprovalVO;
 
@@ -129,15 +129,24 @@ public class ApprovalController {
 	    }
 	}
 	
-	
-	@GetMapping("/aprv/uploadForm")
-	public String uploadTemplateForm() {
-	    return "group/approval/approval_template_upload"; // Thymeleaf 템플릿 파일 경로
-	}
-	
+
 	@GetMapping("write")
 	public String write() {
-		return "group/approval/write";
+		return "group/approval/write1";
+	}
+	
+	@PostMapping("/saveForm")
+	public String saveForm(ApprovalFormVO aprvformVO) { 
+	    int formId = approvalService.createForm(aprvformVO);
+	    String url = null;
+
+	    if (formId > 0) {
+	        url = "redirect:/aprv";  // 저장 후 결재 대기함 페이지로 리디렉션
+	    } else {
+	        url = "redirect:/errorPage";  // 저장 실패 시 에러 페이지로 리디렉션
+	    }
+
+	    return url;
 	}
 
 		

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.yedam.app.group.mapper.ApprovalMapper;
+import com.yedam.app.group.service.ApprovalFormVO;
 import com.yedam.app.group.service.ApprovalService;
 import com.yedam.app.group.service.ApprovalVO;
 
@@ -46,12 +47,17 @@ public class ApprovalServiceImpl implements ApprovalService {
 	public ApprovalVO findAprvInfo(ApprovalVO aprvVO) {
 		return approvalMapper.selectAprvInfo(aprvVO);
 	}
-
-	// 도장 이미지 저장
+	
+	
+	// 회사 전자결재 양식 등록
 	@Override
-	public void saveStampImage(ApprovalVO aprvVO) {
-	    approvalMapper.updateStampImage(aprvVO);
+	public int createForm(ApprovalFormVO aprvformVO) {
+		int result = approvalMapper.insertForm(aprvformVO);
+		return result == 1 ? aprvformVO.getFormId() : -1;
 	}
+
+	
+
 	
 	
 }
