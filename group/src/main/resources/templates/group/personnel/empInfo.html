@@ -97,42 +97,42 @@
             
             <div class="form-group">
                 <label for="empid">사원번호</label>
-                <input type="text" id="empid" readonly>
+                <input type="text" id="empid" th:value="${emp.employeeNo}" readonly>
             </div>
 
             <div class="form-group">
                 <label for="name">이름</label>
-                <input type="text" id="name" readonly>
+                <input type="text" id="name" th:value="${emp.employeeName}" readonly>
             </div>
 
             <div class="form-group">
                 <label for="department">부서</label>
-                <input type="text" id="department" readonly>
+                <input type="text" id="department" th:value="${emp.departmentName}" readonly>
             </div>
 
             <div class="form-group">
                 <label for="position">직급</label>
-                <input type="text" id="position" readonly>
+                <input type="text" id="position" th:value="${emp.jobTitleName}" readonly>
             </div>
 
             <div class="form-group">
                 <label for="role">권한</label>
-                <input type="text" id="role" readonly>
+                <input type="text" id="role" th:value="${emp.rightsName}" readonly>
             </div>
 
             <div class="form-group">
                 <label for="contact">연락처</label>
-                <input type="text" id="contact" readonly>
+                <input type="text" id="contact" th:value="${emp.phoneNumber}" readonly>
             </div>
 
             <div class="form-group">
                 <label for="address">주소</label>
-                <input type="text" id="address" readonly>
+                <input type="text" id="address" th:value="${emp.address}" readonly>
             </div>
 
             <div class="form-group">
                 <label for="hire-date">입사일</label>
-                <input type="date" id="hire-date" readonly>
+                <input type="date" id="hire-date" th:value="${#dates.format(emp.hireDate, 'yyyy-MM-dd') }" readonly>
             </div>
 
             <div class="btn-group">

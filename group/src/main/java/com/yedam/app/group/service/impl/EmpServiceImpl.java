@@ -23,22 +23,19 @@ public class EmpServiceImpl implements EmpService{
 	// 사원등록
 	@Override
 	public int createEmpInfo(EmpVO empVO) {
-		int result = empMapper.insertEmpInfo(empVO);
-		return result == 1 ? empVO.getEmployeeNo() : -1;
+		return empMapper.insertEmpInfo(empVO);
 	}
 
 	// 사원 전체조회
 	@Override
 	public List<EmpVO> findAllEmp() {
-		// TODO Auto-generated method stub
-		return null;
+		return empMapper.selectEmpList();
 	}
 
 	// 사원 상세정보
 	@Override
 	public EmpVO findempInfo(EmpVO empVO) {
-		// TODO Auto-generated method stub
-		return null;
+		return empMapper.selectEmpInfo(empVO);
 	}
 
 	// 사원 정보 수정
@@ -46,6 +43,12 @@ public class EmpServiceImpl implements EmpService{
 	public Map<String, Object> modifyEmpInfo(EmpVO empVO) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	// 사원번호 자동증가 조회
+	@Override
+	public int getNextEmployeeNo() {
+		return empMapper.getNextEmployeeNo();
 	}
 	
 

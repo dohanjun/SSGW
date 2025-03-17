@@ -21,89 +21,94 @@
 
     <div class="container text-center">
         <h3>사원 등록</h3>
-    </div>    
+    </div>
+    <form name="insertForm" th:action="@{/empinsert}" method="post" enctype="multipart/form-data">    
     <div class="container text-center">
       <img id="imagePreview" class="profile-img" alt="">
-      <input type="file" id="photo" accept="image/*" onchange="empimg(event)">
+      <input type="file" id="photo" name="profileImageFile" accept="image/*" onchange="empimg(event)">
     </div>
-    
+  
     <div class="container text-center">
-        <input type="file">
-    </div>
 
-
-    <div class="container text-center">
-        <form name="insertform" th:action="@{/}" method="post">
         <table class="table table-boardered">
            <tr>
-               <th>사원번호</th>
-               <td><input type="number" name="" readonly></td>
+               <th><label for="empno">사원번호</label></th>
+               <td><input type="number" id="empno" name="employeeNo" th:value="${employeeNo}" readonly></td>
            </tr>
            <tr>
-               <th>ID</th>
-               <td><input type="text" name="" ></td>
+               <th><label for="subno">회사번호</label></th>
+               <td><input type="number" id="subno" name="suberNo" th:value="${suberNo}" readonly></td>
            </tr>
            <tr>
-               <th>이름</th>
-               <td><input type="text" name=""></td>
+               <th><label for="empid">ID</label></th>
+               <td><input type="text" id="empid" name="employeeId" ></td>
+           </tr>
+           <tr>
+                <th><label for="emppw">비밀번호</label></th>
+                <td><input type="password" id="emppw" name="employeePw"></td>
+            </tr>
+           <tr>
+               <th><label for="empname">이름</label></th>
+               <td><input type="text" id="empname" name="employeeName"></td>
            </tr>
            <tr>
                <th><label for="depa">부서</label></th>
                <td>
-                   <select id="depa">
+                   <select id="depa" name="departmentNo">
                    <option value="">부서를 선택하세요</option>
-                   <option value="">경영기획부</option>
-                   <option value="">마케팅부</option>
-                   <option value="">인사팀</option>
-                   <option value="">회계팀</option>
-                   <option value="">프로젝트팀</option>
-                   <option value="">개발팀</option>
+                   <option value="2">경영기획부</option>
+                   <option value="3">마케팅부</option>
+                   <option value="4">인사팀</option>
+                   <option value="5">회계팀</option>
+                   <option value="6">프로젝트팀</option>
+                   <option value="7">개발팀</option>
                    </select>
                </td>
            </tr>
            <tr>
                <th><label for="rank">직급</label></th>
                <td>
-                   <select id="rank">
+                   <select id="rank" name="rankId">
                    <option>직급을 선택하세요</option>
-                   <option value="">사원</option>
-                   <option value="">대리</option>
-                   <option value="">과장</option>
-                   <option value="">부장</option>
-                   <option value="">이사</option>
-                   <option value="">대표</option>
+                   <option value="1">사원</option>
+                   <option value="2">주임</option>
+                   <option value="3">대리</option>
+                   <option value="4">과장</option>
+                   <option value="5">부장</option>
+                   <option value="6">이사</option>
+                   <option value="7">대표</option>
                    </select>
                </td>
            </tr>
            <tr>
                <th><label for="auth">권한</label></th>
                <td>
-                   <select id="auth">
+                   <select id="auth" name="rightsId">
                    <option>권한을 선택하세요</option>
-                   <option>최고관리자</option>
-                   <option>인사관리자</option>
-                   <option>게시판관리자</option>
-                   <option>일반사용자</option>
+                   <option value="1">최고관리자</option>
+                   <option value="2">인사관리자</option>
+                   <option value="3">게시판관리자</option>
+                   <option value="4">일반사용자</option>
                    </select>
                </td>
            </tr>
            <tr>
-               <th>연락처</th>
-               <td><input type="text" name=""></td>
+               <th><label for="pho">연락처</label></th>
+               <td><input type="text" id="pho" name="phoneNumber"></td>
            </tr>
            <tr>
-               <th>주소</th>
-               <td><input type="text" name=""></td>
+               <th><label for="add">주소</label></th>
+               <td><input type="text" id="add" name="address"></td>
            </tr>
            <tr>
-               <th>입사일</th>
-               <td><input type="date" name=""></td>
+               <th><label for="hire">입사일</label></th>
+               <td><input type="date" id="hire" name="hireDate"></td>
            </tr>
         </table>
         <button type="submit" class="btn btn-primary">등록</button>
         <button type="button" class="btn btn-danger">취소</button>
-      </form>
     </div>
+    </form>
     <script>
     function empimg(event) {
         const image = document.getElementById('imagePreview');
@@ -118,20 +123,6 @@
         }
     }
     
-    document.querySelector('form[name="insertForm"]')
-    .addEventListener('submit', function(event){
-    	event.preventDefault();
-    	
-    	let name = insertForm.querySelector('[name="bookName"]')
-    	if(name.value == ''){
-    		alert('도서명이 입력되지 않았습니다.');
-    		name.focus();
-    		return;
-    	}
-    	
-    	alert('도서등록이 완료 되었습니다.');
-    	insertForm.submit();
-    });
     </script>
 </body>
 </html>

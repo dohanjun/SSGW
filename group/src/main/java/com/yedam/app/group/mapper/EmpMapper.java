@@ -17,5 +17,8 @@ public interface EmpMapper {
 	
 	// 사원정보 수정
 	public int updateEmpInfo(EmpVO empVO);
+	
+	// 사원번호 증가값 조회
+	public int getNextEmployeeNo();
 
 }

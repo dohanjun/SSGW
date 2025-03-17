@@ -12,17 +12,10 @@ public class PersonnelContrtller {
 
 	
 	// 사원관리
-	@GetMapping("empMgmt")
-	    public String empMgmt() {
-	        return "group/personnel/empMgmt";
-	    }
 	
 	
 	// 단건 상세조회
-	@GetMapping("empInfo")
-    public String empInfo() {
-        return "group/personnel/empInfo";
-    }
+
 	
 	// 사원 정보 수정
 	@GetMapping("empUpdate")
