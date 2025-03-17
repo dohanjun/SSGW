@@ -59,7 +59,11 @@
 			<artifactId>mybatis-spring-boot-starter</artifactId>
 			<version>3.0.4</version>
 		</dependency>
-
+		<dependency>
+		    <groupId>org.bgee.log4jdbc-log4j2</groupId>
+		    <artifactId>log4jdbc-log4j2-jdbc4.1</artifactId>
+		    <version>1.16</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
@@ -108,6 +112,10 @@
 		    <groupId>com.github.iamport</groupId>
 		    <artifactId>iamport-rest-client-java</artifactId>
 		    <version>0.2.21</version>
+		</dependency>
+		<dependency>
+		  <groupId>org.springframework.boot</groupId>
+		  <artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 	</dependencies>
 

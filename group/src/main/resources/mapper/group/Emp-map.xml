@@ -66,5 +66,4 @@
 			  ORDER BY employee_no             
       </select>
 
-
 </mapper>

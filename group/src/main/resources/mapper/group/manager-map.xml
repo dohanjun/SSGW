@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yedam.app.group.mapper.ManagerMapper">
+    <select id="getManagerById" parameterType="String" resultType="com.yedam.app.group.service.ManagerVO">
+        SELECT *
+        FROM managers
+        WHERE manager_id = #{managerId}
+    </select>
+</mapper>

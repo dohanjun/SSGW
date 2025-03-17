@@ -37,8 +37,7 @@ public class EmpServiceImpl implements EmpService{
 	// 사원 상세정보
 	@Override
 	public EmpVO findempInfo(EmpVO empVO) {
-		// TODO Auto-generated method stub
-		return null;
+		return empMapper.selectEmpInfo(empVO);
 	}
 
 	// 사원 정보 수정
