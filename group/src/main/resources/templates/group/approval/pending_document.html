@@ -16,7 +16,8 @@
 	  </div>
 		<div class="card shadow mb-4">
 			<div class="card-header py-3">
-				<form th:action="@{/aprv/search}" method="GET">
+			<!-- 검색부분 -->
+				<form th:action="@{/aprv/search}" method="GET"> 
 					<p>기안자<input type="text" name="employeeName">문서제목<input type="text" name="title">상신일<input type="date" name="draftDate"><button type="submit" class="float-right">검색</button></p>
 				</form>
 			</div>
@@ -46,10 +47,6 @@
 			</div>
 		</div>
 	</div>
-	
-	<!-- 수정: 로그인한 사용자의 employeeNo를 가져오기 위한 hidden input 추가 -->
-	<input type="hidden" id="employeeNo" th:value="${session.employeeNo}"> 
-
 	<div class="modal fade" id="stampModal" tabindex="-1" role="dialog" aria-labelledby="stampModalLabel" aria-hidden="true">
     	<div class="modal-dialog" role="document">
         	<div class="approval-modal-content">
@@ -62,14 +59,15 @@
             		<div class="approval-modal-body">
             			<form>
             				<div style="width:200px; height:200px; margin:3px auto; border:1px solid black">
-                			<img id="imgview" src="" alt="등록된 도장" style="display:none; width: 180px; height: 180px;"/>
                 			</div>
                 			<div class="filebox">
     							<label for="file">파일찾기</label> 
-    							<input type="file" id="file" accept="image/*" onchange="previewImage(event)">
+    							<input type="file" id="file" accept="image/*">
 							                          
             				<div class="modal-footer modalbtns">
                 				<button type="button" class="btn btn-secondary" onclick="insertStamp()">등록</button>
+                				<button type="button" class="btn btn-secondary" onclick="updateStamp()">수정</button>
+                				<button type="button" class="btn btn-secondary" onclick="deleteStamp()">삭제</button>
             				</div>
             				</div>
             			</form> 
@@ -79,24 +77,35 @@
 	</div>
 
 <script>
-// 수정: 모달을 열 때 로그인한 사용자의 employeeNo를 포함하여 요청
-document.getElementById('stampInsertButton').addEventListener('click', function() {
-    let employeeNo = document.getElementById('employeeNo').value; // 수정: 현재 로그인한 사용자의 ID 가져오기
+/* function updateStamp(){
+	let file = document.getElementById('file').files[0];
+	
+	if (!file) {
+        alert("파일을 선택하세요.");
+        return;
+    }
 
-    fetch(`/aprv/getStamp?employeeNo=${employeeNo}`)  // 수정: employeeNo를 포함하여 요청
-    .then(response => response.json())
-    .then(data => {
-        let imgView = document.getElementById('imgview');
-        if (data.stampImage) {
-            imgView.src = data.stampImage;  // 기존 도장 이미지 적용
-            imgView.style.display = "block";
-        } else {
-            imgView.style.display = "none";
-        }
-        $('#stampModal').modal('show');
+    let formData = new FormData();
+    
+    formData.append("file", file);
+    
+    fetch('aprv/modify', {
+    	method: 'POST',
+        body: formData
     })
-    .catch(err => console.error('Error loading stamp:', err));
-});
+    .then(res => response.json())
+    .then(result => {
+        if (result.success) {
+            alert("도장 수정 성공!");
+
+        } else {
+            alert("도장 수정 실패!");
+        }
+    })
+    .catch(err => console.log(err))
+} */
+
+
 
 // 도장 등록 기능
 function insertStamp() {
@@ -108,11 +117,10 @@ function insertStamp() {
     }
 
     let formData = new FormData();
-    let employeeNo = document.getElementById('employeeNo').value; // 수정: 로그인한 사용자의 employeeNo 추가
+    
     formData.append("file", file);
-    formData.append("employeeNo", employeeNo); // 수정: employeeNo를 함께 전송
-
-    fetch('/aprv/upload', {
+    
+    fetch('aprv/upload', {
         method: 'POST',
         body: formData
     })
@@ -121,20 +129,17 @@ function insertStamp() {
         if (result.success) {
             alert("도장 등록 성공!");
 
-            // 도장 이미지 업데이트
-            let imgView = document.getElementById('imgview');
-            imgView.src = result.imageUrl;
-            imgView.style.display = "block";
-
-            setTimeout(() => {
-                $('#stampModal').modal('hide');
-            }, 1000);
         } else {
             alert("도장 등록 실패!");
         }
     })
-    .catch(err => console.error("Error:", err));
+    .catch(err => console.log(err));
 }
+
+document.querySelector('#stampInsertButton').addEventListener('click', event => {
+    $('#stampModal').modal('show');
+});
+
 </script>
 
 </body>

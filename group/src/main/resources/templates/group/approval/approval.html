@@ -11,12 +11,26 @@
 <body>
 
 	<h3>결재자</h3>
-	<div>
-	    <th:block th:if="${aprv.stampImgPath != null}">
-          <img th:src="@{${aprv.stampImgPath}}" alt="결재 도장" width="100px" height="100px" style="border: 1px solid #ccc; padding: 5px;">
-        </th:block>
-	</div>
-
+		<!-- <table>
+    <thead>
+        <tr>
+            <th th:each="" th:text="">직책</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td th:each="">
+                <button>확인 버튼</button><br>
+                <img th:src="" 
+                     alt="결재 도장" width="100px" height="100px" 
+                     style="border: 1px solid #ccc; padding: 5px; display: none;">
+            </td>
+        </tr>
+        <tr>
+            <td th:each="">이름</td>
+        </tr>
+    </tbody>
+</table> -->
 	<h2>문서 제목 : [[${aprv.title}]]</h2>
 
     <table border="1">

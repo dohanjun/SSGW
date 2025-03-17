@@ -4,11 +4,24 @@
 
 	<!-- 결재대기함 -->
 	<select id="selectAprvList" resultType="ApprovalVO">
-		SELECT d.DRAFT_NO,
-		d.TITLE, d.CONTENT, d.APRV_STATUS, d.REJECT_REASON, d.DRAFT_DATE,
-		e.EMPLOYEE_NAME, d.APRV_DATE, d.FORM_ID, d.BASICS_FORM_ID, d.SUBER_NO
+		SELECT d.DRAFT_NO
+		       , d.TITLE
+		       , d.CONTENT
+		       , d.APRV_STATUS
+		       , d.REJECT_REASON 
+		       , d.DRAFT_DATE
+		       , e.EMPLOYEE_NAME
+		       , d.APRV_DATE
+		       , d.FORM_ID
+		       , d.BASICS_FORM_ID
+		       , d.SUBER_NO
+               , r.employee_no
 		FROM aprv_documents d
-		JOIN employees e ON d.EMPLOYEE_NO = e.EMPLOYEE_NO
+		JOIN employees e 
+			ON d.EMPLOYEE_NO = e.EMPLOYEE_NO
+        JOIN aprv_routes r
+            ON r.employee_no = e.employee_no
+        WHERE d.APRV_STATUS = '대기'
 	</select>
 
 	<!-- 결재대기함(검색) -->
@@ -34,42 +47,51 @@
 		</if>
 	</select>
 
-	<!-- 수정: 결재 상세 조회 (도장 정보 포함) -->
-	<select id="selectAprvInfo"
-		resultType="com.yedam.app.group.service.ApprovalVO"
-		parameterType="Integer">
+	<!-- 결재 상세 조회 (도장 정보 포함) -->
+	<select id="selectAprvInfo" resultType="ApprovalVO"
+		parameterType="ApprovalVO">
 		SELECT d.DRAFT_NO
-		       , d.EMPLOYEE_NO
-		       , d.TITLE
-		       , d.CONTENT
-		       , d.APRV_STATUS
-		       , d.REJECT_REASON
-		       , d.DRAFT_DATE
-		       , d.APRV_DATE
-		       , s.STAMP_IMG_PATH
+		, d.EMPLOYEE_NO
+		, d.TITLE
+		, d.CONTENT
+		, d.APRV_STATUS
+		, d.REJECT_REASON
+		, d.DRAFT_DATE
+		, d.APRV_DATE
+		, s.STAMP_IMG_PATH
 		FROM aprv_documents d
 		LEFT JOIN stamp s
-		ON d.EMPLOYEE_NO = s.EMPLOYEE_NO 
+		ON
+		d.EMPLOYEE_NO = s.EMPLOYEE_NO
 		AND s.ACTIVE = '1'
 		WHERE d.DRAFT_NO = #{draftNo}
 	</select>
 
-	<!-- 수정: 도장 이미지 저장 (기존 데이터 있으면 UPDATE, 없으면 INSERT) -->
-	<update id="updateStampImage">
+	<!-- 도장 등록 -->
+	<insert id="insertStamp" parameterType="ApprovalVO">
+	 <selectKey keyProperty="stampId"
+				   resultType="Integer"
+				   order="BEFORE">
+			SELECT NVL(MAX(stamp_id), 1) + 1
+			FROM stamp
+	 </selectKey>
+		INSERT INTO stamp(STAMP_IMG_PATH
+						  ,EMPLOYEE_NO
+						  ,STAMP_ID
+						  ,ACTIVE)
+		VALUES			(#{stampImgPath}
+						, 1
+						, #{stampId}
+						,'1')
+	</insert>
+	
+	<!-- 도장 수정 -->
+	<!-- <update id="updateStampImage">
 		UPDATE stamp
-		SET STAMP_IMG_PATH = #{stampImgPath},
-		ACTIVE = #{active},
-		STAMP_ORDER = #{stampOrder}
+		SET STAMP_IMG_PATH = #{stampImgPath}
+							 , ACTIVE = '0'
 		WHERE EMPLOYEE_NO = #{employeeNo}
-	</update>
-
-
-
-	<!-- 수정: 특정 사원의 활성화된 도장 조회 -->
-	<select id="selectStampImage" resultType="String">
-		SELECT STAMP_IMG_PATH
-		FROM stamp WHERE EMPLOYEE_NO = #{employeeNo} AND
-		ACTIVE = 'Y'
-	</select>
+	</update> -->
+	
 
 </mapper>

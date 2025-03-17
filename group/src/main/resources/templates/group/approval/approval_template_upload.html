@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{common/layouts/default_layout}"
+	  layout:fragment="content">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>전자결재 양식 등록</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { width: 50%; margin: auto; padding: 20px; border: 1px solid #ddd; }
+        .preview { margin-top: 20px; padding: 10px; border: 1px solid #ddd; background-color: #f9f9f9; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>전자결재 양식 업로드</h2>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <label for="file">HWP 또는 PDF 파일 선택:</label>
+        <input type="file" id="file" name="file" accept=".hwp, .pdf" required>
+        <button type="button" onclick="uploadFile()">업로드 및 변환</button>
+    </form>
+
+    <div class="preview">
+        <h3>미리보기</h3>
+        <div id="htmlPreview">변환된 HTML이 여기에 표시됩니다.</div>
+    </div>
+</div>
+
+<script>
+function uploadFile() {
+    let formData = new FormData();
+    let fileInput = document.getElementById("file");
+    
+    if (!fileInput.files.length) {
+        alert("파일을 선택하세요.");
+        return;
+    }
+
+    formData.append("file", fileInput.files[0]);
+
+    fetch('/aprv/uploadTemplate', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById("htmlPreview").innerHTML = data.htmlContent;
+        } else {
+            alert("업로드 실패: " + data.message);
+        }
+    })
+    .catch(error => console.error("Error:", error));
+}
+</script>
+
+</body>
+</html>
