@@ -2,8 +2,10 @@ package com.yedam.app.group.mapper;
 
 import java.util.List;
 
-import com.yedam.app.group.service.ApprovalVO;
 import org.apache.ibatis.annotations.Mapper;
+
+import com.yedam.app.group.service.ApprovalFormVO;
+import com.yedam.app.group.service.ApprovalVO;
 
 @Mapper
 public interface ApprovalMapper {
@@ -19,10 +21,11 @@ public interface ApprovalMapper {
 
 	// 도장 등록
 	public int insertStamp(ApprovalVO aprvVO);
-
-	// 도장 이미지 저장
-	void updateStampImage(ApprovalVO aprvVO);
 	
+	// 회사 전자결재양식 등록
+	public int insertForm(ApprovalFormVO aprvformVO);
+	
+
 	
 
 }

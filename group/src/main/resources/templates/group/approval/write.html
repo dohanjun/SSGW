@@ -1,78 +1,49 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>전자결재 양식 작성</title>
+    <title>Summernote 테스트</title>
 
-    <!-- Quill Editor CDN -->
-    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <!-- Summernote 스타일 및 스크립트 -->
+    <link href="https://cdn.jsdelivr.net/npm/summernote/dist/summernote-lite.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/summernote/dist/summernote-lite.min.js"></script>
 
     <style>
-        .text-editor-container {
-            width: 100%;
-            max-width: 800px;
-            margin: auto;
-            background: #ffffff;
-            border: 1px solid #ccc;
-            padding: 10px;
-        }
         #editor-container {
-            height: 300px !important;
-            background: #fff;
-            border: 1px solid #ccc;
-            padding: 10px;
-        }
-        .save-btn {
-            margin-top: 10px;
-            padding: 10px 20px;
-            background: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
+            width: 80%;
+            margin: 20px auto;
         }
     </style>
 </head>
 <body>
 
-    <div class="container mt-4 text-editor-container">
-        <h2>전자결재 양식 작성</h2>
+    <h2 style="text-align: center;">Summernote 테스트</h2>
 
-        <!-- Quill Editor 본문 -->
-        <div id="editor-container"></div>
-
-        <button class="save-btn" onclick="saveContent()">저장</button>
+    <div id="editor-container">
+        <textarea id="summernote"></textarea>
+        <button onclick="getSummernoteContent()">내용 가져오기</button>
+        <div id="output"></div>
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            var quill = new Quill('#editor-container', {
-                theme: 'snow',
-                modules: {
-                    toolbar: [
-                        ['bold', 'italic', 'underline'],
-                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                        [{ 'align': [] }],
-                        ['link', 'image']
-                    ]
-                }
+        $(document).ready(function() {
+            $('#summernote').summernote({
+                height: 300,
+                toolbar: [
+                    ['style', ['bold', 'italic', 'underline']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['insert', ['table', 'link', 'picture']],
+                    ['view', ['fullscreen', 'codeview']]
+                ]
             });
-
-            // 저장 버튼 클릭 시 HTML 데이터 전송
-            window.saveContent = function() {
-                var content = quill.root.innerHTML;
-                fetch('/aprv/save', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ content: content })
-                })
-                .then(response => response.json())
-                .then(data => alert("저장 완료: " + data.message))
-                .catch(error => console.error('저장 오류:', error));
-            }
         });
+
+        function getSummernoteContent() {
+            var content = $('#summernote').summernote('code');
+            document.getElementById("output").innerHTML = `<h3>저장된 HTML</h3><pre>${content}</pre>`;
+        }
     </script>
 
 </body>

@@ -16,8 +16,8 @@ public interface ApprovalService {
 	// 도장 등록
 	public int createStamp(ApprovalVO aprvVO);
 	
-	// 도장 이미지 저장
-	void saveStampImage(ApprovalVO aprvVO);
+	// 회사 전자결재 양식 등록
+	public int createForm(ApprovalFormVO aprvformVO);
 	
 	
 

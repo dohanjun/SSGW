@@ -85,13 +85,27 @@
 						,'1')
 	</insert>
 	
-	<!-- 도장 수정 -->
-	<!-- <update id="updateStampImage">
-		UPDATE stamp
-		SET STAMP_IMG_PATH = #{stampImgPath}
-							 , ACTIVE = '0'
-		WHERE EMPLOYEE_NO = #{employeeNo}
-	</update> -->
-	
-
+	<!-- 회사 전자결재 양식 등록 -->
+	<insert id="insertForm" parameterType="ApprovalFormVO">
+		<selectKey keyProperty="formId"
+				   resultType="Integer"
+				   order="BEFORE">
+			SELECT NVL(MAX(form_id), 1) + 1
+			FROM aprv_forms
+		</selectKey>
+		INSERT INTO aprv_forms (form_id
+		                        , form_type
+		                        , content
+		                        , version
+		                        , active
+		                        , creation_date
+		                        , suber_no)
+		VALUES(#{formId}
+		       ,#{formType}
+		       ,#{content}
+		       ,1
+		       ,'1'
+		       ,sysdate
+		       ,1)
+	</insert>
 </mapper>
