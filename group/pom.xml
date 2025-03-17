@@ -90,20 +90,7 @@
 		<dependency>    
 		    <groupId>nz.net.ultraq.thymeleaf</groupId>    
 		    <artifactId>thymeleaf-layout-dialect</artifactId>  
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/kr.dogfoot/hwplib -->
-		<dependency>
-    		<groupId>kr.dogfoot</groupId>
-    		<artifactId>hwplib</artifactId>
-    		<version>1.0.1</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox -->
-		<dependency>
-    		<groupId>org.apache.pdfbox</groupId>
-    		<artifactId>pdfbox</artifactId>
-    		<version>3.0.4</version>
-		</dependency>
-		
+		</dependency>	
 		<dependency>
 		    <groupId>com.github.iamport</groupId>
 		    <artifactId>iamport-rest-client-java</artifactId>

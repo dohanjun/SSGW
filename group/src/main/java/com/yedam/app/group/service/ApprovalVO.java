@@ -33,4 +33,5 @@ public class ApprovalVO {
 	private int suberNo;          // 회사번호
 	
 	private String employeeName;
+	
 }

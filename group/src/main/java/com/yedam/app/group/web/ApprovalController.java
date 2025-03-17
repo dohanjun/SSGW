@@ -76,26 +76,17 @@ public class ApprovalController {
 	    
 	    ApprovalVO findVO = approvalService.findAprvInfo(aprvVO);
 	    
-	    if (findVO == null) {
-	        return "error/404"; // 문서가 없을 경우 404 페이지로 이동
-	    }
-	    
 	    model.addAttribute("aprv", findVO);
 
-	    // 수정: 결재자의 도장 이미지 가져오기
-	    String stampImage = approvalService.getStampImage(findVO.getEmployeeNo());
-	    model.addAttribute("stampImage", stampImage); // 도장 이미지 추가
-
-	    return "group/approval/approval"; // 올바른 HTML 파일로 이동
+	    return "group/approval/approval"; // 
 	}
 
 	
 	// 도장등록
 	@PostMapping("aprv/upload")
-	public ResponseEntity<Map<String, Object>> uploadStamp(@RequestParam("file") MultipartFile file, 
-                                                           @RequestParam("employeeNo") int employeeNo) {
+	public ResponseEntity<Map<String, Object>> uploadStamp(@RequestParam("file") MultipartFile file) {
 	    Map<String, Object> response = new HashMap<>();
-	    
+
 	    if (file.isEmpty()) {
 	        response.put("success", false);
 	        response.put("message", "파일이 없습니다.");
@@ -104,65 +95,52 @@ public class ApprovalController {
 
 	    try {
 	        // 파일 저장 경로 설정
-	        String uploadDir = "D:/uploads/";  // 업로드할 경로 (변경 가능)
+	        String uploadDir = "D:/uploads/";  
 	        String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-	        // 객체 생성
 	        Path filePath = Paths.get(uploadDir + fileName);
 
 	        // 파일 저장
 	        Files.createDirectories(filePath.getParent());
 	        Files.write(filePath, file.getBytes());
-	        
-	        // 수정: DB에 도장 이미지 저장
-	        approvalService.saveStampImage(employeeNo, "/uploads/" + fileName);
 
-	        response.put("success", true);
-	        response.put("imageUrl", "/uploads/" + fileName); // 클라이언트에서 사용 가능하도록 URL 반환
+	        // DB에 저장할 경로 설정
+	        String fileDbPath = "/uploads/" + fileName;  
+
+	        // ApprovalVO 객체 생성 후 데이터 저장
+	        ApprovalVO aprvVO = new ApprovalVO();
+	        aprvVO.setStampImgPath(fileDbPath);
+
+	        // DB에 저장
+	        int result = approvalService.createStamp(aprvVO);
+
+	        if (result > 0) {
+	            response.put("success", true);
+	            response.put("imageUrl", fileDbPath);
+	        } else {
+	            response.put("success", false);
+	            response.put("message", "DB 저장 실패");
+	        }
 	        return ResponseEntity.ok(response);
+
 	    } catch (IOException e) {
 	        response.put("success", false);
-	        response.put("message", "파일 저장 중 오류 발생: " + e.getMessage());
+	        response.put("message", "파일 저장 중 오류 발생");
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 	    }
 	}
-
 	
-	// 수정: 도장 이미지 조회 API 추가
-	@GetMapping("/aprv/getStamp")
-	@ResponseBody
-	public Map<String, Object> getStamp(@RequestParam("employeeNo") Integer employeeNo) {
-	    Map<String, Object> response = new HashMap<>();
-	    
-	    String stampImage = approvalService.getStampImage(employeeNo);
-	    response.put("stampImage", (stampImage != null) ? stampImage : null);
-	    
-	    return response;
+	
+	@GetMapping("/aprv/uploadForm")
+	public String uploadTemplateForm() {
+	    return "group/approval/approval_template_upload"; // Thymeleaf 템플릿 파일 경로
 	}
 	
-	// 작성페이지 불러오기
-	@GetMapping("aprvWriting")
-	public String basicsForm(ApprovalVO aprvVO, Model model) {
-		ApprovalVO findVO = approvalService.findBaicsForm(aprvVO);
-		
-		model.addAttribute("basics", findVO);
-		
-		return "group/approval/approval_writing";
+	@GetMapping("write")
+	public String write() {
+		return "group/approval/write";
 	}
-	
-	
-	@GetMapping("aprvWriting/content")
-    @ResponseBody
-    public String getFormContent(@RequestParam String formType, Model model) {
-        ApprovalVO aprvVO = new ApprovalVO();
-        aprvVO.setFormType(formType);  // formType을 VO에 설정
 
-        // 양식 데이터 가져오기
-        ApprovalVO findVO = approvalService.findBaicsForm(aprvVO);
-
-        return findVO.getContent();  // 양식의 내용을 반환
-    }
-	
-	
+		
 	@GetMapping("schedule")
 	public String scheduleList() {
 		return "group/schedule/schedule";

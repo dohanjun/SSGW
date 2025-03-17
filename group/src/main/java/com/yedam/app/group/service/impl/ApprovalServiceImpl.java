@@ -21,17 +21,13 @@ public class ApprovalServiceImpl implements ApprovalService {
 	
 	@Override
 	public int createStamp(ApprovalVO aprvVO) {
+		
 	    if (aprvVO.getStampImgPath() == null || aprvVO.getStampImgPath().isEmpty()) {
+	    	
 	        throw new IllegalArgumentException("파일 경로가 필요합니다.");
 	    }
 	    return approvalMapper.insertStamp(aprvVO);
 	}
-
-	@Override
-	public ApprovalVO findBaicsForm(ApprovalVO aprvVO) {
-		return approvalMapper.selectBasicsForm(aprvVO);
-	}
-	
 	
 	// 전체조회
 	@Override
@@ -51,20 +47,11 @@ public class ApprovalServiceImpl implements ApprovalService {
 		return approvalMapper.selectAprvInfo(aprvVO);
 	}
 
-	// 수정: 도장 이미지 저장
+	// 도장 이미지 저장
 	@Override
-	public void saveStampImage(int employeeNo, String stampImgPath) {
-	    String active = "1"; // 기본값 설정
-	    int stampOrder = 1; // 기본값 설정 (필요하면 동적으로 변경 가능)
-	    approvalMapper.updateStampImage(employeeNo, stampImgPath, active, stampOrder);
+	public void saveStampImage(ApprovalVO aprvVO) {
+	    approvalMapper.updateStampImage(aprvVO);
 	}
-
-
-
-
-	// 수정: 도장 이미지 조회
-	@Override
-	public String getStampImage(int employeeNo) {
-	    return approvalMapper.selectStampImage(employeeNo);
-	}
+	
+	
 }
