@@ -30,4 +30,14 @@ public class fileController {
         return "group/file/repositoryInsert";
     }
 	
+	@GetMapping("/basket")
+    public String basket() {
+        return "group/file/basket";
+    }
+	
+	@GetMapping("/detailBasket")
+    public String detailBasket() {
+        return "group/file/detailBasket";
+    }
+	
 }
