@@ -100,10 +100,10 @@
 		    <artifactId>iamport-rest-client-java</artifactId>
 		    <version>0.2.21</version>
 		</dependency>
-		<dependency>
+		<!--<dependency>
 		  <groupId>org.springframework.boot</groupId>
 		  <artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
+		</dependency>-->
 	</dependencies>
 
 	<build>
