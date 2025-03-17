@@ -5,7 +5,7 @@
       <!-- 사원 등록 -->
       <insert id="insertEmpInfo"
               parameterType="EmpVO">
-              <selectKey keyProperty="employeeno"
+              <selectKey keyProperty="employeeNo"
                          resultType="Integer"
                          order="BEFORE">
             	SELECT NVL(MAX(EMPLOYEE_NO), 100) + 1
@@ -23,7 +23,9 @@
 							,PROFILE_IMAGE
 							,SUBER_NO
 							,RANK_ID
-							,RIGHTS_ID                        
+							,RIGHTS_ID
+							,DEPARTMENT_NO
+							,PROFILE_IMAGE_BLOB                        
                          )
                          VALUES
                          (
@@ -38,7 +40,9 @@
                            ,#{suberNo}
                            ,#{rankId}
                            ,#{rightsId}
-                         )
+                           ,#{departmentNo}
+                           ,#{profileImageBLOB,jdbcType=BLOB}
+                         ) <!-- MyBatis가 데이터 타입을 정확히 인식하도록 jdbcType=BLOB을 추가해야 함 -->
       </insert>
 
       
@@ -47,23 +51,72 @@
               resultType="EmpVO">
               
               SELECT EMPLOYEE_NO
-					 , EMPLOYEE_NAME
-					 , EMPLOYEE_ID
-					 , EMPLOYEE_PW
-					 , RESIGNATION_STATUS
-					 , TEMP_IP
-					 , PASSWORD_CHANGED
-					 , HIRE_DATE
-					 , EXIT_DATE
-					 , PHONE_NUMBER
-					 , ADDRESS
-					 , PROFILE_IMAGE
-					 , SUBER_NO
-					 , RANK_ID
-					 , RIGHTS_ID
-					 , MANAGER
-			  FROM employees
-			  ORDER BY employee_no             
+					 , e.EMPLOYEE_NAME
+					 , e.EMPLOYEE_ID
+					 , e.EMPLOYEE_PW
+					 , e.RESIGNATION_STATUS
+					 , e.TEMP_IP
+					 , e.PASSWORD_CHANGED
+					 , e.HIRE_DATE
+					 , e.EXIT_DATE
+					 , e.PHONE_NUMBER
+					 , e.ADDRESS
+					 , e.PROFILE_IMAGE
+					 , e.SUBER_NO
+					 , e.RANK_ID
+					 , e.RIGHTS_ID
+					 , e.MANAGER
+					 , e.DEPARTMENT_NO
+					 , e.PROFILE_IMAGE_BLOB
+					 , d.DEPARTMENT_NAME
+                     , r.JOB_TITLE_NAME
+                     , rt.RIGHTS_NAME
+   			 FROM EMPLOYEES e
+   			 LEFT JOIN DEPARTMENT d ON e.DEPARTMENT_NO = d.DEPARTMENT_NO
+    		 LEFT JOIN RANK r ON e.RANK_ID = r.RANK_ID
+    		 LEFT JOIN RIGHTS rt ON e.RIGHTS_ID = rt.RIGHTS_ID
+    		 ORDER BY e.EMPLOYEE_NO             
+      </select>
+      
+      <!-- 사원번호 자동조회 -->
+      <select id="getNextEmployeeNo" 
+               resultType="int">
+       SELECT NVL(MAX(EMPLOYEE_NO), 100) + 1 FROM EMPLOYEES
+      </select>
+      
+      <!-- 사원정보 상세 조회 -->
+      <select id="selectEmpInfo"
+              parameterType="EmpVO"
+              resultType="EmpVO">
+              
+              SELECT EMPLOYEE_NO
+					 , e.EMPLOYEE_NAME
+					 , e.EMPLOYEE_ID
+					 , e.EMPLOYEE_PW
+					 , e.RESIGNATION_STATUS
+					 , e.TEMP_IP
+					 , e.PASSWORD_CHANGED
+					 , e.HIRE_DATE
+					 , e.EXIT_DATE
+					 , e.PHONE_NUMBER
+					 , e.ADDRESS
+					 , e.PROFILE_IMAGE
+					 , e.SUBER_NO
+					 , e.RANK_ID
+					 , e.RIGHTS_ID
+					 , e.MANAGER
+					 , e.DEPARTMENT_NO
+					 , e.PROFILE_IMAGE_BLOB
+					 , d.DEPARTMENT_NAME
+                     , r.JOB_TITLE_NAME
+                     , rt.RIGHTS_NAME
+   			 FROM EMPLOYEES e
+   			 LEFT JOIN DEPARTMENT d ON e.DEPARTMENT_NO = d.DEPARTMENT_NO
+    		 LEFT JOIN RANK r ON e.RANK_ID = r.RANK_ID
+    		 LEFT JOIN RIGHTS rt ON e.RIGHTS_ID = rt.RIGHTS_ID
+    		 ORDER BY e.EMPLOYEE_NO   
+      
+      
       </select>
 
 

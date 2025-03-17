@@ -22,25 +22,15 @@
                 </tr>
             </thead>
             <tbody>                                   
-                <tr><!-- 샘플 -->
-                   <td>01</td>
-                   <td>경영기획부</td>
-                   <td>이사</td>
-                   <td>홍길동</td>
-                   <td>2025-03-01</td>
-                   <td>010-1111-1111</td>
-                </tr>
-
-              <th:block th:each=" post : ${boards} ">
-                   <!--/* post(BoardVO) => <tr/> 로 바꿔야함 */-->
-                   <!--/* boardInfo?bno=1 여기로 온클릭 /*-->
-                <tr th:id="${post.bno}"
-                    th:onclick="|='@{/(=${})}'|">       <!--/* text는 [[]] 이중괄호에 ${}변수 가져올거 */-->
-                   <!--<td>[[${}]]</td>                   
-                   <td>[[${}]]</td>
-                   <td>[[${}]]</td>
-                   <td>[[${}]]</td>
-                   <td>[[${}]]</td>-->
+              <th:block th:each="info, sts : ${emps}">
+                <tr th:id="${info.employeeNo}"
+                    th:onclick="|location.href='@{/empInfo(employeeNo=${info.employeeNo})}'|">
+                   <td>[[${info.employeeNo}]]</td>                   
+                   <td>[[${info.departmentName}]]</td>
+                   <td>[[${info.jobTitleName}]]</td>
+                   <td>[[${info.employeeName}]]</td>
+                   <td>[[${#dates.format(info.hireDate, "yyyy년MM월dd일")}]]</td>
+                   <td>[[${info.phoneNumber}]]</td>
                 </tr>    
               </th:block>
             </tbody>

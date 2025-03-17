@@ -19,5 +19,8 @@ public interface EmpService {
 	public Map<String, Object>
 	             modifyEmpInfo(EmpVO empVO);	
 	
+	// 사원번호 자동 증가 조회
+    public int getNextEmployeeNo();
+	
 
 }
