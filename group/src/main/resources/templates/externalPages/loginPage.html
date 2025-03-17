@@ -1,9 +1,71 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="~{common/layouts/main_layout}"
-	layout:fragment="content">
-<header>
-	<h1>로그인</h1>
-</header>
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/layouts/main_layout}"
+      layout:fragment="content">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <style>
+    .card {
+      background-color: #fff;
+      padding: 40px 80px;
+      margin: 100px auto;
+      border: 1px solid #dadada;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      width: 800px;
+    }
+    .login-label {
+      font-size: 48px;
+      font-weight: bold;
+      margin-bottom: 40px;
+      text-align: center;
+    }
+    .login-form {
+      display: flex;
+      flex-direction: column;
+    }
+    .login-form input {
+      width: 100%;
+      height: 88px;
+      margin-bottom: 20px;
+      border-radius: 50px;
+      border: 1px solid rgba(44, 62, 80, 1);
+      padding: 0 20px;
+      font-size: 28px;
+    }
+    .login-form input:focus {
+      outline: none;
+      border-color: #3498db;
+    }
+    .login-btn {
+      width: 100%;
+      height: 88px;
+      margin-top: 20px;
+      background-color: rgba(44, 62, 80, 1);
+      border-radius: 50px;
+      color: white;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .login-btn:hover {
+      background-color: transparent;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="login-label">LOGIN</div>
+      <!-- 로그인 폼 -->
+      <form class="login-form" action="#" method="POST">
+        <input type="text" name="username" placeholder="아이디" required>
+        <input type="password" name="password" placeholder="비밀번호" required>
+        <button class="login-btn" type="submit">로그인</button>
+      </form>
+    </div>
+  </div>
+</body>
 </html>

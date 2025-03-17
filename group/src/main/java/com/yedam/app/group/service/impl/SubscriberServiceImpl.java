@@ -15,8 +15,9 @@ public class SubscriberServiceImpl implements SubscriberService {
     private final SubscriberMapper subscriberMapper;
 
     @Override
-    public void saveSubscriber(SubscriberVO subscriber) {
+    public int saveSubscriber(SubscriberVO subscriber) {
         subscriberMapper.insertSubscriber(subscriber);
+        return subscriber.getSuberNo();
     }
 
 }

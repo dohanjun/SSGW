@@ -1,10 +1,10 @@
 let formattedTPrice = 0;
-let dataList = []; 
+let dataList = [];
 $(document).ready(updatePrice);
 function updatePrice() {
 	let totalModulePrice = 0;
-	dataList.forEach(e=>{
-		 totalModulePrice += Number(e.modulePrice);
+	dataList.forEach(e => {
+		totalModulePrice += Number(e.modulePrice);
 	})
 	let countValue = $('.countInput')[0].value;
 	let uploadValue = $('.uploadInput')[0].value;
@@ -12,14 +12,14 @@ function updatePrice() {
 	let periodValue = $('.periodInput')[0].value;
 
 	let mPrice = totalModulePrice.toLocaleString('ko-KR');
-	
+
 	let pPrice = (countValue / 10 * 100000).toLocaleString('ko-KR');
 	let fuPrice = (uploadValue / 5 * 10000).toLocaleString('ko-KR');
 	let fRPrice = (storageValue * 100000).toLocaleString('ko-KR');
-	let tPrice = (countValue / 10 * 100000) + (uploadValue / 5 * 10000) + (storageValue * 100000)  + totalModulePrice;
-	
+	let tPrice = (countValue / 10 * 100000) + (uploadValue / 5 * 10000) + (storageValue * 100000) + totalModulePrice;
+
 	formattedTPrice = tPrice.toLocaleString('ko-KR');
-	
+
 	$('#moculePrice')[0].innerHTML = mPrice;
 	$('#peoplePrice')[0].innerHTML = pPrice;
 	$('#fileUploadPrice')[0].innerHTML = fuPrice;
@@ -39,30 +39,30 @@ function updatePrice() {
 
 document.querySelectorAll('.selectModule .selectItem *').forEach(e => {
 
-    e.addEventListener('click', f => {
+	e.addEventListener('click', f => {
 
-        f.currentTarget.classList.toggle('check');
+		f.currentTarget.classList.toggle('check');
 
-        let attrValue = f.target.getAttribute('for');
-        if (attrValue) {
-            let data = {};
-			let cleanedAttrValue = attrValue.replace(/^[^\(]*\(|\)$/g, ''); 
+		let attrValue = f.target.getAttribute('for');
+		if (attrValue) {
+			let data = {};
+			let cleanedAttrValue = attrValue.replace(/^[^\(]*\(|\)$/g, '');
 
 			cleanedAttrValue.split(', ').forEach(pair => {
-			    let [key, value] = pair.split('=');
-			    if (value) {
-			        data[key] = value;
-			    }
+				let [key, value] = pair.split('=');
+				if (value) {
+					data[key] = value;
+				}
 			});
 
-            if (f.target.classList.contains('check')) {
-                dataList.push(data);
-            } else {
+			if (f.target.classList.contains('check')) {
+				dataList.push(data);
+			} else {
 				dataList = dataList.filter(item => item.moduleNo !== data.moduleNo);
-            }
-            updatePrice();
-        }
-    });
+			}
+			updatePrice();
+		}
+	});
 });
 
 
@@ -72,8 +72,8 @@ document.querySelector('.plusButton').addEventListener('click', event => {
 	let count = Number(countInput.value);
 
 	if (count < 100) {
-		count += 10; 
-		countInput.value = count; 
+		count += 10;
+		countInput.value = count;
 		updatePrice();
 	}
 });
@@ -92,27 +92,27 @@ document.querySelector('.minusButton').addEventListener('click', event => {
 
 
 function setupDropdown(inputClass, dropdownClass, optionClass) {
-    let input = document.querySelector(inputClass);
-    let dropdown = document.querySelector(dropdownClass);
+	let input = document.querySelector(inputClass);
+	let dropdown = document.querySelector(dropdownClass);
 
-    input.addEventListener('click', function(event) {
-        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
-        event.stopPropagation();
-    });
+	input.addEventListener('click', function(event) {
+		dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+		event.stopPropagation();
+	});
 
-    document.querySelectorAll(optionClass).forEach(option => {
-        option.addEventListener('click', function(event) {
-            input.value = this.dataset.value;
-            dropdown.style.display = 'none';
-            updatePrice();
-            event.stopPropagation();
-        });
-    });
+	document.querySelectorAll(optionClass).forEach(option => {
+		option.addEventListener('click', function(event) {
+			input.value = this.dataset.value;
+			dropdown.style.display = 'none';
+			updatePrice();
+			event.stopPropagation();
+		});
+	});
 }
 
 document.addEventListener('click', function(event) {
-    document.querySelectorAll('.uploadDropdown, .storageDropdown, .periodDropdown, .paymentDropdown')
-        .forEach(dropdown => dropdown.style.display = 'none');
+	document.querySelectorAll('.uploadDropdown, .storageDropdown, .periodDropdown, .paymentDropdown')
+		.forEach(dropdown => dropdown.style.display = 'none');
 });
 document.addEventListener("DOMContentLoaded", function() {
 	let form = document.querySelector("form");
@@ -130,7 +130,8 @@ document.addEventListener("DOMContentLoaded", function() {
 				return;
 			}
 		}
-		$('#modalPrice')[0].innerHTML = formattedTPrice
+		console.log(dataList)
+		$('#modalPrice')[0].innerHTML = $('#endPrice')[0].innerHTML
 		paymentModal.style.display = "flex";
 	});
 
@@ -158,8 +159,7 @@ function payment(type) {
 	var username = $("#subName").val();
 	var userEmail = $("#subEmail").val();
 	var userPhone = $("#phoneNo").val();
-	let num = Number(formattedTPrice.replace(/,/g, ''));
-	console.log(num)
+	let num = Number($('#endPrice')[0].innerHTML.replace(/,/g, ''));
 	IMP.init('imp07168373');
 
 	IMP.request_pay(
@@ -177,43 +177,77 @@ function payment(type) {
 		},
 		function(rsp) {
 			if (rsp.success) {
-					
+
 				$.ajax({
-				    type: "POST",
-				    url: "/save",
+					type: "POST",
+					url: "/saveSuber",
 					data: JSON.stringify({
-					        subscriber: {
-								domain : "@"+$("#subId").val(),
-								firstIp:first_ip,
-					            subName: $("#subName").val(),
-					            subId: $("#subId").val(),
-								subUid:"UID" + Date.now().toString() + Math.floor(Math.random() * 1000).toString().padStart(3, "0"),
-					            subPw: $("#subPw").val(),
-					            companyName: $("#companyName").val(),
-					            subEmail: $("#subEmail").val(),
-					            subBnisNo: $("#subBnisNo").val(),
-					            maxCount: $(".countInput").val(),
-					            maxSize: $(".storageInput").val(), 
-					            maxUpSize: $(".uploadInput").val()
-					        },
-					       /* payment: {
-					            amount: $("#amount").val(),
-					            method: $("#paymentMethod").val()
-					        },
-					        modules: [
-					            { moduleId: 1, moduleName: "인사관리" },
-					            { moduleId: 2, moduleName: "근태관리" }
-					        ]*/
-					    }),
-				    contentType: "application/json",
-				    success: function(response) {
-				        alert("결제 정보가 정상적으로 저장되었습니다.");
-				        console.log(response);
-				    },
-				    error: function(xhr, status, error) {
-				        alert("결제 정보 저장 중 오류가 발생했습니다.");
-				        console.error(xhr.responseText);
-				    }
+						domain: "@" + $("#subId").val() + ".com",
+						firstIp: first_ip,
+						subName: $("#subName").val(),
+						subId: $("#subId").val(),
+						subUid: "UID" + Date.now().toString() + Math.floor(Math.random() * 1000).toString().padStart(3, "0"),
+						subPw: $("#subPw").val(),
+						companyName: $("#companyName").val(),
+						subEmail: $("#subEmail").val(),
+						subBnisNo: $("#subBnisNo").val(),
+						maxCount: $(".countInput").val(),
+						maxSize: $(".storageInput").val(),
+						maxUpSize: $(".uploadInput").val()
+					}),
+					contentType: "application/json",
+					success: function(response) {
+						var suberNo = response;
+						$.ajax({
+							type: "POST",
+							url: "/saveSubDetail",
+							data: JSON.stringify(
+								dataList.map(module => ({
+									suberNo: suberNo,
+									moduleNo: module.moduleNo,
+									subPeriod: $('.periodInput')[0].value,
+									discount: parseInt($('.periodInput')[0].value) === 12 ? 'Y' : 'N',
+									discountRate: parseInt($('.periodInput')[0].value) === 12 ? 0.200 : 0.000,
+									discountPrice: parseInt($('.periodInput')[0].value) === 12 ? Number(module.modulePrice) * 0.8 : Number(module.modulePrice)
+								}))
+							),
+							contentType: "application/json",
+							success: function(response) {
+								$.ajax({
+									type: "POST",
+									url: "/savePayment",
+									data: JSON.stringify(
+										{
+										    paymentType: type,
+										    paymentPrice: num,
+										    suberNo: suberNo,
+										    subPeriod: $('.periodInput')[0].value,
+											paymentStatus:"완료",
+											claim: "Y",
+											claimState:"완료",
+										}
+									),
+									contentType: "application/json",
+									success: function(response) {
+										alert("결제 완료.");
+										location.href = "login";
+									},
+									error: function(xhr, status, error) {
+										alert("결제 정보 저장 중 오류가 발생했습니다.");
+										console.error(xhr.responseText);
+									}
+								});
+							},
+							error: function(xhr, status, error) {
+								alert("결제 정보 저장 중 오류가 발생했습니다.");
+								console.error(xhr.responseText);
+							}
+						});
+					},
+					error: function(xhr, status, error) {
+						alert("결제 정보 저장 중 오류가 발생했습니다.");
+						console.error(xhr.responseText);
+					}
 				});
 			}
 			else {

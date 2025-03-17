@@ -29,11 +29,12 @@
 }
 
 .basicModule {
-	justify-content: center;
-	margin: 10% 0;
-	display: flex;
-	gap: 200px;
 	color: black;
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	justify-content: center;
+	gap: 100px;
+	margin: 5%;
 }
 
 .selectModule .check {
@@ -240,3 +241,17 @@
         font-size: 35px;
         cursor: pointer;
     }
+
+.form-floating label {
+  font-size: 1.1rem;
+  color: #6c757d;
+  font-weight: bold;
+  
+}
+
+.container {
+	width: 80%
+}
+#mainNav{
+	margin-bottom: 5%;
+}

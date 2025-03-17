@@ -10,46 +10,55 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yedam.app.group.service.ModuleDetailService;
 import com.yedam.app.group.service.ModuleService;
 import com.yedam.app.group.service.ModuleVO;
+import com.yedam.app.group.service.PaymentService;
+import com.yedam.app.group.service.PaymentVO;
 import com.yedam.app.group.service.SubscriberService;
 import com.yedam.app.group.service.SubscriberVO;
+import com.yedam.app.group.service.SubscriptionDetailVO;
 
 import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequiredArgsConstructor
 public class ModuleController {
-	
+
 	private final ModuleService moduleService;
 	private final SubscriberService subscriberService;
+	private final ModuleDetailService moduleDetailService;
+	private final PaymentService paymentService;
+
+	@GetMapping("/subscribe")
+	public String subscribePage(Model model) {
+		List<ModuleVO> modules = moduleService.getAllModules();
+		model.addAttribute("modules", modules);
+		return "externalPages/subscribePage";
+	}
+
+	@PostMapping("/saveSuber")
+	public ResponseEntity<Integer> saveSuber(@RequestBody SubscriberVO subscriber) {
+		int suberNo = subscriberService.saveSubscriber(subscriber);
+		return ResponseEntity.ok(suberNo);
+	}
+
+	@PostMapping("/saveSubDetail")
+	public ResponseEntity<String> saveSubDetail(@RequestBody List<SubscriptionDetailVO> request) {
+		List<SubscriptionDetailVO> modules = request;
+		moduleDetailService.saveModuleDetail(modules);
+		return ResponseEntity.ok("모듈 저장 성공");
+	}
+
+	@PostMapping("/savePayment")
+	public ResponseEntity<String> savePayment(@RequestBody PaymentVO payment) {
+		System.out.println("결제내역"+payment);
+		paymentService.savePayment(payment);
+		return ResponseEntity.ok("내역 저장 성공");
+	}
 	
-	 @GetMapping("/subscribe")
-	    public String subscribePage(Model model) {
-	        List<ModuleVO> modules = moduleService.getAllModules();
-	        model.addAttribute("modules", modules);
-	        return "externalPages/subscribePage";
-	    }
-	 
-
-	 @PostMapping("/save")
-	 public ResponseEntity<String> savePayment(@RequestBody Map<String, Object> requestData) {
-	     ObjectMapper objectMapper = new ObjectMapper();
-
-	     SubscriberVO subscriber = objectMapper.convertValue(requestData.get("subscriber"), SubscriberVO.class);
-	     //PaymentVO payment = objectMapper.convertValue(requestData.get("payment"), PaymentVO.class);
-	     //List<ModuleVO> modules = objectMapper.convertValue(requestData.get("modules"), new TypeReference<List<ModuleVO>>() {});
-
-	     System.out.println("구독자 정보: " + subscriber);
-	     //System.out.println("결제 정보: " + payment);
-	     //System.out.println("선택한 모듈: " + modules);
-
-	     subscriberService.saveSubscriber(subscriber);
-	     //paymentService.processPayment(payment);
-	     //moduleService.saveModules(modules);
-
-	     return ResponseEntity.ok("구독자, 결제, 모듈 정보 저장 완료");
-	 }
-
+	@PostMapping("/login")
+	public String login() {
+		return "externalPages/loginPage";
+	}
 }
