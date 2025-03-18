@@ -23,6 +23,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.yedam.app.group.service.ApprovalFormVO;
 import com.yedam.app.group.service.ApprovalService;
 import com.yedam.app.group.service.ApprovalVO;
+import com.yedam.app.group.service.EmpService;
+import com.yedam.app.group.service.EmpVO;
 
 import lombok.Data;
 
@@ -31,19 +33,31 @@ import lombok.Data;
 public class ApprovalController {
 	
 	private final ApprovalService approvalService;
+	private final EmpService empService;
 	
 //	public ApprovalController(ApprovalService approvalService) {
 //		this.approvalService = approvalService;
 //	}
 	
+	
 	// 결재대기함
 	@GetMapping("aprv")
 	public String aprvList(Model model) {
-		List<ApprovalVO> list = approvalService.findAllList();
-		
-		model.addAttribute("aprvs", list);
-		
-		return "group/approval/pending_document";
+	    // 로그인한 사용자의 정보 가져오기
+	    EmpVO loggedInUser = empService.getLoggedInUserInfo();
+
+	    if (loggedInUser != null) {
+	        Integer employeeNo = loggedInUser.getEmployeeNo();
+	        System.out.println("현재 로그인한 사용자의 사원번호: " + employeeNo);
+
+	        // employeeNo를 넘겨주기
+	        List<ApprovalVO> list = approvalService.findAllList(employeeNo);
+	        model.addAttribute("aprvs", list);
+	    } else {
+	        System.out.println("로그인한 사용자 정보를 가져올 수 없습니다.");
+	    }
+
+	    return "group/approval/pending_document";
 	}
 	
 	// 결재대기함(검색)
@@ -70,6 +84,105 @@ public class ApprovalController {
 	    return "group/approval/pending_document";
 	}
 	
+	// 도장등록
+		@PostMapping("aprv/upload")
+		public ResponseEntity<Map<String, Object>> uploadStamp(@RequestParam("file") MultipartFile file) {
+		    Map<String, Object> response = new HashMap<>();
+		    EmpVO loggedInUser = empService.getLoggedInUserInfo();
+			Integer employeeNo = loggedInUser.getEmployeeNo();
+
+		    if (file.isEmpty()) {
+		        response.put("success", false);
+		        response.put("message", "파일이 없습니다.");
+		        return ResponseEntity.badRequest().body(response);
+		    }
+		    
+		    try {
+		    	
+		        // 파일 저장 경로 설정
+		        String uploadDir = "D:/uploads/";  
+		        String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+		        Path filePath = Paths.get(uploadDir + fileName);
+
+		        // 파일 저장
+		        Files.createDirectories(filePath.getParent());
+		        Files.write(filePath, file.getBytes());
+
+		        // DB에 저장할 경로 설정
+		        String fileDbPath = "/uploads/" + fileName;  
+
+		        // ApprovalVO 객체 생성 후 데이터 저장
+		        ApprovalVO aprvVO = new ApprovalVO();
+		        aprvVO.setStampImgPath(fileDbPath);
+
+		        // DB에 저장
+		        int result = approvalService.createStamp(aprvVO);
+
+		        if (result > 0) {
+		            response.put("success", true);
+		            response.put("imageUrl", fileDbPath);
+		        } else {
+		            response.put("success", false);
+		            response.put("message", "DB 저장 실패");
+		        }
+		        return ResponseEntity.ok(response);
+
+		    } catch (IOException e) {
+		        response.put("success", false);
+		        response.put("message", "파일 저장 중 오류 발생");
+		        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		    }
+		}
+		
+		// 도장 수정
+		@PostMapping("aprv/modify")
+		public ResponseEntity<Map<String, Object>> modifyStamp(@RequestParam("file") MultipartFile file) {
+		    Map<String, Object> response = new HashMap<>();
+
+		    if (file.isEmpty()) {
+		        response.put("success", false);
+		        response.put("message", "파일이 없습니다.");
+		        return ResponseEntity.badRequest().body(response);
+		    }
+
+		    try {
+		        
+		        // 파일 저장 경로 설정
+		        String uploadDir = "D:/uploads/";
+		        String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+		        Path filePath = Paths.get(uploadDir + fileName);
+
+		        // 파일 저장
+		        Files.createDirectories(filePath.getParent());
+		        Files.write(filePath, file.getBytes());
+
+		        // DB에 저장할 경로 설정
+		        String fileDbPath = "/uploads/" + fileName;
+
+		        // ApprovalVO 객체 생성 후 데이터 설정
+		        ApprovalVO aprvVO = new ApprovalVO();
+		        aprvVO.setStampImgPath(fileDbPath);
+
+		        // 도장 수정 서비스 호출
+		        Map<String, Object> result = approvalService.modifyStramp(aprvVO);
+
+		        if ((boolean) result.get("success")) {
+		            response.put("success", true);
+		            response.put("imageUrl", fileDbPath);
+		        } else {
+		            response.put("success", false);
+		            response.put("message", "도장 수정 실패");
+		        }
+
+		        return ResponseEntity.ok(response);
+
+		    } catch (IOException e) {
+		        response.put("success", false);
+		        response.put("message", "파일 저장 중 오류 발생");
+		        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		    }
+		}
+	
 	
 	// 결재페이지로 이동
 	@GetMapping("aprv/info")
@@ -85,59 +198,8 @@ public class ApprovalController {
 	}
 
 	
-	// 도장등록
-	@PostMapping("aprv/upload")
-	public ResponseEntity<Map<String, Object>> uploadStamp(@RequestParam("file") MultipartFile file) {
-	    Map<String, Object> response = new HashMap<>();
-
-	    if (file.isEmpty()) {
-	        response.put("success", false);
-	        response.put("message", "파일이 없습니다.");
-	        return ResponseEntity.badRequest().body(response);
-	    }
-
-	    try {
-	        // 파일 저장 경로 설정
-	        String uploadDir = "D:/uploads/";  
-	        String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-	        Path filePath = Paths.get(uploadDir + fileName);
-
-	        // 파일 저장
-	        Files.createDirectories(filePath.getParent());
-	        Files.write(filePath, file.getBytes());
-
-	        // DB에 저장할 경로 설정
-	        String fileDbPath = "/uploads/" + fileName;  
-
-	        // ApprovalVO 객체 생성 후 데이터 저장
-	        ApprovalVO aprvVO = new ApprovalVO();
-	        aprvVO.setStampImgPath(fileDbPath);
-
-	        // DB에 저장
-	        int result = approvalService.createStamp(aprvVO);
-
-	        if (result > 0) {
-	            response.put("success", true);
-	            response.put("imageUrl", fileDbPath);
-	        } else {
-	            response.put("success", false);
-	            response.put("message", "DB 저장 실패");
-	        }
-	        return ResponseEntity.ok(response);
-
-	    } catch (IOException e) {
-	        response.put("success", false);
-	        response.put("message", "파일 저장 중 오류 발생");
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-	    }
-	}
 	
-	@PostMapping("aprv/modify")
-	public ResponseEntity<Map<String, Object>> modifyStamp(@RequestParam("file") MultipartFile file){
-		Map<String, Object> response = new HashMap<>();
-		
-		return null;
-	}
+
 	
 	
 	
@@ -161,11 +223,6 @@ public class ApprovalController {
 	    return url;
 	}
 	
-	
-	
-	
-	
-		
 	@GetMapping("schedule")
 	public String scheduleList() {
 		return "group/schedule/schedule";

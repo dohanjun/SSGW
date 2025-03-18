@@ -118,5 +118,11 @@
       
       
       </select>
-
+      <!-- 로그인한 사람 아이디 -->
+	  <select id="findByEmployeeId" parameterType="String" resultType="EmpVO">
+	  		 SELECT * 
+	  		 FROM employees 
+	  		 WHERE employee_id = #{employeeId}
+	  </select>
+	
 </mapper>

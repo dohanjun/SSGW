@@ -27,7 +27,8 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(auth -> auth
                 // 공개 URL: 로그인 페이지, 정적 자원 등
-                .requestMatchers("/", "/login", "/subscribe", "/manual", "/css/**", "/js/**", "/images/**").permitAll()
+                .requestMatchers("/", "/login", "/subscribe", "/manual", "/css/**", "/js/**", "/img/**").permitAll()
+                .requestMatchers("/aprv/modify", "/aprv/upload").permitAll()
                 // 그 외의 요청은 인증 필요
                 .anyRequest().authenticated()
             )
@@ -43,7 +44,7 @@ public class SecurityConfig {
                 .invalidateHttpSession(true)   
                 .permitAll()
             )
-            .csrf(csrf -> csrf.ignoringRequestMatchers("/logout"));
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/logout", "/aprv/modify", "/aprv/upload"));
         return http.build();
     }
 
