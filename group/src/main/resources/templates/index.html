@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	layout:decorate="~{common/layouts/main_layout}"
 	layout:fragment="content">
@@ -91,21 +92,6 @@
 	</main>
 </header>
 <script> 
-        // 현재 사용자가 누구냐에 따라 보여질 화면 일딴 매니져로 해놈
-        const currentUser = {
-            username: "mana" // 현재 로그인한 사용자 이름
-        };
-
-        // 헤더 수정됨
-        const menu = document.getElementById('menu');
-
-        if (currentUser.username === "manager") {
-            menu.innerHTML = `
-                <a href="/module-management">모듈관리</a>
-                <a href="/subscription-status">구독현황</a>
-                <a href="/qna">Q&A</a>
-            `;
-        }
         
         // 슬라이더
 		const imageList = [
