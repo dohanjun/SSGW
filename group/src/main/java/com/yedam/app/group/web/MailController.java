@@ -148,4 +148,7 @@ public class MailController {
 	      mailService.removeDelInfo(mailId);
 	      return "redirect:mailList";
 	    }
+	 
+	 
+
 }

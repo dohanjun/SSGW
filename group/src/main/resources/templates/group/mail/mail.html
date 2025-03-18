@@ -10,22 +10,12 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
 </head>
 <style>
-	.container{
-	margin-left: 10px;
-	margin-right: 10px;
-	margin: 0 auto;
-	}
+
 	#flo{
 	float: left;
 	display: flex;
 	justify-content: center;
 	padding-left: 30px;
-	}
-
-	#cle{
-	content: "";
-	display: block;
-	clear: none;
 	}
 
 	.left{
@@ -59,7 +49,7 @@
     #se{
  	margin-right: 10px;
     }
-	.bar{
+	#bar{
 		position: static;
 		text-align: center;
 		padding: 20px;
@@ -136,7 +126,7 @@
 	<table border="1" class="table">
 	<thead>
 		<tr class="text-center">
-			<td>체크</td>
+			<td><input id="allCheck" type="checkbox" name="allCheck"/></td>
 			<td scope="col">이미지</td>
 			<td scope="col">작성자</td>
 			<td scope="col">제목</td>
@@ -147,7 +137,7 @@
 	<th:block th:each="info : ${mails}">
 		<tr 
 		th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">
-		    <td><input type="checkbox"></td>
+		    <td><input type="checkbox" name="RowCheck" th:value="${info.mailId}"/></td>
 			<td>[[ ${info.mailId} ]]</td>
 			<td>[[ ${info.getUser} ]]</td>
 			<td>[[ ${info.title} ]]</td>
@@ -163,18 +153,28 @@
 <!-- 메일목록 창 마침 -->
 
 <!-- 바기능 -->
-<div class="bar">
-	<nav>
+<div id="bar" class="page-num" th:if="${!mail.isEmpty()}">
+	<nav th:with="pageSize = ${mail.pageable.pageSize},
+			     start=${(mail.number/pageSize)*pageSize + 1},
+			     end=(${(mail.totalPages == 0) ? 1 : (start + (pageSize - 1) : mails.totalPages)})">
 	  <ul class="pagination">
-	    <li class="page-item"><a class="page-link" href="#"> << </a></li>
-	    <li><a class="page-link"> < </a></li>
-	    <li><a class="page-link" href="#">1</a></li>
-	    <li><a class="page-link" href="#">2</a></li>
-	    <li><a class="page-link" href="#">3</a></li>
-	    <li><a class="page-link" href="#">4</a></li>
-	    <li><a class="page-link" href="#">5</a></li>
-	    <li><a class="page-link" href="#"> > </a></li>
-	    <li class="page-item"><a class="page-link" href="#"> >> </a></li>
+	    <li th:if="${start > 1}">
+	    <a class="page-link" th:href="@{/admin/mail?(page=0,category=${selectedCategory},searchingWord=${searchingWord})}" th:text="'<<'"></a>
+	    </li>
+	    <li th:if="${start > 1}">
+	    <a class="page-link" th:href="@{/admin/mail?(page=${start - 2},category=${selectedCategory},searchingWord=${searchingWord})}" th:text="'<'"></a>
+	    </li>
+	    
+	    <li th:each="page: ${#numbers.sequence(start, end)}">
+	    <a class="page-link" th:href="@{/admin/mail?(page=${page - 1},category=${selectedCategory},searchingWord=${searchingWord})}" th:text="${page}"></a>
+	    </li>
+	    
+	    <li th:if="${end < mail.totalPages}">
+	    <a class="page-link" th:href="@{/admin/mail?(page=${start + pageSize - 1},category=${selectedCategory},searchingWord=${searchingWord})}" th:text="'>'"></a>
+	    </li>
+	    <li th:if="${end < mail.totalPages">
+	    <a class="page-link" th:href="@{/admin/mail?(page=${mails.totalPages - 1},category=${selectedCategory},searchingWord=${searchingWord})}" th:text="'>>'"></a>
+	    </li>
 	  </ul>
 	</nav>
 </div>
@@ -204,10 +204,6 @@ document.getElementById("mailSidebar").addEventListener("click", function(){
 		let eid = selectedTr.children[1].textContent;
 		let url = context + '/mailInfo?mailId=' + mid;
 	}
-
-//바 기능
-
-
 
 </script>
 
