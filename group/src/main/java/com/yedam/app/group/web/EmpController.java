@@ -14,15 +14,18 @@ import org.springframework.web.multipart.MultipartFile;
 import com.yedam.app.group.service.EmpService;
 import com.yedam.app.group.service.EmpVO;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor // 리콰이어알규먼트 쓰고 밑에 final
 @Controller
 public class EmpController {
 	
-	private EmpService empService;
+	private final EmpService empService;
 	
-	@Autowired
-	public EmpController(EmpService empService) {
-		this.empService = empService;
-	}
+//	@Autowired @Resource @Qualify 등등 더있음
+//	public EmpController(EmpService empService) {
+//		this.empService = empService;
+//	}
 	
 	// 등록 페이지
 	@GetMapping("empinsert")

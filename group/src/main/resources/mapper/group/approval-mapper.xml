@@ -85,6 +85,15 @@
 						,'1')
 	</insert>
 	
+	<!-- 도장수정 -->
+	<update id="updateStamp" parameterType="ApprovalVO">
+		UPDATE stamp
+		SET active = '0'
+		WHERE active = '1'
+		AND   employee_no = 1
+	</update>
+	
+	
 	<!-- 회사 전자결재 양식 등록 -->
 	<insert id="insertForm" parameterType="ApprovalFormVO">
 		<selectKey keyProperty="formId"
