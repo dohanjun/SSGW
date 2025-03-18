@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title></title>
 
-    <!-- ✅ CKEditor 4.22 (무료 버전) 사용 -->
     <script src="ckeditor/ckeditor.js"></script>
 
     <style>
@@ -23,7 +22,7 @@
         <label>양식유형:</label>
         <input type="text" name="formType" required>
 
-        <!-- CKEditor의 내용을 저장할 숨겨진 필드 -->
+        
         <input type="hidden" name="content" id="hiddenContent">
 
         <div id="editor-container">
@@ -34,7 +33,7 @@
     </form>
 
     <script>
-        // ✅ CKEditor 설정
+        // CK에디터
         CKEDITOR.replace('editor', {
             extraPlugins: 'table,tableresize',
             removePlugins: 'exportpdf',
@@ -48,7 +47,6 @@
             fontSize_sizes: "10/10px;12/12px;14/14px;16/16px;18/18px;20/20px;24/24px;28/28px;32/32px;36/36px"
         });
 
-        // ✅ 저장 버튼 클릭 시 CKEditor 내용을 hidden input에 저장
         function saveContent() {
             document.getElementById("hiddenContent").value = CKEDITOR.instances.editor.getData();
         }

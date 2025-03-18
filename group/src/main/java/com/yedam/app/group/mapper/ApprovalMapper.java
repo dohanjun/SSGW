@@ -22,8 +22,12 @@ public interface ApprovalMapper {
 	// 도장 등록
 	public int insertStamp(ApprovalVO aprvVO);
 	
+	// 도장 수정(기존 도장 active = 0, 새로운 도장 등록)
+	public int updateStamp(ApprovalVO aprvVO); 
+	
 	// 회사 전자결재양식 등록
 	public int insertForm(ApprovalFormVO aprvformVO);
+	
 	
 
 	
