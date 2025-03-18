@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/layouts/main_layout}"
+      layout:fragment="content">
+<head>
+    <style>
+        .table-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 40px;
+        }
+
+        table {
+            width: 70%;
+            border-collapse: collapse;
+            background-color: #ffffff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        button {
+            padding: 5px 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+        }
+
+        .edit-btn,.insertedit-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .delete-btn {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .add-btn {
+            margin: 20px 0;
+            padding: 10px 20px;
+            background-color: #008CBA;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .modal-content input,
+        .modal-content textarea {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .modal-buttons button {
+            padding: 6px 12px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>서비스명</th>
+                <th>금액</th>
+                <th>수정</th>
+                <th>삭제</th>
+            </tr>
+        </thead>
+        <tbody>
+        <tr th:each="module : ${modules}">
+            <td th:text="${module.moduleNo}" style="display:none"></td>
+            <td th:text="${module.moduleName}">서비스명</td>
+            <td th:text="${module.modulePrice}">금액</td>
+            <td><button class="edit-btn">수정</button></td>
+            <td><button class="delete-btn">삭제</button></td>
+        </tr>
+        </tbody>
+    </table>
+    <button class="add-btn">추가</button>
+</div>
+
+<!-- Modal -->
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <h3>모듈 추가/수정</h3>
+        <input type="text" id="moduleTitle" placeholder="제목">
+        <input type="number" id="modulePrice" placeholder="가격">
+        <textarea id="moduleDescription" placeholder="내용"></textarea>
+        <div class="modal-buttons">
+            <button class="insertedit-btn">저장/수정</button>
+            <button class="delete-btn" onclick="closeModal()">취소</button>
+        </div>
+    </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+<script th:inline="javascript">
+var modules = [[${modules}]];
+
+function closeModal(){
+    document.getElementById('moduleTitle').value ='';
+    document.getElementById('modulePrice').value = '';
+    document.getElementById('moduleDescription').value ='';  
+    document.getElementById('modal').style.display = 'none';
+}
+
+window.onclick = function(event) {
+    const modal = document.getElementById('modal');
+    if (event.target == modal) {
+        modal.style.display = 'none';
+    }
+}
+
+document.querySelectorAll('.edit-btn').forEach(e => {
+    e.addEventListener('click', event => {
+        const row = event.target.closest('tr');
+        const cells = row.querySelectorAll('td');
+        const moduleNo = cells[0].textContent;
+        modules.forEach(module => {
+            if(module.moduleNo == moduleNo){
+                document.getElementById('moduleTitle').value = module.moduleName;
+                document.getElementById('modulePrice').value = module.modulePrice;
+                document.getElementById('moduleDescription').value = module.explanation;  
+                document.getElementById('modal').style.display = 'flex';
+            }
+        });
+    });
+});
+
+document.querySelector('.add-btn').addEventListener('click', event => {
+    document.getElementById('moduleTitle').value ='';
+    document.getElementById('modulePrice').value = '';
+    document.getElementById('moduleDescription').value ='';  
+    document.getElementById('modal').style.display = 'flex';
+})
+
+document.querySelectorAll(".insertedit-btn").forEach(e => {
+    e.addEventListener('click', event => {
+		$.ajax({
+			type: "POST",
+			url: "/insertModule",
+			data: JSON.stringify(
+				{
+				    moduleName: document.getElementById('moduleTitle').value,
+					modulePrice: Number(document.getElementById('modulePrice').value),
+					explanation: document.getElementById('moduleDescription').value,
+				}
+			),
+			contentType: "application/json",
+			success: function(response) {
+				alert("등록 완료.");
+		        addModuleToTable(data); 
+		        closeModal();
+
+			},
+			error: function(xhr, status, error) {
+				alert("등록 싫패");
+				console.error(xhr.responseText);
+			}
+		});
+    });
+});
+
+function addModuleToTable(module) {
+    let tbody = document.getElementById('moduleTableBody');
+    let newRow = document.createElement('tr');
+
+    newRow.innerHTML = `
+        <td style="display:none">${module.moduleNo}</td>
+        <td>${module.moduleName}</td>
+        <td>${module.modulePrice}</td>
+        <td><button class="edit-btn">수정</button></td>
+        <td><button class="delete-btn">삭제</button></td>
+    `;
+    tbody.appendChild(newRow);
+}
+
+</script>
+
+</body>
+</html>

@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
@@ -26,8 +25,10 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
+
                 // 공개 URL: 로그인 페이지, 정적 자원 등
                 .requestMatchers("/", "/login", "/subscribe", "/manual", "/css/**", "/js/**", "/img/**").permitAll()
+                .requestMatchers("/module","/insertModule").hasAuthority("ROLE_MANAGER")
                 .requestMatchers("/aprv/modify", "/aprv/upload").permitAll()
                 // 그 외의 요청은 인증 필요
                 .anyRequest().authenticated()
@@ -44,7 +45,7 @@ public class SecurityConfig {
                 .invalidateHttpSession(true)   
                 .permitAll()
             )
-            .csrf(csrf -> csrf.ignoringRequestMatchers("/logout", "/aprv/modify", "/aprv/upload"));
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/logout", "/aprv/modify", "/aprv/upload","/insertModule"));
         return http.build();
     }
 

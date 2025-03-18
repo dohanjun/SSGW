@@ -12,4 +12,28 @@
 	        EXPLANATION
 	    FROM MODULE
     </select>
+    
+    <insert id="insertModule" parameterType="com.yedam.app.group.service.ModuleVO">
+        <selectKey keyProperty="moduleNo" resultType="int" order="BEFORE">
+	        SELECT nvl(MAX(MODULE_NO), 0) + 1 FROM MODULE
+	    </selectKey>
+	    INSERT INTO MODULE (
+	        MODULE_NO,
+	        MODULE_NAME,
+	        MODULE_PRICE,
+	        VERSION,
+	        BASIC_MODULE,
+	        ACTIVATE,
+	        EXPLANATION
+	    ) VALUES (
+	        #{moduleNo},
+	        #{moduleName},
+	        #{modulePrice},
+	        1.0,
+	        'N',
+	        'Y',
+	        #{explanation}
+	    )
+	</insert>
+    
 </mapper>

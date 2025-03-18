@@ -20,4 +20,9 @@ public class ModuleServiceImpl implements ModuleService{
         return moduleMapper.getAllModules();
     }
 
+	@Override
+	public void addModule(ModuleVO module) {
+		moduleMapper.insertModule();
+	}
+
 }
