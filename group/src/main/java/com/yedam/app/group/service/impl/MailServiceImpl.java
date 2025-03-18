@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.yedam.app.group.mapper.MailMapper;
 import com.yedam.app.group.service.MailService;
 import com.yedam.app.group.service.MailVO;
+import com.yedam.app.group.service.PageListVO;
 
 @Service
 public class MailServiceImpl implements MailService {
@@ -21,10 +22,16 @@ public class MailServiceImpl implements MailService {
 		this.mailMapper = mailMapper;
 	}
 	
+	//메일검색기능
+	@Override
+	public MailVO mailCondition(MailVO mailVO) {
+		return mailMapper.mailCondition(mailVO);
+	}
+	
 	//메일전체조회
 	@Override
-	public List<MailVO> findAll() {
-		return mailMapper.selectAllList();
+	public List<MailVO> findAll(PageListVO vo) {
+		return mailMapper.selectAllList(vo);
 	}
 	
 	//메일상세조회
@@ -115,5 +122,12 @@ public class MailServiceImpl implements MailService {
 		
 		return map;
 	}
+
+	//메일페이지네이션
+	@Override
+	public int pageGetCount(PageListVO pagelistVO) {
+		return mailMapper.getCount(pagelistVO);
+	}
+
 
 }

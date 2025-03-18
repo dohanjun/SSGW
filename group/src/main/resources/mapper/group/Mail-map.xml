@@ -2,8 +2,29 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yedam.app.group.mapper.MailMapper">
 
+<!-- 단건조회 -->
+	<select id="getMail" parameterType="PageListVO" resultType="PageListVO">
+		SELECT  *
+		FROM Mail
+		WHERE MAIL_ID = #{mailId}
+	</select>
+	
+
+<sql id="mailCondition">
+		  <where>
+		  	<if test="title != null and title != ''">
+		  		AND TITLE = #{title}
+		  	</if>
+		  	<if test="getUser != null and getUser != ''">
+		  		AND GET_USER = #{getUser}
+		  	</if>
+		  </where>
+</sql>
+
+ 
 	<!-- 메일전체조회 -->
 	<select id="selectAllList" resultType="MailVO">
+	SELECT B.* FROM ( SELECT A.*, ROWNUM RN FROM(
 	SELECT   mail_id
 	        ,title
 	        ,content
@@ -16,7 +37,11 @@
 	        ,recode
 	        ,mail_type
 	FROM Mail
+	<include refid="mailCondition"></include>
 	ORDER BY mail_id
+	
+	) A ) B WHERE RN BETWEEN #{start} AND #{end}
+	
 	</select>
 
 	<!-- 메일단건조회 -->
@@ -146,5 +171,12 @@
 	DELETE FROM Mail
 	WHERE mail_id = #{mailId}
 	</delete>
+	
+	<!-- 전체건수반환 -->
+	<select id="getCount" resultType="int">
+	SELECT COUNT(*)
+	FROM Mail
+	<include refid="mailCondition"></include>
+	</select>
 	
 </mapper>
