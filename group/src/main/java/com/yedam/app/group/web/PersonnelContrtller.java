@@ -18,10 +18,7 @@ public class PersonnelContrtller {
 
 	
 	// 사원 정보 수정
-	@GetMapping("empUpdate")
-    public String empUpdate() {
-        return "group/personnel/empUpdate";
-    }
+	
 	
 	// 휴가조회
 	@GetMapping("vacaList")

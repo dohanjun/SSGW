@@ -23,9 +23,9 @@ public class EmpVO {
 	private String address;			  // 주소
 	private String profileImage;	  // 프로필 이미지 // BLOB 방식 밑에 추가해서 이거안씀
 	private int suberNo;			  // 회사번호
-	private int rankId;			      // 직급Id
-	private int rightsId;			  // 권한Id 
-	private int manager;			  // 매니저Id
+	private Integer rankId;			      // 직급Id
+	private Integer rightsId;			  // 권한Id 
+	private Integer manager;			  // 매니저Id
 	private int departmentNo;		  // 부서번호
 	
     private byte[] profileImageBLOB; //  이미지 (숫자로 변환되어 저장됨)
