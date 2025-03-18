@@ -3,25 +3,26 @@
 <mapper namespace="com.yedam.app.group.mapper.ApprovalMapper">
 
 	<!-- 결재대기함 -->
-	<select id="selectAprvList" resultType="ApprovalVO">
+	<select id="selectAprvList" parameterType="Integer" resultType="ApprovalVO">
 		SELECT d.DRAFT_NO
-		       , d.TITLE
-		       , d.CONTENT
-		       , d.APRV_STATUS
-		       , d.REJECT_REASON 
-		       , d.DRAFT_DATE
-		       , e.EMPLOYEE_NAME
-		       , d.APRV_DATE
-		       , d.FORM_ID
-		       , d.BASICS_FORM_ID
-		       , d.SUBER_NO
-               , r.employee_no
+       		   ,d.TITLE
+    		   ,d.CONTENT
+    		   ,d.APRV_STATUS
+    		   ,d.REJECT_REASON
+    		   ,d.DRAFT_DATE
+    		   ,e.EMPLOYEE_NAME
+    		   ,d.APRV_DATE
+    		   ,d.FORM_ID
+    		   ,d.BASICS_FORM_ID
+    		   ,d.SUBER_NO
+    		   ,r.EMPLOYEE_NO
 		FROM aprv_documents d
 		JOIN employees e 
-			ON d.EMPLOYEE_NO = e.EMPLOYEE_NO
-        JOIN aprv_routes r
-            ON r.employee_no = e.employee_no
-        WHERE d.APRV_STATUS = '대기'
+    		ON d.EMPLOYEE_NO = e.EMPLOYEE_NO 
+		JOIN aprv_routes r
+    		ON r.DRAFT_NO = d.DRAFT_NO
+		WHERE d.APRV_STATUS = '대기'
+		AND r.EMPLOYEE_NO = #{employeeNo}
 	</select>
 
 	<!-- 결재대기함(검색) -->
@@ -68,7 +69,7 @@
 	</select>
 
 	<!-- 도장 등록 -->
-	<insert id="insertStamp" parameterType="ApprovalVO">
+	<insert id="insertStamp" parameterType="Integer">
 	 <selectKey keyProperty="stampId"
 				   resultType="Integer"
 				   order="BEFORE">
@@ -80,19 +81,26 @@
 						  ,STAMP_ID
 						  ,ACTIVE)
 		VALUES			(#{stampImgPath}
-						, 1
+						, #{employeeNo}
 						, #{stampId}
 						,'1')
 	</insert>
 	
 	<!-- 도장수정 -->
-	<update id="updateStamp" parameterType="ApprovalVO">
+	<update id="updateStamp" parameterType="Integer">
 		UPDATE stamp
 		SET active = '0'
 		WHERE active = '1'
-		AND   employee_no = 1
+		AND   employee_no = #{employeeNo}
 	</update>
 	
+	<!-- 활성화된 도장 조회 -->
+	<select id="countActiveStamps" parameterType="ApprovalVO" resultType="Integer">
+		SELECT COUNT(*) 
+		FROM stamp 
+		WHERE employee_no = #{employeeNo} 
+		AND active = '1'
+	</select>
 	
 	<!-- 회사 전자결재 양식 등록 -->
 	<insert id="insertForm" parameterType="ApprovalFormVO">

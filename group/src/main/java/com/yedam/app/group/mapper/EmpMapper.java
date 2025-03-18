@@ -20,5 +20,8 @@ public interface EmpMapper {
 	
 	// 사원번호 증가값 조회
 	public int getNextEmployeeNo();
-
+	
+	// 로그인한 정보 가져오기
+	public EmpVO findByEmployeeId(String employeeId);
+	
 }

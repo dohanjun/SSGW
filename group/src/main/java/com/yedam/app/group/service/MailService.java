@@ -5,8 +5,11 @@ import java.util.Map;
 
 public interface MailService {
 	
+	//메일검색기능
+	public MailVO mailCondition(MailVO mailVO);
+	
 	//메일전체조회
-	public List<MailVO> findAll();
+	public List<MailVO> findAll(PageListVO vo);
 	
 	//메일단건조회
 	public MailVO findMailId(MailVO mailVO);
@@ -31,5 +34,8 @@ public interface MailService {
 	
 	//메일삭제
 	public Map<String, Object> removeDelInfo(int mailId);
+
+	//메일 페이지네이션
+	public int pageGetCount(PageListVO pagelistVO);
 	
 }

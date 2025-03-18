@@ -3,11 +3,15 @@ package com.yedam.app.group.mapper;
 import java.util.List;
 
 import com.yedam.app.group.service.MailVO;
+import com.yedam.app.group.service.PageListVO;
 
 public interface MailMapper {
 
+	//메일검색기능
+	public MailVO mailCondition(MailVO mailVO);
+	
 	//메일전체조회
-	public List<MailVO> selectAllList();
+	public List<MailVO> selectAllList(PageListVO vo);
 	
 	//메일단건조회
 	public MailVO selectMailId(int mailId);
@@ -32,4 +36,8 @@ public interface MailMapper {
 	
 	//메일삭제
 	public int DeleteMail(int mailId);
+	
+	//메일페이지네이션
+	public int getCount(PageListVO pagelistVO);
+
 }

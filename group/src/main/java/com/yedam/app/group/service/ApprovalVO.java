@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 public class ApprovalVO {
 	private Integer stampId;
-	private int employeeNo;
+	private Integer employeeNo;
 	private String stampImgPath;
 	private String active;
 	private int stampOrder;

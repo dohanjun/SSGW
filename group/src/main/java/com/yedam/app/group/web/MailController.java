@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.yedam.app.group.service.MailService;
 import com.yedam.app.group.service.MailVO;
+import com.yedam.app.group.service.PageListVO;
+import com.yedam.app.group.service.Paging;
 
 @Controller
 public class MailController {
@@ -28,8 +30,15 @@ public class MailController {
 	
 	 //메일목록
 	 @GetMapping("mail")
-	    public String mail(Model model) {
-		 List<MailVO> list = mailService.findAll();
+	    public String mail(Model model, PageListVO vo, Paging paging) {
+		 
+		 //페이징처리
+		 vo.setStart(paging.getFirst());
+		 vo.setEnd(paging.getLast());
+		 paging.setTotalRecord(mailService.pageGetCount(vo));
+		 model.addAttribute("paging", paging);
+		 
+		 List<MailVO> list = mailService.findAll(vo);
 		 model.addAttribute("mails", list);
 	     return "group/mail/mail";  // mainPage.html을 반환
 	    }	
@@ -49,7 +58,7 @@ public class MailController {
 	    public String myMailSelect(MailVO mailVO, Model model) {
 	     MailVO findVO = mailService.findMailId(mailVO);
 	     model.addAttribute("mail", findVO);
-		 return "group/mail/mailSelect";  // mainPage.html을 반환
+		 return "group/mail/myMailSelect";  // mainPage.html을 반환
 	    }	
 	 
 	 

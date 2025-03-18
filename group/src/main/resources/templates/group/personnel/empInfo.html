@@ -35,12 +35,22 @@
         }
 
         .profile-img {
-            width: 100px;
-            height: 100px;
-            background: #ddd;
-            display: block;
-            margin: 0 auto 10px;
-        }
+		    width: 100px;
+		    height: 100px;
+		    object-fit: cover; /* 원본 비율을 유지하면서 박스 크기에 맞춤 */
+		    border: 1px solid #ddd; /* 테두리 추가 */
+		    display: block;
+		    margin: 0 auto;
+       }
+       .profile-img img {
+		    width: 100px;
+		    height: 100px;
+		    object-fit: cover; /* 비율을 유지하면서 크기에 맞게 자름 */
+
+		    display: block;
+		    margin: 0 auto;
+	  }
+        
 
         .form-group {
             margin-bottom: 10px;
@@ -93,7 +103,11 @@
     <div class="content-wrapper">
         <div class="employee-container">
             <h2 class="emph2">사원 상세정보</h2>
-            <div class="profile-img"></div>
+            <div class="profile-img">
+                       <img th:if="${profileImageBase64}" 
+				         th:src="'data:image/png;base64,' + ${profileImageBase64}" 
+				         alt="프로필 이미지">  	
+            </div>
             
             <div class="form-group">
                 <label for="empid">사원번호</label>
@@ -136,7 +150,8 @@
             </div>
 
             <div class="btn-group">
-                <button type="submit" class="btn btn-primary">수정</button>
+                <button type="button" class="btn btn-primary" 
+                th:onclick="|location.href = '@{ /empUpdate(employeeNo=${emp.employeeNo}) }'|">수정</button>
                 <button type="button" class="btn btn-danger">취소</button>
             </div>
         </div>

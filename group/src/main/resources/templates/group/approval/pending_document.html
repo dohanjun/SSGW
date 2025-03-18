@@ -10,20 +10,26 @@
 </head>
 <body>
 	<div class="container-fluid">
-	  <div class="h555">
-		<h1 class="h3 mb-2 text-gray-800">결재대기함</h1>
-		<button id="stampInsertButton">도장등록</button>
-	  </div>
+		<div class="h555">
+			<h1 class="h3 mb-2 text-gray-800">결재대기함</h1>
+			<button id="stampInsertButton">도장등록</button>
+		</div>
 		<div class="card shadow mb-4">
 			<div class="card-header py-3">
-			<!-- 검색부분 -->
-				<form th:action="@{/aprv/search}" method="GET"> 
-					<p>기안자<input type="text" name="employeeName">문서제목<input type="text" name="title">상신일<input type="date" name="draftDate"><button type="submit" class="float-right">검색</button></p>
+				<!-- 검색부분 -->
+				<form th:action="@{/aprv/search}" method="GET">
+					<p>
+						기안자<input type="text" name="employeeName">문서제목<input
+							type="text" name="title">상신일<input type="date"
+							name="draftDate">
+						<button type="submit" class="float-right">검색</button>
+					</p>
 				</form>
 			</div>
 			<div class="card-body">
 				<div class="table-responsive">
-					<table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+					<table class="table table-bordered" id="dataTable" width="100%"
+						cellspacing="0">
 						<thead>
 							<tr>
 								<th>문서번호</th>
@@ -34,49 +40,86 @@
 							</tr>
 						</thead>
 						<tbody>
-								<tr th:each="aprv : ${aprvs}" th:onclick="|location.href='@{/aprv/info(draftNo=${aprv.draftNo})}'|">
-									<td>[[${aprv.draftNo}]]</td>
-									<td>[[${aprv.aprvStatus}]]</td>
-									<td>[[${aprv.employeeName}]]</td>
-									<td>[[${aprv.title}]]</td>
-									<td>[[${#dates.format(aprv.draftDate, "yyyy년 MM월 dd일")}]]</td>
-								</tr>
+							<tr th:each="aprv : ${aprvs}"
+								th:onclick="|location.href='@{/aprv/info(draftNo=${aprv.draftNo})}'|">
+								<td>[[${aprv.draftNo}]]</td>
+								<td>[[${aprv.aprvStatus}]]</td>
+								<td>[[${aprv.employeeName}]]</td>
+								<td>[[${aprv.title}]]</td>
+								<td>[[${#dates.format(aprv.draftDate, "yyyy년 MM월 dd일")}]]</td>
+							</tr>
 						</tbody>
 					</table>
 				</div>
 			</div>
 		</div>
 	</div>
-	<div class="modal fade" id="stampModal" tabindex="-1" role="dialog" aria-labelledby="stampModalLabel" aria-hidden="true">
-    	<div class="modal-dialog" role="document">
-        	<div class="approval-modal-content">
-            		<div class="modal-header">
-                		<h5 class="modal-title" id="stampModalLabel">도장 등록</h5>
-                		<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    	<span aria-hidden="true">&times;</span>
-                		</button>
-            		</div>
-            		<div class="approval-modal-body">
-            			<form>
-            				<div style="width:200px; height:200px; margin:3px auto; border:1px solid black">
-                			</div>
-                			<div class="filebox">
-    							<label for="file">파일찾기</label> 
-    							<input type="file" id="file" accept="image/*">
-							                          
-            				<div class="modal-footer modalbtns">
-                				<button type="button" class="btn btn-secondary" onclick="insertStamp()">등록</button>
-                				<button type="button" class="btn btn-secondary" onclick="updateStamp()">수정</button>
-                				<button type="button" class="btn btn-secondary" onclick="deleteStamp()">삭제</button>
-            				</div>
-            				</div>
-            			</form> 
-        			</div>
-    			</div>
+	<div class="modal fade" id="stampModal" tabindex="-1" role="dialog"
+		aria-labelledby="stampModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="approval-modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="stampModalLabel">도장 등록</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="approval-modal-body">
+					<form>
+						<div id="imagePreviewContainer" style="width: 200px; height: 200px; margin: 3px auto; border: 10px solid black; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+							<img id="imagePreview" src="" alt="도장 미리보기" style="max-width: 100%; max-height: 100%; display: none;">
+						</div>
+						<div class="filebox">
+							<label for="file">파일찾기</label> <input type="file" id="file"
+								accept="image/*">
+
+							<div class="modal-footer modalbtns">
+								<button type="button" class="btn btn-secondary"
+									onclick="insertStamp()">등록</button>
+								<button type="button" class="btn btn-secondary"
+									onclick="updateStamp()">수정</button>
+								<button type="button" class="btn btn-secondary"
+									onclick="deleteStamp()">삭제</button>
+							</div>
+						</div>
+					</form>
+				</div>
 			</div>
+		</div>
 	</div>
 
 <script>
+document.querySelector("#stampInsertButton").addEventListener("click", function() {
+    let existingStampUrl = "[[${stampImgPath}]]"; // Thymeleaf에서 기존 도장 이미지 경로 가져오기
+    let imagePreview = document.getElementById("imagePreview");
+
+    if (existingStampUrl) {
+        imagePreview.src = existingStampUrl;
+        imagePreview.style.display = "block";
+    } else {
+        imagePreview.style.display = "none";
+    }
+
+    $('#stampModal').modal('show');
+});
+
+document.getElementById("file").addEventListener("change", function(event) {
+    let file = event.target.files[0]; // 선택한 파일
+    let imagePreview = document.getElementById("imagePreview");
+    
+    if (file) {
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            imagePreview.src = e.target.result;
+            imagePreview.style.display = "block"; // 이미지 표시
+        };
+        reader.readAsDataURL(file);
+    } else {
+        imagePreview.style.display = "none"; // 파일 선택 취소 시 이미지 숨김
+    }
+});
+
 
 
  function updateStamp(){
@@ -95,7 +138,7 @@
     	method: 'POST',
         body: formData
     })
-    .then(res => response.json())
+    .then(res => res.json())
     .then(result => {
         if (result.success) {
             alert("도장 수정 성공!");

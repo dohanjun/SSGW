@@ -25,8 +25,12 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/login", "/subscribe", "/manual", "/css/**", "/js/**", "/images/**").permitAll()
+
+                // 공개 URL: 로그인 페이지, 정적 자원 등
+                .requestMatchers("/", "/login", "/subscribe", "/manual", "/css/**", "/js/**", "/img/**").permitAll()
                 .requestMatchers("/module","/insertModule").hasAuthority("ROLE_MANAGER")
+                .requestMatchers("/aprv/modify", "/aprv/upload").permitAll()
+                // 그 외의 요청은 인증 필요
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
@@ -41,8 +45,7 @@ public class SecurityConfig {
                 .invalidateHttpSession(true)   
                 .permitAll()
             )
-            .csrf(csrf -> csrf.ignoringRequestMatchers("/logout","/insertModule"));
-
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/logout", "/aprv/modify", "/aprv/upload","/insertModule"));
         return http.build();
     }
 
