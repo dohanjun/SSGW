@@ -10,11 +10,9 @@ import com.yedam.app.group.service.ApprovalVO;
 @Mapper
 public interface ApprovalMapper {
 
-	// 전체조회(결재대기함)
-	public List<ApprovalVO> selectAprvList(Integer employeeNo);
-
-	// 결재대기함(검색)
-	public List<ApprovalVO> searchAprvList(ApprovalVO aprvVO);
+	
+	// 결재문서함
+	public List<ApprovalVO> selectAprvListByStatus(ApprovalVO aprvVO);
 
 	// 결재상세조회(승인창)
 	public ApprovalVO selectAprvInfo(ApprovalVO aprvVO);
@@ -28,9 +26,11 @@ public interface ApprovalMapper {
 	// 활성화된 도장 조회
 	public Integer countActiveStamps(ApprovalVO aprvVO);  
 	
+	// 도장이미지불러오기
+	public ApprovalVO selectActiveStamp(ApprovalVO aprvVO);
+	
 	// 회사 전자결재양식 등록
 	public int insertForm(ApprovalFormVO aprvformVO);
-	
 	
 
 	
