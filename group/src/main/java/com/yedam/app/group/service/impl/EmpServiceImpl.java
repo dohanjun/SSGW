@@ -16,7 +16,7 @@ public class EmpServiceImpl implements EmpService{
 	private EmpMapper empMapper;
 	
 	@Autowired
-	public EmpServiceImpl(EmpMapper empMapper){
+	public EmpServiceImpl(EmpMapper empMapper ){
 		this.empMapper = empMapper;
 	}
 	
