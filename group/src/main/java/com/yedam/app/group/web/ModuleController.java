@@ -1,7 +1,6 @@
 package com.yedam.app.group.web;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -60,5 +59,11 @@ public class ModuleController {
 	@PostMapping("/login")
 	public String login() {
 		return "externalPages/loginPage";
+	}
+	
+	@PostMapping("/insertModule")
+	public ResponseEntity<String> saveSuber(@RequestBody ModuleVO module) {
+		moduleService.addModule(module);
+		return ResponseEntity.ok("모듈 저장 성공");
 	}
 }

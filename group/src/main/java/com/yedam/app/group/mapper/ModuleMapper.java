@@ -9,4 +9,5 @@ import com.yedam.app.group.service.ModuleVO;
 @Mapper
 public interface ModuleMapper {
 	List<ModuleVO> getAllModules();
+	ModuleVO insertModule();
 }
