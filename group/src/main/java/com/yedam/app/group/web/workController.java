@@ -16,4 +16,8 @@ public class workController {
 	    public String blank() {
 	        return "group/workPage/blank";  // mainPage.html을 반환
 	    }
+	 @GetMapping("/demoblank")
+	    public String demoblank() {
+	        return "group/workPage/demoblank";  // mainPage.html을 반환
+	    }
 }
