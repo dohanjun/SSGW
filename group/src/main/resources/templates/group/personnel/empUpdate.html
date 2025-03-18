@@ -35,12 +35,21 @@
         }
 
         .profile-img {
-            width: 100px;
-            height: 100px;
-            background: #ddd;
-            display: block;
-            margin: 0 auto 10px;
-        }
+		    width: 100px;
+		    height: 100px;
+		    object-fit: cover; /* 원본 비율을 유지하면서 박스 크기에 맞춤 */
+		    border: 1px solid #ddd; /* 테두리 추가 */
+		    display: block;
+		    margin: 0 auto;
+       }
+       .profile-img img {
+		    width: 100px;
+		    height: 100px;
+		    object-fit: cover; /* 비율을 유지하면서 크기에 맞게 자름 */
+
+		    display: block;
+		    margin: 0 auto;
+	  }
 
         .form-container {
             display: flex;
@@ -98,76 +107,85 @@
     </style>
 </head>
 <body>
+<form th:action="@{/empUpdate}" th:object="${emp}" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="employeeNo" th:value="${emp.employeeNo}">
     <div class="content-wrapper">
         <div class="employee-container">
             <h2 class="emph2">사원 정보수정</h2>
-            <img id="imagePreview" class="profile-img" alt="">
-            <input type="file" id="photo" accept="image/*" onchange="empimg(event)">
+            <div class="profile-img">
+			<img th:if="${profileImageBase64 != null and profileImageBase64 != ''}" 
+			     th:src="'data:image/png;base64,' + ${profileImageBase64}" 
+			     alt="프로필 이미지">  	
+            </div>	
             
             <div class="form-container">
                 <div class="form-group">
                     <label for="empid">ID</label>
-                    <input type="text" id="empid">
+                    <input type="text" id="empid" th:field="*{employeeId}">
                 </div>
                 <div class="form-group">
                     <label for="pw">PW</label>
-                    <input type="password" id="pw">
+                    <input type="password" id="pw" th:field="*{employeePw}">
                     <button type="button" onclick="resetPassword()">초기화</button>
                 </div>
                 <div class="form-group">
                     <label for="number">사원번호</label>
-                    <input type="text" id="number" readonly>
+                    <input type="text" id="number" th:field="*{employeeNo}" readonly>
                 </div>
                 <div class="form-group">
                     <label for="name">이름</label>
-                    <input type="text" id="name" readonly>
+                    <input type="text" id="name" th:field="*{employeeName}" readonly>
                 </div>
                 <div class="form-group">
                     <label for="department">부서</label>
-                    <select id="department">
-                        <option>부서를 선택하세요</option>
-                        <option>경영기획부</option>
-                        <option>마케팅부</option>
-                        <option>인사팀</option>
-                        <option>회계팀</option>
-                        <option>개발팀</option>
-                    </select>
+                    <select id="department" name="departmentNo" th:field="*{departmentNo}">
+                        <option value="">부서를 선택하세요</option>
+					    <option value="2">경영기획부</option>
+					    <option value="3">마케팅부</option>
+					    <option value="4">인사팀</option>
+					    <option value="5">회계팀</option>
+					    <option value="6">IT팀</option>
+					    <option value="7">개발팀</option>
+				   </select>
                 </div>
                 <div class="form-group">
                     <label for="position">직급</label>
-                    <select id="position">
-                        <option>직급을 선택하세요</option>
-                        <option>사원</option>
-                        <option>대리</option>
-                        <option>과장</option>
-                        <option>부장</option>
-                    </select>
+                    <select id="position" name="rankId" th:field="*{rankId}">
+	                   <option value="">직급을 선택하세요</option>
+					   <option value="1">사원</option>
+					   <option value="2">주임</option>
+					   <option value="3">대리</option>
+					   <option value="4">과장</option>
+					   <option value="5">부장</option>
+					   <option value="6">이사</option>
+					   <option value="7">대표</option>
+					</select>
                 </div>
                 <div class="form-group">
                     <label for="role">권한</label>
-                    <select id="role">
-                        <option>권한을 선택하세요</option>
-                        <option>최고관리자</option>
-                        <option>인사관리자</option>
-                        <option>게시판관리자</option>
-                        <option>일반사용자</option>
-                    </select>
+                    <select id="role" name="rightsId" th:field="*{rightsId}">
+	                   <option value="">권한을 선택하세요</option>
+					   <option value="1">최고관리자</option>
+					   <option value="2">인사관리자</option>
+					   <option value="3">게시판관리자</option>
+					   <option value="4">일반사용자</option>
+					</select>
                 </div>
                 <div class="form-group">
                     <label for="contact">연락처</label>
-                    <input type="text" id="contact">
+                    <input type="text" id="contact" th:field="*{phoneNumber}">
                 </div>
                 <div class="form-group">
                     <label for="address">주소</label>
-                    <input type="text" id="address">
+                    <input type="text" id="address" th:field="*{address}">
                 </div>
                 <div class="form-group">
                     <label for="hire-date">입사일</label>
-                    <input type="date" id="hire-date">
+                    <input type="date" id="hire-date" th:field="*{hireDate}">
                 </div>
                 <div class="form-group">
                     <label for="leave-date">퇴사일</label>
-                    <input type="date" id="leave-date">
+                    <input type="date" id="leave-date" th:field="*{exitDate}">
                 </div>
             </div>
 
@@ -179,6 +197,7 @@
             </div>
         </div>
     </div>
+</form>
     
     <script>
         function empimg(event) {

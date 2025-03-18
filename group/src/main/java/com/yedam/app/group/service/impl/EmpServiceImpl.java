@@ -1,5 +1,6 @@
 package com.yedam.app.group.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,8 +44,20 @@ public class EmpServiceImpl implements EmpService{
 	// 사원 정보 수정
 	@Override
 	public Map<String, Object> modifyEmpInfo(EmpVO empVO) {
-		// TODO Auto-generated method stub
-		return null;
+		Map<String, Object> map = new HashMap<>();
+		boolean isSuccessed = false;
+		
+		int result = empMapper.updateEmpInfo(empVO);
+		
+		if(result == 1) {
+			isSuccessed = true;
+		}
+		
+		map.put("result", isSuccessed);
+		map.put("target", empVO);
+		// 자바 내부 기준말고 아작스 기준으로 만듬 자바스크립트한태 전달형태 지금만든 맵
+		
+		return map;
 	}
 
 	// 사원번호 자동증가 조회
