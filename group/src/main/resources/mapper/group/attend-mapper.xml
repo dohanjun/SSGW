@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yedam.app.group.mapper.AttendanceManagementMapper">
+
+
+
+
+
+
+
+<insert id="insertAttend" parameterType="AttendanceManagementVO">
+<selectKey keyProperty="workAttitudeId"
+			resultType="Integer"
+			order="BEFORE">
+SELECT NVL(MAX(work_attitude_id), 1) +1
+FROM attendance_management
+</selectKey>  
+	INSERT INTO attendance_management (work_attitude_id
+                                        , attendance_date
+                                        , clock_in_time
+                                        , work_attitude_type
+                                        , approval_datetime
+                                        , employee_no
+                                        , reason
+                                        , total_working_hours)
+                                        values(${workAttitudeId}
+                                              , ${attendanceDate}
+                                              , ${clockInTime}
+                                              , ${workAttitudeType}
+                                              , ${approvalDatetime}
+                                              , ${employeeNo}
+                                              , ${reason}
+                                              , ${totalWorkingHours})
+</insert>
+
+</mapper>

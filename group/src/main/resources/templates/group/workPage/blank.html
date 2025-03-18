@@ -25,59 +25,145 @@
 
 </head>
 <style>
-#page-top{
-background-color: dfdfdf;
-}
-start{
-box-shadow : 5px 5px 5px 5px; 
-background-color : fff;
+
+.col{
+margin: 10px;
 }
 
-h3 {
-background-color: black;
+
+.card-body{
+display: block;	
 }
-.st-table tr,td{
+
+div td{
+text-align: center;
+margin: 0px auto;	
+}
+
+.work-menu{
+background-color: balck;
+color: fff;
 border: 1px solid black;
+display: inline;
+width: 300px;
+
+margin: 40px;
+
 }
 
-.start div{
-border : 1px solid black;
-display: flex;
-width: 100px;
-text-align: center;	
-color: black;
-bord : 2px;
-}
+
+
 </style>
 <body id="page-top">
+ 				
+ 				
+ 				<div class="row">
 
-	<h3>사원 출퇴근 관리</h3>	
-	<form>
-		<table class="st-table">
-			<tr>
-				<th>전체</th>
-				<th>정상근로일</th>
-				<th>미처리</th>
-				<th>실제 출퇴근등록일</th>
-			</tr>
-		</table>
-	</form>
+                        <!-- Area Chart -->
+                 
 
-	<div class="start">
-		<p>출퇴근 관리</p>
-		<div class="start-m1">
-			<div>전체</div>
-		</div>
-		<div class="start-m1">
-			<div>전체</div>
-		</div>
-		<div class="start-m1">
-			<div>전체</div>
-		</div>
-		<div class="start-m1">
-			<div>전체</div>
-		</div>
-	</div>
+                        <!-- Pie Chart -->
+                        <div class="col">
+                            <div class="card shadow mb-4">
+                                <!-- Card Header - Dropdown -->
+                                <div
+                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h5 class="m-0 font-weight-bold text-primary">출퇴근</h5>
+                                    <div class="dropdown no-arrow">
+                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        </a>
+                                            <div class="dropdown-header"></div>
+                                           
+                                        
+                                    </div>
+                                </div>
+                                <!-- Card Body -->
+                                <div class="">
+                                    <div class="">
+                                        <canvas id="myPieChart"></canvas>
+                                    </div>
+									<div class="work-menu">
+										<a>전체</a>
+									</div>
+									<div class="work-menu">
+										<span><a>정상근로일</a></span>
+									</div>
+									<div class="work-menu">
+										<a>미처리</a>
+									</div>
+									<div class="work-menu">
+										<a>실제출퇴근등록일</a>
+									</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+                    
+                    <div class="row">
+
+                        <!-- Area Chart -->
+                 
+
+                        <!-- Pie Chart -->
+                        <div class="col">
+                            <div class="card shadow mb-4">
+                                <!-- Card Header - Dropdown -->
+                                <div
+                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h5 class="m-0 font-weight-bold text-primary">출퇴근기록</h5>
+                                    <div class="dropdown no-arrow">
+                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        </a>
+                                            <div class="dropdown-header"></div>
+                                           
+                                        
+                                    </div>
+                                </div>
+                                <!-- Card Body -->
+                                <div class="">
+                                    <div class="">
+                                        <canvas id="myPieChart"></canvas>
+                                    </div>
+									<div class="work-info">
+										<table>
+											<tr>
+												<td>사원번호</td>
+												<td>날짜</td>	
+												<td>출근시간</td>
+												<td>퇴근시간</td>
+												<td>근태유형</td>	
+												<td>연차사유</td>
+												<td>비고</td>
+												<td>총 근무시간</td>
+												<td></td>
+											</tr>
+										</table>
+										
+									</div>
+									<table>
+										<tr>
+											<td>[[${employeeNo}]]</td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+										</tr>
+									</table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
 
     <!-- Bootstrap core JavaScript-->
     <script src="vendor/jquery/jquery.min.js"></script>
