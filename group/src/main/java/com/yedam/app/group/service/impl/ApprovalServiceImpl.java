@@ -1,6 +1,7 @@
 package com.yedam.app.group.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ public class ApprovalServiceImpl implements ApprovalService {
 		this.approvalMapper = approvalMapper;
 	}
 	
+	// 도장등록
 	@Override
 	public int createStamp(ApprovalVO aprvVO) {
 		
@@ -30,6 +32,19 @@ public class ApprovalServiceImpl implements ApprovalService {
 	    return approvalMapper.insertStamp(aprvVO);
 	}
 	
+//	// 도장수정
+//	@Override
+//	public Map<String, Object> modifyStramp(ApprovalVO aprvVO) {
+//		ApprovalVO aprvVO = new ApprovalVO();
+//		
+//		int update = approvalMapper.updateStamp(aprvVO);
+//		
+//		if ("0".equals(aprvVO.getActive())) { 
+//			createStamp(aprvVO); 
+//		}
+//		return ; 
+//	}
+		
 	// 전체조회
 	@Override
 	public List<ApprovalVO> findAllList() {
@@ -55,6 +70,13 @@ public class ApprovalServiceImpl implements ApprovalService {
 		int result = approvalMapper.insertForm(aprvformVO);
 		return result == 1 ? aprvformVO.getFormId() : -1;
 	}
+
+	@Override
+	public Map<String, Object> modifyStramp(ApprovalVO aprvVO) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 
 	
 

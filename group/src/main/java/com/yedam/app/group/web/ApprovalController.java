@@ -24,14 +24,17 @@ import com.yedam.app.group.service.ApprovalFormVO;
 import com.yedam.app.group.service.ApprovalService;
 import com.yedam.app.group.service.ApprovalVO;
 
+import lombok.Data;
+
 @Controller
+@Data
 public class ApprovalController {
 	
 	private final ApprovalService approvalService;
 	
-	public ApprovalController(ApprovalService approvalService) {
-		this.approvalService = approvalService;
-	}
+//	public ApprovalController(ApprovalService approvalService) {
+//		this.approvalService = approvalService;
+//	}
 	
 	// 결재대기함
 	@GetMapping("aprv")
@@ -129,7 +132,16 @@ public class ApprovalController {
 	    }
 	}
 	
-
+	@PostMapping("aprv/modify")
+	public ResponseEntity<Map<String, Object>> modifyStamp(@RequestParam("file") MultipartFile file){
+		Map<String, Object> response = new HashMap<>();
+		
+		return null;
+	}
+	
+	
+	
+	
 	@GetMapping("write")
 	public String write() {
 		return "group/approval/write1";
@@ -148,7 +160,11 @@ public class ApprovalController {
 
 	    return url;
 	}
-
+	
+	
+	
+	
+	
 		
 	@GetMapping("schedule")
 	public String scheduleList() {
