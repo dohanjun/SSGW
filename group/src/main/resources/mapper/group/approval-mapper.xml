@@ -2,50 +2,38 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yedam.app.group.mapper.ApprovalMapper">
 
-	<!-- 결재대기함 -->
-	<select id="selectAprvList" parameterType="Integer" resultType="ApprovalVO">
-		SELECT d.DRAFT_NO
-       		   ,d.TITLE
-    		   ,d.CONTENT
-    		   ,d.APRV_STATUS
-    		   ,d.REJECT_REASON
-    		   ,d.DRAFT_DATE
-    		   ,e.EMPLOYEE_NAME
-    		   ,d.APRV_DATE
-    		   ,d.FORM_ID
-    		   ,d.BASICS_FORM_ID
-    		   ,d.SUBER_NO
-    		   ,r.EMPLOYEE_NO
-		FROM aprv_documents d
-		JOIN employees e 
-    		ON d.EMPLOYEE_NO = e.EMPLOYEE_NO 
-		JOIN aprv_routes r
-    		ON r.DRAFT_NO = d.DRAFT_NO
-		WHERE d.APRV_STATUS = '대기'
-		AND r.EMPLOYEE_NO = #{employeeNo}
-	</select>
-
-	<!-- 결재대기함(검색) -->
-	<select id="searchAprvList" resultType="ApprovalVO"
-		parameterType="ApprovalVO">
-		SELECT d.DRAFT_NO, d.TITLE, d.CONTENT, d.APRV_STATUS, d.REJECT_REASON,
+	
+	<!-- 전자결재문서함 -->
+	<select id="selectAprvListByStatus" parameterType="ApprovalVO"
+		resultType="ApprovalVO">
+		SELECT d.DRAFT_NO,
+		d.TITLE,
+		d.CONTENT,
+		d.APRV_STATUS,
+		d.REJECT_REASON,
 		d.DRAFT_DATE,
-		e.EMPLOYEE_NAME, d.APRV_DATE, d.FORM_ID,
-		d.BASICS_FORM_ID, d.SUBER_NO
-		FROM
-		aprv_documents d
-		JOIN employees e ON
-		d.EMPLOYEE_NO = e.EMPLOYEE_NO
-		WHERE 1=1
+		e.EMPLOYEE_NAME,
+		d.APRV_DATE,
+		d.FORM_ID,
+		d.BASICS_FORM_ID,
+		d.SUBER_NO,
+		r.EMPLOYEE_NO
+		FROM aprv_documents d
+		JOIN employees e
+		ON d.EMPLOYEE_NO = e.EMPLOYEE_NO
+		JOIN aprv_routes r
+		ON r.DRAFT_NO = d.DRAFT_NO
+		WHERE d.APRV_STATUS = #{aprvStatus}
+		AND r.EMPLOYEE_NO = #{employeeNo}
 		<if test="employeeName != null and employeeName != ''">
-			AND e.EMPLOYEE_NAME LIKE '%' || #{employeeName} || '%'
-		</if>
-		<if test="title != null and title != ''">
-			AND d.TITLE LIKE '%' || #{title} || '%'
-		</if>
-		<if test="draftDate != null">
-			AND d.DRAFT_DATE = #{draftDate}
-		</if>
+        	AND e.EMPLOYEE_NAME LIKE '%' || #{employeeName} || '%'
+    	</if>
+    	<if test="title != null and title != ''">
+        	AND d.TITLE LIKE '%' || #{title} || '%'
+    	</if>
+    	<if test="draftDate != null">
+        	AND d.DRAFT_DATE = #{draftDate}
+    	</if>
 	</select>
 
 	<!-- 결재 상세 조회 (도장 정보 포함) -->
@@ -55,74 +43,87 @@
 		, d.EMPLOYEE_NO
 		, d.TITLE
 		, d.CONTENT
-		, d.APRV_STATUS
+		,
+		d.APRV_STATUS
 		, d.REJECT_REASON
 		, d.DRAFT_DATE
 		, d.APRV_DATE
-		, s.STAMP_IMG_PATH
+		,
+		s.STAMP_IMG_PATH
 		FROM aprv_documents d
 		LEFT JOIN stamp s
 		ON
-		d.EMPLOYEE_NO = s.EMPLOYEE_NO
+		d.EMPLOYEE_NO
+		= s.EMPLOYEE_NO
 		AND s.ACTIVE = '1'
 		WHERE d.DRAFT_NO = #{draftNo}
 	</select>
 
 	<!-- 도장 등록 -->
-	<insert id="insertStamp" parameterType="Integer">
-	 <selectKey keyProperty="stampId"
-				   resultType="Integer"
-				   order="BEFORE">
+	<insert id="insertStamp" parameterType="ApprovalVO">
+		<selectKey keyProperty="stampId" resultType="Integer"
+			order="BEFORE">
 			SELECT NVL(MAX(stamp_id), 1) + 1
 			FROM stamp
-	 </selectKey>
+		</selectKey>
 		INSERT INTO stamp(STAMP_IMG_PATH
-						  ,EMPLOYEE_NO
-						  ,STAMP_ID
-						  ,ACTIVE)
-		VALUES			(#{stampImgPath}
-						, #{employeeNo}
-						, #{stampId}
-						,'1')
+		,EMPLOYEE_NO
+		,STAMP_ID
+		,ACTIVE)
+		VALUES (#{stampImgPath}
+		, #{employeeNo}
+		, #{stampId}
+		,'1')
 	</insert>
-	
+
 	<!-- 도장수정 -->
-	<update id="updateStamp" parameterType="Integer">
+	<update id="updateStamp" parameterType="ApprovalVO">
 		UPDATE stamp
-		SET active = '0'
+		SET active =
+		'0'
 		WHERE active = '1'
-		AND   employee_no = #{employeeNo}
+		AND employee_no = #{employeeNo}
 	</update>
-	
+
 	<!-- 활성화된 도장 조회 -->
-	<select id="countActiveStamps" parameterType="ApprovalVO" resultType="Integer">
-		SELECT COUNT(*) 
-		FROM stamp 
-		WHERE employee_no = #{employeeNo} 
+	<select id="countActiveStamps" parameterType="ApprovalVO"
+		resultType="Integer">
+		SELECT COUNT(*)
+		FROM stamp
+		WHERE employee_no = #{employeeNo}
 		AND active = '1'
 	</select>
-	
+
+	<select id="selectActiveStamp" parameterType="ApprovalVO"
+		resultType="ApprovalVO">
+		SELECT employee_no
+		,stamp_img_path
+		,active
+		FROM stamp
+		WHERE active = '1'
+		AND employee_no = #{employeeNo}
+	</select>
+
 	<!-- 회사 전자결재 양식 등록 -->
 	<insert id="insertForm" parameterType="ApprovalFormVO">
-		<selectKey keyProperty="formId"
-				   resultType="Integer"
-				   order="BEFORE">
+		<selectKey keyProperty="formId" resultType="Integer"
+			order="BEFORE">
 			SELECT NVL(MAX(form_id), 1) + 1
 			FROM aprv_forms
 		</selectKey>
 		INSERT INTO aprv_forms (form_id
-		                        , form_type
-		                        , content
-		                        , version
-		                        , active
-		                        , creation_date
-		                        , suber_no)
+		, form_type
+		, content
+		, version
+		, active
+		, creation_date
+		, suber_no)
 		VALUES(#{formId}
-		       ,#{formType}
-		       ,#{content}
-		       ,1
-		       ,'1'
-		       ,sysdate
-		       ,1)
+		,#{formType}
+		,#{content}
+		,1
+		,'1'
+		,sysdate
+		,1)
 	</insert>
 </mapper>

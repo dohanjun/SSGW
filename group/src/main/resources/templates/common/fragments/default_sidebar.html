@@ -119,9 +119,9 @@
                         <a class="collapse-item">결재요청함</a>
                         <a class="collapse-item">임시저장함</a>
                         <h6 class="collapse-header">결재</h6>
-                        <a class="collapse-item">결재대기함</a>
-                        <a class="collapse-item">결재진행함</a>
-                        <a class="collapse-item">완료문서함</a>
+                        <a class="collapse-item" th:href="@{/aprv/list?aprvStatus=대기}">결재대기함</a>
+                        <a class="collapse-item" th:href="@{/aprv/list?aprvStatus=진행}">결재진행함</a>
+                        <a class="collapse-item" th:href="@{/aprv/list?aprvStatus=완료}">완료문서함</a>
                         <a class="collapse-item">반려문서함</a>
                         <a class="collapse-item">참조열람함</a>
                     </div>
