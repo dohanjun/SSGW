@@ -12,7 +12,7 @@
 <style>
 
 	#flo{
-	float: left;
+	float: right;
 	display: flex;
 	justify-content: center;
 	padding-left: 30px;
@@ -21,26 +21,8 @@
 	.left{
 		position: relative;
 		left: 1000px;
-		top: 20px;
+		bottom: 10px;
 	}
-    .side-bar{
-    	border-radius: 10px;
-    	transform: translate(-250px, 0);
-    	transition: .5s;
-    	position: relative;
-    	background-color: yellow;
-    	width: 300px;
-    	height: 860px;
-    	text-align: center;
-    	font-size: xx-large;
-    }
-    .side-bar:hover{
-    	transform: translate(calc(var(--side-bar-width) * 10),0);
-    }
-    #sta{
-    	position: relative;
-		top: -800px;
-    }
     .p{
     	clear: left;
     	padding-left: 30px;
@@ -53,60 +35,30 @@
 		position: static;
 		text-align: center;
 		padding: 20px;
-		padding-left: 370px;
+		padding-left: 600px;
 	}
 	
 </style>
 <body>
 <h3>메일메인화면</h3>
 
-<div class="row">
-
-<!-- 사이드바 기능 -->
-<div class="side-bar">
-<nav>
-    <div>
-        <ul class="navbar-nav">
-          <li>
-            <a class="nav-link" href="mailInsert">메일쓰기</a>
-          </li>
-          <li>
-            <a class="nav-link" href="#">받은메일함</a>
-          </li>
-          <li>
-            <a class="nav-link" href="#">보낸메일함</a>
-          </li>
-          <li>
-            <a class="nav-link" href="#">임시메일함</a>
-          </li>
-          <li>
-            <a class="nav-link" href="#">휴지통</a>
-          </li>
-        </ul>
-      </div>
-    </nav>
-  </div>
-  <!-- 사이드바 기능 마침 -->
 <!-- 검색기능 -->
-  <div  class="left" id="se">
+  <div class="left" id="se">
     <form role="search">
-      <input type="search" placeholder="Search" aria-label="Search">
+      <input type="search" placeholder="Search">
       <button class="btn btn-outline-success" type="submit">검색</button>
     </form>
   </div>
-<!-- 검색기능 마침 --> 
-</div>
-<div class="container">
-<div class="col" id="sta">
+<!-- 검색기능 마침 -->
 
+<div class="col">
+<div>
+<div>
+	<h5 th:text="'전체글: '+${totalCount}+'개'"></h5>
+</div>
 <div id="flo">
-<div class="hstack gap-3 p-2 col">
+<button>삭제</button>
 
-  <input class="check-input" type="checkbox" id="checkboxNoLabel" value="" aria-label="...">
-<a>전체선택</a>
-</div>
-  <div><button>삭제</button>
-  </div>
 <!-- 정렬기능 -->
 <div class="dropdown">
 <label>정렬</label>
@@ -118,8 +70,9 @@
 </select>
 </div>
 </div>
-
+</div>
 <!-- 정렬기능 마침 -->
+
 <!-- 메일목록 창 -->
 <div class="p">
 	<form name="form" method="post">
@@ -135,51 +88,45 @@
 	</thead>
 	<tbody>
 	<th:block th:each="info : ${mails}">
-		<tr 
-		th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">
+		<tr>
 		    <td><input type="checkbox" name="RowCheck" th:value="${info.mailId}"/></td>
-			<td>[[ ${info.mailId} ]]</td>
-			<td>[[ ${info.getUser} ]]</td>
-			<td>[[ ${info.title} ]]</td>
-		  	<td>[[ ${ #dates.format(info.sentDate, "yyyy년MM월dd일") } ]]</td>
+			<td th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[ ${info.mailId} ]]</td>
+			<td th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[ ${info.getUser} ]]</td>
+			<td th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[ ${info.title} ]]</td>
+		  	<td th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[ ${ #dates.format(info.sentDate, "yyyy년MM월dd일") } ]]</td>
 		</tr>
  	  </th:block>
  	  </tbody>
 	</table>
 	</form>
-	<!-- 메일상세기능 마침 -->
 	</div>
-
 <!-- 메일목록 창 마침 -->
 
 <!-- 바기능 -->
-<div id="bar" class="page-num" th:if="${!mail.isEmpty()}">
-	<nav th:with="pageSize = ${mail.pageable.pageSize},
-			     start=${(mail.number/pageSize)*pageSize + 1},
-			     end=(${(mail.totalPages == 0) ? 1 : (start + (pageSize - 1) : mails.totalPages)})">
-	  <ul class="pagination">
-	    <li th:if="${start > 1}">
-	    <a class="page-link" th:href="@{/admin/mail?(page=0,category=${selectedCategory},searchingWord=${searchingWord})}" th:text="'<<'"></a>
-	    </li>
-	    <li th:if="${start > 1}">
-	    <a class="page-link" th:href="@{/admin/mail?(page=${start - 2},category=${selectedCategory},searchingWord=${searchingWord})}" th:text="'<'"></a>
-	    </li>
-	    
-	    <li th:each="page: ${#numbers.sequence(start, end)}">
-	    <a class="page-link" th:href="@{/admin/mail?(page=${page - 1},category=${selectedCategory},searchingWord=${searchingWord})}" th:text="${page}"></a>
-	    </li>
-	    
-	    <li th:if="${end < mail.totalPages}">
-	    <a class="page-link" th:href="@{/admin/mail?(page=${start + pageSize - 1},category=${selectedCategory},searchingWord=${searchingWord})}" th:text="'>'"></a>
-	    </li>
-	    <li th:if="${end < mail.totalPages">
-	    <a class="page-link" th:href="@{/admin/mail?(page=${mails.totalPages - 1},category=${selectedCategory},searchingWord=${searchingWord})}" th:text="'>>'"></a>
-	    </li>
-	  </ul>
+<div id="bar">
+	<nav>
+		<ul class="pagination">
+			<li class="page-item"
+				th:classappend="${paging.startPage} == 1 ? disabled"><a
+				class="page-link"
+				th:href="|javascript:gopage(${paging.startPage}-1)|">Previous</a></li>
+	
+			<li
+				th:each="num : *{#numbers.sequence(paging.startPage, paging.endPage)}"
+				class="page-item" th:classappend="${num} == ${paging.page} ? active">
+				<a class="page-link" th:href="|javascript:gopage(${num})|"
+				th:text="${num}">2</a>
+			</li>
+	
+			<li class="page-item"
+				th:classappend="${paging.endPage} >= ${paging.lastPage} ? disabled">
+				<a class="page-link"
+				th:href="|javascript:gopage(${paging.endPage}+1)|">Next</a>
+			</li>
+		</ul>
 	</nav>
 </div>
 <!-- 바기능 마침 -->
-</div>
 </div>
 
 
@@ -187,12 +134,12 @@
 
 <script>
 
+//사이드바
 document.getElementById("mailSidebar").addEventListener("click", function(){
     document.getElementById("sidebar-wrapper").classList.toggle("side-hidden");
 })
 //버튼
-	const context = document.querySelector('meta[name="contextPath"]')
-							.getAttribute('value');
+	const context = ''; //document.querySelector('meta[name="contextPath"]').getAttribute('value');
 							
 	document.querySelectorAll('tbody > tr')
 			.forEach(function(trTag){
@@ -203,6 +150,34 @@ document.getElementById("mailSidebar").addEventListener("click", function(){
 		let selectedTr = event.currentTarget;
 		let eid = selectedTr.children[1].textContent;
 		let url = context + '/mailInfo?mailId=' + mid;
+	}
+	
+	//체크박스
+	    $(function(){
+        var chkObj = document.getElementsByName("RowCheck");
+        var rowCnt = chkObj.length;
+
+        $("input[name='allCheck']").click(function(){
+            var chk_listArr = $("input[name='RowCheck']");
+            for (var i=0; i<chk_listArr.length; i++){
+                chk_listArr[i].checked = this.checked;
+            }
+        });
+        $("input[name='RowCheck']").click(function(){
+            if($("input[name='RowCheck']:checked").length == rowCnt){
+                $("input[name='allCheck']")[0].checked = true;
+            }
+            else{
+                $("input[name='allCheck']")[0].checked = false;
+            }
+        });
+    });
+	
+	//바 기능
+	function gopage(p){
+		//frmSearch.page.value = p;
+		//frmSearch.submit();		
+		location.href = '/mail?page=' + p;
 	}
 
 </script>

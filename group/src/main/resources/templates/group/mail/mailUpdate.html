@@ -72,23 +72,23 @@
 	<table class="table">
 		<tr>
 			<td>받는사람</td>
-			<td><input name="" value="${}" readonly="readonly"></td>
+			<td><input name="giveName" th:value="${mail.employeeId}"></td>
 		</tr>
 		<tr>
 			<td>참조</td>
-			<td><input name="" value="${}" readonly="readonly"></td>
+			<td><input name="cc" th:value="${mail.cc}"></td>
 		</tr>
 		<tr>
 			<td>제목</td>
-			<td><input name="" value="${}" readonly="readonly"></td>
+			<td><input name="title" th:value="${mail.title}"></td>
 		</tr>
 		<tr>
 			<td>파일첨부</td>
-			<td><input name="file" value="${}"></td>
+			<td><input name="file" th:value="${mail.attachedFileName}"></td>
 		</tr>
 		<tr>
 			<td>내용</td>
-			<td><input name="" value="${}"></td>
+			<td><input name="content" th:value="${mail.content}"></td>
 		</tr>
 	</table>
 	</form>
