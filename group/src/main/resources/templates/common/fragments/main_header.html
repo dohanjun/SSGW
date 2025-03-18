@@ -1,39 +1,45 @@
-
 <!DOCTYPE html>
-<div xmlns:th="https://www.thymeleaf.org"
-		th:fragment="header">
+<div xmlns:th="https://www.thymeleaf.org" th:fragment="header">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>SSGW - Strong Security Groupware</title>
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
+    <link href="css/index.css" rel="stylesheet" />
+  </head>
+  
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg bg-secondary text-uppercase" id="mainNav">
+    <div class="container">
+      <a class="navbar-brand" th:href="@{/}">IMMIPIS</a>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item mx-0 mx-lg-1" th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+            <a class="nav-link py-3 px-0 px-lg-3 rounded" th:href="@{/module}">모듈관리</a>
+          </li>
+          <li class="nav-item mx-0 mx-lg-1" th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+            <a class="nav-link py-3 px-0 px-lg-3 rounded" th:href="@{/qna}">qna</a>
+          </li>
+          <li class="nav-item mx-0 mx-lg-1" th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+            <a class="nav-link py-3 px-0 px-lg-3 rounded" th:href="@{/logout}">로그아웃</a>
+          </li>
+          
+          <li class="nav-item mx-0 mx-lg-1" th:if="${!#authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+            <a class="nav-link py-3 px-0 px-lg-3 rounded" th:href="@{/subscribe}">subscribe</a>
+          </li>
+          <li class="nav-item mx-0 mx-lg-1" th:if="${!#authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+            <a class="nav-link py-3 px-0 px-lg-3 rounded" th:href="@{/manual}">manual</a>
+          </li>
+          <li class="nav-item mx-0 mx-lg-1" th:if="${!#authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+            <a class="nav-link py-3 px-0 px-lg-3 rounded" th:href="@{/login}">login</a>
+          </li>
+        </ul>
+      </div>
+      	<p th:text="${#authentication.name}">Username</p>
+		<p th:text="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}">Is Manager?</p>
+    </div>
+  </nav>
  
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-<title>SSGW - Strong Security Groupware</title>
-<link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
-<script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
-<link href="https://fonts.googleapis.com/css?family=Montserrat:400,700"
-	rel="stylesheet" type="text/css" />
-<link
-	href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic"
-	rel="stylesheet" type="text/css" />
-<link href="css/index.css" rel="stylesheet" />
-</head>
-
-	<!-- Navigation-->
-	<nav
-		class="navbar navbar-expand-lg bg-secondary text-uppercase "
-		id="mainNav">
-		<div class="container">
-			<a class="navbar-brand" href="/">IMMIPIS</a>
-			<div class="collapse navbar-collapse" id="navbarResponsive">
-				<ul class="navbar-nav ms-auto">
-					<li class="nav-item mx-0 mx-lg-1"><a
-						class="nav-link py-3 px-0 px-lg-3 rounded" href="/subscribe">subscribe</a></li>
-					<li class="nav-item mx-0 mx-lg-1"><a
-						class="nav-link py-3 px-0 px-lg-3 rounded" href="/manual">manual</a></li>
-					<li class="nav-item mx-0 mx-lg-1"><a
-						class="nav-link py-3 px-0 px-lg-3 rounded" href="/login">login</a></li>
-				</ul>
-			</div>
-		</div>
-	</nav>
-<body>
-</div>
