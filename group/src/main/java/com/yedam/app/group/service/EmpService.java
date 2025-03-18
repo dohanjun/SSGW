@@ -22,5 +22,7 @@ public interface EmpService {
 	// 사원번호 자동 증가 조회
     public int getNextEmployeeNo();
 	
+    // 로그인한 대상 정보 가져오기
+    public EmpVO getLoggedInUserInfo();
 
 }

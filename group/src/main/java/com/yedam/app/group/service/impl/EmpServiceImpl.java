@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.yedam.app.group.mapper.EmpMapper;
@@ -62,6 +64,20 @@ public class EmpServiceImpl implements EmpService{
 	@Override
 	public int getNextEmployeeNo() {
 		return empMapper.getNextEmployeeNo();
+	}
+	
+	
+	// 로그인한 대상 정보가져오기
+	@Override
+	public EmpVO getLoggedInUserInfo() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication != null && authentication.isAuthenticated()) {
+			
+			String employeeId = authentication.getName(); // 로그인한 사용자의 ID(employeeId)
+			
+			return empMapper.findByEmployeeId(employeeId); // DB에서 해당 ID로 정보 조회
+		}
+		return null;
 	}
 	
 
