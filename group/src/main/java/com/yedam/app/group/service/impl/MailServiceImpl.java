@@ -24,8 +24,9 @@ public class MailServiceImpl implements MailService {
 	
 	//메일검색기능
 	@Override
-	public MailVO mailCondition(MailVO mailVO) {
-		return mailMapper.mailCondition(mailVO);
+	public PageListVO getPageList(PageListVO vo) {
+		PageListVO result = mailMapper.getPageList(vo);
+		return result;
 	}
 	
 	//메일전체조회
@@ -128,6 +129,30 @@ public class MailServiceImpl implements MailService {
 	public int pageGetCount(PageListVO pagelistVO) {
 		return mailMapper.getCount(pagelistVO);
 	}
+
+//메일상세함
+	
+	//받은메일함
+	@Override
+	public List<MailVO> selectGetList(PageListVO vo) {
+		return mailMapper.selectGetList(vo);
+	}
+	//보낸메일함
+	@Override
+	public List<MailVO> selectPutList(PageListVO vo) {
+		return mailMapper.selectPutList(vo);
+	}
+	//임시메일함
+	@Override
+	public List<MailVO> selectTemList(PageListVO vo) {
+		return mailMapper.selectTemList(vo);
+	}
+	//휴지통
+	@Override
+	public List<MailVO> selectDelList(PageListVO vo) {
+		return mailMapper.selectDelList(vo);
+	}
+
 
 
 }

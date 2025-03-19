@@ -148,6 +148,26 @@
                     </div>
                 </div>
             </li>
+            <!-- 메일 Menu -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#mailT"
+                    aria-expanded="true" aria-controls="collapseTwo">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span>메일</span>
+                </a>
+                <div id="mailT" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">메일</h6>
+                        <a class="collapse-item" th:href="@{mail}">메일메인화면</a>
+                        <a class="collapse-item" th:href="@{mailInsert}">메일쓰기</a>
+                        <h6 class="collapse-header">메일세부항목</h6>
+                        <a class="collapse-item" th:href="@{getMail}">받은메일함</a>
+                        <a class="collapse-item" th:href="@{putMail}">보낸메일함</a>
+                        <a class="collapse-item" th:href="@{temporaryMail}">임시메일함</a>
+                        <a class="collapse-item" th:href="@{deleteMail}">휴지통</a>
+                    </div>
+                </div>
+            </li>
             
             <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#board"
