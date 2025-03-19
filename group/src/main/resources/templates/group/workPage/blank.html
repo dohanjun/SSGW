@@ -56,8 +56,6 @@ div td {
 	font-weight: bold;
 	margin: 0;
 }
-
-/* 출퇴근 기록 테이블 스타일 */
 .work-info {
 	width: 100%;
 	overflow-x: auto;
@@ -89,7 +87,6 @@ div td {
 
 <body id="page-top">
 
-	<!-- 1. 근무시간 원형 그래프 + 연간 근태 현황 -->
 	<div class="row">
 		<div class="col">
 			<div class="card shadow mb-4">
@@ -109,23 +106,23 @@ div td {
 							</div>
 							<div class="leave-card">
 								<h6>연차</h6>
-								<p th:text="${remainingAnnualLeave} + '일'">10일</p>
+								<p th:text="|${remainingAnnualLeave}일|">10일</p>
 							</div>
 							<div class="leave-card">
 								<h6>병가</h6>
-								<p th:text="${remainingSickLeave} + '일'">5일</p>
+								<p th:text="|${remainingSickLeave}일|">5일</p>
 							</div>
 							<div class="leave-card">
 								<h6>반차</h6>
-								<p th:text="${remainingHalfDayLeave} + '회'">4회</p>
+								<p th:text="|${remainingHalfDayLeave}회|">4회</p>
 							</div>
 							<div class="leave-card">
 								<h6>지각</h6>
-								<p th:text="${lateCount} + '회'">2회</p>
+								<p th:text="|${lateCount}회|">2회</p>
 							</div>
 							<div class="leave-card">
 								<h6>조퇴</h6>
-								<p th:text="${earlyLeaveCount} + '회'">3회</p>
+								<p th:text="|${earlyLeaveCount}회|">3회</p>
 							</div>
 						</div>
 					</div>
@@ -133,15 +130,17 @@ div td {
 			</div>
 		</div>
 	</div>
-	
-	<span id="workHoursData" 
-		th:text="${{ monthlyTotalWorkHours: monthlyTotalWorkHours, totalWorkedHours: totalWorkedHours, overtimeHours: overtimeHours }}"
-		hidden></span>
-	
+
+<span id="workHoursData"
+    th:data-monthly-total-work-hours="${monthlyTotalWorkHours}"
+    th:data-total-worked-hours="${totalWorkedHours}"
+    th:data-overtime-hours="${overtimeHours}"
+    hidden></span>
+
 	<div class="row">
 		<div class="col">
 			<div class="card shadow mb-4">
-				<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+				<div class="card-header py-3">
 					<h5 class="m-0 font-weight-bold">출퇴근 기록</h5>
 				</div>
 				<div class="card-body">
@@ -162,11 +161,11 @@ div td {
 							<tbody>
 								<tr th:each="attendance : ${attendanceList}">
 									<td th:text="${attendance.employeeNo}"></td>
-									<td th:text="${#dates.format(attendance.attendanceDate, 'yyyy-MM-dd HH:mm')}"></td>
-									<td th:text="${#dates.format(attendance.clockInTime, 'HH:mm')}"></td>
-									<td th:text="${#dates.format(attendance.clockOutTime, 'HH:mm')}"></td>
+									<td th:text="${attendance.attendanceDate != null ? #dates.format(attendance.attendanceDate, 'yyyy-MM-dd HH:mm') : '-'}"></td>
+									<td th:text="${attendance.clockInTime != null ? #dates.format(attendance.clockInTime, 'HH:mm') : '-'}"></td>
+									<td th:text="${attendance.clockOutTime != null ? #dates.format(attendance.clockOutTime, 'HH:mm') : '-'}"></td>
 									<td th:text="${attendance.workAttitudeType}"></td>
-									<td th:text="${attendance.reason} ?: '-'"></td>
+									<td th:text="${attendance.reason != null ? attendance.reason : '-'}"></td>
 									<td></td>
 									<td th:text="${attendance.totalWorkingHours}"></td>
 								</tr>
@@ -177,48 +176,57 @@ div td {
 			</div>
 		</div>
 	</div>
-	
+
 	<script src="vendor/jquery/jquery.min.js"></script>
 	<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        let today = new Date();
-        let currentMonth = today.getMonth();
-        let monthNames = ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"];
-        document.getElementById('currentMonthTitle').innerText = `${monthNames[currentMonth]} 근무시간`;
+        let workHoursDataElement = document.getElementById('workHoursData');
 
-        document.getElementById('currentWorkMonths').innerText = `${currentMonth + 1}개월`;
+        
+        let monthlyTotalWorkHours = parseFloat(workHoursDataElement.dataset.monthlyTotalWorkHours) || 0;
+        let totalWorkedHours = parseFloat(workHoursDataElement.dataset.totalWorkedHours) || 0;
+        let overtimeHours = parseFloat(workHoursDataElement.dataset.overtimeHours) || 0;
 
-        // ✅ JSON 데이터를 가져와서 사용
-        let workHoursData = JSON.parse(document.getElementById('workHoursData').textContent);
-        let monthlyTotalWorkHours = workHoursData.monthlyTotalWorkHours || 0;
-        let totalWorkedHours = workHoursData.totalWorkedHours || 0;
-        let overtimeHours = workHoursData.overtimeHours || 0;
+        
         let remainingWorkHours = Math.max(0, monthlyTotalWorkHours - totalWorkedHours);
 
-        // ✅ 초과근무 시간 조정 (30분 단위 반올림)
+        
         let adjustedOvertimeHours = 0;
         if (overtimeHours > 0) {
             adjustedOvertimeHours = Math.floor(overtimeHours / 0.5) * 0.5;
         }
 
+       
+        console.log("월 총 근무 시간:", monthlyTotalWorkHours);
+        console.log("현재 근무 시간:", totalWorkedHours);
+        console.log("초과 근무 시간:", adjustedOvertimeHours);
+        console.log("남은 근무 시간:", remainingWorkHours);
+
+        
         let ctx = document.getElementById('workHoursPieChart').getContext('2d');
-        new Chart(ctx, { 
-            type: 'doughnut', 
+        new Chart(ctx, {
+            type: 'doughnut',
             data: {
-                labels: ['예상 근무시간', '현재 근무시간', '초과 근무시간'],
+                labels: ['남은 근무시간', '현재 근무시간', '초과 근무시간'],
                 datasets: [{
                     data: [remainingWorkHours, totalWorkedHours - adjustedOvertimeHours, adjustedOvertimeHours],
                     backgroundColor: ['#CCCCCC', '#007bff', '#FF5733'],
                 }]
             },
-            options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
         });
     });
 </script>
-
 
 
 </body>
