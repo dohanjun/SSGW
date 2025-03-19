@@ -3,7 +3,7 @@
 <mapper namespace="com.yedam.app.group.mapper.MailMapper">
 
 <!-- 단건조회 -->
-	<select id="getMail" parameterType="PageListVO" resultType="PageListVO">
+	<select id="getPageList" parameterType="PageListVO" resultType="PageListVO">
 		SELECT  *
 		FROM Mail
 		WHERE MAIL_ID = #{mailId}
@@ -12,11 +12,11 @@
 
 <sql id="mailCondition">
 		  <where>
-		  	<if test="title != null and title != ''">
-		  		AND TITLE = #{title}
-		  	</if>
-		  	<if test="getUser != null and getUser != ''">
-		  		AND GET_USER = #{getUser}
+		  	<if test="search != null and search != ''">
+		  		 TITLE LIKE '%' || #{search} || '%'
+		  		OR GET_USER LIKE '%' || #{search} || '%'
+		  		OR RECODE LIKE '%' || #{search} || '%'
+		  		
 		  	</if>
 		  </where>
 </sql>
