@@ -6,6 +6,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Context Path 추가 (여기 반드시 포함) 
+    <meta name="contextPath" value="/myapp">-->
+    
     <title>사원정보 수정</title>
     <style>
         /* 메인 컨테이너*/
@@ -107,21 +111,21 @@
     </style>
 </head>
 <body>
-<form th:action="@{/empUpdate}" th:object="${emp}" method="post" enctype="multipart/form-data">
-    <input type="hidden" name="employeeNo" th:value="${emp.employeeNo}">
+
+<form name="updateForm" th:action="@{/empUpdate}" th:object="${emp}" method="post" enctype="multipart/form-data">
     <div class="content-wrapper">
         <div class="employee-container">
             <h2 class="emph2">사원 정보수정</h2>
             <div class="profile-img">
-			<img th:if="${profileImageBase64 != null and profileImageBase64 != ''}" 
-			     th:src="'data:image/png;base64,' + ${profileImageBase64}" 
-			     alt="프로필 이미지">  	
+			<img th:if="${profileImageBase64}" 
+				         th:src="'data:image/png;base64,' + ${profileImageBase64}" 
+				         alt="프로필 이미지">  			     
             </div>	
             
             <div class="form-container">
                 <div class="form-group">
                     <label for="empid">ID</label>
-                    <input type="text" id="empid" th:field="*{employeeId}">
+                    <input type="text" id="empid" th:field="*{employeeId}" readonly>
                 </div>
                 <div class="form-group">
                     <label for="pw">PW</label>
@@ -138,7 +142,7 @@
                 </div>
                 <div class="form-group">
                     <label for="department">부서</label>
-                    <select id="department" name="departmentNo" th:field="*{departmentNo}">
+                    <select th:field="*{departmentNo}">
                         <option value="">부서를 선택하세요</option>
 					    <option value="2">경영기획부</option>
 					    <option value="3">마케팅부</option>
@@ -150,7 +154,7 @@
                 </div>
                 <div class="form-group">
                     <label for="position">직급</label>
-                    <select id="position" name="rankId" th:field="*{rankId}">
+                    <select th:field="*{rankId}">
 	                   <option value="">직급을 선택하세요</option>
 					   <option value="1">사원</option>
 					   <option value="2">주임</option>
@@ -163,7 +167,7 @@
                 </div>
                 <div class="form-group">
                     <label for="role">권한</label>
-                    <select id="role" name="rightsId" th:field="*{rightsId}">
+                    <select th:field="*{rightsId}">
 	                   <option value="">권한을 선택하세요</option>
 					   <option value="1">최고관리자</option>
 					   <option value="2">인사관리자</option>
@@ -171,6 +175,7 @@
 					   <option value="4">일반사용자</option>
 					</select>
                 </div>
+
                 <div class="form-group">
                     <label for="contact">연락처</label>
                     <input type="text" id="contact" th:field="*{phoneNumber}">
@@ -192,7 +197,7 @@
             <button type="button">엑셀 등록</button>
 
             <div class="btn-group">
-                <button type="submit" class="btn btn-primary">수정</button>
+                <button type="submit" id="btn1" class="btn btn-primary">수정</button>
                 <button type="button" class="btn btn-danger">취소</button>
             </div>
         </div>
@@ -215,6 +220,55 @@
         
         function resetPassword() {
             document.getElementById('pw').value = '12345678';
+        }
+        
+        // 특정 버튼 선택
+        document.getElementById('btn1').addEventListener('click', updateAjax);
+        
+        // URL 절대경로 가져오기 포트도 가져옴
+        const baseURL = window.location.origin; // 예: http://localhost:8080
+        console.log("Base URL:", baseURL);
+        
+        // 필드 선언
+             let headers = new Headers();
+     
+		     headers.append('Content-Type', 'application/json'); // 여기 필드명 변수명과 필드명 동일 변수만 줘도됨
+
+        // HTTP 요청 헤더 설정
+
+
+        // AJAX
+        function updateAjax(event){
+        // 1) 보낼 데이터 가져오기
+        let dataObj = getFormData();
+        // 2) AJAX
+        fetch(`${context}/empUpdate`, {
+            method : 'POST',
+            headers, // : {'Content-type' : 'application/json'}
+            body : JSON.stringify(dataObj)
+        })
+          .then(res => res.json())
+          .then(data => {
+        // 3) 응답받을 데이터 가져오기
+              if(data.result){
+                alert(`${data.target.employeeNo}를 수정!!`)
+              }else{
+                alert('수정되지 않았습니다.');
+              }    
+          })
+              .catch(err => console.log(err));
+        }
+        
+        //
+        function getFormData() {
+            let formData = new FormData(updateForm);
+
+            let obj = {};
+            formData.forEach((value, name) => {
+                obj[name] = value;
+            })
+
+            return obj;
         }
     </script>
 </body>
