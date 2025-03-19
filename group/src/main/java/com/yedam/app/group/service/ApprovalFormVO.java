@@ -14,4 +14,5 @@ public class ApprovalFormVO {
 	private String active;      // 활성화 여부
 	private Date creationDate;  // 생성일
 	private int suberNo;        // 회사번호
+	
 }

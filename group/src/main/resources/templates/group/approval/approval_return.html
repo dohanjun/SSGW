@@ -5,20 +5,32 @@
 	layout:fragment="content">
 <head>
 <meta charset="UTF-8">
-<title></title>
+<title>반려문서함</title>
+<link rel="stylesheet" th:href="@{/css/approval.css}">
 </head>
 <body>
 	<div class="container-fluid">
-		<h1 class="h3 mb-2 text-gray-800">반려문서함</h1>
+		<div class="h555">
+			<h1 class="h3 mb-2 text-gray-800">반려문서함</h1>
+			<button id="stampInsertButton">도장등록</button>
+		</div>
 		<div class="card shadow mb-4">
 			<div class="card-header py-3">
-				<form action="" method="">
-					<p>기안자<input>문서제목<input>상신일<input><button type="submit" class="float-right">검색</button></p>
+				<!-- 검색부분 -->
+				<form th:action="@{/aprv/list}" method="GET">
+					<input type="hidden" name="aprvStatus" th:value="${aprvStatus}">
+					<p>
+						기안자 <input type="text" name="employeeName"> 문서제목 <input
+							type="text" name="title"> 상신일 <input type="date"
+							name="draftDate">
+						<button type="submit" class="float-right">검색</button>
+					</p>
 				</form>
 			</div>
 			<div class="card-body">
 				<div class="table-responsive">
-					<table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+					<table class="table table-bordered" id="dataTable" width="100%"
+						cellspacing="0">
 						<thead>
 							<tr>
 								<th>문서번호</th>
@@ -29,21 +41,197 @@
 							</tr>
 						</thead>
 						<tbody>
-							<th:block each=" : ">
-								<tr>
-									<td>rr</td>
-									<td>ddd</td>
-									<td>ssss</td>
-									<td>dddd</td>
-									<td>ssss</td>
-								</tr>
-							</th:block>
+							<tr th:each="aprv : ${aprvs}"
+								th:onclick="|location.href='@{/aprv/info(draftNo=${aprv.draftNo})}'|">
+								<td>[[${aprv.draftNo}]]</td>
+								<td>[[${aprv.aprvStatus}]]</td>
+								<td>[[${aprv.employeeName}]]</td>
+								<td>[[${aprv.title}]]</td>
+								<td>[[${#dates.format(aprv.draftDate, "yyyy년 MM월 dd일")}]]</td>
+							</tr>
 						</tbody>
 					</table>
 				</div>
 			</div>
 		</div>
-
 	</div>
+	<div class="modal fade" id="stampModal" tabindex="-1" role="dialog"
+		aria-labelledby="stampModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="approval-modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="stampModalLabel">도장 등록</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="approval-modal-body">
+					<form>
+						<div id="imagePreviewContainer"
+							style="width: 200px; height: 200px; margin: 3px auto; border: 10px solid black; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+							<img id="imagePreview"
+								th:src="${stampImgPath != null ? stampImgPath : ''}"
+								th:data-stamp-url="${stampImgPath}" alt="도장 미리보기"
+								style="max-width: 100%; max-height: 100%; display: block;">
+						</div>
+						<div class="filebox">
+							<label for="file">파일찾기</label> <input type="file" id="file"
+								accept="image/*">
+
+							<div class="modal-footer modalbtns">
+								<button type="button" class="btn btn-secondary"
+									onclick="insertStamp()">등록</button>
+								<button type="button" class="btn btn-secondary"
+									onclick="updateStamp()">수정</button>
+								<button type="button" class="btn btn-secondary"
+									onclick="deleteStamp()">삭제</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+	document.querySelector("#stampInsertButton").addEventListener("click", function() {
+	    let imagePreview = document.getElementById("imagePreview");
+	    let existingStampUrl = imagePreview.getAttribute("data-stamp-url"); //  Thymeleaf 값 유지!
+
+	    //  기존 도장 URL이 있으면 이미지 유지, 없으면 숨김
+	    if (existingStampUrl && existingStampUrl.trim() !== "" && existingStampUrl !== "null") {
+	        imagePreview.src = existingStampUrl;
+	        imagePreview.style.display = "block";
+	    } else {
+	        imagePreview.style.display = "none";
+	    }
+
+
+	    $('#stampModal').modal('show');
+	});
+
+
+
+
+	
+ // 도장 비활성화
+ function deleteStamp(){
+	 fetch('/aprv/delete', {
+	        method: 'POST',
+	    })
+	    .then(res => res.json())
+	    .then(result => {
+	        if (result.success) {
+	            alert("도장이 성공적으로 삭제되었습니다.");
+	        } else {
+	            alert("도장 삭제 실패: " + result.message);
+	        }
+	    })
+	    .catch(err => console.log(err));
+ }
+
+ // 도장수정
+ function updateStamp(){
+	let file = document.getElementById('file').files[0];
+	
+	if (!file) {
+        alert("파일을 선택하세요.");
+        return;
+    }
+
+    let formData = new FormData();
+    
+    formData.append("file", file);
+    
+    fetch('/aprv/modify', {
+    	method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(result => {
+        if (result.success) {
+            alert("도장 수정 성공!");
+
+        } else {
+            alert("도장 수정 실패!");
+        }
+    })
+    .catch(err => console.log(err))
+ }
+ 
+// 도장 등록 기능
+function insertStamp() {
+    let file = document.getElementById('file').files[0];
+
+    if (!file) {
+        alert("파일을 선택하세요.");
+        return;
+    }
+
+    let formData = new FormData();
+    
+    formData.append("file", file);
+    
+    fetch('/aprv/upload', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json()) 
+    .then(result => {
+        if (result.success) {
+            alert("도장 등록 성공!");
+
+        } else {
+            alert("도장 등록 실패!");
+        }
+    })
+    .catch(err => console.log(err));
+}
+
+document.querySelector('#stampInsertButton').addEventListener('click', event => {
+    $('#stampModal').modal('show');
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    let imagePreview = document.getElementById("imagePreview");
+
+    if (imagePreview.src && imagePreview.src.trim() !== "" && imagePreview.src !== window.location.href) {
+        imagePreview.style.display = "block"; // ✅ 이미지 표시
+    }
+});
+
+// 등록된 도장 보여주기
+document.addEventListener("DOMContentLoaded", function () {
+    let imagePreview = document.getElementById("imagePreview");
+
+    // 서버에서 활성화된 도장 정보 가져오기
+    fetch('/aprv/stamp')
+    .then(res => res.json())
+    .then(result => {
+        if (result.success && result.stampImgPath) {
+            imagePreview.style.display = "block";
+            imagePreview.src = result.stampImgPath;
+        }
+    })
+    .catch(err => console.log("도장 정보를 가져오는 중 오류 발생:", err));
+
+    // 파일 업로드 시 미리보기 업데이트
+    document.getElementById("file").addEventListener("change", function (event) {
+        let file = event.target.files[0];
+
+        if (file) {
+            let reader = new FileReader();
+            reader.onload = function (e) {
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = "block"; // 이미지 표시
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+});
+
+</script>
+
 </body>
 </html>

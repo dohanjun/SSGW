@@ -5,176 +5,150 @@
 	layout:fragment="content">
 
 <head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>출퇴근 기록</title>
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
+<!-- Custom fonts and styles -->
+<link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet"
+	type="text/css">
+<link
+	href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+	rel="stylesheet">
+<link href="css/sb-admin-2.min.css" rel="stylesheet">
 
-    <title>SB Admin 2 - Blank</title>
-
-    <!-- Custom fonts for this template-->
-    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-    <link
-        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-        rel="stylesheet">
-
-    <!-- Custom styles for this template-->
-    <link href="css/sb-admin-2.min.css" rel="stylesheet">
-
-</head>
 <style>
-
-.col{
-margin: 10px;
+.col {
+	margin: 10px;
 }
 
-
-.card-body{
-display: block;	
+.card-body {
+	display: block;
+	padding: 20px;
 }
 
-div td{
-text-align: center;
-margin: 0px auto;	
+div td {
+	text-align: center;
 }
 
-.work-menu{
-background-color: balck;
-color: fff;
-border: 1px solid black;
-display: inline;
-width: 300px;
-
-margin: 40px;
-
+.work-menu {
+	background-color: #343a40;
+	color: white;
+	border-radius: 8px;
+	padding: 10px 20px;
+	display: inline-block;
+	width: 220px;
+	text-align: center;
+	margin: 10px;
+	font-weight: bold;
+	cursor: pointer;
+	transition: background 0.3s ease;
 }
 
+.work-menu:hover {
+	background-color: #007bff;
+}
 
+.work-info table, .work-info td {
+	border: 1px solid #ddd;
+	padding: 8px;
+	text-align: center;
+}
 
+.work-info table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-top: 20px;
+}
+
+.card-header {
+	background: #007bff;
+	color: white;
+	font-weight: bold;
+}
+
+/* Adjust column widths */
+.work-info th:nth-child(1), .work-info td:nth-child(1) {
+	width: 15%; /* 사원번호 */
+}
+
+.work-info th:nth-child(2), .work-info td:nth-child(2) {
+	width: 15%; /* 날짜 */
+}
 </style>
+</head>
+
 <body id="page-top">
- 				
- 				
- 				<div class="row">
+	<div class="row">
+		<div class="col">
+			<div class="card shadow mb-4">
+				<div
+					class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+					<h5 class="m-0 font-weight-bold">출퇴근</h5>
+				</div>
+				<div class="card-body text-center">
+					<div class="work-menu">전체</div>
+					<div class="work-menu">조퇴회수</div>
+					<div class="work-menu">지각회수</div>
+					<div class="work-menu">연차회수</div>
+					<div class="work-menu"></div>
+					<div class="work-menu">실제 출퇴근 등록일</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<div class="card shadow mb-4">
+				<div
+					class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+					<h5 class="m-0 font-weight-bold">출퇴근 기록</h5>
+				</div>
+				<div class="card-body">
+					<div class="work-info">
+						<table>
+							<thead>
+								<tr>
+									<th>사원번호</th>
+									<th>날짜</th>
+									<th>출근시간</th>
+									<th>퇴근시간</th>
+									<th>근태유형</th>
+									<th>연차사유</th>
+									<th>비고</th>
+									<th>총 근무시간</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="attendance : ${attendanceList}">
+									<td th:text="${attendance.employeeNo}">[[${employeeNo}]]</td>
+									<td th:text="${#dates.setFormat(attendance.attendanceDate, 'yyyy-MM-dd HH:mm')}"></td>
+									<td th:text="${#dates.setFormat(attendance.clockInTime, 'HH:mm')}"></td>
+									<td th:text="${#dates.setFormat(attendance.clockOutTime, 'HH:mm')}"></td>
+									<td th:text="${attendance.workAttitudeType}"></td>
+									<td th:text="${attendance.reason} ?: '-'"></td>
+									<td></td>
+									<td th:text="${attendance.totalWorkingHours}"></td>
+								</tr>
+							</tbody>
 
-                        <!-- Area Chart -->
-                 
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
-                        <!-- Pie Chart -->
-                        <div class="col">
-                            <div class="card shadow mb-4">
-                                <!-- Card Header - Dropdown -->
-                                <div
-                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                    <h5 class="m-0 font-weight-bold text-primary">출퇴근</h5>
-                                    <div class="dropdown no-arrow">
-                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        </a>
-                                            <div class="dropdown-header"></div>
-                                           
-                                        
-                                    </div>
-                                </div>
-                                <!-- Card Body -->
-                                <div class="">
-                                    <div class="">
-                                        <canvas id="myPieChart"></canvas>
-                                    </div>
-									<div class="work-menu">
-										<a>전체</a>
-									</div>
-									<div class="work-menu">
-										<span><a>정상근로일</a></span>
-									</div>
-									<div class="work-menu">
-										<a>미처리</a>
-									</div>
-									<div class="work-menu">
-										<a>실제출퇴근등록일</a>
-									</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    
-                    
-                    <div class="row">
-
-                        <!-- Area Chart -->
-                 
-
-                        <!-- Pie Chart -->
-                        <div class="col">
-                            <div class="card shadow mb-4">
-                                <!-- Card Header - Dropdown -->
-                                <div
-                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                    <h5 class="m-0 font-weight-bold text-primary">출퇴근기록</h5>
-                                    <div class="dropdown no-arrow">
-                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        </a>
-                                            <div class="dropdown-header"></div>
-                                           
-                                        
-                                    </div>
-                                </div>
-                                <!-- Card Body -->
-                                <div class="">
-                                    <div class="">
-                                        <canvas id="myPieChart"></canvas>
-                                    </div>
-									<div class="work-info">
-										<table>
-											<tr>
-												<td>사원번호</td>
-												<td>날짜</td>	
-												<td>출근시간</td>
-												<td>퇴근시간</td>
-												<td>근태유형</td>	
-												<td>연차사유</td>
-												<td>비고</td>
-												<td>총 근무시간</td>
-												<td></td>
-											</tr>
-										</table>
-										
-									</div>
-									<table>
-										<tr>
-											<td>[[${employeeNo}]]</td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-										</tr>
-									</table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-
-
-
-    <!-- Bootstrap core JavaScript-->
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Core plugin JavaScript-->
-    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
-
-    <!-- Custom scripts for all pages-->
-    <script src="js/sb-admin-2.min.js"></script>
-
+	<!-- Bootstrap core JavaScript-->
+	<script src="vendor/jquery/jquery.min.js"></script>
+	<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+	<script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+	<script src="js/sb-admin-2.min.js"></script>
+	<script>
+		
+	</script>
 </body>
 
 </html>

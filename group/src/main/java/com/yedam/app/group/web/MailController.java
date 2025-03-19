@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.yedam.app.group.service.MailService;
@@ -148,9 +149,10 @@ public class MailController {
 	 public Map<String, Object>
 	 	mailVeryAJAXJSON(@RequestBody MailVO mailVO) {
 		 return mailService.VeryInfo(mailVO);
-	    }
+	    } 
 	 
-	 //메일삭제
+	 
+	 //메일휴지통
 	 
 	 @GetMapping("mailDelete")
 	    public String mailDelete(Integer mailId) {
@@ -158,6 +160,64 @@ public class MailController {
 	      return "redirect:mailList";
 	    }
 	 
+//세부메일함
 	 
+	 //받은메일함
+	 @GetMapping("getMail")
+	    public String getMail(Model model, PageListVO vo, Paging paging) {
+		 
+		 //페이징처리
+		 vo.setStart(paging.getFirst());
+		 vo.setEnd(paging.getLast());
+		 paging.setTotalRecord(mailService.pageGetCount(vo));
+		 model.addAttribute("paging", paging);
+		 
+		 List<MailVO> list = mailService.findAll(vo);
+		 model.addAttribute("mails", list);
+	     return "group/mail/getMail";  // mainPage.html을 반환
+	    }	
+	 
+	 //보낸메일함
+	 @GetMapping("putMail")
+	    public String putMail(Model model, PageListVO vo, Paging paging) {
+		 
+		 //페이징처리
+		 vo.setStart(paging.getFirst());
+		 vo.setEnd(paging.getLast());
+		 paging.setTotalRecord(mailService.pageGetCount(vo));
+		 model.addAttribute("paging", paging);
+		 
+		 List<MailVO> list = mailService.findAll(vo);
+		 model.addAttribute("mails", list);
+	     return "group/mail/putMail";  // mainPage.html을 반환
+	    }	
+	 //임시메일함 -> 7일뒤 삭제
+	 @GetMapping("temporaryMail")
+	    public String temporaryMail(Model model, PageListVO vo, Paging paging) {
+		 
+		 //페이징처리
+		 vo.setStart(paging.getFirst());
+		 vo.setEnd(paging.getLast());
+		 paging.setTotalRecord(mailService.pageGetCount(vo));
+		 model.addAttribute("paging", paging);
+		 
+		 List<MailVO> list = mailService.findAll(vo);
+		 model.addAttribute("mails", list);
+	     return "group/mail/temporaryMail";  // mainPage.html을 반환
+	    }	
+	 //휴지통 -> 30일 뒤 삭제
+	 @GetMapping("deleteMail")
+	    public String deleteMail(Model model, PageListVO vo, Paging paging) {
+		 
+		 //페이징처리
+		 vo.setStart(paging.getFirst());
+		 vo.setEnd(paging.getLast());
+		 paging.setTotalRecord(mailService.pageGetCount(vo));
+		 model.addAttribute("paging", paging);
+		 
+		 List<MailVO> list = mailService.findAll(vo);
+		 model.addAttribute("mails", list);
+	     return "group/mail/deleteMail";  // mainPage.html을 반환
+	    }	
 
 }

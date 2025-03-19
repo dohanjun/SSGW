@@ -6,7 +6,7 @@ import java.util.Map;
 public interface MailService {
 	
 	//메일검색기능
-	public MailVO mailCondition(MailVO mailVO);
+	public PageListVO getPageList(PageListVO vo);
 	
 	//메일전체조회
 	public List<MailVO> findAll(PageListVO vo);
@@ -37,5 +37,16 @@ public interface MailService {
 
 	//메일 페이지네이션
 	public int pageGetCount(PageListVO pagelistVO);
+	
+//메일상세함
+	
+		//받은메일함
+		public List<MailVO> selectGetList(PageListVO vo);
+		//보낸메일함
+		public List<MailVO> selectPutList(PageListVO vo);
+		//임시메일함
+		public List<MailVO> selectTemList(PageListVO vo);
+		//휴지통
+		public List<MailVO> selectDelList(PageListVO vo);
 	
 }

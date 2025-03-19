@@ -8,18 +8,18 @@ import lombok.Data;
 
 @Data
 public class ApprovalVO {
-	private Integer stampId;
-	private Integer employeeNo;
-	private String stampImgPath;
-	private String active;
-	private int stampOrder;
+	private Integer stampId;       // 도장아이디
+	private Integer employeeNo;    // 사원번호
+	private String stampImgPath;   // 이미지경로
+	private String active;         // 활성화 여부 '0', '1'
+	private int stampOrder;        // 순서
 	
 	// 기본양식
-	private Integer basicsFormId;
-	private String content;
-	private int version;
-	private String remarks;
-	private String formType;
+	private Integer basicsFormId;  // 기본양식아이디
+	private String content;        // 양식
+	private int version;           // 버전
+	private String remarks;        // 비고
+	private String formType;       // 유형
 	
 	// 전자결재
 	private Integer draftNo;      // 문서번호
@@ -32,6 +32,6 @@ public class ApprovalVO {
 	private int formId;           // 양식번호
 	private int suberNo;          // 회사번호
 	
-	private String employeeName;
+	private String employeeName;  // 사원이름
 	
 }

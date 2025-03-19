@@ -18,15 +18,16 @@ public class EmpVO {
 	private String passwordChanged;   // 비밀번호 변경여부
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date hireDate;			  // 입사일
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date exitDate;			  // 퇴사일
 	private String phoneNumber;	 	  // 연락처
 	private String address;			  // 주소
 	private String profileImage;	  // 프로필 이미지 // BLOB 방식 밑에 추가해서 이거안씀
-	private int suberNo;			  // 회사번호
+	private Integer suberNo;			  // 회사번호
 	private Integer rankId;			      // 직급Id
 	private Integer rightsId;			  // 권한Id 
 	private Integer manager;			  // 매니저Id
-	private int departmentNo;		  // 부서번호
+	private Integer departmentNo;		  // 부서번호
 	
     private byte[] profileImageBLOB; //  이미지 (숫자로 변환되어 저장됨)
     private MultipartFile profileImageFile; //  사용자가 업로드한 파일
