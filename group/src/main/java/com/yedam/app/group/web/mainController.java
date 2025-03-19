@@ -81,7 +81,7 @@ public class mainController {
 
 	
 	@GetMapping("/qna/detail")
-	public String getBoardDetail(@RequestParam("postId") Long postId, Model model) {
+	public String getBoardDetail(@RequestParam("postId") int postId, Model model) {
 	    // 게시글 정보 조회
 	    BoardPostVO boardPost = boardPostService.getBoardDetail(postId);
 
