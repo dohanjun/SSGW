@@ -25,6 +25,7 @@
 		ON r.DRAFT_NO = d.DRAFT_NO
 		WHERE d.APRV_STATUS = #{aprvStatus}
 		AND r.EMPLOYEE_NO = #{employeeNo}
+		AND d.SUBER_NO = #{suberNo}
 		<if test="employeeName != null and employeeName != ''">
         	AND e.EMPLOYEE_NAME LIKE '%' || #{employeeName} || '%'
     	</if>
@@ -43,13 +44,11 @@
 		, d.EMPLOYEE_NO
 		, d.TITLE
 		, d.CONTENT
-		,
-		d.APRV_STATUS
+		, d.APRV_STATUS
 		, d.REJECT_REASON
 		, d.DRAFT_DATE
 		, d.APRV_DATE
-		,
-		s.STAMP_IMG_PATH
+		, s.STAMP_IMG_PATH
 		FROM aprv_documents d
 		LEFT JOIN stamp s
 		ON
@@ -93,7 +92,8 @@
 		WHERE employee_no = #{employeeNo}
 		AND active = '1'
 	</select>
-
+	
+	<!-- 활성화된 도장 이미지  -->
 	<select id="selectActiveStamp" parameterType="ApprovalVO"
 		resultType="ApprovalVO">
 		SELECT employee_no
@@ -124,6 +124,33 @@
 		,1
 		,'1'
 		,sysdate
-		,1)
+		,#{suberNo})
 	</insert>
+	
+	<!-- 기본양식불러오기 -->
+	<select id="selectBasicsForm" parameterType="ApprovalVO" resultType="ApprovalVO">
+		SELECT BASICS_FORM_ID
+			   ,CONTENT
+			   ,VERSION
+			   ,REMARKS	
+			   ,FORM_TYPE
+	    FROM   BASICS_FORM
+	    WHERE  BASICS_FORM_ID = #{basicsFormId}
+	</select>
+	
+	<!-- 회사전용양식불러오기 -->
+	<select id="selectAprvForm" parameterType="ApprovalFormVO" resultType="ApprovalFormVO">
+		SELECT FORM_ID
+			   ,FORM_TYPE
+			   ,REMARKS
+			   ,CONTENT
+			   ,VERSION
+			   ,ACTIVE
+			   ,CREATION_DATE
+			   ,SUBER_NO
+		FROM   aprv_forms
+		WHERE  SUBER_NO = #{suberNo}
+		  AND  ACTIVE = '1'
+		  AND  FORM_ID = #{formId}
+	</select>
 </mapper>

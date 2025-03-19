@@ -44,7 +44,7 @@ public class SecurityConfig {
                 .invalidateHttpSession(true)   
                 .permitAll()
             )
-            .csrf(csrf -> csrf.ignoringRequestMatchers("/logout", "/aprv/**","/insertModule"));
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/logout", "/aprv/**","/insertModule","/saveForm"));
         return http.build();
     }
 

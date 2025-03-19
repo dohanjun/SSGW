@@ -73,6 +73,7 @@ public class ApprovalServiceImpl implements ApprovalService {
 	@Override
 	public int createForm(ApprovalFormVO aprvformVO) {
 		int result = approvalMapper.insertForm(aprvformVO);
+		
 		return result == 1 ? aprvformVO.getFormId() : -1;
 	}
 	
@@ -133,9 +134,22 @@ public class ApprovalServiceImpl implements ApprovalService {
 	    return approvalMapper.selectActiveStamp(aprvVO);
 	}
 	
+	// 전자결재 문서조회
 	@Override
 	public List<ApprovalVO> findAprvListByStatus(ApprovalVO aprvVO) {
 	    return approvalMapper.selectAprvListByStatus(aprvVO);
+	}
+	
+	// 기본양식
+	@Override
+	public ApprovalVO findBasicsForm(Integer basicsFormId) {
+		return approvalMapper.selectBasicsForm(basicsFormId);
+	}
+	
+	// 회사전용양식
+	@Override
+	public ApprovalFormVO findAprvForm(Integer formId, int suber) {
+		return approvalMapper.selectAprvForm(formId, suber);
 	}
 
 	

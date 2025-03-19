@@ -9,29 +9,26 @@
 <link th:href="@{/css/approval.css}" rel="stylesheet">
 </head>
 <body>
-
-	<h3>결재자</h3>
-		<!-- <table>
-    <thead>
-        <tr>
-            <th th:each="" th:text="">직책</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td th:each="">
-                <button>확인 버튼</button><br>
-                <img th:src="" 
-                     alt="결재 도장" width="100px" height="100px" 
-                     style="border: 1px solid #ccc; padding: 5px; display: none;">
-            </td>
-        </tr>
-        <tr>
-            <td th:each="">이름</td>
-        </tr>
-    </tbody>
-</table> -->
-	<h2>문서 제목 : [[${aprv.title}]]</h2>
+	<p>결재선</p>
+	<table class="ddddd">
+		<tr>
+		  <th>직책</th>
+		  <th>직책</th>
+		  <th>직책</th>
+		</tr>
+		<tr>
+		  <td>도장</td>
+		  <td>도장</td>
+		  <td>도장</td>
+		</tr>
+		<tr>
+		  <td>이름</td>
+		  <td>이름</td>
+		  <td>이름</td>
+		</tr>
+	</table>
+	
+	<h4>문서 제목 : [[${aprv.title}]]</h4>
 
     <table border="1">
         <tr>
@@ -43,11 +40,6 @@
             <td th:text="${#dates.format(aprv.draftDate, 'yyyy-MM-dd')}" style="padding: 10px;"></td>
         </tr>
     </table>
-
-	<!-- 수정: 뒤로가기 버튼 스타일 개선 -->
-    <div style="margin-top: 20px;">
-        <a href="/aprv" style="padding: 10px 15px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">뒤로가기</a>
-    </div>
 
 </body>
 </html>
