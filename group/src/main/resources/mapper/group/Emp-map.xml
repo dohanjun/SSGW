@@ -123,20 +123,19 @@
               parameterType="EmpVO">
               
               UPDATE employees
-              SET
-                 employeeId    =   #{EMPLOYEE_ID}
-                 , employeePw  =   #{EMPLOYEE_PW}
-                 , employeeNo  =   #{EMPLOYEE_NO}
-                 , employeeName =  #{EMPLOYEE_NAME}
-                 , departmentNo =  #{DEPARTMENT_NO}
-                 , rankId    =     #{RANK_ID}
-                 , rightsId  =     #{RIGHTS_ID}
-                 , phoneNumber =   #{PHONE_NUMBER}
-                 , address     =   #{ADDRESS}
-                 , hireDate    =   #{HIRE_DATE}
-                 , exitDate    =   #{EXIT_DATE}
-                 , profileImageBLOB = #{PROFILE_IMAGE_BLOB, jdbcType=BLOB}
-              WHERE EMPLOYEE_NO = #{employeeNo}
+               <set>
+                   <if test="employeePw != null and employeePw != ''"> EMPLOYEE_PW  =   #{employeePw},</if>
+                  EMPLOYEE_NAME =  #{employeeName},
+                  DEPARTMENT_NO =  #{departmentNo},
+                  RANK_ID    =     #{rankId},
+                  RIGHTS_ID  =     #{rightsId},
+                  PHONE_NUMBER =   #{phoneNumber},
+                  ADDRESS     =    #{address},
+                 <if test="hireDate != null"> HIRE_DATE = #{hireDate},</if>
+			     <if test="exitDate != null"> EXIT_DATE = #{exitDate},</if>
+			     <if test="profileImageBLOB != null"> PROFILE_IMAGE_BLOB = #{profileImageBLOB,jdbcType=BLOB}</if>
+               </set>
+                 WHERE EMPLOYEE_NO = #{employeeNo}
       </update>
       <!-- 로그인한 사람 아이디 -->
 	  <select id="findByEmployeeId" parameterType="String" resultType="EmpVO">
@@ -144,5 +143,6 @@
 	  		 FROM employees 
 	  		 WHERE employee_id = #{employeeId}
 	  </select>
+	  
 
 </mapper>

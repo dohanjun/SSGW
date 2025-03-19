@@ -1,57 +1,81 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org"
-	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	  layout:decorate="~{common/layouts/default_layout}"
-	  layout:fragment="content">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/layouts/default_layout}"
+      layout:fragment="content">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport">
     <title>사원 등록</title>
+
+    <!--  부트스트랩 4 CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.6.2/css/bootstrap.min.css">
+    
+    <!--  jQuery, Popper.js, 부트스트랩 4 JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.6.2/js/bootstrap.min.js"></script>
+
     <style>
-            .profile-img {
+        /*  프로필 이미지 스타일 */
+        .profile-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .profile-img {
             width: 100px;
             height: 100px;
             background: #ddd;
-            display: block;
-            margin: 0 auto 10px;
+            cursor: pointer;
+        }
+
+        /*  파일 선택 input 숨김 */
+        #photo {
+            display: none;
         }
     </style>
 </head>
 <body>
 
-    <div class="container text-center">
-        <h3>사원 등록</h3>
-    </div>
-    <form name="insertForm" th:action="@{/empinsert}" method="post" enctype="multipart/form-data">    
-    <div class="container text-center">
-      <img id="imagePreview" class="profile-img" alt="">
-      <input type="file" id="photo" name="profileImageFile" accept="image/*" onchange="empimg(event)">
-    </div>
-  
-    <div class="container text-center">
+<div class="container text-center">
+    <h3>사원 등록</h3>
+</div>
 
-        <table class="table table-boardered">
-           <tr>
-               <th><label for="empno">사원번호</label></th>
-               <td><input type="number" id="empno" name="employeeNo" th:value="${employeeNo}" readonly></td>
-           </tr>
-           <tr>
-               <th><label for="subno">회사번호</label></th>
-               <td><input type="number" id="subno" name="suberNo" th:value="${suberNo}" readonly></td>
-           </tr>
-           <tr>
-               <th><label for="empid">ID</label></th>
-               <td><input type="text" id="empid" name="employeeId" ></td>
-           </tr>
-           <tr>
+<form name="insertForm" th:action="@{/empinsert}" method="post" enctype="multipart/form-data">
+    <div class="container text-center">
+        <!--  이미지 클릭 시 파일 선택 -->
+        <div class="profile-container">
+            <img id="imagePreview" class="profile-img" src=""  alt="" onclick="document.getElementById('photo').click();">
+            <input type="file" id="photo" name="profileImageFile" accept="image/*" onchange="empimg(event)">
+        </div>
+    </div>
+
+    <div class="container">
+        <table class="table table-bordered">
+            <tr>
+                <th><label for="empno">사원번호</label></th>
+                <td><input type="number" id="empno" name="employeeNo" th:value="${employeeNo}" readonly></td>
+            </tr>
+            <tr style="display: none;"><!-- style="display: none;" tr 화면에서 지움//type="number" 타입말고 hidden 타입쓰면 서버에 전송은 되고 회사번호는 노출안됨 -->
+                <th><label for="subno">회사번호</label></th>
+                <td><input type="hidden" id="subno" name="suberNo" th:value="${suberNo}" readonly></td> 
+            </tr>
+            <tr>
+                <th><label for="empid">ID</label></th>
+                <td><input type="text" id="empid" name="employeeId"></td>
+            </tr>
+            <tr>
                 <th><label for="emppw">비밀번호</label></th>
                 <td><input type="password" id="emppw" name="employeePw"></td>
             </tr>
-           <tr>
-               <th><label for="empname">이름</label></th>
-               <td><input type="text" id="empname" name="employeeName"></td>
-           </tr>
-           <tr>
+            <tr>
+                <th><label for="empname">이름</label></th>
+                <td><input type="text" id="empname" name="employeeName"></td>
+            </tr>
+            <tr>
                <th><label for="depa">부서</label></th>
                <td>
                    <select id="depa" name="departmentNo">
@@ -96,33 +120,70 @@
                <th><label for="pho">연락처</label></th>
                <td><input type="text" id="pho" name="phoneNumber"></td>
            </tr>
-           <tr>
-               <th><label for="add">주소</label></th>
-               <td><input type="text" id="add" name="address"></td>
-           </tr>
-           <tr>
-               <th><label for="hire">입사일</label></th>
-               <td><input type="date" id="hire" name="hireDate"></td>
-           </tr>
+            <tr>
+                <th><label for="add">주소</label></th>
+                <td>
+                    <input type="text" id="add" name="address" readonly>
+                    <button type="button" class="btn btn-info btn-sm" onclick="searchAddress()">주소 검색</button>
+                </td>
+            </tr>
+            <tr>
+                <th><label for="detailAdd">상세주소</label></th>
+                <td>
+                    <input type="text" id="detailAdd" placeholder="상세주소 입력">
+                </td>
+            </tr>
+            <tr>
+                <th><label for="hire">입사일</label></th>
+                <td><input type="date" id="hire" name="hireDate"></td>
+            </tr>
         </table>
+        <div class="container text-center mt-3">
         <button type="submit" class="btn btn-primary">등록</button>
         <button type="button" class="btn btn-danger">취소</button>
+        </div>
     </div>
-    </form>
-    <script>
+</form>
+
+<!--  카카오 주소 API -->
+    <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=843f623b54841d7e48c15c0667f81957&libraries=services"></script>
+    <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+
+<script>
+    //  이미지 미리보기 & 클릭 시 파일 업로드 창 열기
     function empimg(event) {
         const image = document.getElementById('imagePreview');
         const file = event.target.files[0];
         if (file) {
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = function (e) {
                 image.src = e.target.result;
-                image.style.display = 'block';
             };
             reader.readAsDataURL(file);
         }
     }
-    
-    </script>
+
+    //  주소 검색 API
+    function searchAddress() {
+        new daum.Postcode({
+            oncomplete: function (data) {
+                let fullAddress = "[" + data.zonecode + "] " + data.roadAddress;
+                document.getElementById("add").value = fullAddress; // 우편번호 + 도로명 주소 저장
+            }
+        }).open();
+    }
+
+    //  폼 제출 시 주소 + 상세주소 합쳐서 저장
+    document.querySelector("form[name='insertForm']").addEventListener("submit", function (event) {
+        let addressField = document.getElementById("add");
+        let detailAddressField = document.getElementById("detailAdd");
+
+        // 주소 + 상세주소를 합쳐서 하나의 컬럼에 저장
+        if (addressField.value && detailAddressField.value) {
+            addressField.value = addressField.value + " " + detailAddressField.value;
+        }
+    });
+</script>
+
 </body>
 </html>

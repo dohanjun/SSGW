@@ -103,13 +103,14 @@ public class EmpController {
 	       }
 
 	       // 4) 이미지 데이터 처리
-	       String base64Image = "";
-	       if (findVO.getProfileImageBLOB() != null && findVO.getProfileImageBLOB().length > 0) {
-	           base64Image = Base64.getEncoder().encodeToString(findVO.getProfileImageBLOB());
+	       if (findVO.getProfileImageBLOB() != null) {
+	           String base64Image = Base64.getEncoder().encodeToString(findVO.getProfileImageBLOB());
+	           model.addAttribute("profileImageBase64", base64Image);
+	       } else {
+	           model.addAttribute("profileImageBase64", null); // 이미지가 없으면 null 처리
 	       }
 
 	       // 5) 모델에 데이터 추가
-	       model.addAttribute("profileImageBase64", base64Image);
 	       model.addAttribute("emp", findVO);
 
 	       return "group/personnel/empUpdate"; // 뷰 반환
@@ -121,4 +122,7 @@ public class EmpController {
 	       empService.modifyEmpInfo(empVO);
 	       return "redirect:/empInfo?employeeNo=" + empVO.getEmployeeNo();
 	   }
+	   
+	   
+	   
 }
