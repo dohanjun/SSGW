@@ -22,7 +22,27 @@ public class ModuleServiceImpl implements ModuleService{
 
 	@Override
 	public void addModule(ModuleVO module) {
-		moduleMapper.insertModule();
+		moduleMapper.insertModule(module);
 	}
 
+	@Override
+	public void updateModule(ModuleVO module) {
+		moduleMapper.updateModule(module);
+		
+	}
+
+	@Override
+	public void deleteModule(int moduleNo) {
+		moduleMapper.deleteModule(moduleNo);
+	}
+
+	@Override
+	public void updateModuleBasic(int moduleNo) {
+		moduleMapper.updateBasic(moduleNo);
+	}
+
+	@Override
+	public void updateModuleActive(int moduleNo) {
+		moduleMapper.updateActive(moduleNo);
+	}
 }

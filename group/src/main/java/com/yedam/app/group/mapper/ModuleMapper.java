@@ -9,5 +9,9 @@ import com.yedam.app.group.service.ModuleVO;
 @Mapper
 public interface ModuleMapper {
 	List<ModuleVO> getAllModules();
-	ModuleVO insertModule();
+	int insertModule(ModuleVO moduleVO);
+	int updateModule(ModuleVO moduleVO);
+	int deleteModule(int moduleNo);
+	int updateBasic(int moduleNo);
+	int updateActive(int moduleNo);
 }
