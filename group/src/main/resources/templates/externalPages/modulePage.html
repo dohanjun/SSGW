@@ -41,7 +41,7 @@
             color: white;
         }
 
-        .delete-btn {
+        .delete-btn, .delete-modulebtn {
             background-color: #f44336;
             color: white;
         }
@@ -76,7 +76,7 @@
             background-color: #fefefe;
             padding: 20px;
             border-radius: 8px;
-            width: 400px;
+            width: 600px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
 
@@ -115,9 +115,9 @@
         <tr th:each="module : ${modules}">
             <td th:text="${module.moduleNo}" style="display:none"></td>
             <td th:text="${module.moduleName}">서비스명</td>
-            <td th:text="${module.modulePrice}">금액</td>
+            <td th:text="${#numbers.formatInteger(module.modulePrice, 0, 'COMMA')}">금액</td>
             <td><button class="edit-btn">수정</button></td>
-            <td><button class="delete-btn">삭제</button></td>
+            <td><button class="delete-modulebtn">삭제</button></td>
         </tr>
         </tbody>
     </table>
@@ -128,10 +128,13 @@
 <div id="modal" class="modal">
     <div class="modal-content">
         <h3>모듈 추가/수정</h3>
+        <input type="hidden" id="moduleNo">
         <input type="text" id="moduleTitle" placeholder="제목">
         <input type="number" id="modulePrice" placeholder="가격">
         <textarea id="moduleDescription" placeholder="내용"></textarea>
         <div class="modal-buttons">
+        	<button class="basic-btn">기본모듈</button>
+        	<button class="active-btn">활성화</button>
             <button class="insertedit-btn">저장/수정</button>
             <button class="delete-btn" onclick="closeModal()">취소</button>
         </div>
@@ -139,14 +142,14 @@
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 <script th:inline="javascript">
-var modules = [[${modules}]];
+	var modules = [[${modules}]];
 
 function closeModal(){
     document.getElementById('moduleTitle').value ='';
     document.getElementById('modulePrice').value = '';
     document.getElementById('moduleDescription').value ='';  
     document.getElementById('modal').style.display = 'none';
-}
+	}
 
 window.onclick = function(event) {
     const modal = document.getElementById('modal');
@@ -155,69 +158,176 @@ window.onclick = function(event) {
     }
 }
 
-document.querySelectorAll('.edit-btn').forEach(e => {
-    e.addEventListener('click', event => {
-        const row = event.target.closest('tr');
-        const cells = row.querySelectorAll('td');
-        const moduleNo = cells[0].textContent;
-        modules.forEach(module => {
-            if(module.moduleNo == moduleNo){
-                document.getElementById('moduleTitle').value = module.moduleName;
-                document.getElementById('modulePrice').value = module.modulePrice;
-                document.getElementById('moduleDescription').value = module.explanation;  
-                document.getElementById('modal').style.display = 'flex';
-            }
-        });
-    });
-});
-
 document.querySelector('.add-btn').addEventListener('click', event => {
+	document.getElementById('moduleNo').value = '';
     document.getElementById('moduleTitle').value ='';
     document.getElementById('modulePrice').value = '';
     document.getElementById('moduleDescription').value ='';  
     document.getElementById('modal').style.display = 'flex';
 })
 
-document.querySelectorAll(".insertedit-btn").forEach(e => {
-    e.addEventListener('click', event => {
-		$.ajax({
-			type: "POST",
-			url: "/insertModule",
-			data: JSON.stringify(
-				{
-				    moduleName: document.getElementById('moduleTitle').value,
-					modulePrice: Number(document.getElementById('modulePrice').value),
-					explanation: document.getElementById('moduleDescription').value,
-				}
-			),
-			contentType: "application/json",
-			success: function(response) {
-				alert("등록 완료.");
-		        addModuleToTable(data); 
-		        closeModal();
+document.querySelector(".insertedit-btn").addEventListener("click", function(event) {
+    let moduleNo = document.getElementById("moduleNo").value; 
+    let moduleData = {
+        moduleName: document.getElementById("moduleTitle").value,
+        modulePrice: Number(document.getElementById("modulePrice").value),
+        explanation: document.getElementById("moduleDescription").value
+    };
 
-			},
-			error: function(xhr, status, error) {
-				alert("등록 싫패");
-				console.error(xhr.responseText);
-			}
-		});
+    if (moduleNo) {
+        moduleData.moduleNo = moduleNo; 
+        $.ajax({
+            type: "PUT", 
+            url: "/updateModule",
+            data: JSON.stringify(moduleData),
+            contentType: "application/json",
+            success: function(response) {
+                alert("수정 완료.");
+                
+                let index = modules.findIndex(m => m.moduleNo == response.moduleNo);
+                if (index !== -1) {
+                    modules[index] = response;  
+                }
+                
+                let rows = document.querySelectorAll("tbody tr");
+                rows.forEach(row => {
+                    if (row.cells[0].textContent == moduleNo) {
+                        row.cells[1].textContent = response.moduleName;
+                        row.cells[2].textContent = parseInt(response.modulePrice).toLocaleString();
+                    }
+                });
+
+                closeModal();
+            },
+            error: function(xhr, status, error) {
+                alert("수정 실패");
+                console.error(xhr.responseText);
+            }
+        });
+    } else {
+        $.ajax({
+            type: "POST",
+            url: "/insertModule",
+            data: JSON.stringify(moduleData),
+            contentType: "application/json",
+            success: function(response) {
+                alert("등록 완료.");
+                console.log(response);
+
+                let tbody = document.querySelector("tbody");
+                let newRow = document.createElement("tr");
+
+                newRow.innerHTML = `
+                    <td style="display:none">${response.moduleNo}</td>
+                    <td>${response.moduleName}</td>
+                    <td>${parseInt(response.modulePrice).toLocaleString()}</td>
+                    <td><button class="edit-btn">수정</button></td>
+                    <td><button class="delete-modulebtn">삭제</button></td>
+                `;
+
+                tbody.appendChild(newRow);
+                modules.push(response);
+                closeModal();
+            },
+            error: function(xhr, status, error) {
+                alert("등록 실패");
+                console.error(xhr.responseText);
+            }
+        });
+    }
+});
+
+document.querySelector("tbody").addEventListener("click", function(event) {
+    if (event.target.classList.contains("edit-btn")) {
+        console.log("수정 버튼 클릭됨:", event.target);
+
+        const row = event.target.closest('tr');
+        const cells = row.querySelectorAll('td');
+        const moduleNo = cells[0].textContent;
+
+        const module = modules.find(m => m.moduleNo == moduleNo);
+        if (module) {
+            document.getElementById("moduleNo").value = module.moduleNo;
+            document.getElementById("moduleTitle").value = module.moduleName;
+            document.getElementById("modulePrice").value = module.modulePrice;
+            document.getElementById("moduleDescription").value = module.explanation;
+
+            const basicBtn = document.querySelector(".basic-btn");
+            if (module.basicModule === "Y") {
+                basicBtn.textContent = "기본 모듈";
+                basicBtn.style.backgroundColor = "gray";
+            } else {
+                basicBtn.textContent = "결제 모듈";
+                basicBtn.style.backgroundColor = "blue";
+            }
+
+            const activeBtns = document.querySelectorAll(".active-btn");
+            if (module.activate === "Y") {
+                activeBtns[0].style.backgroundColor = "green";
+                activeBtns[0].textContent = "활성화";
+
+            } else {
+                activeBtns[0].style.backgroundColor = "red";
+                activeBtns[0].textContent = "비활성화";
+            }
+
+            document.getElementById("modal").style.display = "flex";
+        }
+    }
+});
+
+
+document.querySelector("tbody").addEventListener("click", function(event) {
+    if (event.target.classList.contains("delete-modulebtn")) {
+        const row = event.target.closest('tr');
+        const moduleNo = row.cells[0].textContent;
+
+        if (confirm("정말 삭제하시겠습니까?")) {
+            $.ajax({
+                type: "DELETE",
+                url: `/deleteModule/${moduleNo}`,
+                success: function(response) {
+                    alert("삭제 완료.");
+                    row.remove(); 
+                },
+                error: function(xhr, status, error) {
+                    alert("삭제 실패");
+                    console.error(xhr.responseText);
+                }
+            });
+        }
+    }
+});
+
+document.querySelector(".basic-btn").addEventListener("click", function(event) {
+    event.target.textContent = event.target.textContent === "기본 모듈" ? "결제 모듈" : "기본 모듈";
+    event.target.style.backgroundColor = event.target.style.backgroundColor === "gray" ? "blue" : "gray";
+
+    let moduleNo = document.getElementById("moduleNo").value;
+    $.ajax({
+        type: "PATCH",
+        url: `/updateModuleBasic/${moduleNo}`,
+        contentType: "application/json",
+        error: function(xhr, status, error) {
+        }
     });
 });
 
-function addModuleToTable(module) {
-    let tbody = document.getElementById('moduleTableBody');
-    let newRow = document.createElement('tr');
+document.querySelectorAll(".active-btn").forEach(button => {
+    button.addEventListener("click", function(event) {
+        event.target.textContent = event.target.textContent === "활성화" ? "비활성화" : "활성화";
+        event.target.style.backgroundColor = event.target.style.backgroundColor === "green" ? "red" : "green";
 
-    newRow.innerHTML = `
-        <td style="display:none">${module.moduleNo}</td>
-        <td>${module.moduleName}</td>
-        <td>${module.modulePrice}</td>
-        <td><button class="edit-btn">수정</button></td>
-        <td><button class="delete-btn">삭제</button></td>
-    `;
-    tbody.appendChild(newRow);
-}
+        let moduleNo = document.getElementById("moduleNo").value;
+        $.ajax({
+            type: "PATCH",
+            url: `/updateModuleActive/${moduleNo}`,
+            contentType: "application/json",
+            error: function(xhr, status, error) {
+            }
+        });
+    });
+});
 
 </script>
 

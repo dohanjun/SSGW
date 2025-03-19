@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{common/layouts/main_layout}"
+	layout:fragment="content">
+<head>
+<link rel="stylesheet" type="text/css" href="/css/subscribePage.css">
+<style>
+.pagination-container {
+	display: flex;
+	justify-content: center;
+	margin-top: 15px;
+}
+
+.search-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 10px;
+	width: 100%;
+	max-width: 400px;
+	margin: 0 auto 15px auto;
+}
+
+.search-box {
+	position: relative;
+	flex-grow: 1;
+}
+
+.search-box input {
+	width: 100%;
+	padding-right: 15px;
+	height: 38px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+}
+
+.search-box i {
+	position: absolute;
+	top: 50%;
+	left: 10px;
+	transform: translateY(-50%);
+	color: #aaa;
+	pointer-events: none;
+}
+
+.search-container .btn-primary {
+	height: 38px;
+	padding: 5px 15px;
+	font-size: 14px;
+	border-radius: 5px;
+}
+
+.form-control {
+	margin-bottom: 0;
+}
+</style>
+</head>
+<body>
+	<div class="card shadow"
+		style="width: 100%; margin-top: 20px; margin-bottom: auto;">
+		<div class="card-body">
+			<div class="table-responsive">
+
+				<!-- 검색 기능 -->
+				<form class="search-container" th:action="@{/qna}" method="get">
+					<div class="search-box">
+						<i class="fas fa-search position-absolute"
+							style="top: 50%; right: 10px; transform: translateY(-50%); color: #aaa;"></i>
+						<input type="text" class="form-control" name="keyword"
+							placeholder="검색어 입력" th:value="${keyword}">
+					</div>
+					<button type="submit" class="btn btn-primary">검색</button>
+				</form>
+
+
+				<!-- 게시판 테이블 -->
+				<table class="table table-bordered" id="dataTable" width="100%"
+					cellspacing="0">
+					<thead>
+						<tr>
+							<th>번호</th>
+							<th>제목</th>
+							<th>작성자</th>
+							<th>작성일</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="board : ${boardList}">
+							<td th:text="${board.postId}"></td>
+							<td><a th:href="@{/qna/detail(postId=${board.postId})}"
+								th:text="${board.postTitle}"></a></td>
+							<td th:text="${board.employeeName}"></td>
+							<td th:text="${#dates.format(board.postDate, 'yyyy-MM-dd')}"></td>
+						</tr>
+					</tbody>
+				</table>
+
+				<!-- 페이지네이션 -->
+				<div class="pagination-container">
+					<nav aria-label="페이지네이션">
+						<ul class="pagination mb-0">
+							<!-- 이전 페이지 -->
+							<li class="page-item"
+								th:classappend="${currentPage == 1} ? 'disabled'"><a
+								class="page-link"
+								th:href="@{/qna(page=${currentPage - 1}, keyword=${keyword})}">&laquo;</a>
+							</li>
+
+							<!-- 페이지 번호 목록 -->
+							<li class="page-item"
+								th:each="i : ${#numbers.sequence(1, totalPages)}"
+								th:classappend="${currentPage == i} ? 'active'"><a
+								class="page-link"
+								th:href="@{/qna(page=${i}, keyword=${keyword})}" th:text="${i}"></a>
+							</li>
+
+							<!-- 다음 페이지 -->
+							<li class="page-item"
+								th:classappend="${currentPage == totalPages} ? 'disabled'">
+								<a class="page-link"
+								th:href="@{/qna(page=${currentPage + 1}, keyword=${keyword})}">&raquo;</a>
+							</li>
+						</ul>
+
+					</nav>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<script
+		src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+</body>
+</html>

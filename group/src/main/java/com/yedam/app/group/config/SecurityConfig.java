@@ -25,12 +25,9 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-
-                // 공개 URL: 로그인 페이지, 정적 자원 등
                 .requestMatchers("/", "/login", "/subscribe", "/manual", "/css/**", "/js/**", "/img/**").permitAll()
-                .requestMatchers("/module","/insertModule").hasAuthority("ROLE_MANAGER")
+                .requestMatchers("/module","/insertModule","/updateModule","/deleteModule/*","/updateModuleBasic/*","/updateModuleActive/*","/qna").hasAuthority("ROLE_MANAGER")
                 .requestMatchers("/aprv/modify", "/aprv/upload").permitAll()
-                // 그 외의 요청은 인증 필요
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
@@ -45,7 +42,7 @@ public class SecurityConfig {
                 .invalidateHttpSession(true)   
                 .permitAll()
             )
-            .csrf(csrf -> csrf.ignoringRequestMatchers("/logout", "/aprv/modify", "/aprv/upload","/insertModule"));
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/logout", "/aprv/modify", "/aprv/upload","/insertModule", "/updateModule","/deleteModule/*","/updateModuleBasic/*","/updateModuleActive/*","/qna"));
         return http.build();
     }
 
@@ -63,18 +60,15 @@ public class SecurityConfig {
         	    ") WHERE username = ?"
         	);
 
-        
         manager.setAuthoritiesByUsernameQuery(
         	    "SELECT username, authority FROM ( " +
         	    "  SELECT MANAGER_ID AS username, 'ROLE_MANAGER' AS authority FROM MANAGER_LOGIN " +
         	    "  UNION ALL " +
-        	    "  SELECT SUB_ID AS username, 'ROLE_USER' AS authority FROM SUBER " +
+        	    "  SELECT SUB_ID AS username, 'ROLE_MANAGERUSER' AS authority FROM SUBER " +
         	    "  UNION ALL " +
         	    "  SELECT EMPLOYEE_ID AS username, 'ROLE_USER' AS authority FROM EMPLOYEES " +
         	    ") WHERE username = ?"
         	);
-
-        
         return manager;
     }
 

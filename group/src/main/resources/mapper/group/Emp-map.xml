@@ -138,7 +138,7 @@
                  , profileImageBLOB = #{PROFILE_IMAGE_BLOB, jdbcType=BLOB}
               WHERE EMPLOYEE_NO = #{employeeNo}
       </update>
-      </select>
+
       <!-- 로그인한 사람 아이디 -->
 	  <select id="findByEmployeeId" parameterType="String" resultType="EmpVO">
 	  		 SELECT * 

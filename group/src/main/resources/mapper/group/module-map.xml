@@ -14,10 +14,10 @@
     </select>
     
     <insert id="insertModule" parameterType="com.yedam.app.group.service.ModuleVO">
-        <selectKey keyProperty="moduleNo" resultType="int" order="BEFORE">
-	        SELECT nvl(MAX(MODULE_NO), 0) + 1 FROM MODULE
-	    </selectKey>
-	    INSERT INTO MODULE (
+		<selectKey keyProperty="moduleNo" resultType="java.lang.Integer" order="BEFORE">
+		    SELECT NVL(MAX(MODULE_NO), 0) + 1 FROM MODULE
+		</selectKey>
+	    INSERT INTO MODULE(
 	        MODULE_NO,
 	        MODULE_NAME,
 	        MODULE_PRICE,
@@ -35,5 +35,26 @@
 	        #{explanation}
 	    )
 	</insert>
-    
+    <update id="updateModule" parameterType="com.yedam.app.group.service.ModuleVO">
+	    UPDATE MODULE
+	    SET MODULE_NAME = #{moduleName},
+	        MODULE_PRICE = #{modulePrice},
+	        EXPLANATION = #{explanation}
+	    WHERE MODULE_NO = #{moduleNo}
+	</update>
+	<delete id="deleteModule" parameterType="int">
+	    DELETE FROM MODULE WHERE MODULE_NO = #{moduleNo}
+	</delete>
+	
+	<update id="updateBasic" parameterType="int">
+	    UPDATE MODULE
+	    SET BASIC_MODULE = CASE WHEN BASIC_MODULE = 'Y' THEN 'N' ELSE 'Y' END
+	    WHERE MODULE_NO = #{moduleNo}
+	</update>
+	
+	<update id="updateActive" parameterType="int">
+	    UPDATE MODULE
+	    SET ACTIVATE = CASE WHEN ACTIVATE = 'Y' THEN 'N' ELSE 'Y' END
+	    WHERE MODULE_NO = #{moduleNo}
+	</update>
 </mapper>
