@@ -5,39 +5,182 @@
     layout:fragment="content">
 <head>
     <meta charset='utf-8' />
-    <script th:src='@{https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js}'></script>
-    <script layout:fragment="script" type="text/javascript" src="/lib/jquery-3.7.1.min.js"></script>
+    
+    <!-- FullCalendar와 Google Calendar 플러그인 추가 (CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/google-calendar@6.1.8/index.global.min.js"></script>
+    
+    <style>
+    /* 공휴일 이벤트 배경 제거 및 글자만 표시 */
+    .fc-daygrid-event {
+        background: none !important;
+        border: none !important;
+        color: black !important;
+        font-size: 12px !important;
+        font-weight: bold !important;
+        display: block !important;
+        padding: 0 !important;
+        text-align: right !important;
+        pointer-events: none !important;
+    }
+
+    /* FullCalendar 내부의 이벤트 글자만 남기고 다른 스타일 제거 */
+    .fc-event-main {
+        white-space: nowrap !important;
+        overflow: visible !important; /* 글자가 숨겨지는 문제 해결 */
+    }
+
+    /* 토요일 날짜 스타일 (파란색) */
+    .fc-day-sat .fc-daygrid-day-number {
+        color: blue !important;
+    }
+
+    /* 일요일 날짜 스타일 (빨간색) */
+    .fc-day-sun .fc-daygrid-day-number {
+        color: red !important;
+    }
+
+    #addScheduleBtn {
+        display: block;
+        margin-bottom: 10px;
+        padding: 10px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+    </style>
 </head>
 <body>
+
     <div class="form-group">
+        <button id="addScheduleBtn">일정 추가</button>
         <div id='calendar-container'>
             <div id="calendar"></div>
         </div>
     </div>
 
+    <!-- 일정 등록 모달 -->
+    <div id="scheduleModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>일정 추가</h3>
+            <label>제목: <input type="text" id="scheduleTitle"></label><br><br>
+            <label>내용: <textarea id="scheduleContent"></textarea></label><br><br>
+            <label>시작일시: <input type="datetime-local" id="scheduleStart"></label><br><br>
+            <label>종료일시: <input type="datetime-local" id="scheduleEnd"></label><br><br>
+            <button onclick="saveSchedule()">저장</button>
+        </div>
+    </div>
+
     <script>
-    $(document).ready(function () {
-        let calendarTag = $('#calendar')[0]; // full-calendar 생성하기
-        let calendar = new FullCalendar.Calendar(calendarTag, {
+    document.addEventListener('DOMContentLoaded', function () {
+        const calendarEl = document.getElementById('calendar');
+
+        const calendar = new FullCalendar.Calendar(calendarEl, {
             locale: "ko",
-            height: '550px', // calendar 높이 설정
-            expandRows: true, // 화면에 맞게 높이 재설정
-            // 주간 및 일간 뷰에서 시간 범위 조정
-            slotMinTime: '09:00:00', // 시작 시간 9AM
-            slotMaxTime: '19:00:00', // 종료 시간 7PM
-            headerToolbar: {                              
+            height: '550px',
+            expandRows: true,
+            slotMinTime: '09:00:00',
+            slotMaxTime: '19:00:00',
+            headerToolbar: {
                 left: 'prevYear,prev,next,nextYear today',
                 center: 'title',
                 right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
             },
-            initialView: 'dayGridMonth', // 기본 뷰를 주간으로 설정 (필요하면 변경 가능)
-            googleCalendarApiKey: 'AIzaSyAlyPfIm5gLdFAyx4r-kNVdsZDuGnnJMRk',
+            initialView: 'dayGridMonth',
+
+            // Google Calendar 공휴일 + DB에서 일정 불러오기
+            eventSources: [
+                {
+                    googleCalendarId: 'ko.south_korea#holiday@group.v.calendar.google.com',
+                    googleCalendarApiKey: 'AIzaSyAlyPfIm5gLdFAyx4r-kNVdsZDuGnnJMRk',
+                    className: 'gcal-event'
+                },
+                {
+                    url: '/schedule/list',  // Spring Boot에서 일정 불러오기
+                    method: 'GET',
+                    failure: function() {
+                        alert("일정을 불러오는데 실패했습니다.");
+                    }
+                }
+            ],
+
+            // 공휴일 이벤트 수정 (배경 없애고 텍스트만 남기기 + "쉬는 날" → "대체 휴무"로 변경)
+            eventDidMount: function(info) {
+                let eventEl = info.el;
+
+                // FullCalendar 기본 스타일 제거
+                eventEl.style.background = 'none';
+                eventEl.style.border = 'none';
+                eventEl.style.padding = '0';
+                eventEl.style.margin = '0';
+                eventEl.style.textAlign = 'left';
+                eventEl.style.pointerEvents = 'none'; // 클릭 방지
+
+                // 이벤트 제목 변경 (쉬는 날 → 대체 휴무)
+                if (info.event.title.includes("쉬는 날")) {
+                    info.event.setProp("title", info.event.title.replace("쉬는 날", "대체 휴무"));
+                }
+
+                // 이벤트 내부 텍스트 스타일 적용
+                let eventText = eventEl.querySelector('.fc-event-main');
+                if (eventText) {
+                    eventText.style.color = 'red';  // 글씨 빨간색
+                    eventText.style.fontSize = '12px';
+                    eventText.style.fontWeight = 'bold';  // 글씨 굵게
+                }
+            }
         });
+
         // 캘린더 랜더링
         calendar.render();
+
+        // 일정 추가 버튼 클릭 시 모달 표시
+        document.getElementById('addScheduleBtn').addEventListener('click', function () {
+            document.getElementById('scheduleModal').style.display = 'block';
+        });
+
+        // 모달 닫기 버튼
+        document.querySelector('.close').addEventListener('click', function () {
+            document.getElementById('scheduleModal').style.display = 'none';
+        });
     });
-    
-    
+
+ // 일정 저장 AJAX
+    function saveSchedule() {
+        let scheduleData = {
+            scheduleTitle: document.getElementById("scheduleTitle").value,
+            scheduleContent: document.getElementById("scheduleContent").value,
+            scheduleStart: document.getElementById("scheduleStart").value,
+            scheduleEnd: document.getElementById("scheduleEnd").value
+        };
+
+        fetch("/schedule/save", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(scheduleData)
+        })
+        .then(response => response.json())  // 응답을 JSON으로 변환
+        .then(data => {
+            if (data.success === 1) {
+                alert(data.message);  // 성공 메시지 표시
+                // 캘린더 새로고침
+                let calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {});
+                calendar.refetchEvents();
+                document.getElementById('scheduleModal').style.display = 'none'; // 모달 닫기
+            } else {
+                alert("일정 등록 실패.");
+            }
+        })
+        .catch(error => {
+            console.error("일정 등록 중 오류 발생:", error);
+            alert("일정 등록에 실패했습니다.");
+        });
+    }
     </script>
+
 </body>
 </html>

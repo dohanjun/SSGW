@@ -130,8 +130,8 @@ public class ApprovalController {
 
 		try {
 
-			// 파일 저장 경로 설정
-			String uploadDir = "D:/uploads/";
+			// 파일 저장 경로 설정  
+			String uploadDir = "src/main/resources/static/img/stamp/";
 			String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
 			Path filePath = Paths.get(uploadDir + fileName);
 
@@ -140,7 +140,7 @@ public class ApprovalController {
 			Files.write(filePath, file.getBytes());
 
 			// DB에 저장할 경로 설정
-			String fileDbPath = "/uploads/" + fileName;
+			String fileDbPath = "/img/stamp/" + fileName;
 
 			// ApprovalVO 객체 생성 후 데이터 저장
 			ApprovalVO aprvVO = new ApprovalVO();
@@ -179,7 +179,7 @@ public class ApprovalController {
 		try {
 
 			// 파일 저장 경로 설정
-			String uploadDir = "D:/uploads/";
+			String uploadDir = "target/classes/static/img/stamp/";
 			String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
 			Path filePath = Paths.get(uploadDir + fileName);
 
@@ -188,7 +188,7 @@ public class ApprovalController {
 			Files.write(filePath, file.getBytes());
 
 			// DB에 저장할 경로 설정
-			String fileDbPath = "/uploads/" + fileName;
+			String fileDbPath = "/img/stamp/" + fileName;
 
 			// ApprovalVO 객체 생성 후 데이터 설정
 			ApprovalVO aprvVO = new ApprovalVO();
