@@ -11,6 +11,12 @@ public interface ApprovalService {
 	// 결재 상세 정보 조회
 	public ApprovalVO findAprvInfo(ApprovalVO aprvVO);
 	
+	// 기본양식 조회
+	public ApprovalVO findBasicsForm(Integer basicsFormId);
+
+	// 회사전용양식 조회
+	public ApprovalFormVO findAprvForm(Integer formId, int suberNo);
+	
 	// 도장 등록
 	public int createStamp(ApprovalVO aprvVO);
 	

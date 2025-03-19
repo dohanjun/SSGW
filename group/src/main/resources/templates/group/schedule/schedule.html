@@ -19,7 +19,7 @@
     $(document).ready(function () {
         let calendarTag = $('#calendar')[0]; // full-calendar 생성하기
         let calendar = new FullCalendar.Calendar(calendarTag, {
-            
+            locale: "ko",
             height: '550px', // calendar 높이 설정
             expandRows: true, // 화면에 맞게 높이 재설정
             // 주간 및 일간 뷰에서 시간 범위 조정
@@ -31,6 +31,7 @@
                 right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
             },
             initialView: 'dayGridMonth', // 기본 뷰를 주간으로 설정 (필요하면 변경 가능)
+            googleCalendarApiKey: 'AIzaSyAlyPfIm5gLdFAyx4r-kNVdsZDuGnnJMRk',
         });
         // 캘린더 랜더링
         calendar.render();

@@ -4,13 +4,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -25,6 +23,7 @@ import com.yedam.app.group.service.ApprovalService;
 import com.yedam.app.group.service.ApprovalVO;
 import com.yedam.app.group.service.EmpService;
 import com.yedam.app.group.service.EmpVO;
+import com.yedam.app.group.service.ScheduleService;
 
 import lombok.Data;
 
@@ -34,11 +33,8 @@ public class ApprovalController {
 
 	private final ApprovalService approvalService;
 	private final EmpService empService;
-
-//	public ApprovalController(ApprovalService approvalService) {
-//		this.approvalService = approvalService;
-//	}
-
+	
+	// 문서함조회(대기, 진행, 완료, 반려, 참조)
 	@GetMapping("aprv/list")
 	public String aprvList(ApprovalVO aprvVO, Model model) {
 		
@@ -50,13 +46,8 @@ public class ApprovalController {
 	    EmpVO loggedInUser = empService.getLoggedInUserInfo();
 
 	    if (loggedInUser != null) {
-	        aprvVO.setEmployeeNo(loggedInUser.getEmployeeNo());  // ✅ 로그인한 사용자 정보 설정
-	        
-	        
-	        System.out.println("검색 조건 - 상태: " + aprvVO.getAprvStatus());
-	        System.out.println("검색 조건 - 기안자: " + aprvVO.getEmployeeName());
-	        System.out.println("검색 조건 - 문서제목: " + aprvVO.getTitle());
-	        System.out.println("검색 조건 - 상신일: " + aprvVO.getDraftDate());
+	        aprvVO.setEmployeeNo(loggedInUser.getEmployeeNo());  //  로그인한 사용자 정보 설정
+	        aprvVO.setSuberNo(loggedInUser.getSuberNo()); // 로그인한 사용자 회사번호
 	        
 	        // 결재 상태별 문서 조회
 	        List<ApprovalVO> list = approvalService.findAprvListByStatus(aprvVO);
@@ -72,10 +63,59 @@ public class ApprovalController {
 	        return "group/approval/approval_complete";
 	    } else if ("진행".equals(aprvVO.getAprvStatus())) {
 	        return "group/approval/approval_progress";
+	    } else if ("참조".equals(aprvVO.getAprvStatus())) {
+	    	return "group/approval/approval_reference";
+	    } else if ("반려".equals(aprvVO.getAprvStatus())) {
+	    	return "group/approval/approval_return";
 	    } else {
 	        return "group/approval/pending_document"; // 기본값 설정
 	    }
 	}
+	
+	// 기안문 작성 페이지
+	@GetMapping("aprv/write")
+	public String aprvWrite(ApprovalVO aprvVO, ApprovalFormVO aprvformVO, Model model) {
+			return "group/approval/approval_writing";
+	}
+	
+	@GetMapping("/aprvWriting/content")
+	public ResponseEntity<String> getFormContent(
+	        @RequestParam(required = false) Integer basicsFormId, 
+	        @RequestParam(required = false) Integer formId) {
+	    try {
+	        EmpVO loggedInUser = empService.getLoggedInUserInfo();
+	        int suberNo = loggedInUser.getSuberNo();
+
+	        StringBuilder contentHtml = new StringBuilder();
+
+	        // 기본 양식 조회
+	        if (basicsFormId != null) {
+	            ApprovalVO basicsForm = approvalService.findBasicsForm(basicsFormId);
+	            contentHtml.append("<h5>기본 양식 내용</h5>");
+	            if (basicsForm != null) {
+	                contentHtml.append("<p>").append(basicsForm.getContent()).append("</p>");
+	            } else {
+	                contentHtml.append("<p>해당하는 기본 양식이 없습니다.</p>");
+	            }
+	        }
+
+	        // 회사전용 양식 조회
+	        if (formId != null) {
+	            ApprovalFormVO aprvForm = approvalService.findAprvForm(formId, suberNo);
+	            contentHtml.append("<h5>회사 전용 양식 내용</h5>");
+	            if (aprvForm != null) {
+	                contentHtml.append("<p>").append(aprvForm.getContent()).append("</p>");
+	            } else {
+	                contentHtml.append("<p>해당하는 회사 전용 양식이 없습니다.</p>");
+	            }
+	        }
+
+	        return ResponseEntity.ok(contentHtml.toString());
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류: " + e.getMessage());
+	    }
+	}
+
 
 	// 도장등록
 	@PostMapping("aprv/upload")
@@ -181,6 +221,7 @@ public class ApprovalController {
 	    return ResponseEntity.ok(response);
 	}
 	
+	// 활성화된 도장 조회
 	@GetMapping("aprv/stamp")
 	public ResponseEntity<Map<String, Object>> getActiveStamp() {
 	    Map<String, Object> response = new HashMap<>();
@@ -221,19 +262,28 @@ public class ApprovalController {
 
 		return "group/approval/approval"; //
 	}
-
+	
+	
+	// 결재 양식 생성 페이지 이동
 	@GetMapping("write")
 	public String write() {
-		return "group/approval/write1";
+		return "group/approval/write";
 	}
-
+	
+	// 전자결재양식 저장 (기본양식아님)
 	@PostMapping("/saveForm")
 	public String saveForm(ApprovalFormVO aprvformVO) {
+		
+		EmpVO loggedInUser = empService.getLoggedInUserInfo();
+		
+		aprvformVO.setSuberNo(loggedInUser.getSuberNo());
+		
 		int formId = approvalService.createForm(aprvformVO);
+		
 		String url = null;
 
 		if (formId > 0) {
-			url = "redirect:/aprv"; // 저장 후 결재 대기함 페이지로 리디렉션
+			url = "redirect:/aprv/list"; // 저장 후 결재 대기함 페이지로 리디렉션
 		} else {
 			url = "redirect:/errorPage"; // 저장 실패 시 에러 페이지로 리디렉션
 		}
@@ -241,33 +291,13 @@ public class ApprovalController {
 		return url;
 	}
 
-	@GetMapping("schedule")
-	public String scheduleList() {
-		return "group/schedule/schedule";
-	}
-
 	@GetMapping("approvalRequest")
 	public String edmsRequest() {
 		return "group/approval/approval_request";
 	}
-
-	@GetMapping("approvalProgress")
-	public String edmsProgress() {
-		return "group/approval/approval_progress";
-	}
-
-	@GetMapping("approvalComplete")
-	public String edmsComplete() {
-		return "group/approval/approval_complete";
-	}
-
-	@GetMapping("approvalReturn")
-	public String edmsReturn() {
-		return "group/approval/approval_return";
-	}
-
-	@GetMapping("approvalReference")
-	public String edmsReference() {
-		return "group/approval/approval_reference";
+	
+	@GetMapping("schedule")
+	public String scheduleList() {
+		return "group/schedule/schedule";
 	}
 }
