@@ -39,75 +39,17 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr>
+							<!-- 리스트가 비어 있을 경우 예외 처리 -->
+    						<tr th:if="${#lists.isEmpty(individualRepositoryList)}">
+        						<td colspan="4" class="text-center">등록된 자료가 없습니다.</td>
+    						</tr>
+						
+							<tr th:each="post : ${individualRepositoryList}">
 								<td><input type="checkbox" class="file-checkbox"></td>
-								<td>예제 프로젝트</td>
-								<td>예제파일.pdf</td>
-								<td>윤지원</td>
-								<td>2025-03-11</td>
-							</tr>
-							<tr>
-								<td><input type="checkbox" class="file-checkbox"></td>
-								<td>예제 프로젝트</td>
-								<td>예제파일.pdf</td>
-								<td>윤지원</td>
-								<td>2025-03-11</td>
-							</tr>
-							<tr>
-								<td><input type="checkbox" class="file-checkbox"></td>
-								<td>예제 프로젝트</td>
-								<td>예제파일.pdf</td>
-								<td>윤지원</td>
-								<td>2025-03-11</td>
-							</tr>
-							<tr>
-								<td><input type="checkbox" class="file-checkbox"></td>
-								<td>예제 프로젝트</td>
-								<td>예제파일.pdf</td>
-								<td>윤지원</td>
-								<td>2025-03-11</td>
-							</tr>
-							<tr>
-								<td><input type="checkbox" class="file-checkbox"></td>
-								<td>예제 프로젝트</td>
-								<td>예제파일.pdf</td>
-								<td>윤지원</td>
-								<td>2025-03-11</td>
-							</tr>
-							<tr>
-								<td><input type="checkbox" class="file-checkbox"></td>
-								<td>예제 프로젝트</td>
-								<td>예제파일.pdf</td>
-								<td>윤지원</td>
-								<td>2025-03-11</td>
-							</tr>
-							<tr>
-								<td><input type="checkbox" class="file-checkbox"></td>
-								<td>예제 프로젝트</td>
-								<td>예제파일.pdf</td>
-								<td>윤지원</td>
-								<td>2025-03-11</td>
-							</tr>
-							<tr>
-								<td><input type="checkbox" class="file-checkbox"></td>
-								<td>예제 프로젝트</td>
-								<td>예제파일.pdf</td>
-								<td>윤지원</td>
-								<td>2025-03-11</td>
-							</tr>
-							<tr>
-								<td><input type="checkbox" class="file-checkbox"></td>
-								<td>예제 프로젝트</td>
-								<td>예제파일.pdf</td>
-								<td>윤지원</td>
-								<td>2025-03-11</td>
-							</tr>
-							<tr>
-								<td><input type="checkbox" class="file-checkbox"></td>
-								<td>예제 프로젝트</td>
-								<td>예제파일.pdf</td>
-								<td>윤지원</td>
-								<td>2025-03-11</td>
+           						<td th:text="${post.title}"></td>
+            					<td th:text="${post.fileName}"></td>
+            					<td th:text="${post.writer}"></td>
+            					<td th:text="${#dates.format(post.creationDate, 'yyyy-MM-dd')}"></td>
 							</tr>
 						</tbody>
 					</table>

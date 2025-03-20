@@ -1,5 +1,7 @@
 package com.yedam.app.group.web;
 
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -47,11 +49,32 @@ public class PostController {
     // 게시글 등록 처리 (POST)
     @PostMapping("/insertPost")
     public String insertPost(@ModelAttribute RepositoryPostVO postVO,  
-                             @RequestParam(value = "file", required = false) MultipartFile file) {
+                             @RequestParam(value = "files", required = false) MultipartFile[] files) {
         EmpVO loggedInUser = empService.getLoggedInUserInfo();
 
         if (loggedInUser == null) {
             throw new IllegalStateException("로그인한 사용자 정보를 찾을 수 없습니다.");
+        }
+        
+        // 작성일자가 null이면 현재 날짜로 설정
+        if (postVO.getCreationDate() == null) {
+            postVO.setCreationDate(new Date());
+        }
+        
+        System.out.println("전달된 title 값: " + postVO.getTitle());
+        System.out.println("전달된 content 값: " + postVO.getContent());
+        
+        if (files != null && files.length > 0) {
+            System.out.println("업로드된 파일 개수: " + files.length);
+            for (MultipartFile file : files) {
+                System.out.println("파일 이름: " + file.getOriginalFilename() + ", 크기: " + file.getSize());
+            }
+        } else {
+            System.out.println("업로드된 파일 없음.");
+        }
+
+        if (postVO.getContent() == null || postVO.getContent().trim().isEmpty()) {
+            throw new IllegalArgumentException("content 값이 비어 있습니다.");
         }
 
         RepositoryVO repository;
@@ -78,11 +101,15 @@ public class PostController {
         postVO.setFileRepositoryId(repository.getFileRepositoryId());
 
         // 게시글 등록
-        int writingId = postService.insertPost(postVO);
+        Long writingId = postService.insertPost(postVO);
 
         // 파일 업로드 (게시글이 등록된 후)
-        if (file != null && !file.isEmpty()) {
-            fileService.insertFile(writingId, file);
+        if (files != null && files.length > 0) {
+            for (MultipartFile file : files) {
+                if (!file.isEmpty()) {
+                    fileService.insertFile(writingId, file);
+                }
+            }
         }
 
         // 등록한 자료실로 이동 (어느 자료실인지 체크)
