@@ -1,6 +1,7 @@
 package com.yedam.app.group.web;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,47 +21,43 @@ public class WorkController {
 
     private final AttendanceService attendanceService;
     private final EmpService empService;
-  
+
     @GetMapping("/blank")
     public String attendanceRecords(HttpSession session, Model model) {
-    	 EmpVO loggedInUser = empService.getLoggedInUserInfo();
+        EmpVO loggedInUser = empService.getLoggedInUserInfo();
 
         if (loggedInUser != null) {
             Integer employeeNo = loggedInUser.getEmployeeNo();
-            List<AttendanceManagementVO> attendanceList = attendanceService.selectList(employeeNo);
+            List<AttendanceManagementVO> attendanceList = attendanceService.selectInfo(employeeNo);
+
+            // 점심시간 제외한 총 근무시간 계산
+            int totalWorkedHours = attendanceList.stream()
+                .mapToInt(att -> Math.max(0, att.getTotalWorkingHours() - 1)) // 점심시간 1시간 제외
+                .sum();
+            
+            int normalWorkHoursPerDay = 9;
+            int workingDaysPerMonth = 22;
+            int monthlyTotalWorkHours = workingDaysPerMonth * normalWorkHoursPerDay;
+//            int overtimeHours = Math.max(0, totalWorkedHours - monthlyTotalWorkHours);
+
+            // 🔽 초과근무시간 계산 (분 단위까지 포함)
+            int totalOvertimeMinutes = attendanceService.getTotalOvertimeMinutes(employeeNo);
+           // double overtimeHoursCalculated = Math.round(totalOvertimeMinutes / 60.0);  //
+
+
             model.addAttribute("attendanceList", attendanceList);
+            model.addAttribute("monthlyTotalWorkHours", monthlyTotalWorkHours);
+            model.addAttribute("totalWorkedHours", totalWorkedHours);
+//            model.addAttribute("overtimeHours", overtimeHours);
+            model.addAttribute("overtimeHoursCalculated", totalOvertimeMinutes);
+
         }
         return "group/workPage/blank";
     }
     
+    @GetMapping("/chartsManager")
+	public String chartsManager() {
+		return "group/workPage/chartsManager";
+	}
     
-    
-//    // 로그인한 사원의 출결 데이터 조회
-//    @GetMapping("/blank")
-//    public String attendanceRecords(Model model) {
-//    	EmpVO loggedInUser = empService.getLoggedInUserInfo();
-//       
-//
-//        if (loggedInUser != null) {
-//	        Integer employeeNo = loggedInUser.getEmployeeNo();
-//	        List<AttendanceManagementVO> attendanceList = attendanceService.selectList(employeeNo);
-//	        model.addAttribute("attendanceList", attendanceList);
-//	        
-//        }
-//
-//        return "group/workPage/blank";
-//    }
-//    @GetMapping("/blank")
-//    public String blank() {
-//        return "group/workPage/blank"; 
-//    }
-    @GetMapping("/charts")
-    public String chartsManager() {
-        return "group/workPage/chartsManager";  
-    }
-    
-    @GetMapping("/cards")
-    public String cards() {
-        return "etc/register";  
-    }
 }

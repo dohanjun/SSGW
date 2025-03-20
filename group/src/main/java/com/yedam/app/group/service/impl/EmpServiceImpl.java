@@ -80,5 +80,25 @@ public class EmpServiceImpl implements EmpService{
 		return null;
 	}
 	
+    //  페이징된 사원 목록 조회
+    public List<EmpVO> findAllEmp(int page, int size, String category, String keyword) {
+        int offset = (page - 1) * size; // OFFSET 계산
+        return empMapper.pageselectEmp(offset, size, category, keyword);
+    }
+
+    //  전체 사원 수 조회
+    @Override
+    public int countAllEmp(String category, String keyword) {
+        return empMapper.countEmp(category, keyword);
+    }
+
+	@Override
+	public void resetPassword(int employeeNo) {
+		// TODO Auto-generated method stub
+		
+	}
+    
+    
+	
 
 }

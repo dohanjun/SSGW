@@ -31,8 +31,7 @@
             </div>
             <!-- Nav Item - Pages Collapse Menu--> 
             <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
-                    aria-expanded="true" aria-controls="collapseTwo">
+                <a class="nav-link" th:href="@{/schedule}">
                     <i class="fas fa-fw fa-cog"></i>
                     <span>일정</span>
                 </a>
@@ -100,7 +99,7 @@
                 </a>
                 <div id="work" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="charts">관리자 근태관리</a>
+                        <a class="collapse-item" href="chartsManager">관리자 근태관리</a>
                         <a class="collapse-item" href="blank">사원 근태관리</a>
                     </div>
                 </div>

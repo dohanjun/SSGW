@@ -57,7 +57,7 @@ public class ApprovalServiceImpl implements ApprovalService {
 	
 	// 도장 active '1' 확인하기
 	@Override
-    public int countActiveStamps(ApprovalVO aprvVO) {
+    public int findActiveStamps(ApprovalVO aprvVO) {
 		
         return approvalMapper.countActiveStamps(aprvVO);
     }
@@ -103,7 +103,7 @@ public class ApprovalServiceImpl implements ApprovalService {
 	
 	// 도장 비활성화
 	@Override
-	public Map<String, Object> deleteStamp(ApprovalVO aprvVO) {
+	public Map<String, Object> removeStamp(ApprovalVO aprvVO) {
 	    Map<String, Object> response = new HashMap<>();
 	    EmpVO loggedInUser = empService.getLoggedInUserInfo();
 	    

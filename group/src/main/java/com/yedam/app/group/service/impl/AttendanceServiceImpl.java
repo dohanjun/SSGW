@@ -11,7 +11,7 @@ import com.yedam.app.group.service.AttendanceManagementVO;
 import com.yedam.app.group.service.AttendanceService;
 
 @Service
-@Transactional // ✅ 트랜잭션 처리 추가 (필요한 경우)
+@Transactional
 public class AttendanceServiceImpl implements AttendanceService {
 
     private final AttendanceMapper attendanceMapper;
@@ -22,13 +22,23 @@ public class AttendanceServiceImpl implements AttendanceService {
     }
 
     @Override
-    public List<AttendanceManagementVO> selectAllList() {
-        return attendanceMapper.selectAllList();
+    public List<AttendanceManagementVO> selectAll() {
+        return attendanceMapper.selectAll();
     }
 
     @Override
-    public List<AttendanceManagementVO> selectList(Integer employeeNo) {
-        return attendanceMapper.selectList(employeeNo);
+    public List<AttendanceManagementVO> selectInfo(Integer employeeNo) {
+        return attendanceMapper.selectInfo(employeeNo);
+    }
+
+    @Override
+    public int getTotalOvertimeMinutes(Integer employeeNo) {
+        Integer totalMinutes = attendanceMapper.calculateTotalOvertime(employeeNo);
+        return (totalMinutes != null) ? totalMinutes : 0;
+    }
+
+    @Override
+    public AttendanceManagementVO getAttendanceSummary(Integer employeeNo) {
+        return attendanceMapper.getAttendanceSummary(employeeNo);
     }
 }
-

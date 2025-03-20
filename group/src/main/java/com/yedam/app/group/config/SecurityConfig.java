@@ -45,7 +45,7 @@ public class SecurityConfig {
                 .permitAll()
             )
 
-            .csrf(csrf -> csrf.ignoringRequestMatchers("/logout","/insertModule", "/updateModule","/deleteModule/*","/updateModuleBasic/*","/updateModuleActive/*","/qna", "/aprv/**","/insertModule","/saveForm"));
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/logout","/insertModule", "/updateModule","/deleteModule/*","/updateModuleBasic/*","/updateModuleActive/*","/qna", "/aprv/**","/insertModule","/saveForm", "/schedule/**"));
 
         return http.build();
     }

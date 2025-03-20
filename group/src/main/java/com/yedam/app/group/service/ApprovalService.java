@@ -24,10 +24,10 @@ public interface ApprovalService {
 	public Map<String, Object> modifyStamp(ApprovalVO aprvVO);
 	
 	// 도장 비활성화
-	public Map<String, Object> deleteStamp(ApprovalVO aprvVO);
+	public Map<String, Object> removeStamp(ApprovalVO aprvVO);
 	
 	// 활성화된 도장 개수 조회
-	public int countActiveStamps(ApprovalVO aprvVO);
+	public int findActiveStamps(ApprovalVO aprvVO);
 	
 	// 도장정보 불러오기
 	public ApprovalVO getActiveStamp(ApprovalVO aprvVO);

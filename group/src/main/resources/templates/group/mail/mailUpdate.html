@@ -55,10 +55,11 @@
   <h3>메일수정화면</h3>
   <div class="content-wrapper">
 	<div class="employee-container">
-	  <div>
-	  <a href="#" lcon="home"></a>
+	  <div class="btn-container">
+	  <a lcon="back" class="btn btn-primary" th:onclick="|location.href='@{/myMailSelect(mailId=${mail.mailId})}'|">
+	  </a>
+	  </div>
 	<h1>메일수정하기</h1>
-	</div>
 	  <div>
 	    <hr>
 			<a href="#">저장</a>

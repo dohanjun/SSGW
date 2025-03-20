@@ -79,20 +79,19 @@ public class mainController {
 	    return "externalPages/qnaPage";
 	}
 
-	
-	@GetMapping("/qna/detail")
-	public String getBoardDetail(@RequestParam("postId") int postId, Model model) {
-	    // 게시글 정보 조회
-	    BoardPostVO boardPost = boardPostService.getBoardDetail(postId);
-
-	    // 게시글이 존재하지 않을 경우 목록 페이지로 리다이렉트
-	    if (boardPost == null) {
-	        return "redirect:/qna?page=1";
-	    }
-
-	    model.addAttribute("boardPost", boardPost);
-	    return "externalPages/qnaDetail"; // 상세 페이지로 이동
-	}
+//	@GetMapping("/qna/detail")
+//	public String getBoardDetail(@RequestParam("postId") Long postId, Model model) {
+//	    // 게시글 정보 조회
+//	    BoardPostVO boardPost = boardPostService.getBoardDetail(postId);
+//
+//	    // 게시글이 존재하지 않을 경우 목록 페이지로 리다이렉트
+//	    if (boardPost == null) {
+//	        return "redirect:/qna?page=1";
+//	    }
+//
+//	    model.addAttribute("boardPost", boardPost);
+//	    return "externalPages/qnaDetail"; // 상세 페이지로 이동
+//	}
 	
 	@GetMapping("/module")
 	public String subscribePage(Model model) {

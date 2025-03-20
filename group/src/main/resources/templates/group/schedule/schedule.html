@@ -5,39 +5,325 @@
     layout:fragment="content">
 <head>
     <meta charset='utf-8' />
-    <script th:src='@{https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js}'></script>
-    <script layout:fragment="script" type="text/javascript" src="/lib/jquery-3.7.1.min.js"></script>
+    
+    <!-- FullCalendar와 Google Calendar 플러그인 추가 (CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/google-calendar@6.1.8/index.global.min.js"></script>
+    
+    <style>
+    /* 공휴일 이벤트 배경 제거 및 글자만 표시 */
+    .fc-daygrid-event {
+        background: none !important;
+        border: none !important;
+        color: black !important;
+        font-size: 12px !important;
+        font-weight: bold !important;
+        display: block !important;
+        padding: 0 !important;
+        text-align: right !important;
+        /* pointer-events: none !important; */
+    }
+
+    /* FullCalendar 내부의 이벤트 글자만 남기고 다른 스타일 제거 */
+    .fc-event-main {
+        white-space: nowrap !important;
+        overflow: visible !important; /* 글자가 숨겨지는 문제 해결 */
+    }
+
+    /* 토요일 날짜 스타일 (파란색) */
+    .fc-day-sat .fc-daygrid-day-number {
+        color: blue !important;
+    }
+
+    /* 일요일 날짜 스타일 (빨간색) */
+    .fc-day-sun .fc-daygrid-day-number {
+        color: red !important;
+    }
+
+    #addScheduleBtn {
+        display: block;
+        margin-bottom: 10px;
+        padding: 10px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .modal-header {
+    	text-align: center;
+    }
+    </style>
 </head>
 <body>
+
     <div class="form-group">
+        <button id="addScheduleBtn">일정 추가</button>
         <div id='calendar-container'>
             <div id="calendar"></div>
         </div>
     </div>
 
+    <!-- 일정 등록 모달 -->
+<div id="scheduleModal" class="modal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title w-100 text-center">일정 추가</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="d-flex align-items-center mb-2">
+          <label class="col-sm-2">제목:</label>
+          <input type="text" id="scheduleTitle" class="form-control w-100">
+        </div>
+        <div class="d-flex align-items-center mb-2">
+          <label class="col-sm-2">내용:</label>
+          <textarea id="scheduleContent" class="form-control w-100" rows="5"></textarea>
+        </div>
+        <div class="d-flex align-items-center mb-2">
+          <label class="col-sm-3">시작일시:</label>
+          <input type="datetime-local" id="scheduleStart" class="form-control">
+        </div>
+        <div class="d-flex align-items-center mb-2">
+          <label class="col-sm-3">종료일시:</label>
+          <input type="datetime-local" id="scheduleEnd" class="form-control">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="saveSchedule()">저장</button>
+        <button type="button" class="btn btn-secondary close2" data-dismiss="modal">닫기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+	
+	<!-- 일정 상세 정보 모달 -->
+<div id="scheduleInfoModal" class="modal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">일정 제목</h5>
+        <button type="button" class="close closeModal2" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- 동적으로 일정 상세 정보 삽입 -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary">수정</button>
+        <button type="button" class="btn btn-secondary closeModal" data-dismiss="modal">닫기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
     <script>
-    $(document).ready(function () {
-        let calendarTag = $('#calendar')[0]; // full-calendar 생성하기
-        let calendar = new FullCalendar.Calendar(calendarTag, {
+    document.addEventListener('DOMContentLoaded', function () {
+        const calendarEl = document.getElementById('calendar');
+
+        const calendar = new FullCalendar.Calendar(calendarEl, {
             locale: "ko",
-            height: '550px', // calendar 높이 설정
-            expandRows: true, // 화면에 맞게 높이 재설정
-            // 주간 및 일간 뷰에서 시간 범위 조정
-            slotMinTime: '09:00:00', // 시작 시간 9AM
-            slotMaxTime: '19:00:00', // 종료 시간 7PM
-            headerToolbar: {                              
+            height: '550px',
+            expandRows: true,
+            slotMinTime: '09:00:00',
+            slotMaxTime: '19:00:00',
+            headerToolbar: {
                 left: 'prevYear,prev,next,nextYear today',
                 center: 'title',
                 right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
             },
-            initialView: 'dayGridMonth', // 기본 뷰를 주간으로 설정 (필요하면 변경 가능)
-            googleCalendarApiKey: 'AIzaSyAlyPfIm5gLdFAyx4r-kNVdsZDuGnnJMRk',
+            initialView: 'dayGridMonth',
+			
+            
+            // 일정 데이터 가져오기
+            events: function (fetchInfo, successCallback, failureCallback) {
+                fetch('/schedule/list')
+                    .then(response => response.json())
+                    .then(data => {
+
+                        // FullCalendar에서 인식할 수 있도록 데이터 변환
+                        let events = data.map(event => ({
+                            id: event.scheduleId,
+                            title: event.scheduleTitle,
+                            start: event.scheduleStart,
+                            end: event.scheduleEnd,
+                            extendedProps: { 
+                                content: event.scheduleContent,
+                                employeeName: event.employeeName,
+                                departmentName: event.departmentName,
+                                scheduleDivision: event.scheduleDivision
+                            },
+                            allDay: false  // allDay 설정 (true, false)
+                        }));
+
+                        successCallback(events);
+                    })
+                    .catch(error => {
+                        console.error("일정 데이터를 불러오는 중 오류 발생:", error);
+                        failureCallback(error);
+                    });
+            },
+
+            // Google Calendar 공휴일
+            eventSources: [
+                {
+                    googleCalendarId: 'ko.south_korea#holiday@group.v.calendar.google.com',
+                    googleCalendarApiKey: 'AIzaSyAlyPfIm5gLdFAyx4r-kNVdsZDuGnnJMRk',
+                    className: 'gcal-event'
+                }
+            ],
+            // 이벤트 클릭 시 상세 보기
+            // 이벤트 클릭 시 상세 보기
+eventClick: function (info) {
+    let event = info.event;
+	console.log(event);
+    // 모달 요소 가져오기
+    let modal = document.getElementById('scheduleInfoModal');
+    
+    // 일정 제목 설정
+    modal.querySelector('.modal-title').innerText = event.title;
+    
+    // 일정 내용 설정
+    modal.querySelector('.modal-body').innerHTML = `
+        <input type="hidden" id="editScheduleId" value="${event.id}">
+        <div class="form-group">
+        	<label>부서명</label>
+        	<input type="text" id="editDepartmentName" class="form-control" value="${event.extendedProps.departmentName || ''}" readonly>
+    	</div>
+        <div class="form-group">
+            <label>사원 이름</label>
+            <input type="text" id="editEmployeeName" class="form-control" value="${event.extendedProps.employeeName || ''}" readonly>
+        </div>
+        <div class="form-group">
+            <label>일정 제목</label>
+            <input type="text" id="editScheduleTitle" class="form-control" value="${event.title}">
+        </div>
+        <div class="form-group">
+            <label>일정 내용</label>
+            <textarea id="editScheduleContent" class="form-control" rows="3">${event.extendedProps.content || ''}</textarea>
+        </div>
+        <div class="form-group">
+            <label>시작일시</label>
+            <input type="datetime-local" id="editScheduleStart" class="form-control" value="${convertToLocalDateTime(event.start)}">
+        </div>
+        <div class="form-group">
+            <label>종료일시</label>
+            <input type="datetime-local" id="editScheduleEnd" class="form-control" value="${convertToLocalDateTime(event.end)}">
+        </div>
+    `;
+	
+    // 모달 표시
+    modal.style.display = 'block';
+},
+
+            // 공휴일 이벤트 수정 (배경 없애고 텍스트만 남기기 + "쉬는 날" → "대체 휴무"로 변경)
+            eventDidMount: function(info) {
+                let eventEl = info.el;
+
+                // FullCalendar 기본 스타일 제거
+                //eventEl.style.background = 'none';
+                //eventEl.style.border = 'none';
+                //eventEl.style.padding = '0';
+                //eventEl.style.margin = '0';
+                //eventEl.style.textAlign = 'left';
+                //eventEl.style.pointerEvents = 'none'; // 클릭 방지
+
+                // 이벤트 제목 변경 (쉬는 날 → 대체 휴무)
+                if (info.event.title.includes("쉬는 날")) {
+                    info.event.setProp("title", info.event.title.replace("쉬는 날", "대체 휴무"));
+                }
+                
+                // 이벤트 내부 텍스트 스타일 적용
+                let eventText = eventEl.querySelector('.fc-event-main');
+                if (eventText) {
+                    eventText.style.color = 'red';  // 글씨 빨간색
+                    eventText.style.fontSize = '12px';
+                    eventText.style.fontWeight = 'bold';  // 글씨 굵게
+                }
+            }
         });
+
         // 캘린더 랜더링
         calendar.render();
+
+        // 일정 추가 버튼 클릭 시 일정 추가 모달 표시
+        document.getElementById('addScheduleBtn').addEventListener('click', function () {
+            document.getElementById('scheduleModal').style.display = 'block';
+        });
+
+        // 일정 등록 모달 닫기 버튼
+        document.querySelector('.close').addEventListener('click', function () {
+            document.getElementById('scheduleModal').style.display = 'none';        
+        });
+        
+        // 일정 등록 모달 닫기 버튼2
+        document.querySelector('.close2').addEventListener('click', function(){
+        	document.getElementById('scheduleModal').style.display = 'none';
+        });
+        
+        // 모달 닫기 버튼
+        document.querySelector('.closeModal').addEventListener('click', function(){
+        	document.getElementById('scheduleInfoModal').style.display = 'none';
+        });
+        
+        document.querySelector('.closeModal2').addEventListener('click', function(){
+        	document.getElementById('scheduleInfoModal').style.display = 'none';
+        });
+        
     });
+
+    // 일정 저장 AJAX
+    function saveSchedule() {
+        let scheduleData = {
+            scheduleTitle: document.getElementById("scheduleTitle").value,
+            scheduleContent: document.getElementById("scheduleContent").value,
+            scheduleStart: document.getElementById("scheduleStart").value,
+            scheduleEnd: document.getElementById("scheduleEnd").value
+        };
+
+        fetch("/schedule/save", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(scheduleData)
+        })
+        .then(response => response.json())  // 응답을 JSON으로 변환
+        .then(data => {
+            if (data.success === 1) {
+                alert(data.message);  // 성공 메시지 표시
+                
+                document.getElementById('scheduleModal').style.display = 'none'; // 모달 닫기
+            } else {
+                alert("일정 등록 실패.");
+            }
+        })
+        .catch(error => {
+            console.error("일정 등록 중 오류 발생:", error);
+            alert("일정 등록에 실패했습니다.");
+        });
+    }
     
+    function convertToLocalDateTime(date) {
+        if (!date) return '';
+
+        let d = new Date(date);
+        let year = d.getFullYear();
+        let month = String(d.getMonth() + 1).padStart(2, '0');
+        let day = String(d.getDate()).padStart(2, '0');
+        let hours = String(d.getHours()).padStart(2, '0');
+        let minutes = String(d.getMinutes()).padStart(2, '0');
+
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+    }
     
     </script>
+
 </body>
 </html>

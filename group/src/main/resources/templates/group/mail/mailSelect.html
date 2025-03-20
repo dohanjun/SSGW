@@ -53,10 +53,11 @@
   <body>
   <div class="content-wrapper" id="center">
 	<div class="employee-container">
-	  <div>
-	  <a href="#" lcon="home"></a>
+	  <div class="btn-container">
+	  <a lcon="home" class="btn btn-primary" th:onclick="|location.href='@{/mail(mailId=${mail.mailId})}'|">
+	  </a>
+	  </div>
 	<h1>메일상세화면</h1>
-	</div>
 	  <div>
 	    <hr>
 			<button type="button"

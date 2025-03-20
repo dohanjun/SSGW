@@ -54,10 +54,11 @@
   <h3>나의메일상세화면</h3>
   <div class="content-wrapper">
 	<div class="employee-container">
-	  <div>
-	  <a href="#" lcon="home"></a>
+	  <div class="btn-container">
+	  <a lcon="home" class="btn btn-primary" th:onclick="|location.href='@{/mail(mailId=${mail.mailId})}'|">
+	  </a>
+	  </div>
 	<h1>내 메일상세보기</h1>
-	</div>
 	  <div>
 	    <hr>
 	        <button type="button"

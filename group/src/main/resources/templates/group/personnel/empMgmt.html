@@ -6,11 +6,13 @@
 <head>
 <meta charset="UTF-8">
 <title></title>
+    <!--  부트스트랩 (페이지네이션 스타일 적용) -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.6.2/css/bootstrap.min.css">
 </head>
 <body>
      <div class="container text-center">
          <h3>사원 관리</h3>
-         <table class="table">
+         <table class="table table-bordered">
             <thead>
                 <tr>
                    <th>사원번호</th>
@@ -35,17 +37,34 @@
               </th:block>
             </tbody>
          </table>
-        <div class="search-box">
-            <select id="catemp">
-                <option value="all">전체</option>
-                <option value="departmentName">부서</option>
-                <option value="jobTitleName">직급</option>
-                <option value="employeeName">이름</option>
-            </select>
-            <input type="text" id="keyemp" placeholder="검색어 입력">
-            <button onclick="employees()" class="btn btn-primary">검색</button>
-        </div>
-     </div>
+        
+        <!-- 페이징 버튼 -->
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:if="${currentPage > 1}">
+                    <a class="page-link" th:href="@{/empMgmt(page=${currentPage - 1}, size=12)}">이전</a>
+                </li>
+                <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}"
+                    th:classappend="${i == currentPage} ? 'active' : ''">
+                    <a class="page-link" th:href="@{/empMgmt(page=${i}, size=12)}" th:text="${i}"></a>
+                </li>
+                <li class="page-item" th:if="${currentPage < totalPages}">
+                    <a class="page-link" th:href="@{/empMgmt(page=${currentPage + 1}, size=12)}">다음</a>
+                </li>
+            </ul>
+        </nav>
+         
+        <!--  검색 기능 -->
+		<div class="search-box mt-3">
+		    <select id="catemp" th:value="${category}">
+		        <option value="all" th:selected="${category == 'all'}">전체</option>
+		        <option value="departmentName" th:selected="${category == 'departmentName'}">부서</option>
+		        <option value="jobTitleName" th:selected="${category == 'jobTitleName'}">직급</option>
+		        <option value="employeeName" th:selected="${category == 'employeeName'}">이름</option>
+		    </select>
+		    <input type="text" id="keyemp" placeholder="검색어 입력" th:value="${keyword}">
+		    <button onclick="employees()" class="btn btn-primary">검색</button>
+		</div>
      
      <script>
      // 사원 검색 기능
@@ -57,10 +76,15 @@
              alert("검색어를 입력하세요.");
              return;
          }
+         
+         // 검색 요청을 보낼 URL 설정
+         let url = `/empMgmt?category=${category}&keyword=${encodeURIComponent(keyword)}`;
+         location.href = url;
 
          console.log(`검색 카테고리: ${category}, 검색어: ${keyword}`);
-         // Ajax 요청 추가 가능
      }
+     
+     
      </script>
 </body>
 </html>
