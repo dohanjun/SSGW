@@ -11,215 +11,175 @@
 <title>출퇴근 기록</title>
 
 <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-<link href="css/sb-admin-2.min.css" rel="stylesheet">
+<link href="css/sb-admin-2.css" rel="stylesheet">
 
 <style>
-.col {
-	margin: 10px;
-}
-.card-body {
-	display: block;
-	padding: 20px;
-}
-div td {
-	text-align: center;
+.container-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
 }
 .chart-container {
-	width: 50%;
+    width: 40%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
-.flex-container {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
+.info-container {
+    width: 25%;
+    text-align: center;
+    background: #f8f9fc;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
 }
-.leave-container {
-	width: 45%;
+.info-container h6 {
+    font-weight: bold;
+    margin-bottom: 5px;
 }
-.leave-card {
-	background-color: #f8f9fc;
-	border: 1px solid #ddd;
-	border-radius: 10px;
-	padding: 15px;
-	margin: 10px;
-	text-align: center;
-	display: inline-block;
-	width: 48%;
-	box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+.info-container p {
+    font-size: 18px;
+    font-weight: bold;
+    color: #007bff;
+    margin: 0;
 }
-.leave-card h6 {
-	font-weight: bold;
-	margin-bottom: 5px;
-}
-.leave-card p {
-	font-size: 18px;
-	color: #007bff;
-	font-weight: bold;
-	margin: 0;
-}
-
-/* 출퇴근 기록 테이블 스타일 */
 .work-info {
-	width: 100%;
-	overflow-x: auto;
+    width: 100%;
+    overflow-x: auto;
 }
 .work-info table {
-	width: 100%;
-	border-collapse: collapse;
-	margin-top: 20px;
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
 }
 .work-info th, .work-info td {
-	border: 1px solid #ddd;
-	padding: 12px;
-	text-align: center;
-	white-space: nowrap;
-	vertical-align: middle;
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
 }
 .work-info th {
-	background-color: #f8f9fc;
-	font-weight: bold;
+    background-color: #f8f9fc;
+    font-weight: bold;
 }
 .work-info tbody tr:nth-child(even) {
-	background-color: #f2f2f2;
+    background-color: #f2f2f2;
 }
 .work-info tbody tr:hover {
-	background-color: #e2e6ea;
+    background-color: #e2e6ea;
 }
 </style>
 </head>
 
 <body id="page-top">
 
-	<!-- 1. 근무시간 원형 그래프 + 연간 근태 현황 -->
-	<div class="row">
-		<div class="col">
-			<div class="card shadow mb-4">
-				<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-					<h5 class="m-0 font-weight-bold" id="currentMonthTitle"></h5>
-				</div>
-				<div class="card-body">
-					<div class="flex-container">
-						<div class="chart-container">
-							<canvas id="workHoursPieChart"></canvas>
-						</div>
-						<div class="leave-container">
-							<h5 class="text-center font-weight-bold">연간 근태 현황</h5>
-							<div class="leave-card">
-								<h6>현재 근무 월수</h6>
-								<p id="currentWorkMonths"></p>
-							</div>
-							<div class="leave-card">
-								<h6>연차</h6>
-								<p th:text="${remainingAnnualLeave} + '일'">10일</p>
-							</div>
-							<div class="leave-card">
-								<h6>병가</h6>
-								<p th:text="${remainingSickLeave} + '일'">5일</p>
-							</div>
-							<div class="leave-card">
-								<h6>반차</h6>
-								<p th:text="${remainingHalfDayLeave} + '회'">4회</p>
-							</div>
-							<div class="leave-card">
-								<h6>지각</h6>
-								<p th:text="${lateCount} + '회'">2회</p>
-							</div>
-							<div class="leave-card">
-								<h6>조퇴</h6>
-								<p th:text="${earlyLeaveCount} + '회'">3회</p>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	
-	<span id="workHoursData" 
-		th:text="${{ monthlyTotalWorkHours: monthlyTotalWorkHours, totalWorkedHours: totalWorkedHours, overtimeHours: overtimeHours }}"
-		hidden></span>
-	
-	<div class="row">
-		<div class="col">
-			<div class="card shadow mb-4">
-				<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-					<h5 class="m-0 font-weight-bold">출퇴근 기록</h5>
-				</div>
-				<div class="card-body">
-					<div class="work-info">
-						<table>
-							<thead>
-								<tr>
-									<th>사원번호</th>
-									<th>날짜</th>
-									<th>출근시간</th>
-									<th>퇴근시간</th>
-									<th>근태유형</th>
-									<th>연차사유</th>
-									<th>비고</th>
-									<th>총 근무시간</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr th:each="attendance : ${attendanceList}">
-									<td th:text="${attendance.employeeNo}"></td>
-									<td th:text="${#dates.format(attendance.attendanceDate, 'yyyy-MM-dd HH:mm')}"></td>
-									<td th:text="${#dates.format(attendance.clockInTime, 'HH:mm')}"></td>
-									<td th:text="${#dates.format(attendance.clockOutTime, 'HH:mm')}"></td>
-									<td th:text="${attendance.workAttitudeType}"></td>
-									<td th:text="${attendance.reason} ?: '-'"></td>
-									<td></td>
-									<td th:text="${attendance.totalWorkingHours}"></td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	
-	<script src="vendor/jquery/jquery.min.js"></script>
-	<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- ✅ 원형 그래프를 중심으로 배치 -->
+<div class="container-flex">
+    <!-- 왼쪽: 총 근무시간 & 초과 근무시간 -->
+    <div class="info-container">
+        <h6>총 근무시간</h6>
+        <p id="totalWorkDisplay">0 시간</p>
+        <h6>초과 근무시간</h6>
+        <p id="overtimeWorkDisplay">0 시간</p>
+    </div>
+
+    <!-- 가운데: 원형 그래프 -->
+    <div class="chart-container">
+        <canvas id="workHoursPieChart"></canvas>
+    </div>
+
+    <!-- 오른쪽: 연간 근태 현황 -->
+
+</div>
+
+<!-- ✅ 출퇴근 기록 (하단) -->
+<div class="row">
+    <div class="col">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h5 class="m-0 font-weight-bold">출퇴근 기록</h5>
+            </div>
+            <div class="card-body">
+                <div class="work-info">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>사원번호</th>
+                                <th>날짜</th>
+                                <th>출근시간</th>
+                                <th>퇴근시간</th>
+                                <th>근태유형</th>
+                                <th>연차사유</th>
+                                <th>비고</th>
+                                <th>총 근무시간</th>
+                                <th>초과 근무시간</th> <!-- ✅ 초과 근무시간 추가 -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="attendance : ${attendanceList}">
+                                <td th:text="${attendance.employeeNo}"></td>
+                                <td th:text="${#dates.format(attendance.attendanceDate, 'yyyy-MM-dd ')}"></td>
+                                <td th:text="${#dates.format(attendance.clockInTime, 'HH:mm')}"></td>
+                                <td th:text="${#dates.format(attendance.clockOutTime, 'HH:mm')}"></td>
+                                <td th:text="${attendance.workAttitudeType}"></td>
+                                <td th:text="${attendance.reason} ?: '-'"></td>
+                                <td></td>
+                                <td th:text="${attendance.totalWorkingHours}"></td>
+                                <td th:text="${attendance.overtimeList} ? ${attendance.overtimeList.overtimeTime} + '시간'"></td> <!-- ✅ 초과 근무시간 표시 -->
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+       
+    </div>
+</div>
+
+<!-- ✅ Hidden 데이터 저장 -->
+<span id="workHoursData"
+    th:data-monthly-total-work-hours="${monthlyTotalWorkHours}"
+    th:data-total-worked-hours="${totalWorkedHours}"
+    th:data-overtime-hours="${overtimeHoursCalculated}"  
+    hidden></span>
+
+<script src="vendor/jquery/jquery.min.js"></script>
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        let today = new Date();
-        let currentMonth = today.getMonth();
-        let monthNames = ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"];
-        document.getElementById('currentMonthTitle').innerText = `${monthNames[currentMonth]} 근무시간`;
+document.addEventListener("DOMContentLoaded", function () {
+    let workHoursDataElement = document.getElementById('workHoursData');
 
-        document.getElementById('currentWorkMonths').innerText = `${currentMonth + 1}개월`;
+    let monthlyTotalWorkHours = parseFloat(workHoursDataElement.dataset.monthlyTotalWorkHours) || 0;
+    let totalWorkedHours = parseFloat(workHoursDataElement.dataset.totalWorkedHours) || 0;
+  //  let overtimeMinutes = parseFloat(workHoursDataElement.dataset.overtimeHours) || 0;
 
-        // ✅ JSON 데이터를 가져와서 사용
-        let workHoursData = JSON.parse(document.getElementById('workHoursData').textContent);
-        let monthlyTotalWorkHours = workHoursData.monthlyTotalWorkHours || 0;
-        let totalWorkedHours = workHoursData.totalWorkedHours || 0;
-        let overtimeHours = workHoursData.overtimeHours || 0;
-        let remainingWorkHours = Math.max(0, monthlyTotalWorkHours - totalWorkedHours);
+    let overtimeHours = workHoursDataElement.dataset.overtimeHours
 
-        // ✅ 초과근무 시간 조정 (30분 단위 반올림)
-        let adjustedOvertimeHours = 0;
-        if (overtimeHours > 0) {
-            adjustedOvertimeHours = Math.floor(overtimeHours / 0.5) * 0.5;
-        }
+    let overtimeDisplayText = (overtimeHours > 0 ) 
+        ? `${overtimeHours}시간`
+        : "없음";
 
-        let ctx = document.getElementById('workHoursPieChart').getContext('2d');
-        new Chart(ctx, { 
-            type: 'doughnut', 
-            data: {
-                labels: ['예상 근무시간', '현재 근무시간', '초과 근무시간'],
-                datasets: [{
-                    data: [remainingWorkHours, totalWorkedHours - adjustedOvertimeHours, adjustedOvertimeHours],
-                    backgroundColor: ['#CCCCCC', '#007bff', '#FF5733'],
-                }]
-            },
-            options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
-        });
+    document.getElementById('totalWorkDisplay').innerText = totalWorkedHours + " 시간";
+    document.getElementById('overtimeWorkDisplay').innerText = overtimeDisplayText;
+
+    new Chart(document.getElementById('workHoursPieChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['예상 근무시간', '총 근무시간', '초과 근무시간'],
+            datasets: [{
+                data: [Math.max(0, monthlyTotalWorkHours - totalWorkedHours), totalWorkedHours, overtimeHours],
+                backgroundColor: ['#CCCCCC', '#007bff', '#FF5733'],
+            }]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
     });
+    console.log([Math.max(0, monthlyTotalWorkHours - totalWorkedHours), totalWorkedHours])
+});
 </script>
-
-
 
 </body>
 </html>
