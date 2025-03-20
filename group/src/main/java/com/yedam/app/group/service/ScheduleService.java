@@ -5,8 +5,16 @@ import java.util.List;
 public interface ScheduleService {
 	
 	// 일정등록
-	public int saveSchedule(ScheduleVO scheduleVO);
+	public int createSchedule(ScheduleVO scheduleVO);
 	
 	// 일정조회
-	public List<ScheduleVO> getAllSchedules(ScheduleVO scheduleVO);
+	public List<ScheduleVO> findAllSchedules(ScheduleVO scheduleVO);
+	
+	// 일정수정
+	public int modifySchedule(ScheduleVO scheduleVO);
+	
+	// 일정삭제
+	public int removeSchedule(ScheduleVO scheduleVO);
+	
+	
 }
