@@ -79,7 +79,6 @@ public class mainController {
 	    return "externalPages/qnaPage";
 	}
 
-	
 //	@GetMapping("/qna/detail")
 //	public String getBoardDetail(@RequestParam("postId") Long postId, Model model) {
 //	    // 게시글 정보 조회

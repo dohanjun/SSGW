@@ -14,7 +14,7 @@
 <body>
 		<div class="card shadow mb-4" style="width: 100%; margin-top: 20px; margin-bottom: auto;">
 			<div class="card-header py-3">
-				<h6 class="m-0 font-weight-bold text-primary">전체 자료실</h6>
+				<h6 class="m-0 font-weight-bold text-primary" th:text="${repository.fileRepositoryType}">전체 자료실</h6>
 			</div>
 			<div class="card-body">
 				<div class="table-responsive">
@@ -24,18 +24,18 @@
 							style="top: 50%; left: 10px; transform: translateY(-50%); color: #aaa;"></i>
 					</div>
 					<div class="text-right mb-3">
-						<button class="btn btn-primary">동륵</button>
+						<button class="btn btn-primary" th:onclick="|location.href='@{/repositoryInsert}'|">동륵</button>
 					</div>
 					<table class="table table-bordered" id="dataTable" width="100%"
 						cellspacing="0">
 						<thead>
-							<tr>
-								<th><input type="checkbox" id="selectAll"></th>
-								<th>자료이름</th>
-								<th>파일명</th>
-								<th>작성자</th>
-								<th>작성일</th>
-							</tr>
+						    <tr th:each="post : ${totalRepositoryList}">
+            					<td><input type="checkbox" class="file-checkbox"></td>
+           						<td th:text="${post.title}">자료이름</td>
+            					<td th:text="${post.fileName}">파일명</td>
+            					<td th:text="${post.writer}">작성자</td>
+            					<td th:text="${#dates.format(post.writeDate, 'yyyy-MM-dd')}">작성일</td>
+        				    </tr>
 						</thead>
 						<tbody>
 							<tr>
