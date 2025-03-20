@@ -131,7 +131,7 @@ public class ApprovalController {
 		try {
 
 			// 파일 저장 경로 설정  
-			String uploadDir = "src/main/resources/static/img/stamp/";
+			String uploadDir = "D:/uploads/";
 			String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
 			Path filePath = Paths.get(uploadDir + fileName);
 
@@ -140,7 +140,7 @@ public class ApprovalController {
 			Files.write(filePath, file.getBytes());
 
 			// DB에 저장할 경로 설정
-			String fileDbPath = "/img/stamp/" + fileName;
+			String fileDbPath = "/uploads/" + fileName;
 
 			// ApprovalVO 객체 생성 후 데이터 저장
 			ApprovalVO aprvVO = new ApprovalVO();
@@ -179,7 +179,7 @@ public class ApprovalController {
 		try {
 
 			// 파일 저장 경로 설정
-			String uploadDir = "target/classes/static/img/stamp/";
+			String uploadDir = "D:/uploads/";
 			String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
 			Path filePath = Paths.get(uploadDir + fileName);
 
@@ -217,7 +217,7 @@ public class ApprovalController {
 	// 도장 비활성화
 	@PostMapping("aprv/delete")
 	public ResponseEntity<Map<String, Object>> deleteStamp() {
-	    Map<String, Object> response = approvalService.deleteStamp(new ApprovalVO());
+	    Map<String, Object> response = approvalService.removeStamp(new ApprovalVO());
 	    return ResponseEntity.ok(response);
 	}
 	

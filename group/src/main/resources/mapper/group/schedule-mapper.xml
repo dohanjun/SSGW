@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yedam.app.group.mapper.ScheduleMapper">
+	<!-- 일정등록 -->
 	<insert id="insertSchedule" parameterType="ScheduleVO">
 		<selectKey keyProperty="scheduleId" resultType="Integer"
 			order="BEFORE">
@@ -17,19 +18,27 @@
             #{departmentNo}, '개인', #{suberNo}
         )
     </insert>
+    
+    <!-- 일정조회 -->
     <select id="getScheduleList" resultType="ScheduleVO" parameterType="ScheduleVO">
-        SELECT  SCHEDULE_ID
-			    ,SCHEDULE_TITLE
-				,SCHEDULE_CONTENT
-				,SCHEDULE_START
-				,SCHEDULE_END
-				,EMPLOYEE_NO
-				,DEPARTMENT_NO
-				,SCHEDULE_DIVISION
-				,REPEAT_CYCLE
-				,SUBER_NO 
-        FROM schedule
-        WHERE SUBER_NO = #{suberNo}
-          AND EMPLOYEE_NO = #{employeeNo}
+        SELECT  s.SCHEDULE_ID
+				,s.SCHEDULE_TITLE
+				,s.SCHEDULE_CONTENT
+				,s.SCHEDULE_START
+				,s.SCHEDULE_END
+				,s.EMPLOYEE_NO
+				,s.DEPARTMENT_NO
+				,s.SCHEDULE_DIVISION
+				,s.REPEAT_CYCLE
+				,s.SUBER_NO
+        		,d.department_name
+                ,e.employee_name
+		FROM schedule s
+		JOIN department d
+  		    ON s.department_no = d.department_no
+        JOIN employees e
+            ON s.employee_no = e.employee_no
+		WHERE s.SUBER_NO = #{suberNo}
+		AND s.EMPLOYEE_NO = #{employeeNo}
     </select>
 </mapper>
