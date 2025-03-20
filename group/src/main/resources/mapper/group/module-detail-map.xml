@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yedam.app.group.mapper.ModuleDetailMapper">
-<insert id="insertModules">
-    INSERT INTO SUB_DETAILS (SUB_DETAILS_NO, suber_no, module_no, sub_period, discount, discount_rate, discount_price)
-    VALUES (SUB_DETAILS_SEQ.NEXTVAL, #{suberNo}, #{moduleNo}, #{subPeriod}, #{discount}, #{discountRate}, #{discountPrice})
+
+<insert id="insertModules" parameterType="com.yedam.app.group.service.SubscriptionDetailVO">
+    <selectKey keyProperty="subDetailsNo" resultType="int" order="BEFORE">
+        SELECT SUB_DETAILS_SEQ.NEXTVAL FROM DUAL
+    </selectKey>
+
+    INSERT INTO SUB_DETAILS (
+        SUB_DETAILS_NO, suber_no, module_no, sub_period, discount, discount_rate, discount_price
+    ) VALUES (
+        #{subDetailsNo}, #{suberNo}, #{moduleNo}, #{subPeriod}, #{discount}, #{discountRate}, #{discountPrice}
+    )
 </insert>
+
 </mapper>
 

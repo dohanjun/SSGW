@@ -10,4 +10,8 @@ public interface BoardPostService {
     int getTotalCountByKeyword(String keyword);
     
 	BoardPostVO getBoardDetail(int postId);
+	int modifyBoartFixed(int postId);
+	int removeBoradPost(int postId);
+	
+	int createBoard(BoardPostVO boardPost);
 }

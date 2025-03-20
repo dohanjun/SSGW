@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{common/layouts/main_layout}"
+	layout:fragment="content">
+<head>
+<!-- Quill CSS -->
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css"
+	rel="stylesheet">
+<style>
+#postEditor-container {
+	height: 200px;
+	background-color: #f8f9fc;
+	border: 1px solid #ddd;
+	border-radius: 5px;
+}
+
+#commentEditor-container {
+	height: 150px;
+	background-color: #fff;
+	border: 1px solid #ddd;
+	border-radius: 5px;
+}
+</style>
+</head>
+<body>
+	<div id="wrapper">
+		<div id="content-wrapper" class="d-flex flex-column">
+			<div id="content">
+				<div class="container-fluid px-0">
+					<div class="card shadow mb-4">
+						<!-- 게시글 정보 -->
+						<div
+							class="card-header py-3 d-flex align-items-center position-relative">
+							<h6 class="m-0 font-weight-bold text-primary">게시글 정보</h6>
+							<i class="fa-solid fa-thumbtack position-absolute fix"
+								style="right: 20px; top: 50%; transform: translateY(-50%);"></i>
+						</div>
+						<div class="card-body">
+							<table class="table table-bordered file-info-table">
+								<tbody>
+									<tr>
+										<th>제목</th>
+										<td>[[${boardPost.postTitle}]]</td>
+										<th>작성자</th>
+										<td>[[${boardPost.employeeName}]]</td>
+										<th>등록일</th>
+										<td
+											th:text="${#dates.format(boardPost.postDate, 'yyyy년 MM월 dd일')}"></td>
+									</tr>
+									<tr>
+										<td colspan="6">
+											<div id="postEditor-container"></div>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<div class="text-center mb-3">
+								<a href="/qna">
+									<button class="btn btn-secondary">
+										<i class="fas fa-arrow-left"></i>
+									</button>
+								</a>
+								<button class="btn btn-danger delete-btn">
+									<i class="fas fa-trash"></i>
+								</button>
+							</div>
+						</div>
+					</div>
+
+					<!-- 답글 작성 -->
+					<div class="card shadow mb-4">
+						<div class="card-header py-3">
+							<h6 class="m-0 font-weight-bold text-primary">답글 작성</h6>
+						</div>
+						<div class="card-body">
+							<!-- Quill 에디터 (답글 입력) -->
+							<div id="commentEditor-container"></div>
+							<button id="commentSubmitBtn" class="btn btn-primary mt-2"
+								style="width: 80px; height: 40px; font-size: 0.9rem; border-radius: 6px;">
+								등록</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script
+		src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+	<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+	<script th:inline="javascript">
+		var post = /*[[${boardPost}]]*/[];
+		var postId = post.postId;
+		
+		var postQuill = new Quill('#postEditor-container', {
+			theme : 'snow',
+			readOnly : true,
+			modules : {
+				toolbar : false
+			}
+		});
+		postQuill.root.innerHTML = `[[${boardPost.postContent}]]`;
+		var commentQuill = new Quill('#commentEditor-container', {
+			theme : 'snow',
+			placeholder : '여기에 내용을 입력하세요...',
+			modules : {
+				toolbar : [ [ {
+					'font' : []
+				}, {
+					'size' : []
+				} ], [ 'bold', 'italic', 'underline' ], [ {
+					'list' : 'ordered'
+				}, {
+					'list' : 'bullet'
+				} ], [ {
+					'align' : []
+				} ], [ 'link', 'image' ], [ 'clean' ] ]
+			}
+		});
+		document.getElementById('commentSubmitBtn').addEventListener('click',
+				function() {
+					var commentContent = commentQuill.root.innerHTML;
+					
+					$.ajax({
+			            type: "POST",
+			            url: "/insertBoardPost",
+			            data: JSON.stringify({
+			            	parentCommentId:postId,
+			            	postTitle:post.postTitle+"에 대한 답글 입니다",
+			            	postContent:commentContent,
+			            	boardId:999,
+			            	employeeNo:0,
+			            	
+			            }),
+			            contentType: "application/json",
+			            success: function(response) {
+			                alert("등록 완료.");
+			            },
+			            error: function(xhr, status, error) {
+			                alert("등록 실패");
+			                console.error(xhr.responseText);
+			            }
+			        });
+				});
+		
+		$(document).ready(function() {
+			if (post.faq === 'Y') {
+				$(".fix").css("color", "green");
+			} else {
+				$(".fix").css("color", "gray");
+			}
+		});
+
+		$(document).on("click", ".fix", function() {
+			$.ajax({
+				type : "POST",
+				url : "/fixed",
+				contentType : "application/x-www-form-urlencoded",
+				data : "postId=" + postId,
+				success : function(response) {
+				},
+				error : function(xhr, status, error) {
+					console.error("❌ 요청 실패:", error);
+				}
+			});
+		});
+
+		$(document).on('click', '.fix', function() {
+			let color = window.getComputedStyle(this).color;
+
+			if (color === 'rgb(128, 128, 128)') {
+				$(this).css('color', 'rgb(0, 128, 0)');
+			} else {
+				$(this).css('color', 'rgb(128, 128, 128)');
+			}
+		});
+		
+		$('.delete-btn').on('click',e=>{
+			$.ajax({
+				type : "DELETE",
+				url : "/deletePost",
+				contentType : "application/x-www-form-urlencoded",
+				data : "postId=" + postId,
+				success : function(response) {
+					window.location.href = "/qna"; 
+				},
+				error : function(xhr, status, error) {
+					console.error("❌ 요청 실패:", error);
+				}
+			});
+		})
+	</script>
+</body>
+</html>

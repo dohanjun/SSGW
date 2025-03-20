@@ -13,9 +13,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.yedam.app.group.service.EmpService;
+import com.yedam.app.group.service.EmpVO;
 import com.yedam.app.group.service.ModuleDetailService;
 import com.yedam.app.group.service.ModuleService;
 import com.yedam.app.group.service.ModuleVO;
+import com.yedam.app.group.service.PaymentDetailsService;
+import com.yedam.app.group.service.PaymentDetailsVO;
 import com.yedam.app.group.service.PaymentService;
 import com.yedam.app.group.service.PaymentVO;
 import com.yedam.app.group.service.SubscriberService;
@@ -33,7 +37,9 @@ public class ModuleController {
 	private final SubscriberService subscriberService;
 	private final ModuleDetailService moduleDetailService;
 	private final PaymentService paymentService;
-
+	private final PaymentDetailsService paymentDetailsService;
+	private final EmpService empService;
+	
 	@GetMapping("/subscribe")
 	public String subscribePage(Model model) {
 		List<ModuleVO> modules = moduleService.getAllModules();
@@ -48,18 +54,31 @@ public class ModuleController {
 	}
 
 	@PostMapping("/saveSubDetail")
-	public ResponseEntity<String> saveSubDetail(@RequestBody List<SubscriptionDetailVO> request) {
-		List<SubscriptionDetailVO> modules = request;
-		moduleDetailService.saveModuleDetail(modules);
-		return ResponseEntity.ok("모듈 저장 성공");
+	public ResponseEntity<List<SubscriptionDetailVO>> saveSubDetail(@RequestBody List<SubscriptionDetailVO> request) {
+	    List<SubscriptionDetailVO> savedModules = moduleDetailService.saveModuleDetail(request);
+	    return ResponseEntity.ok(savedModules);
 	}
 
 	@PostMapping("/savePayment")
-	public ResponseEntity<String> savePayment(@RequestBody PaymentVO payment) {
-		System.out.println("결제내역"+payment);
-		paymentService.savePayment(payment);
-		return ResponseEntity.ok("내역 저장 성공");
+	public ResponseEntity<PaymentVO> savePayment(@RequestBody PaymentVO payment) {
+	    paymentService.savePayment(payment);
+	    return ResponseEntity.ok(payment);
 	}
+	
+	 @PostMapping("/savePaymentDetails")
+	    public ResponseEntity<List<PaymentDetailsVO>> savePaymentDetails(@RequestBody List<PaymentDetailsVO> request) {
+	        List<PaymentDetailsVO> savedDetails = paymentDetailsService.createPaymentDetails(request);
+	        System.out.println(request);
+	        return ResponseEntity.ok(savedDetails);
+	    }
+	 
+	    @PostMapping("/saveUser")
+	    public ResponseEntity<?> saveUser(@RequestBody EmpVO employee) {   
+	    	int savedEmployee = empService.createEmpInfo(employee);
+	    	System.out.println(employee);
+	        return ResponseEntity.ok(savedEmployee);
+	    }
+	
 	
 	@PostMapping("/login")
 	public String login() {
