@@ -1,17 +1,22 @@
 package com.yedam.app.group.web;
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.yedam.app.group.service.BoardPostService;
 import com.yedam.app.group.service.BoardPostVO;
 import com.yedam.app.group.service.ModuleService;
 import com.yedam.app.group.service.ModuleVO;
+import com.yedam.app.group.service.PaymentVO;
 
 import org.springframework.ui.Model;
 import jakarta.servlet.http.HttpServletRequest;
@@ -80,19 +85,12 @@ public class mainController {
 	}
 
 	
-//	@GetMapping("/qna/detail")
-//	public String getBoardDetail(@RequestParam("postId") Long postId, Model model) {
-//	    // 게시글 정보 조회
-//	    BoardPostVO boardPost = boardPostService.getBoardDetail(postId);
-//
-//	    // 게시글이 존재하지 않을 경우 목록 페이지로 리다이렉트
-//	    if (boardPost == null) {
-//	        return "redirect:/qna?page=1";
-//	    }
-//
-//	    model.addAttribute("boardPost", boardPost);
-//	    return "externalPages/qnaDetail"; // 상세 페이지로 이동
-//	}
+	@GetMapping("/qna/detail")
+	public String getBoardDetail(@RequestParam("postId") int postId, Model model) {
+	    BoardPostVO boardPost = boardPostService.getBoardDetail(postId);
+	    model.addAttribute("boardPost", boardPost);
+	    return "externalPages/qnaDetail"; 
+	}
 	
 	@GetMapping("/module")
 	public String subscribePage(Model model) {
@@ -100,4 +98,26 @@ public class mainController {
 		model.addAttribute("modules", modules);
 		return "externalPages/modulePage";
 	}
+	
+	@PostMapping("/fixed")
+	public ResponseEntity<String> modifyFixed(@RequestParam("postId") int postId) {
+		boardPostService.modifyBoartFixed(postId);
+	    return ResponseEntity.ok("내역 저장 성공");
+	}
+	
+	@DeleteMapping("/deletePost")
+	public ResponseEntity<String> removeBoradPost(@RequestParam("postId") int postId) {
+		boardPostService.removeBoradPost(postId);
+	    return ResponseEntity.ok("삭제 성공");
+	}
+	
+	@PostMapping("/insertBoardPost")
+	public ResponseEntity<String> insertBoardPost(@RequestBody BoardPostVO boardPost) {
+	    System.out.println("받은 데이터: " + boardPost);
+	    boardPostService.createBoard(boardPost);
+	    return ResponseEntity.ok("게시글이 성공적으로 등록되었습니다.");
+	}
+
+	
+	
 }

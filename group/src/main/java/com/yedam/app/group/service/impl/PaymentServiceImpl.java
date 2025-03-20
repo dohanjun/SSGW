@@ -12,10 +12,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService{
     private final PaymentMapper paymentMapper;
-
 	@Override
 	public void savePayment(PaymentVO payment) {
-		paymentMapper.insertPaymentDetail(payment);
+        paymentMapper.insertPaymentDetail(payment);
 	}
 }
 

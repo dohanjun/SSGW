@@ -26,8 +26,8 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/", "/login", "/subscribe", "/manual", "/css/**", "/js/**", "/img/**").permitAll()
-                .requestMatchers("/module","/insertModule","/updateModule","/deleteModule/*","/updateModuleBasic/*","/updateModuleActive/*","/qna").hasAuthority("ROLE_MANAGER")
-                .requestMatchers("/aprv/modify", "/aprv/upload").permitAll()
+                .requestMatchers("/module","/insertModule","/updateModule","/deleteModule/*","/updateModuleBasic/*","/updateModuleActive/*","/qna","/fixed").hasAuthority("ROLE_MANAGER")
+                .requestMatchers("/aprv/modify", "/aprv/upload","/saveSubDetail","/saveSubDetail","/saveSuber","/savePayment","/savePaymentDetails","/saveUser").permitAll()
 
                 .anyRequest().authenticated()
             )
@@ -43,9 +43,7 @@ public class SecurityConfig {
                 .invalidateHttpSession(true)   
                 .permitAll()
             )
-
-            .csrf(csrf -> csrf.ignoringRequestMatchers("/logout","/insertModule", "/updateModule","/deleteModule/*","/updateModuleBasic/*","/updateModuleActive/*","/qna", "/aprv/**","/insertModule","/saveForm", "/schedule/**"));
-
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/logout","/savePayment","/insertModule", "/updateModule","/deleteModule/*","/updateModuleBasic/*","/updateModuleActive/*","/qna", "/aprv/**","/insertModule","/saveForm", "/schedule/**","/qna","/fixed","/saveSubDetail","/saveSubDetail","/saveSuber","/savePaymentDetails","/saveUser"));
         return http.build();
     }
 

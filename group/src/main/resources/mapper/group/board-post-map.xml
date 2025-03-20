@@ -59,5 +59,52 @@
         WHERE BOARD_ID = 999
         AND POST_TITLE LIKE '%' || #{keyword} || '%'
     </select>
+	
+	    <select id="selectPostById" resultType="com.yedam.app.group.service.BoardPostVO">
+
+            SELECT 
+                B.POST_ID,
+                B.PARENT_COMMENT_ID,
+                B.POST_TITLE,
+                B.POST_CONTENT,
+                B.POST_DATE,
+                B.FIXED,
+                B.FAQ,
+                B.LOCATION,
+                B.READ,
+                B.BOARD_ID,
+                B.EMPLOYEE_NO,
+                E.EMPLOYEE_NAME
+            FROM BOARD_POST B
+            LEFT JOIN EMPLOYEES E ON B.EMPLOYEE_NO = E.EMPLOYEE_NO
+            WHERE B.POST_ID = ${postId}
+    </select>
+    
+	 <update id="modifyBoartFixed" parameterType="int">
+	    UPDATE board_post 
+	    SET fixed = CASE 
+	        WHEN faq = 'Y' THEN 'N' 
+	        ELSE 'Y' 
+	    END
+	    WHERE post_id = #{postId}
+	</update>
+	
+	<delete id="deletePost" parameterType="int">
+	    DELETE FROM board_post WHERE post_id = #{postId}
+	</delete>
+	
+	<insert id="insertPost" parameterType="com.yedam.app.group.service.BoardPostVO" useGeneratedKeys="true" keyProperty="postId">
+	    <selectKey keyProperty="postId" resultType="int" order="BEFORE">
+	        SELECT NVL(MAX(post_id), 0) + 1 FROM board_post
+	    </selectKey>
+	
+	    INSERT INTO board_post (
+	        post_id, parent_comment_id, post_title, post_content, post_date, 
+	        fixed, faq, location, read, board_id, employee_no
+	    ) VALUES (
+	        #{postId}, #{parentCommentId}, #{postTitle}, #{postContent}, sysdate,
+	        'N', 'N', null, 'N', #{boardId}, #{employeeNo}
+	    )
+	</insert>
 
 </mapper>
