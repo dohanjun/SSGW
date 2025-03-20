@@ -60,4 +60,8 @@ public class WorkController {
 		return "group/workPage/chartsManager";
 	}
     
+    @GetMapping("/mypage")
+	public String myPage() {
+		return "group/workPage/mypage";
+	}
 }
