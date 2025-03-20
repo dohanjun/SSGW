@@ -9,6 +9,8 @@
 <title>mail Reply</title>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+
+
 </head>
 <style>
 	#flo{
@@ -52,47 +54,53 @@
 </style>
 <!-- 메일답장 페이지-->
   <body>
-  <h3>메일답장화면</h3>
-  <div class="content-wrapper" id="center">
-	<div class="employee-container">
-	  <div>
-	  <a href="#" lcon="home"></a>
-	<h1>답장하기</h1>
+<div id="content-wrapper" class="d-flex flex-column">
+  <div id="container-fluid px-0">
+  	<div class="card shadow mb-4">
+	<!-- "자료 등록" 왼쪽 정렬 유지 -->
+	  <div class="btn-container">
+	  <a lcon="back" class="btn btn-primary" th:onclick="|location.href='@{/mailSelect(mailId=${mail.mailId})}'|">
+	  </a>
+	  </div>
+  	<div class="card-header py-3">
+	  <h6 class="m-0 font-weight-bold text-primary">메일답장하기</h6>
 	</div>
-	  <div>
-	    <hr>
+	  <div class="btn-container">
 			<button type="button"
 			th:onclick="|location.href='@{/mailReply(mailId=${mail.mailId})}'|">보내기</button>
 			<button type="button"
 			th:onclick="|location.href='@{/mailVery(mailId=${mail.mailId})}'|">임시저장</button>
-		<hr>
 	  </div>
-
-	<!-- 메일답장기능 -->
-	<div>
-		<div>
-			<label for="getName">받는사람</label>
-			<input type="text" id="getName" th:value="${mail.getUser}" readonly>
-		</div>
-		<div>
-			<label for="cc">참조</label>
-			<input type="text" id="cc" name="cc">
-		</div>
-		<div>
-			<label for="mid">제목</label>
-			<input type="text" id="mid" th:value="${mail.title}" readonly>
-		</div>
-		<div>
-			<label for="file">파일첨부</label>
-			<input th:value="${mail.attachedFileName}" readonly>
-		</div>
-		<div>
-			<label for="content">내용</label>
-			<textarea name="opinion" cols="30" row="30" th:value="${mail.content}"></textarea>
-		</div>
+<!-- 메일답장기능 -->
+	<div class="card-body">
+	   <table class="table file-info-table">	  
+  		 <tbody>
+		<tr>
+			<th for="getName">받는사람</th>
+			<td><input type="text" id="getName" th:value="${mail.getUser}" readonly></td>
+			<th for="cc">참조</th>
+			<td><input type="text" id="cc" name="cc"></td>
+		</tr>
+		<tr>
+			<th for="mid">제목</th>
+			<td><input type="text" id="mid" th:value="${mail.title}" readonly></td>
+			<th for="file">파일첨부</th>
+			<td><input th:value="${mail.attachedFileName}" readonly></td>
+		</tr>
+		<tr>
+			<th for="content">내용</th>
+			<td><textarea name="opinion" cols="30" row="30" th:value="${mail.content}" readonly></textarea></td>
+			<th for="content">답장하기</th>
+			<td><textarea name="opinion" cols="30" row="30" th:value="${mail.content}"></textarea></td>
+		</tr>
+	</tbody>
+   </table>
+   
 	</div>
-	<!-- 메일답장기능 마침 -->
-		</div>
+<!-- 메일답장기능 마침 -->
 	</div>
+	</div>
+	</div>
+	
   </body>
 </html>
