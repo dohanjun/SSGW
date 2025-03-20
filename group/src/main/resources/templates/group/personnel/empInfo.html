@@ -152,7 +152,7 @@
             <div class="btn-group">
                 <button type="button" class="btn btn-primary" 
                 th:onclick="|location.href = '@{ /empUpdate(employeeNo=${emp.employeeNo}) }'|">수정</button>
-                <button type="button" class="btn btn-danger">취소</button>
+                <button type="button" class="btn btn-danger" th:onclick="|location.href = '@{ /empMgmt }'|">취소</button>
             </div>
         </div>
     </div>

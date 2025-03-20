@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yedam.app.group.mapper.DeptMapper">
      
-     <!-- 부서 조회 -->
+     <!-- 부서 조회 
      <select id="selectDeptList"
              resultType="DeptVO">
              
@@ -15,7 +15,33 @@
 			 FROM DEPARTMENT
 			 ORDER BY DEPARTMENT_NO
      
-     </select>
+     </select>-->
+     
+    <!-- 부서 목록 조회 -->
+    <select id="getAllDepartments" resultType="com.yedam.app.group.service.DeptVO"
+            parameterType="com.yedam.app.group.service.DeptVO">
+        SELECT DEPARTMENT_NO, DEPARTMENT_NAME 
+        FROM DEPARTMENT 
+        WHERE SUBER_NO = #{suberNo}
+        ORDER BY DEPARTMENT_NO ASC
+    </select>
+
+    <!-- 직급 목록 조회 -->
+    <select id="getAllRanks" resultType="com.yedam.app.group.service.RankVO" 
+            parameterType="com.yedam.app.group.service.RankVO">
+        SELECT RANK_ID, JOB_TITLE_NAME 
+        FROM RANK 
+        WHERE SUBER_NO = #{suberNo}
+        ORDER BY RANK_ID ASC
+    </select>
+
+    <!-- 권한 목록 조회 -->
+    <select id="getAllRights" resultType="RightsVO" parameterType="RightsVO">
+        SELECT RIGHTS_ID, RIGHTS_NAME 
+        FROM RIGHTS 
+        WHERE SUBER_NO = #{suberNo}
+        ORDER BY RIGHTS_ID ASC
+    </select>
 
 
 </mapper>

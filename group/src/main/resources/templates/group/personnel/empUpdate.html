@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- Context Path 추가 (여기 반드시 포함) 
+    <!-- Context Path 추가
     <meta name="contextPath" value="/myapp">-->
     
     <title>사원정보 수정</title>
@@ -116,11 +116,11 @@
     <div class="content-wrapper">
         <div class="employee-container">
             <h2 class="emph2">사원 정보수정</h2>
-            <div class="profile-img">
-			<img th:if="${profileImageBase64}" 
-				         th:src="'data:image/png;base64,' + ${profileImageBase64}" 
-				         alt="프로필 이미지">  			     
-            </div>	
+			<div class="profile-container">
+			    <img id="imagePreview" class="profile-img" th:src="'data:image/png;base64,' + ${profileImageBase64}" 
+			         alt="프로필 이미지" onclick="document.getElementById('photo').click();">
+			    <input type="file" id="photo" name="profileImageFile" accept="image/*" style="display: none;" onchange="previewImage(event)">
+			</div>
             
             <div class="form-container">
                 <div class="form-group">
@@ -142,48 +142,39 @@
                 </div>
                 <div class="form-group">
                     <label for="department">부서</label>
-                    <select th:field="*{departmentNo}">
-                        <option value="">부서를 선택하세요</option>
-					    <option value="2">경영기획부</option>
-					    <option value="3">마케팅부</option>
-					    <option value="4">인사팀</option>
-					    <option value="5">회계팀</option>
-					    <option value="6">IT팀</option>
-					    <option value="7">개발팀</option>
-				   </select>
+				    <select id="department" name="departmentNo">
+				        <option value="">부서를 선택하세요</option>
+				    </select>
                 </div>
                 <div class="form-group">
                     <label for="position">직급</label>
-                    <select th:field="*{rankId}">
-	                   <option value="">직급을 선택하세요</option>
-					   <option value="1">사원</option>
-					   <option value="2">주임</option>
-					   <option value="3">대리</option>
-					   <option value="4">과장</option>
-					   <option value="5">부장</option>
-					   <option value="6">이사</option>
-					   <option value="7">대표</option>
-					</select>
+				    <select id="position" name="rankId">
+				        <option value="">직급을 선택하세요</option>
+				    </select>
                 </div>
                 <div class="form-group">
                     <label for="role">권한</label>
-                    <select th:field="*{rightsId}">
-	                   <option value="">권한을 선택하세요</option>
-					   <option value="1">최고관리자</option>
-					   <option value="2">인사관리자</option>
-					   <option value="3">게시판관리자</option>
-					   <option value="4">일반사용자</option>
-					</select>
+				    <select id="role" name="rightsId">
+				        <option value="">권한을 선택하세요</option>
+				    </select>
                 </div>
 
                 <div class="form-group">
                     <label for="contact">연락처</label>
                     <input type="text" id="contact" th:field="*{phoneNumber}">
                 </div>
-                <div class="form-group">
-                    <label for="address">주소</label>
-                    <input type="text" id="address" th:field="*{address}">
-                </div>
+				<!-- 주소 입력 -->
+				<div class="form-group">
+				    <label for="address">주소</label>
+				    <input type="text" id="address" th:field="*{address}" readonly>
+				    <button type="button" class="btn btn-info btn-sm" onclick="searchAddress()">주소 검색</button>
+				</div>
+				
+				<!-- 상세주소 입력 -->
+				<div class="form-group">
+				    <label for="detailAddress">상세주소</label>
+				    <input type="text" id="detailAddress" placeholder="상세주소 입력">
+				</div>
                 <div class="form-group">
                     <label for="hire-date">입사일</label>
                     <input type="date" id="hire-date" th:field="*{hireDate}">
@@ -198,25 +189,31 @@
 
             <div class="btn-group">
                 <button type="submit" id="btn1" class="btn btn-primary">수정</button>
-                <button type="button" class="btn btn-danger">취소</button>
+                <button type="button" class="btn btn-danger" th:onclick="|location.href = '@{ /empInfo(employeeNo=${emp.employeeNo}) }'|">취소</button>
             </div>
         </div>
     </div>
 </form>
+
+
+    <!--  카카오 주소 API -->
+    <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=843f623b54841d7e48c15c0667f81957&libraries=services"></script>
+    <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     
     <script>
-        function empimg(event) {
-            const image = document.getElementById('imagePreview');
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    image.src = e.target.result;
-                    image.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            }
-        }
+	    // 이미지 미리보기 기능
+	    function previewImage(event) {
+	        const image = document.getElementById('imagePreview');
+	        const file = event.target.files[0];
+	
+	        if (file) {
+	            const reader = new FileReader();
+	            reader.onload = function (e) {
+	                image.src = e.target.result; // 이미지 미리보기 업데이트
+	            };
+	            reader.readAsDataURL(file);
+	        }
+	    }
         
         function resetPassword() {
             document.getElementById('pw').value = '12345678';
@@ -270,6 +267,100 @@
 
             return obj;
         }
+        
+        // AJAX 요청을 통해 데이터 불러오기
+        function loadData(url, selectId, valueField, textField) {
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    let select = document.getElementById(selectId);
+                    select.innerHTML = '<option value="">선택하세요</option>'; // 기본값 초기화
+
+                    data.forEach(item => {
+                        let option = document.createElement("option");
+                        option.value = item[valueField];  // ID 값
+                        option.textContent = item[textField]; // 표시할 텍스트
+                        select.appendChild(option);
+                    });
+                })
+                .catch(error => console.error(`Error loading ${selectId} data:`, error));
+        }
+
+        // 페이지 로드 시 실행
+        document.addEventListener("DOMContentLoaded", function() {
+            loadData("/api/departments", "department", "departmentNo", "departmentName");
+            loadData("/api/ranks", "position", "rankId", "jobTitleName");
+            loadData("/api/rights", "role", "rightsId", "rightsName");
+        });
+        
+        
+         // AJAX 요청을 통해 데이터 불러오기
+         
+        let empId = "[[${emp.employeeNo}]]";  
+        let selectedDepartment = "[[${emp.departmentNo}]]";
+        let selectedRank = "[[${emp.rankId}]]";
+        let selectedRight = "[[${emp.rightsId}]]";
+
+        function loadData(url, selectId, valueField, textField, selectedValue) {
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    let select = document.getElementById(selectId);
+                    select.innerHTML = '<option value="">선택하세요</option>'; 
+
+                    data.forEach(item => {
+                        let option = document.createElement("option");
+                        option.value = item[valueField];  
+                        option.textContent = item[textField]; 
+
+                        if (option.value === selectedValue) {
+                            option.selected = true;
+                        }
+
+                        select.appendChild(option);
+                    });
+                })
+                .catch(error => console.error(`Error loading ${selectId} data:`, error));
+        }
+
+        // 페이지 로드시 실행
+        document.addEventListener("DOMContentLoaded", function() {
+            loadData("/api/departments", "department", "departmentNo", "departmentName", selectedDepartment);
+            loadData("/api/ranks", "position", "rankId", "jobTitleName", selectedRank);
+            loadData("/api/rights", "role", "rightsId", "rightsName", selectedRight);
+        });
+        
+        //  주소 검색 API (카카오)
+        function searchAddress() {
+            new daum.Postcode({
+                oncomplete: function (data) {
+                    let fullAddress = "[" + data.zonecode + "] " + data.roadAddress;
+                    document.getElementById("address").value = fullAddress; // 주소 입력
+                }
+            }).open();
+        }
+
+        //  페이지 로드 시 기존 주소 데이터에서 상세주소를 분리하여 입력
+        document.addEventListener("DOMContentLoaded", function () {
+            let fullAddress = document.getElementById("address").value;
+            if (fullAddress.includes("]")) {
+                let splitAddress = fullAddress.split("] "); // "] "를 기준으로 분리
+                document.getElementById("address").value = splitAddress[0] + "]"; // 우편번호 포함 주소
+                document.getElementById("detailAddress").value = splitAddress[1] || ""; // 상세주소 입력
+            }
+        });
+
+        //  폼 제출 시 주소 + 상세주소 합쳐서 저장
+        document.querySelector("form[name='updateForm']").addEventListener("submit", function (event) {
+            let addressField = document.getElementById("address");
+            let detailAddressField = document.getElementById("detailAddress");
+
+            // 주소 + 상세주소를 하나의 값으로 합쳐서 저장
+            if (addressField.value && detailAddressField.value) {
+                addressField.value = addressField.value + " " + detailAddressField.value;
+            }
+        });
+
     </script>
 </body>
 </html>
