@@ -9,5 +9,12 @@ public interface ScheduleMapper {
 	public int insertSchedule(ScheduleVO scheduleVO);
 	
 	// 일정조회
-	public List<ScheduleVO> getScheduleList(ScheduleVO scheduleVO);
+	public List<ScheduleVO> SelectAllScheduleList(ScheduleVO scheduleVO);
+	
+	// 일정수정
+	public int updateSchedule(ScheduleVO scheduleVO);
+	
+	// 일정 삭제
+	public int deleteSchedule(ScheduleVO scheduleVO);
+	
 }

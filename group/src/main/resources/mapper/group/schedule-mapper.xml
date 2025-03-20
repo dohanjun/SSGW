@@ -15,12 +15,12 @@
         ) VALUES (
             #{scheduleId}, #{scheduleTitle}, #{scheduleContent}, 
             #{scheduleStart}, #{scheduleEnd}, #{employeeNo}, 
-            #{departmentNo}, '개인', #{suberNo}
+            #{departmentNo}, #{scheduleDivision}, #{suberNo}
         )
     </insert>
     
     <!-- 일정조회 -->
-    <select id="getScheduleList" resultType="ScheduleVO" parameterType="ScheduleVO">
+    <select id="SelectAllScheduleList" resultType="ScheduleVO" parameterType="ScheduleVO">
         SELECT  s.SCHEDULE_ID
 				,s.SCHEDULE_TITLE
 				,s.SCHEDULE_CONTENT
@@ -41,4 +41,20 @@
 		WHERE s.SUBER_NO = #{suberNo}
 		AND s.EMPLOYEE_NO = #{employeeNo}
     </select>
+    
+    <!-- 일정수정 -->
+    <update id="updateSchedule" parameterType="ScheduleVO">
+    UPDATE schedule
+    SET schedule_title = #{scheduleTitle}
+        ,schedule_content = #{scheduleContent}
+        ,schedule_start = #{scheduleStart}
+        ,schedule_end = #{scheduleEnd}
+    WHERE schedule_id = #{scheduleId}    
+    </update>
+    
+    <!-- 일정삭제 -->
+    <delete id="deleteSchedule" parameterType="ScheduleVO">
+    	DELETE schedule
+    	WHERE schedule_id = #{scheduleId}
+    </delete>
 </mapper>

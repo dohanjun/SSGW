@@ -12,7 +12,7 @@
     
     <style>
     /* 공휴일 이벤트 배경 제거 및 글자만 표시 */
-    .fc-daygrid-event {
+    .gcal-event {
         background: none !important;
         border: none !important;
         color: black !important;
@@ -21,7 +21,7 @@
         display: block !important;
         padding: 0 !important;
         text-align: right !important;
-        /* pointer-events: none !important; */
+        pointer-events: none !important;
     }
 
     /* FullCalendar 내부의 이벤트 글자만 남기고 다른 스타일 제거 */
@@ -75,23 +75,39 @@
         </button>
       </div>
       <div class="modal-body">
-        <div class="d-flex align-items-center mb-2">
-          <label class="col-sm-2">제목:</label>
-          <input type="text" id="scheduleTitle" class="form-control w-100">
+    <div class="d-flex align-items-center mb-2">
+        <label class="col-sm-3">일정 유형:</label>
+        <div class="form-check">
+            <input type="radio" name="scheduleType" value="개인" id="personal" class="form-check-input" checked>
+            <label for="personal" class="form-check-label">개인</label>
         </div>
-        <div class="d-flex align-items-center mb-2">
-          <label class="col-sm-2">내용:</label>
-          <textarea id="scheduleContent" class="form-control w-100" rows="5"></textarea>
+        <div class="form-check">
+            <input type="radio" name="scheduleType" value="부서" id="department" class="form-check-input">
+            <label for="department" class="form-check-label">부서</label>
         </div>
-        <div class="d-flex align-items-center mb-2">
-          <label class="col-sm-3">시작일시:</label>
-          <input type="datetime-local" id="scheduleStart" class="form-control">
+        <div class="form-check">
+            <input type="radio" name="scheduleType" value="회사" id="company" class="form-check-input">
+            <label for="company" class="form-check-label">회사</label>
         </div>
-        <div class="d-flex align-items-center mb-2">
-          <label class="col-sm-3">종료일시:</label>
-          <input type="datetime-local" id="scheduleEnd" class="form-control">
-        </div>
-      </div>
+    </div>
+    
+    <div class="d-flex align-items-center mb-2">
+        <label class="col-sm-2">제목:</label>
+        <input type="text" id="scheduleTitle" class="form-control w-100">
+    </div>
+    <div class="d-flex align-items-center mb-2">
+        <label class="col-sm-2">내용:</label>
+        <textarea id="scheduleContent" class="form-control w-100" rows="5"></textarea>
+    </div>
+    <div class="d-flex align-items-center mb-2">
+        <label class="col-sm-3">시작일시:</label>
+        <input type="datetime-local" id="scheduleStart" class="form-control">
+    </div>
+    <div class="d-flex align-items-center mb-2">
+        <label class="col-sm-3">종료일시:</label>
+        <input type="datetime-local" id="scheduleEnd" class="form-control">
+    </div>
+</div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" onclick="saveSchedule()">저장</button>
         <button type="button" class="btn btn-secondary close2" data-dismiss="modal">닫기</button>
@@ -116,8 +132,9 @@
         <!-- 동적으로 일정 상세 정보 삽입 -->
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary">수정</button>
-        <button type="button" class="btn btn-secondary closeModal" data-dismiss="modal">닫기</button>
+        <button type="button" class="btn btn-primary" onclick="updateSchedule()">수정</button>
+    <button type="button" class="btn btn-danger" onclick="deleteSchedule()">삭제</button>
+    <button type="button" class="btn btn-secondary closeModal" data-dismiss="modal">닫기</button>
       </div>
     </div>
   </div>
@@ -278,13 +295,17 @@ eventClick: function (info) {
         
     });
 
-    // 일정 저장 AJAX
+    // 일정 저장 
     function saveSchedule() {
+    	let selectedType = document.querySelector('input[name="scheduleType"]:checked').value;
+    	
+    	
         let scheduleData = {
             scheduleTitle: document.getElementById("scheduleTitle").value,
             scheduleContent: document.getElementById("scheduleContent").value,
             scheduleStart: document.getElementById("scheduleStart").value,
-            scheduleEnd: document.getElementById("scheduleEnd").value
+            scheduleEnd: document.getElementById("scheduleEnd").value,
+            scheduleDivision: selectedType
         };
 
         fetch("/schedule/save", {
@@ -298,7 +319,7 @@ eventClick: function (info) {
         .then(data => {
             if (data.success === 1) {
                 alert(data.message);  // 성공 메시지 표시
-                
+                location.reload();
                 document.getElementById('scheduleModal').style.display = 'none'; // 모달 닫기
             } else {
                 alert("일정 등록 실패.");
@@ -321,6 +342,56 @@ eventClick: function (info) {
         let minutes = String(d.getMinutes()).padStart(2, '0');
 
         return `${year}-${month}-${day}T${hours}:${minutes}`;
+    }
+    
+ // 일정 수정
+    function updateSchedule() {
+        let scheduleId = document.getElementById("editScheduleId").value;
+        let scheduleData = {
+            scheduleId: scheduleId,
+            scheduleTitle: document.getElementById("editScheduleTitle").value,
+            scheduleContent: document.getElementById("editScheduleContent").value,
+            scheduleStart: document.getElementById("editScheduleStart").value,
+            scheduleEnd: document.getElementById("editScheduleEnd").value
+        };
+
+        fetch("/schedule/update", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(scheduleData)
+        })
+        .then(response => response.text())
+        .then(data => {
+            alert(data);  // 성공 메시지 표시
+            location.reload(); // 페이지 새로고침
+        })
+        .catch(error => {
+            console.error("일정 수정 중 오류 발생:", error);
+            alert("일정 수정에 실패했습니다.");
+        });
+    }
+
+    // 일정 삭제
+    function deleteSchedule() {
+        let scheduleId = document.getElementById("editScheduleId").value;
+
+        fetch(`/schedule/delete/${scheduleId}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+        .then(response => response.text())
+        .then(data => {
+            alert(data);
+            location.reload(); // 페이지 새로고침
+        })
+        .catch(error => {
+            console.error("일정 삭제 중 오류 발생:", error);
+            alert("일정 삭제에 실패했습니다.");
+        });
     }
     
     </script>
