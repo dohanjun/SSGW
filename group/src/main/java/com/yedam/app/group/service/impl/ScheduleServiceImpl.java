@@ -22,8 +22,8 @@ public class ScheduleServiceImpl implements ScheduleService {
 	}
 
 	@Override
-	public List<ScheduleVO> getAllSchedules() {
-		return scheduleMapper.getScheduleList();
+	public List<ScheduleVO> getAllSchedules(ScheduleVO scheduleVO) {
+		return scheduleMapper.getScheduleList(scheduleVO);
 	}
 
 }

@@ -1,11 +1,13 @@
 package com.yedam.app.group.web;
 
 
+
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -49,18 +51,15 @@ public class ScheduleController {
 	
 	// 일정 조회
 	@GetMapping("/list")
-    public ResponseEntity<List<ScheduleVO>> getScheduleList() {
+    public ResponseEntity<List<ScheduleVO>> getScheduleList(ScheduleVO scheduleVO, Model model) {
 		
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 		
-		ScheduleVO scheduleVO = new ScheduleVO();
-		
-		scheduleVO.setEmployeeNo(loggedInUser.getEmployeeNo());  //  로그인한 사용자 정보 설정
+		scheduleVO.setEmployeeNo(loggedInUser.getEmployeeNo());  //  로그인한 사용자 사원번호
 		scheduleVO.setSuberNo(loggedInUser.getSuberNo()); // 로그인한 사용자 회사번호
 		
-		
-		
-        List<ScheduleVO> scheduleList = scheduleService.getAllSchedules();
+        List<ScheduleVO> scheduleList = scheduleService.getAllSchedules(scheduleVO);
+        
         return ResponseEntity.ok(scheduleList);
     }
 	
