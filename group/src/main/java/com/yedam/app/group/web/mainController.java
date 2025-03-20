@@ -84,13 +84,14 @@ public class mainController {
 	    return "externalPages/qnaPage";
 	}
 
-	
+
 	@GetMapping("/qna/detail")
 	public String getBoardDetail(@RequestParam("postId") int postId, Model model) {
 	    BoardPostVO boardPost = boardPostService.getBoardDetail(postId);
 	    model.addAttribute("boardPost", boardPost);
 	    return "externalPages/qnaDetail"; 
 	}
+
 	
 	@GetMapping("/module")
 	public String subscribePage(Model model) {

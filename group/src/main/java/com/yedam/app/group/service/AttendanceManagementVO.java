@@ -1,6 +1,7 @@
 package com.yedam.app.group.service;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -20,4 +21,17 @@ public class AttendanceManagementVO {
 	private int employeeNo;
 	private String reason;
 	private int totalWorkingHours;
+	
+    
+    private Integer totalOvertimeTime;
+	
+    private OvertimeVO overtimeList; 
+
+  
+    public double getOvertimeHours() {
+        if (overtimeList == null ) {
+            return 0.0;
+        }
+        return overtimeList.getOvertimeHours(); 
+    }
 }

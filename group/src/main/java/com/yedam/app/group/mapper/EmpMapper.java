@@ -2,6 +2,8 @@ package com.yedam.app.group.mapper;
 
 import java.util.List;
 
+
+import org.apache.ibatis.annotations.Param;
 import com.yedam.app.group.service.EmpVO;
 
 public interface EmpMapper {
@@ -23,5 +25,17 @@ public interface EmpMapper {
 	
 	// 로그인한 정보 가져오기
 	public EmpVO findByEmployeeId(String employeeId);
+	
+    //  페이징 적용된 사원 목록 조회
+    public List<EmpVO> pageselectEmp(@Param("offset") int offset, @Param("size") int size, String category, String keyword);
+
+    //  전체 사원 수 조회
+    public int countEmp(String category, String keyword);
+    
+    
+    //  사원번호로 랜덤 비밀번호를 업데이트
+    public void updatePassword(@Param("employeeNo") int employeeNo, @Param("employeePw") String employeePw);
+    
+    
 	
 }

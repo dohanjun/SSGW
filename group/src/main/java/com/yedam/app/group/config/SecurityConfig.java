@@ -26,8 +26,11 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/", "/login", "/subscribe", "/manual", "/css/**", "/js/**", "/img/**").permitAll()
+
                 .requestMatchers("/module","/insertModule","/updateModule","/deleteModule/*","/updateModuleBasic/*","/updateModuleActive/*","/qna","/fixed").hasAuthority("ROLE_MANAGER")
                 .requestMatchers("/aprv/modify", "/aprv/upload","/saveSubDetail","/saveSubDetail","/saveSuber","/savePayment","/savePaymentDetails","/saveUser").permitAll()
+                .requestMatchers("/insertPost").permitAll()
+
 
                 .anyRequest().authenticated()
             )

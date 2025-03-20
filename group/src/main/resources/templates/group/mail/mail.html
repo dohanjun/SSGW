@@ -39,39 +39,38 @@
 	}
 	
 </style>
+
 <body>
 <h3>메일메인화면</h3>
 
 <!-- 검색기능 -->
+<form role="search" name="frmSearch">
   <div class="left" id="se">
-    <form role="search" name="frmSearch">
 	  <input type="hidden" name="page" value="1">
-      <input name="search" type="search" placeholder="Search">
+      <input name="search" type="search" placeholder="Search" th:value="${pageListVO.search}">
       <button class="btn btn-outline-success" type="submit">검색</button>
-    </form>
+
   </div>
 <!-- 검색기능 마침 -->
 
-<div class="col">
 <div>
-<div>
-	<h5 th:text="'전체글: '+${totalCount}+'개'"></h5>
+	<h5 th:text="'전체글: '+${paging.totalRecord}+'개'"></h5>
 </div>
 <div id="flo">
 <button>삭제</button>
 
 <!-- 정렬기능 -->
-<div class="dropdown">
-<label>정렬</label>
-  <select>
-    <option class="dropdown-item">안읽은메일</option>
-    <option class="dropdown-item">첨부메일</option>
-    <option class="dropdown-item">최신순</option>
-    <option class="dropdown-item">오래된순</option>
-</select>
+    <div class="sort-options">
+        <h3>정렬</h3>
+        <select name="sortKey" onchange="submitForm()">
+            <option value="list" th:selected="${pageListVO.sortKey == 'list'}">안읽은메일</option>
+            <option value="file" th:selected="${pageListVO.sortKey == 'file'}">첨부메일</option>
+            <option value="desc" th:selected="${pageListVO.sortKey == 'desc'}">최신순</option>
+            <option value="asc" th:selected="${pageListVO.sortKey == 'asc'}">오래된순</option>
+        </select>
+    </div>
 </div>
-</div>
-</div>
+</form>
 <!-- 정렬기능 마침 -->
 
 <!-- 메일목록 창 -->
@@ -128,7 +127,7 @@
 	</nav>
 </div>
 <!-- 바기능 마침 -->
-</div>
+
 
 
 
@@ -140,7 +139,7 @@
 	
 	function moveInfoPage(event){
 		let selectedTr = event.currentTarget;
-		let eid = selectedTr.children[1].textContent;
+		let mid = selectedTr.children[1].textContent;
 		let url = context + '/mailInfo?mailId=' + mid;
 	}
 	
@@ -194,6 +193,13 @@
 	        }
 	    }
 	}
+	
+	 // 폼을 제출하는 함수
+    function submitForm() {
+    	frmSearch.submit();
+    }
+	//정렬기능 구현
+	
 
 </script>
 

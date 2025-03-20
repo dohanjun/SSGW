@@ -13,30 +13,33 @@ public class AESUtil {
     private static byte[] SECRET_KEY;
     private static byte[] IV;
 
-    public static void setKeys(byte[] secretKey, byte[] iv) {
-        SECRET_KEY = secretKey;
-        IV = iv;
+    public static void setKeys(String secretKeyBase64, String ivBase64) {
+        if (SECRET_KEY == null && IV == null) {
+            SECRET_KEY = Base64.getDecoder().decode(secretKeyBase64);
+            IV = Base64.getDecoder().decode(ivBase64);
+            System.out.println("🔹 AES Keys Set Successfully!");
+            System.out.println("SECRET_KEY Length: " + SECRET_KEY.length);
+            System.out.println("IV Length: " + IV.length);
+        }
     }
 
     public static String encrypt(String value) throws Exception {
+        if (SECRET_KEY == null || IV == null) {
+            throw new IllegalStateException("AES Keys are not initialized. Call setKeys() first.");
+        }
+
         Cipher cipher = Cipher.getInstance(TRANSFORMATION);
-        SecretKeySpec keySpec = new SecretKeySpec(SECRET_KEY, ALGORITHM);
-        IvParameterSpec ivSpec = new IvParameterSpec(IV);
-
-        cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec);
-        byte[] encrypted = cipher.doFinal(value.getBytes(StandardCharsets.UTF_8));
-
-        return Base64.getEncoder().encodeToString(encrypted);
+        cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(SECRET_KEY, ALGORITHM), new IvParameterSpec(IV));
+        return Base64.getEncoder().encodeToString(cipher.doFinal(value.getBytes(StandardCharsets.UTF_8)));
     }
 
     public static String decrypt(String encrypted) throws Exception {
+        if (SECRET_KEY == null || IV == null) {
+            throw new IllegalStateException("AES Keys are not initialized. Call setKeys() first.");
+        }
+
         Cipher cipher = Cipher.getInstance(TRANSFORMATION);
-        SecretKeySpec keySpec = new SecretKeySpec(SECRET_KEY, ALGORITHM);
-        IvParameterSpec ivSpec = new IvParameterSpec(IV);
-
-        cipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec);
-        byte[] decrypted = cipher.doFinal(Base64.getDecoder().decode(encrypted));
-
-        return new String(decrypted, StandardCharsets.UTF_8);
+        cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(SECRET_KEY, ALGORITHM), new IvParameterSpec(IV));
+        return new String(cipher.doFinal(Base64.getDecoder().decode(encrypted)), StandardCharsets.UTF_8);
     }
 }

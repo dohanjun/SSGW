@@ -8,5 +8,5 @@ public interface ScheduleService {
 	public int saveSchedule(ScheduleVO scheduleVO);
 	
 	// 일정조회
-	public List<ScheduleVO> getAllSchedules();
+	public List<ScheduleVO> getAllSchedules(ScheduleVO scheduleVO);
 }
