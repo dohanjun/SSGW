@@ -16,14 +16,13 @@
 		  		 TITLE LIKE '%' || #{search} || '%'
 		  		OR GET_USER LIKE '%' || #{search} || '%'
 		  		OR RECODE LIKE '%' || #{search} || '%'
-		  		
-		  	</if>
+		  	</if>	
 		  </where>
 </sql>
 
  
 	<!-- 메일전체조회 -->
-	<select id="selectAllList" resultType="MailVO">
+	<select id="findAll" resultType="MailVO">
 	SELECT B.* FROM ( SELECT A.*, ROWNUM RN FROM(
 	SELECT   mail_id
 	        ,title
@@ -38,14 +37,29 @@
 	        ,mail_type
 	FROM Mail
 	<include refid="mailCondition"></include>
-	ORDER BY mail_id
-	
+	  	ORDER BY
+	  	<choose>
+	  		<when test='sortKey !=  null and sortKey.equals("list")'>
+	  			TITLE
+	  		</when>
+	  		<when test='"file".equals(sortKey)'>
+	  			ATTACHED_FILE_NAME
+	  		</when>
+	  		<when test='sortKey !=  null and sortKey.equals("desc")'>
+	  			mail_Id  DESC
+	  		</when>
+	  		<when test='sortKey !=  null and sortKey.equals("asc")'>
+	  			mail_id ASC
+	  		</when>
+	  		<otherwise>
+	  			mail_id DESC
+	  		</otherwise>
+	  	</choose>
 	) A ) B WHERE RN BETWEEN #{start} AND #{end}
-	
 	</select>
 
 	<!-- 메일단건조회 -->
-	<select id="selectMailId" resultType="MailVO">
+	<select id="findInfo" resultType="MailVO">
 	SELECT   mail_id
 	        ,title
 	        ,content
@@ -62,7 +76,7 @@
 	</select>
 	
 	<!-- 나의메일단건조회 -->
-	<select id="MySelectMailId" resultType="MailVO">
+	<select id="MyfindInfo" resultType="MailVO">
 	SELECT   mail_id
 	        ,title
 	        ,content
@@ -79,7 +93,7 @@
 	</select>
 	
 	<!-- 메일등록 -->
-	<insert id="InsertMailInfo" parameterType="MailVO">
+	<insert id="create" parameterType="MailVO">
 	<selectKey keyProperty="mailId" resultType="Integer" order="BEFORE">
 	SELECT NVL(MAX(mail_id) + 1, 100) as mail_id
 	FROM Mail
@@ -122,7 +136,7 @@
 	</insert>
 	
 	<!-- 메일수정 -->
-	<update id="UpdateMail" parameterType="MailVO">
+	<update id="modify" parameterType="MailVO">
 	UPDATE  Mail
 	   SET  get_user = #{getUser}
 	       ,cc = #{cc}
@@ -167,7 +181,7 @@
 	</update>
 	
 	<!-- 메일삭제 -->
-	<delete id="DeleteMail" parameterType="int">
+	<delete id="remove" parameterType="int">
 	DELETE FROM Mail
 	WHERE mail_id = #{mailId}
 	</delete>
@@ -178,5 +192,8 @@
 	FROM Mail
 	<include refid="mailCondition"></include>
 	</select>
-	
+
+
+<!-- 세부메일함 -->
+
 </mapper>

@@ -32,14 +32,13 @@ public class MailController {
 	 //메일목록
 	 @GetMapping("mail")
 	    public String mail(Model model, PageListVO vo, Paging paging) {
-		 
 		 //페이징처리
 		 vo.setStart(paging.getFirst());
 		 vo.setEnd(paging.getLast());
 		 paging.setTotalRecord(mailService.pageGetCount(vo));
 		 model.addAttribute("paging", paging);
-		 
-		 List<MailVO> list = mailService.findAll(vo);
+		// model.addAttribute("vo", vo);
+		 List<MailVO> list = mailService.selectAll(vo);
 		 model.addAttribute("mails", list);
 	     return "group/mail/mail";  // mainPage.html을 반환
 	    }	
@@ -48,7 +47,7 @@ public class MailController {
 	 //메일상세보기
 	 @GetMapping("mailSelect")
 	    public String mailSelect(MailVO mailVO, Model model) {
-	     MailVO findVO = mailService.findMailId(mailVO);
+	     MailVO findVO = mailService.selectInfo(mailVO);
 	     model.addAttribute("mail", findVO);
 		 return "group/mail/mailSelect";  // mainPage.html을 반환
 	    }	
@@ -57,7 +56,7 @@ public class MailController {
 	 //내 메일상세보기
 	 @GetMapping("myMailSelect")
 	    public String myMailSelect(MailVO mailVO, Model model) {
-	     MailVO findVO = mailService.findMailId(mailVO);
+	     MailVO findVO = mailService.MySelectInfo(mailVO);
 	     model.addAttribute("mail", findVO);
 		 return "group/mail/myMailSelect";  // mainPage.html을 반환
 	    }	
@@ -76,7 +75,7 @@ public class MailController {
 	//메일등록처리
 	 @PostMapping("/mailInsert")
 	    public String mailInsertProcess(MailVO mailVO) {
-	     int mid = mailService.addInfo(mailVO);
+	     int mid = mailService.insert(mailVO);
 		 String url = null;
 		 if (mid > -1) {
 			 url = "redirect:mailInfo?mailId="+mid;
@@ -92,7 +91,7 @@ public class MailController {
 	//메일수정
 	@GetMapping("/mailUpdate")
 		public String mailUpdate(MailVO mailVO, Model model) {
-			MailVO findVO = mailService.findMailId(mailVO);
+			MailVO findVO = mailService.selectInfo(mailVO);
 			model.addAttribute("mail", findVO);
 			return "group/mail/mailUpdate";
 		}
@@ -104,14 +103,14 @@ public class MailController {
 	 @ResponseBody
 	 public Map<String, Object>
 	 	mailUpdateAJAXJSON(@RequestBody MailVO mailVO) {
-		 return mailService.modifyUpdInfo(mailVO);
+		 return mailService.update(mailVO);
 	    }	
 	 
 	//메일답장
 	 
 	 @GetMapping("/mailReply")
 	    public String mailReplyForm(MailVO mailVO, Model model) {
-		 MailVO findVO = mailService.findMailId(mailVO);
+		 MailVO findVO = mailService.selectInfo(mailVO);
 			model.addAttribute("mail", findVO);
 	      return "group/mail/mailReply";
 	    }
@@ -136,7 +135,7 @@ public class MailController {
 	//메일전달
 	@GetMapping("/mailVery")
 		public String mailVery(MailVO mailVO, Model model) {
-			MailVO findVO = mailService.findMailId(mailVO);
+			MailVO findVO = mailService.selectInfo(mailVO);
 			model.addAttribute("mail", findVO);
 			return "group/mail/mailVery";
 		}
@@ -152,11 +151,11 @@ public class MailController {
 	    } 
 	 
 	 
-	 //메일휴지통
+	 //메일삭제
 	 
 	 @GetMapping("mailDelete")
 	    public String mailDelete(Integer mailId) {
-	      mailService.removeDelInfo(mailId);
+	      mailService.delete(mailId);
 	      return "redirect:mailList";
 	    }
 	 
@@ -172,7 +171,7 @@ public class MailController {
 		 paging.setTotalRecord(mailService.pageGetCount(vo));
 		 model.addAttribute("paging", paging);
 		 
-		 List<MailVO> list = mailService.findAll(vo);
+		 List<MailVO> list = mailService.selectAll(vo);
 		 model.addAttribute("mails", list);
 	     return "group/mail/getMail";  // mainPage.html을 반환
 	    }	
@@ -187,7 +186,7 @@ public class MailController {
 		 paging.setTotalRecord(mailService.pageGetCount(vo));
 		 model.addAttribute("paging", paging);
 		 
-		 List<MailVO> list = mailService.findAll(vo);
+		 List<MailVO> list = mailService.selectAll(vo);
 		 model.addAttribute("mails", list);
 	     return "group/mail/putMail";  // mainPage.html을 반환
 	    }	
@@ -201,7 +200,7 @@ public class MailController {
 		 paging.setTotalRecord(mailService.pageGetCount(vo));
 		 model.addAttribute("paging", paging);
 		 
-		 List<MailVO> list = mailService.findAll(vo);
+		 List<MailVO> list = mailService.selectAll(vo);
 		 model.addAttribute("mails", list);
 	     return "group/mail/temporaryMail";  // mainPage.html을 반환
 	    }	
@@ -215,7 +214,7 @@ public class MailController {
 		 paging.setTotalRecord(mailService.pageGetCount(vo));
 		 model.addAttribute("paging", paging);
 		 
-		 List<MailVO> list = mailService.findAll(vo);
+		 List<MailVO> list = mailService.selectAll(vo);
 		 model.addAttribute("mails", list);
 	     return "group/mail/deleteMail";  // mainPage.html을 반환
 	    }	
