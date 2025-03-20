@@ -54,15 +54,29 @@ public class EmpController {
 	    }
 	   
 	// 사원관리
-	   @GetMapping("empMgmt")
-		 public String empMgmt(Model model) {
-		// 2) Service
-		   List<EmpVO> list = empService.findAllEmp();
-		// 2-1) Service의 결과를 View에 전달
-			model.addAttribute("emps", list);
-			// 3) View
-		    return "group/personnel/empMgmt";
-		    }
+	   @GetMapping("/empMgmt")
+	   public String empMgmt(
+		   @RequestParam(value = "page", defaultValue = "1") int page,
+		   @RequestParam(value = "size", defaultValue = "12") int size,
+		   @RequestParam(value = "category", required = false, defaultValue = "all") String category,
+		   @RequestParam(value = "keyword", required = false) String keyword,
+		    Model model) {
+		   
+		   // 검색 결과를 가져옴
+	       List<EmpVO> emps = empService.findAllEmp(page, size, category, keyword);
+	       int totalRecords = empService.countAllEmp(category, keyword);
+	       int totalPages = (int) Math.ceil((double) totalRecords / size);
+
+	       // 모델에 데이터 추가
+	       model.addAttribute("emps", emps);
+	       model.addAttribute("currentPage", page);
+	       model.addAttribute("totalPages", totalPages);
+	       model.addAttribute("category", category);
+	       model.addAttribute("keyword", keyword);
+
+	       return "group/personnel/empMgmt";
+	 }
+	    
 	// 사원 상세조회   
 	   @GetMapping("empInfo")
 	   public String empInfo(@RequestParam("employeeNo") int employeeNo, Model model) {
@@ -93,6 +107,7 @@ public class EmpController {
 	       // 1) 기본 생성자로 EmpVO 객체 생성 후 employeeNo 설정
 	       EmpVO empVO = new EmpVO();
 	       empVO.setEmployeeNo(employeeNo);
+	       
 
 	       // 2) 사원 정보 조회
 	       EmpVO findVO = empService.findempInfo(empVO);
@@ -117,12 +132,28 @@ public class EmpController {
 	   }
 
 	   // 사원 정보 수정
-	   @PostMapping("empUpdate")
-	   public String updateEmpInfo(@ModelAttribute EmpVO empVO) {
-	       empService.modifyEmpInfo(empVO);
-	       return "redirect:/empInfo?employeeNo=" + empVO.getEmployeeNo();
-	   }
-	   
-	   
+	    @PostMapping("empUpdate")
+	    public String updateEmpInfo(@ModelAttribute EmpVO empVO, @RequestParam(value = "profileImageFile", required = false) MultipartFile file) {
+	        try {
+	            // 1) 프로필 이미지 업로드 처리
+	            if (file != null && !file.isEmpty()) {
+	                empVO.setProfileImageBLOB(file.getBytes()); // 업로드된 파일을 BLOB으로 변환하여 저장
+	            } else {
+	                // 기존 이미지 유지 (DB에서 현재 이미지 가져오기)
+	                EmpVO existingEmp = empService.findempInfo(empVO);
+	                if (existingEmp != null) {
+	                    empVO.setProfileImageBLOB(existingEmp.getProfileImageBLOB());
+	                }
+	            }
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+
+	        // 2) 사원 정보 수정
+	        empService.modifyEmpInfo(empVO);
+
+	        // 3) 수정 후 사원 상세 페이지로 이동
+	        return "redirect:/empInfo?employeeNo=" + empVO.getEmployeeNo();
+	    }
 	   
 }
