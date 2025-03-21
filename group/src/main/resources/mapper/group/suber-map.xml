@@ -13,4 +13,51 @@
             #{maxCount}, #{maxSize}, #{companyName},#{firstIp},#{domain}
         )
     </insert>
+    
+	<select id="selectAllSubers" resultType="com.yedam.app.group.service.SubscriptionSummaryVO">
+	  <![CDATA[
+	    SELECT 
+	      s.suber_no AS suberNo,
+	      s.company_name AS subName,
+	      LISTAGG(m.module_name, ', ') WITHIN GROUP (ORDER BY m.module_name) AS moduleName,
+	      p.payment_status AS paymentStatus,
+	      TO_CHAR(p.payment_end_date, 'YYYY"년" MM"월" DD"일"') AS paymentEndDate
+	    FROM suber s
+	    LEFT JOIN sub_details sd ON s.suber_no = sd.suber_no
+	    LEFT JOIN module m ON sd.module_no = m.module_no
+	    LEFT JOIN payment p ON s.suber_no = p.suber_no
+	    GROUP BY s.suber_no, s.company_name, p.payment_status, p.payment_end_date
+	    ORDER BY s.suber_no DESC
+	  ]]>
+	</select>
+	
+	<select id="selectinfoSuber" resultType="com.yedam.app.group.service.SubscriberVO">
+		WITH pd_ranked AS (
+			  SELECT pd.*, ROW_NUMBER() OVER (PARTITION BY pd.payment_no ORDER BY pd.payment_details_no) AS rn
+			  FROM payment_details pd
+			),
+			sd_ranked AS (
+			  SELECT sd.*, m.module_name,
+			         ROW_NUMBER() OVER (PARTITION BY sd.suber_no ORDER BY sd.module_no) AS rn
+			  FROM sub_details sd
+			  JOIN module m ON sd.module_no = m.module_no
+			),
+			main_query AS (
+			  SELECT
+			    s.company_name,
+			    s.suber_no,
+			    pd.payment_price,
+			    p.payment_start_date AS payment_start_date,
+			    p.payment_end_date AS payment_end_date,
+			    sd.module_name
+			  FROM suber s
+			  JOIN payment p ON s.suber_no = p.suber_no
+			  JOIN pd_ranked pd ON p.payment_no = pd.payment_no
+			  JOIN sd_ranked sd ON s.suber_no = sd.suber_no AND pd.rn = sd.rn
+			  WHERE s.suber_no = ${suberNo}
+			)
+			SELECT * FROM main_query
+			ORDER BY module_name
+	</select>
+
 </mapper>

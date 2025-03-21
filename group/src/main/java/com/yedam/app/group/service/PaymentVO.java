@@ -22,4 +22,5 @@ public class PaymentVO {
     private int subPeriod;               // 모듈구독기간
     private String cancelState;          // 해지신청여부
     private Date cancelDate;             // 해지신청일
+
 }

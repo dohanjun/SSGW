@@ -28,7 +28,7 @@ public class SecurityConfig {
                 .requestMatchers("/", "/login", "/subscribe", "/manual", "/css/**", "/js/**", "/img/**").permitAll()
 
                 .requestMatchers("/module","/insertModule","/updateModule","/deleteModule/*","/updateModuleBasic/*","/updateModuleActive/*","/qna","/fixed").hasAuthority("ROLE_MANAGER")
-                .requestMatchers("/aprv/modify", "/aprv/upload","/saveSubDetail","/saveSubDetail","/saveSuber","/savePayment","/savePaymentDetails","/saveUser").permitAll()
+                .requestMatchers("/aprv/modify", "/aprv/upload","/saveSubDetail","/saveSubDetail","/saveSuber","/savePayment","/savePaymentDetails","/saveUser","/insertBoardPost","/selectBoardPost","/updateBoardPost").permitAll()
                 .requestMatchers("/insertPost").permitAll()
 
 
@@ -46,7 +46,7 @@ public class SecurityConfig {
                 .invalidateHttpSession(true)   
                 .permitAll()
             )
-            .csrf(csrf -> csrf.ignoringRequestMatchers("/logout","/savePayment","/insertModule", "/updateModule","/deleteModule/*","/updateModuleBasic/*","/updateModuleActive/*","/qna", "/aprv/**","/insertModule","/saveForm", "/schedule/**","/qna","/fixed","/saveSubDetail","/saveSubDetail","/saveSuber","/savePaymentDetails","/saveUser"));
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/logout","/savePayment","/insertModule", "/updateModule","/deleteModule/*","/updateModuleBasic/*","/updateModuleActive/*","/qna", "/aprv/**","/insertModule","/saveForm", "/schedule/**","/qna","/fixed","/saveSubDetail","/saveSubDetail","/saveSuber","/savePaymentDetails","/saveUser","/insertBoardPost","/selectBoardPost","/updateBoardPost"));
         return http.build();
     }
 

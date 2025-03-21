@@ -14,7 +14,7 @@
         VALUES (
             #{paymentNo}, sysdate, #{paymentType}, #{paymentPrice}, #{paymentStatus},
             sysdate, #{overduePeriod}, #{suberNo}, #{claim}, #{claimState},
-            #{overdueDay}, sysdate, sysdate + #{subPeriod}, #{subPeriod},
+            #{overdueDay}, sysdate, ADD_MONTHS(sysdate, #{subPeriod}), #{subPeriod},
             #{cancelState}, #{cancelDate}
         )
     </insert>

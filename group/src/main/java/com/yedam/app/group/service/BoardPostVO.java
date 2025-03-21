@@ -18,4 +18,5 @@ public class BoardPostVO {
     private int boardId;            // 게시판 ID
     private int employeeNo;         // 사원 번호
     private String employeeName;         // 사원 이름
+    private String childYn;
 }

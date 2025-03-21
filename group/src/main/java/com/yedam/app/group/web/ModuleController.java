@@ -49,7 +49,9 @@ public class ModuleController {
 
 	@PostMapping("/saveSuber")
 	public ResponseEntity<Integer> saveSuber(@RequestBody SubscriberVO subscriber) {
+		System.out.println("들어온데이터" + subscriber);
 		int suberNo = subscriberService.saveSubscriber(subscriber);
+		System.out.println(suberNo);
 		return ResponseEntity.ok(suberNo);
 	}
 
