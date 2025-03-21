@@ -130,7 +130,7 @@
                 <div class="form-group">
                     <label for="pw">PW</label>
                     <input type="password" id="pw" th:field="*{employeePw}">
-                    <button type="button" onclick="resetPassword()">초기화</button>
+                    <button type="button" onclick="resetPassword()">비밀번호 초기화</button>
                 </div>
                 <div class="form-group">
                     <label for="number">사원번호</label>
@@ -360,6 +360,18 @@
                 addressField.value = addressField.value + " " + detailAddressField.value;
             }
         });
+        
+        // 비밀번호 초기화 API 버튼
+		function resetPassword() {
+		    let employeeNo = document.getElementById("number").value; // 사원번호 가져오기
+		
+		    fetch("/api/resetPassword?employeeNo=" + employeeNo, {
+		        method: "POST"
+		    })
+		    .then(response => response.text())
+		    .then(message => alert(message)) // 성공 메시지 알림
+		    .catch(error => console.error("비밀번호 초기화 실패:", error));
+		}
 
     </script>
 </body>

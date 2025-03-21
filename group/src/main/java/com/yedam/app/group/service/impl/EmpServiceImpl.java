@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.yedam.app.group.mapper.EmpMapper;
 import com.yedam.app.group.service.EmpService;
 import com.yedam.app.group.service.EmpVO;
+import com.yedam.app.group.service.PasswordUtils;
 
 @Service
 public class EmpServiceImpl implements EmpService{
@@ -31,8 +32,8 @@ public class EmpServiceImpl implements EmpService{
 
 	// 사원 전체조회
 	@Override
-	public List<EmpVO> findAllEmp() {
-		return empMapper.selectEmpList();
+	public List<EmpVO> findAllEmp(EmpVO empVO) {
+		return empMapper.selectEmpList(empVO);
 	}
 
 	// 사원 상세정보
@@ -81,22 +82,32 @@ public class EmpServiceImpl implements EmpService{
 	}
 	
     //  페이징된 사원 목록 조회
-    public List<EmpVO> findAllEmp(int page, int size, String category, String keyword) {
+    public List<EmpVO> findAllEmp(int page, int size, String category, String keyword, Integer suberNo) {
         int offset = (page - 1) * size; // OFFSET 계산
-        return empMapper.pageselectEmp(offset, size, category, keyword);
+        return empMapper.pageselectEmp(offset, size, category, keyword, suberNo);
     }
 
     //  전체 사원 수 조회
     @Override
-    public int countAllEmp(String category, String keyword) {
-        return empMapper.countEmp(category, keyword);
+    public int countAllEmp(String category, String keyword, Integer suberNo) {
+        return empMapper.countEmp(category, keyword, suberNo);
     }
 
-	@Override
-	public void resetPassword(int employeeNo) {
-		// TODO Auto-generated method stub
-		
-	}
+    // 비밀번호 업데이트
+    @Override
+    public void resetPassword(int employeeNo) {
+        // 1️ 랜덤 비밀번호 생성
+        String randomPassword = PasswordUtils.generateRandomPassword();
+        
+        // 2️ 비밀번호 암호화(해싱)
+        String hashedPassword = PasswordUtils.hashPassword(randomPassword);
+
+        // 3️ 비밀번호 업데이트 (DB에 저장)
+        empMapper.updatePassword(employeeNo, hashedPassword);
+
+//        // 4️ (선택) 이메일 전송 가능
+//        System.out.println("새로운 비밀번호: " + randomPassword); // 콘솔 확인용
+    }
     
     
 	

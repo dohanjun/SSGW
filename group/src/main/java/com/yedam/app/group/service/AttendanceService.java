@@ -14,4 +14,10 @@ public interface AttendanceService {
 
     // 총 근무시간 및 초과근무시간 조회
     AttendanceManagementVO getAttendanceSummary(Integer employeeNo);
+    
+    
+    void clockIn(Integer employeeNo);  // ✅ 출근 처리
+    
+    
+    void clockOut(Integer employeeNo); // ✅ 퇴근 처리
 }
