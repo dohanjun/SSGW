@@ -1,10 +1,12 @@
 package com.yedam.app.group.web;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import com.yedam.app.group.service.EmpService;
 import com.yedam.app.group.service.EmpVO;
@@ -43,7 +45,16 @@ public class RepositoryController {
 
 	    // 자료실에 등록된 게시글 목록 가져오기
 	    List<RepositoryPostVO> totalRepositoryList = postService.getTotalRepositoryPosts(loggedInUser.getSuberNo());
-
+	    
+	    // 디버깅 로그 추가
+	    System.out.println("최종 전달할 자료실 ID: " + totalRepository.getFileRepositoryId());
+	    System.out.println("최종 전달할 게시글 개수: " + (totalRepositoryList != null ? totalRepositoryList.size() : "null"));
+	    
+	    // ull 방지 (리스트가 null이면 빈 리스트로 초기화)
+	    if (totalRepositoryList == null) {
+	        totalRepositoryList = new ArrayList<>();
+	    }
+	    
 	    // Model에 추가하여 HTML에서 사용할 수 있도록 설정
 	    model.addAttribute("repository", totalRepository);  // 자료실 정보
 	    model.addAttribute("totalRepositoryList", totalRepositoryList);  // 게시글 목록
@@ -65,8 +76,13 @@ public class RepositoryController {
 	    if (departmentRepository == null) {
 	        throw new IllegalStateException("해당 부서의 자료실을 찾을 수 없습니다.");
 	    }
+	    
+	    List<RepositoryPostVO> departmentRepositoryList = postService.getDepartmentRepositoryPosts(
+                loggedInUser.getSuberNo(), loggedInUser.getDepartmentNo());
 
 	    model.addAttribute("repository", departmentRepository);
+	    model.addAttribute("departmentRepositoryList", departmentRepositoryList);
+	    
 	    return "group/repository/departmentRepository";
 	}
 
@@ -82,10 +98,15 @@ public class RepositoryController {
 	            loggedInUser.getSuberNo(), loggedInUser.getEmployeeNo());
 
 	    if (individualRepository == null) {
-	        throw new IllegalStateException("해당 사원의 자료실을 찾을 수 없습니다.");
-	    
+	        throw new IllegalStateException("해당 사원의 자료실을 찾을 수 없습니다.");    
 	    }
+	    
+	    List<RepositoryPostVO> individualRepositoryList = postService.getIndividualRepositoryPosts(
+                loggedInUser.getSuberNo(), loggedInUser.getEmployeeNo());
+	    
 	    model.addAttribute("repository", individualRepository);
+	    model.addAttribute("individualRepositoryList", individualRepositoryList);
+	    
 	    return "group/repository/individualRepository";
 	}
 
@@ -94,9 +115,16 @@ public class RepositoryController {
 		return "group/repository/detailPost";
 	}
 
-	@GetMapping("/basket")
-	public String basket() {
-		return "group/repository/basket";
+	@GetMapping("/detailPost/{id}")
+	public String detailPost(@PathVariable("id") Long writingId, Model model) {
+	    RepositoryPostVO post = postService.getPostDetail(writingId);
+	    EmpVO loggedInUser = empService.getLoggedInUserInfo();
+
+	    model.addAttribute("post", post);
+	    model.addAttribute("isWriterOrAdmin", 
+	        post.getEmployeeNo() == loggedInUser.getEmployeeNo() || loggedInUser.isAdmin());
+
+	    return "group/repository/detailPost";
 	}
 
 	@GetMapping("/detailBasket")

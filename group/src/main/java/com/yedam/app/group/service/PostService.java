@@ -1,10 +1,11 @@
 package com.yedam.app.group.service;
 
 import java.util.List;
+import java.util.Map;
 
 public interface PostService {
 	// 게시글 등록
-    int insertPost(RepositoryPostVO postVO);
+    Long insertPost(RepositoryPostVO postVO);
     
     // 전체 자료실 ID 조회
     RepositoryVO getTotalRepository(int suberNo);
@@ -15,5 +16,18 @@ public interface PostService {
     // 개인 자료실 ID 조회
     RepositoryVO getIndividualRepository(int suberNo, int employeeNo);
     
-    List<RepositoryPostVO> getTotalRepositoryPosts(int fileRepositoryId);
+    // 전체 자료실 게시글 조회
+    List<RepositoryPostVO> getTotalRepositoryPosts(int suberNo);
+
+    // 부서 자료실 게시글 조회
+    List<RepositoryPostVO> getDepartmentRepositoryPosts(int suberNo, int departmentNo);
+
+    // 개인 자료실 게시글 조회
+    List<RepositoryPostVO> getIndividualRepositoryPosts(int suberNo, int employeeNo);
+    
+    // 사원 정보 기반으로 자료실 자동 판별
+    RepositoryVO getRepositoryByUserInfo(int suberNo, int departmentNo, int employeeNo);
+    
+    // 단건 조회
+    RepositoryPostVO getPostDetail(Long writingId);
 }

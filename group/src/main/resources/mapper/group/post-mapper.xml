@@ -3,41 +3,112 @@
 <mapper namespace="com.yedam.app.group.mapper.PostMapper">
 
 	<!-- 게시글 등록 -->
-    <insert id="insertPost" parameterType="com.yedam.app.group.service.RepositoryPostVO">
-        INSERT INTO repository_post (title, content, employee_no, file_repository_id, write_date)
-        VALUES (#{title}, #{content}, #{employeeNo}, #{fileRepositoryId}, NOW());
+    <insert id="insertPost" parameterType="com.yedam.app.group.service.RepositoryPostVO" useGeneratedKeys="true" keyProperty="writingId">
+      <selectKey keyProperty="writingId" resultType="java.lang.Long" order="AFTER">
+        SELECT REPOSITORY_POST_SEQ.CURRVAL FROM DUAL
+      </selectKey>
+        INSERT INTO repository_post (writing_id, title, content, employee_no, file_repository_id, creation_date)
+        VALUES (REPOSITORY_POST_SEQ.NEXTVAL, #{title}, #{content}, #{employeeNo}, #{fileRepositoryId}, SYSDATE)
     </insert>
 
     <!-- 전체 자료실 조회 -->
     <select id="getTotalRepository" parameterType="int" resultType="com.yedam.app.group.service.RepositoryVO">
-        SELECT file_repository_id, repository_name 
-        FROM repository WHERE suber_no = #{suberNo} AND repository_type = '전체';
+        SELECT file_repository_id 
+        FROM repository WHERE suber_no = #{suberNo} AND file_repository_type = '전체'
     </select>
 
     <!-- 부서 자료실 조회 -->
     <select id="getDepartmentRepository" parameterType="map" resultType="com.yedam.app.group.service.RepositoryVO">
-        SELECT file_repository_id, repository_name 
-        FROM repository WHERE suber_no = #{suberNo} AND department_no = #{departmentNo} AND repository_type = '부서';
+        SELECT file_repository_id
+        FROM repository WHERE suber_no = #{suberNo} AND department_no = #{departmentNo} AND file_repository_type = '부서'
     </select>
 
     <!-- 개인 자료실 조회 -->
     <select id="getIndividualRepository" parameterType="map" resultType="com.yedam.app.group.service.RepositoryVO">
-        SELECT file_repository_id, repository_name 
-        FROM repository WHERE suber_no = #{suberNo} AND employee_no = #{employeeNo} AND repository_type = '개인';
+        SELECT file_repository_id
+        FROM repository WHERE suber_no = #{suberNo} AND employee_no = #{employeeNo} AND file_repository_type = '개인'
     </select>
     
-    <!-- 특정 자료실의 게시글 목록 조회 -->
-    <select id="getTotalRepositoryPosts" parameterType="int" resultType="com.yedam.app.group.service.RepositoryPostVO">
+    <!-- 전체 자료실 게시글 목록 조회 -->
+    <select id="getTotalRepositoryPosts" parameterType="map" resultType="com.yedam.app.group.service.RepositoryPostVO">
         SELECT 
-            p.title, 
-            NVL(f.save_file_name, '파일 없음') AS fileName, 
-            e.employee_name AS writer, 
-            p.creation_date
-        FROM repository_post p
-        JOIN employees e ON p.employee_no = e.employee_no
-        LEFT JOIN repository_file f ON p.writing_id = f.writing_id
-        WHERE p.file_repository_id = #{fileRepositoryId}
-        ORDER BY p.creation_date DESC
+        	p.writing_id,
+        	p.title,
+        	e.employee_name AS writer,
+        	p.creation_date AS creationDate,
+        	MIN(f.file_name) AS fileName,
+        	COUNT(f.file_id) AS fileCount
+    	FROM repository_post p
+    	JOIN employees e ON p.employee_no = e.employee_no
+    	LEFT JOIN repository_file f ON p.writing_id = f.writing_id
+    	WHERE p.file_repository_id IN (
+        	SELECT file_repository_id
+        	FROM repository
+        	WHERE suber_no = #{suberNo}
+          	AND file_repository_type = '전체'
+    	)
+    	GROUP BY p.writing_id, p.title, e.employee_name, p.creation_date
+    	ORDER BY p.creation_date DESC
     </select>
 
+    <!-- 부서 자료실 게시글 목록 조회 -->
+    <select id="getDepartmentRepositoryPosts" parameterType="map" resultType="com.yedam.app.group.service.RepositoryPostVO">
+        SELECT 
+        	p.writing_id,
+        	p.title,
+        	e.employee_name AS writer,
+        	p.creation_date AS creationDate,
+       		MIN(f.file_name) AS fileName,
+        	COUNT(f.file_id) AS fileCount
+    	FROM repository_post p
+    	JOIN employees e ON p.employee_no = e.employee_no
+    	LEFT JOIN repository_file f ON p.writing_id = f.writing_id
+    	WHERE p.file_repository_id IN (
+        	SELECT file_repository_id
+       		FROM repository
+        	WHERE suber_no = #{suberNo}
+          		AND department_no = #{departmentNo}
+          		AND file_repository_type = '부서'
+    	)
+    	GROUP BY p.writing_id, p.title, e.employee_name, p.creation_date
+    	ORDER BY p.creation_date DESC
+    </select>
+
+    <!-- 개인 자료실 게시글 목록 조회 -->
+    <select id="getIndividualRepositoryPosts" parameterType="map" resultType="com.yedam.app.group.service.RepositoryPostVO">
+        SELECT 
+        	p.writing_id,
+        	p.title,
+        	e.employee_name AS writer,
+        	p.creation_date AS creationDate,
+        	MIN(f.file_name) AS fileName,
+        	COUNT(f.file_id) AS fileCount
+    	FROM repository_post p
+    	JOIN employees e ON p.employee_no = e.employee_no
+    	LEFT JOIN repository_file f ON p.writing_id = f.writing_id
+    	WHERE p.file_repository_id IN (
+        	SELECT file_repository_id
+        	FROM repository
+        	WHERE suber_no = #{suberNo}
+          		AND employee_no = #{employeeNo}
+          		AND file_repository_type = '개인'
+    	)
+    	GROUP BY p.writing_id, p.title, e.employee_name, p.creation_date
+    	ORDER BY p.creation_date DESC
+    </select>
+	
+	<select id="getPostDetail" parameterType="long" resultType="com.yedam.app.group.service.RepositoryPostVO">
+        SELECT 
+            p.writing_id,
+            p.title,
+            p.content,
+            e.employee_name AS writer,
+            TO_CHAR(p.creation_date, 'YYYY-MM-DD') AS creationDate,
+            p.employee_no,
+            p.file_repository_id,
+            p.fix
+        FROM repository_post p
+        JOIN employees e ON p.employee_no = e.employee_no
+        WHERE p.writing_id = #{writingId}
+    </select>
 </mapper>

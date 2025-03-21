@@ -127,6 +127,20 @@
 		,#{suberNo})
 	</insert>
 	
+	<!-- 기본양식목록 불러오기 -->
+	<select id="selectAllBasicsForms" parameterType="ApprovalVO" resultType="ApprovalVO">
+		SELECT BASICS_FORM_ID
+		       ,FORM_TYPE
+		FROM   BASICS_FORM
+	</select>
+	
+	<!-- 회사양식목록 불러오기 -->
+	<select id="selectAllAprvForms" parameterType="ApprovalFormVO" resultType="ApprovalFormVO">
+		SELECT FORM_ID
+		       ,FORM_TYPE
+		FROM   APRV_FORMS
+	</select>
+	
 	<!-- 기본양식불러오기 -->
 	<select id="selectBasicsForm" parameterType="ApprovalVO" resultType="ApprovalVO">
 		SELECT BASICS_FORM_ID
@@ -152,5 +166,29 @@
 		WHERE  SUBER_NO = #{suberNo}
 		  AND  ACTIVE = '1'
 		  AND  FORM_ID = #{formId}
+	</select>
+	
+	<!-- 결재요청함 ,임시저장함 -->
+	<select id="selectAllList" parameterType="ApprovalVO" resultType="ApprovalVO">	
+	SELECT  d.DRAFT_NO
+			,d.TITLE
+			,d.CONTENT
+			,d.APRV_STATUS
+			,d.REJECT_REASON
+			,d.DRAFT_DATE
+			,e.EMPLOYEE_NAME
+			,d.APRV_DATE
+			,d.FORM_ID
+			,d.BASICS_FORM_ID
+			,d.SUBER_NO
+			,d.EMPLOYEE_NO
+	FROM aprv_documents d
+	JOIN employees e
+		ON d.EMPLOYEE_NO = e.EMPLOYEE_NO
+	WHERE d.EMPLOYEE_NO = #{employeeNo}
+	<if test="aprv_status eq '임시'">
+	  AND d.APRV_STATUS = '임시'	
+	</if>
+	  AND d.SUBER_NO = #{suberNo}
 	</select>
 </mapper>
