@@ -21,6 +21,9 @@
             <a class="nav-link py-3 px-0 px-lg-3 rounded" th:href="@{/module}">모듈관리</a>
           </li>
           <li class="nav-item mx-0 mx-lg-1" th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+            <a class="nav-link py-3 px-0 px-lg-3 rounded" th:href="@{/suberList}">구독현황</a>
+          </li>
+          <li class="nav-item mx-0 mx-lg-1" th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}">
             <a class="nav-link py-3 px-0 px-lg-3 rounded" th:href="@{/qna}">QnA</a>
           </li>
           <li class="nav-item mx-0 mx-lg-1" th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}">

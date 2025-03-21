@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{common/layouts/main_layout}"
+	  layout:fragment="content">
+	  
+<!-- CSRF 토큰 메타는 필요 없음 → form input에 바로 넣음 -->
+
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<style>
+		.card-header {
+			background-color: #2C3E50;
+		}
+		.menu-container {
+			position: relative;
+			display: inline-block;
+		}
+		.menu-toggle {
+			cursor: pointer;
+			font-size: 18px;
+		}
+		.dropdown-menu {
+			display: none;
+			position: absolute;
+			right: 0;
+			top: 100%;
+			background-color: white;
+			border: 1px solid #ccc;
+			list-style: none;
+			padding: 5px 0;
+			margin: 0;
+			z-index: 1000;
+			box-shadow: 0px 2px 6px rgba(0,0,0,0.1);
+		}
+		.dropdown-menu li {
+			padding: 5px 15px;
+			cursor: pointer;
+		}
+		.dropdown-menu li:hover {
+			background-color: #f0f0f0;
+		}
+	</style>
+</head>
+<body>
+	<div class="container my-4">
+		<div class="card">
+			<div class="card-header text-white">
+				<h4 class="mb-0">구독현황</h4>
+			</div>
+			<div class="card-body">
+				<table class="table">
+					<tbody>
+						<tr th:each="suber : ${subscribers}">
+							<td th:text="${suber.subName}"></td>
+							<td th:text="${suber.moduleName} ?: '기본모듈 구독중'"></td>
+							<td th:text="${suber.paymentStatus} ?: '-'"></td>
+							<td th:text="${suber.paymentEndDate} ?: '-'"></td>
+							<td>
+								<div class="menu-container">
+									<span class="menu-toggle">⋮</span>
+									<ul class="dropdown-menu">
+										<li th:data-subno="${suber.suberNo}">구독현황</li>
+									</ul>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
+	<!-- 🔽 숨겨진 폼 -->
+	<form id="suberForm" th:action="@{/suberInfo}" method="post" style="display: none;">
+		<input type="hidden" name="suberNo" id="suberNoInput">
+		<input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+	</form>
+
+	<script>
+	document.addEventListener("DOMContentLoaded", function () {
+		const toggles = document.querySelectorAll(".menu-toggle");
+
+		toggles.forEach(toggle => {
+			toggle.addEventListener("click", function (e) {
+				const dropdown = this.nextElementSibling;
+				document.querySelectorAll(".dropdown-menu").forEach(menu => {
+					if (menu !== dropdown) menu.style.display = "none";
+				});
+				dropdown.style.display = (dropdown.style.display === "block") ? "none" : "block";
+				e.stopPropagation();
+			});
+		});
+
+		document.querySelectorAll(".dropdown-menu li").forEach(item => {
+			item.addEventListener("click", function (e) {
+				const subNo = this.getAttribute("data-subno");
+				if (subNo) {
+					document.getElementById("suberNoInput").value = subNo;
+					document.getElementById("suberForm").submit(); 
+				}
+				e.stopPropagation();
+			});
+		});
+
+		document.addEventListener("click", function () {
+			document.querySelectorAll(".dropdown-menu").forEach(menu => {
+				menu.style.display = "none";
+			});
+		});
+	});
+	</script>
+</body>
+</html>

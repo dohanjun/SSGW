@@ -17,6 +17,9 @@ import com.yedam.app.group.service.BoardPostVO;
 import com.yedam.app.group.service.ModuleService;
 import com.yedam.app.group.service.ModuleVO;
 import com.yedam.app.group.service.PaymentVO;
+import com.yedam.app.group.service.SubscriberService;
+import com.yedam.app.group.service.SubscriberVO;
+import com.yedam.app.group.service.SubscriptionSummaryVO;
 
 import org.springframework.ui.Model;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,6 +34,7 @@ public class mainController {
 	
 	private final ModuleService moduleService;
 	private final BoardPostService boardPostService;
+	private final SubscriberService subscriberService;
 	
 	@GetMapping("main")
 	public String mainPage() {
@@ -56,20 +60,32 @@ public class mainController {
 		return "redirect:/";
 	}
 	
+	
 	@GetMapping("/qna")
-	public String boardPage(@RequestParam(defaultValue = "1") int page,
-	                        @RequestParam(required = false) String keyword,
-	                        Model model) {
+	public String page1(@RequestParam(defaultValue = "1") int page,
+	                    @RequestParam(required = false) String keyword,
+	                    Model model) {
+	    addBoardData(page, keyword, model);
+	    return "externalPages/qnaPage";
+	}
+
+	@GetMapping("/qnaBoard")
+	public String page2(@RequestParam(defaultValue = "1") int page,
+	                    @RequestParam(required = false) String keyword,
+	                    Model model) {
+	    addBoardData(page, keyword, model);
+	    return "group/QnA/qnaPage";
+	}
+
+	private void addBoardData(int page, String keyword, Model model) {
 	    int pageSize = 10;
 	    int totalCount;
 	    List<BoardPostVO> boardList;
 
 	    if (keyword != null && !keyword.trim().isEmpty()) {
-	        // 검색어가 있을 경우
 	        boardList = boardPostService.getPagedPostsByKeyword(keyword, page);
 	        totalCount = boardPostService.getTotalCountByKeyword(keyword);
 	    } else {
-	        // 검색어가 없을 경우 전체 리스트 가져오기
 	        boardList = boardPostService.getBoardList(page);
 	        totalCount = boardPostService.getTotalCount();
 	    }
@@ -80,8 +96,6 @@ public class mainController {
 	    model.addAttribute("currentPage", page);
 	    model.addAttribute("totalPages", totalPages);
 	    model.addAttribute("keyword", keyword);
-
-	    return "externalPages/qnaPage";
 	}
 
 
@@ -114,11 +128,40 @@ public class mainController {
 	
 	@PostMapping("/insertBoardPost")
 	public ResponseEntity<String> insertBoardPost(@RequestBody BoardPostVO boardPost) {
-	    System.out.println("받은 데이터: " + boardPost);
 	    boardPostService.createBoard(boardPost);
 	    return ResponseEntity.ok("게시글이 성공적으로 등록되었습니다.");
 	}
+	
+	@PostMapping("/updateBoardPost")
+	public ResponseEntity<String> updateBoardPost(@RequestBody BoardPostVO boardPost) {
+	    System.out.println("받은 데이터: " + boardPost);
+	    boardPostService.modifyBoard(boardPost);
+	    return ResponseEntity.ok("게시글이 성공적으로 등록되었습니다.");
+	}
+
+	@GetMapping("/suberList")
+	public String suberListPage(Model model) {
+	    List<SubscriptionSummaryVO> subscribers = subscriberService.findAllSubscribers();
+	    model.addAttribute("subscribers", subscribers);
+	    return "externalPages/suberListPage";
+	}
+	
+	@PostMapping("/suberInfo")
+	public String suberInfoPage(@RequestParam("suberNo") int suberNo, Model model) {
+		List<SubscriberVO> suber = subscriberService.findinfoSuberByNo(suberNo);
+	    model.addAttribute("suber", suber);
+	    return "externalPages/suberInfoPage";
+	}
 
 	
-	
+	@PostMapping("/selectBoardPost")
+	public ResponseEntity<BoardPostVO> selectBoardPost(@RequestBody BoardPostVO boardPost) {
+	    BoardPostVO childPost = boardPostService.findinfoChildPostByParentId(boardPost.getParentCommentId());
+	    if(childPost != null) {
+	        return ResponseEntity.ok(childPost);
+	    } else {
+	        return ResponseEntity.noContent().build();
+	    }
+	}
+
 }

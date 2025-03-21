@@ -56,5 +56,15 @@ public class BoardPostServiceImpl implements BoardPostService {
 	public int createBoard(BoardPostVO boardPost) {
 		return boardPostMapper.insertPost(boardPost);
 	}
+
+	@Override
+	public int modifyBoard(BoardPostVO boardPost) {
+		return boardPostMapper.updatePost(boardPost);
+	}
+
+	@Override
+	public BoardPostVO findinfoChildPostByParentId(int postId) {
+		return boardPostMapper.selectChildPostById(postId);
+	}
 }
 

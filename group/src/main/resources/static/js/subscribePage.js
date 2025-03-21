@@ -196,6 +196,7 @@ function payment(type) {
 					}),
 					contentType: "application/json",
 					success: function(response) {
+						console.log("성공",response)
 						var suberNo = response;
 
 						$.ajax({
@@ -213,6 +214,7 @@ function payment(type) {
 							),
 							contentType: "application/json",
 							success: function(response) {
+								console.log("성공2",response)
 								subDetailsNoList = response.map(detail => ({
 									subDetailsNo: detail.subDetailsNo,
 									discountPrice: detail.discountPrice
@@ -232,6 +234,7 @@ function payment(type) {
 									}),
 									contentType: "application/json",
 									success: function(response2) {
+										console.log("성공3")
 										let paymentNo = response2.paymentNo;
 
 										let paymentDetailsList = subDetailsNoList.map(detail => ({
@@ -271,7 +274,9 @@ function payment(type) {
 													}),
 													contentType: "application/json",
 													success: function(response3) {
+														console.log("성공4")
 														location.href = "login";
+														
 													},
 													error: function(xhr, status, error) {
 														alert("❌ 결제 상세 정보 저장 중 오류 발생.");
@@ -298,7 +303,6 @@ function payment(type) {
 								console.error(xhr.responseText);
 							}
 						});
-
 					},
 					error: function(xhr, status, error) {
 						alert("❌ 구독자 정보 저장 중 오류 발생.");

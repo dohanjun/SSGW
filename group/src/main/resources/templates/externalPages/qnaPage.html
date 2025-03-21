@@ -134,36 +134,6 @@
 <script th:inline="javascript">
     var post = /*[[${boardList}]]*/[];
 
-    post.forEach(e => {
-        if (e.parentCommentId != null) {
-            $(".postId").each((index, num) => {
-                if (String(e.parentCommentId) === num.innerText) {
-                    let postRow = $(num).closest("tr");
-                    let postDate = new Date(e.postDate)
-                        .toLocaleDateString("ko-KR", {
-                            timeZone: "Asia/Seoul",
-                            year: "numeric",
-                            month: "2-digit",
-                            day: "2-digit"
-                        })
-                        .replace(/\./g, '')  
-                        .trim()
-                        .replace(/ /g, '-'); 
-                    postRow.after(`
-                        <tr class="replyRow">
-                            <td></td>
-                            <td style="padding-left: 30px;">
-                                <i class="fa-solid fa-reply"></i>
-                                <a href="/qna/detail?postId=${e.postId}">${e.postTitle}</a>
-                            </td>
-                            <td>관리자</td>
-                            <td>${postDate}</td>
-                        </tr>
-                    `);
-                }
-            });
-        }
-    });
 </script>
 
 

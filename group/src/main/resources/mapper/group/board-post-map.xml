@@ -18,10 +18,12 @@
                 B.BOARD_ID,
                 B.EMPLOYEE_NO,
                 E.EMPLOYEE_NAME,
+                B.child_yn,
                 ROW_NUMBER() OVER (ORDER BY B.POST_ID DESC) AS rnum
             FROM BOARD_POST B
             LEFT JOIN EMPLOYEES E ON B.EMPLOYEE_NO = E.EMPLOYEE_NO
             WHERE B.BOARD_ID = 999
+            AND B.PARENT_COMMENT_ID IS NULL
         ) WHERE rnum BETWEEN (#{page} - 1) * 10 + 1 AND #{page} * 10
     </select>
 
@@ -40,28 +42,29 @@
                 B.BOARD_ID,
                 B.EMPLOYEE_NO,
                 E.EMPLOYEE_NAME,
+                B.child_yn,
                 ROW_NUMBER() OVER (ORDER BY B.POST_ID DESC) AS rnum
             FROM BOARD_POST B
             LEFT JOIN EMPLOYEES E ON B.EMPLOYEE_NO = E.EMPLOYEE_NO
             WHERE B.BOARD_ID = 999
             AND B.POST_TITLE LIKE '%' || #{keyword} || '%'
+            AND B.PARENT_COMMENT_ID IS NULL
         ) WHERE rnum BETWEEN (#{page} - 1) * 10 + 1 AND #{page} * 10
     </select>
 
     <!-- 전체 게시글 개수 조회 -->
     <select id="getTotalCount" resultType="int">
-        SELECT COUNT(*) FROM BOARD_POST WHERE BOARD_ID = 999
+        SELECT COUNT(*) FROM BOARD_POST WHERE BOARD_ID = 999 AND PARENT_COMMENT_ID IS NULL
     </select>
 
     <!-- 검색된 게시글 개수 조회 -->
     <select id="getTotalCountByKeyword" resultType="int">
         SELECT COUNT(*) FROM BOARD_POST 
         WHERE BOARD_ID = 999
+        AND PARENT_COMMENT_ID IS NULL
         AND POST_TITLE LIKE '%' || #{keyword} || '%'
     </select>
-	
 	    <select id="selectPostById" resultType="com.yedam.app.group.service.BoardPostVO">
-
             SELECT 
                 B.POST_ID,
                 B.PARENT_COMMENT_ID,
@@ -74,7 +77,8 @@
                 B.READ,
                 B.BOARD_ID,
                 B.EMPLOYEE_NO,
-                E.EMPLOYEE_NAME
+                E.EMPLOYEE_NAME,
+                B.child_yn
             FROM BOARD_POST B
             LEFT JOIN EMPLOYEES E ON B.EMPLOYEE_NO = E.EMPLOYEE_NO
             WHERE B.POST_ID = ${postId}
@@ -82,7 +86,7 @@
     
 	 <update id="modifyBoartFixed" parameterType="int">
 	    UPDATE board_post 
-	    SET fixed = CASE 
+	    SET faq = CASE 
 	        WHEN faq = 'Y' THEN 'N' 
 	        ELSE 'Y' 
 	    END
@@ -97,14 +101,24 @@
 	    <selectKey keyProperty="postId" resultType="int" order="BEFORE">
 	        SELECT NVL(MAX(post_id), 0) + 1 FROM board_post
 	    </selectKey>
-	
 	    INSERT INTO board_post (
 	        post_id, parent_comment_id, post_title, post_content, post_date, 
-	        fixed, faq, location, read, board_id, employee_no
+	        fixed, faq, location, read, board_id, employee_no,child_yn
 	    ) VALUES (
 	        #{postId}, #{parentCommentId}, #{postTitle}, #{postContent}, sysdate,
-	        'N', 'N', null, 'N', #{boardId}, #{employeeNo}
+	        'N', 'N', null, 'N', #{boardId}, #{employeeNo},'N'
 	    )
 	</insert>
-
+	
+	<update id="updatePost" parameterType="map">
+		  UPDATE BOARD_POST
+		  SET child_yn = #{childYn}
+		  WHERE post_id = #{postId}
+	</update>
+	
+	<select id="selectChildPostById" resultType="com.yedam.app.group.service.BoardPostVO">
+            SELECT *
+            FROM BOARD_POST
+            WHERE parent_comment_id = ${parentCommentId}
+    </select>
 </mapper>

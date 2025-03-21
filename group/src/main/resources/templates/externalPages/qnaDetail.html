@@ -69,7 +69,8 @@
 					</div>
 
 					<!-- 답글 작성 -->
-					<div class="card shadow mb-4">
+					<div class="card shadow mb-4"
+						th:if="${#strings.equals(boardPost.childYn, 'N')}">
 						<div class="card-header py-3">
 							<h6 class="m-0 font-weight-bold text-primary">답글 작성</h6>
 						</div>
@@ -79,6 +80,32 @@
 							<button id="commentSubmitBtn" class="btn btn-primary mt-2"
 								style="width: 80px; height: 40px; font-size: 0.9rem; border-radius: 6px;">
 								등록</button>
+						</div>
+					</div>
+
+					<div class="card shadow mb-4"
+						th:if="${#strings.equals(boardPost.childYn, 'Y')}">
+						<div class="card-header py-3">
+							<h6 class="m-0 font-weight-bold text-primary">답글</h6>
+						</div>
+						<div class="card-body">
+							<table class="table table-bordered file-info-table">
+								<tbody>
+									<tr>
+										<th>제목</th>
+										<td id="childPostTitle"></td>
+										<th>작성자</th>
+										<td id="childPostWriter">관리자</td>
+										<th>등록일</th>
+										<td id="childPostDate"></td>
+									</tr>
+									<tr>
+										<td colspan="6">
+											<div id="childPostEditor-container"></div>
+										</td>
+									</tr>
+								</tbody>
+							</table>
 						</div>
 					</div>
 				</div>
@@ -91,6 +118,7 @@
 	<script th:inline="javascript">
 		var post = /*[[${boardPost}]]*/[];
 		var postId = post.postId;
+		var postPId = post.parentCommentId;
 		
 		var postQuill = new Quill('#postEditor-container', {
 			theme : 'snow',
@@ -99,49 +127,68 @@
 				toolbar : false
 			}
 		});
-		postQuill.root.innerHTML = `[[${boardPost.postContent}]]`;
-		var commentQuill = new Quill('#commentEditor-container', {
-			theme : 'snow',
-			placeholder : '여기에 내용을 입력하세요...',
-			modules : {
-				toolbar : [ [ {
-					'font' : []
-				}, {
-					'size' : []
-				} ], [ 'bold', 'italic', 'underline' ], [ {
-					'list' : 'ordered'
-				}, {
-					'list' : 'bullet'
-				} ], [ {
-					'align' : []
-				} ], [ 'link', 'image' ], [ 'clean' ] ]
-			}
-		});
-		document.getElementById('commentSubmitBtn').addEventListener('click',
-				function() {
-					var commentContent = commentQuill.root.innerHTML;
-					
-					$.ajax({
-			            type: "POST",
-			            url: "/insertBoardPost",
-			            data: JSON.stringify({
-			            	parentCommentId:postId,
-			            	postTitle:post.postTitle+"에 대한 답글 입니다",
-			            	postContent:commentContent,
-			            	boardId:999,
-			            	employeeNo:0,
-			            	
-			            }),
-			            contentType: "application/json",
-			            success: function(response) {
-			                alert("등록 완료.");
-			            },
-			            error: function(xhr, status, error) {
-			                alert("등록 실패");
-			                console.error(xhr.responseText);
-			            }
-			        });
-				});
+		if(postPId == null){
+			postQuill.root.innerHTML = `[[${boardPost.postContent}]]`;
+			var commentQuill = new Quill('#commentEditor-container', {
+				theme : 'snow',
+				placeholder : '여기에 내용을 입력하세요...',
+				modules : {
+					toolbar : [ [ {
+						'font' : []
+					}, {
+						'size' : []
+					} ], [ 'bold', 'italic', 'underline' ], [ {
+						'list' : 'ordered'
+					}, {
+						'list' : 'bullet'
+					} ], [ {
+						'align' : []
+					} ], [ 'link', 'image' ], [ 'clean' ] ]
+				}
+			});
+		}
+		
+		if (document.getElementById('commentSubmitBtn')) {
+		    document.getElementById('commentSubmitBtn').addEventListener('click', function() {
+		        var commentContent = commentQuill.root.innerHTML;
+		        $.ajax({
+		            type: "POST",
+		            url: "/insertBoardPost",
+		            data: JSON.stringify({
+		                parentCommentId: postId,
+		                postTitle: post.postTitle + "에 대한 답글 입니다",
+		                postContent: commentContent,
+		                boardId: 999,
+		                employeeNo: 0,
+		            }),
+		            contentType: "application/json",
+		            success: function(response) {
+
+		                $.ajax({
+		                    type: "POST",
+		                    url: "/updateBoardPost",
+		                    data: JSON.stringify({
+		                        postId: postId,
+		                        childYn: "Y"
+		                    }),
+		                    contentType: "application/json",
+		                    success: function(response) {
+		                        alert("등록 완료.");
+		                    },
+		                    error: function(xhr, status, error) {
+		                        alert("등록 실패");
+		                        console.error(xhr.responseText);
+		                    }
+		                });
+		            },
+		            error: function(xhr, status, error) {
+		                alert("등록 실패");
+		                console.error(xhr.responseText);
+		            }
+		        });
+		    });
+		}
+
 		
 		$(document).ready(function() {
 			if (post.faq === 'Y') {
@@ -189,6 +236,27 @@
 				}
 			});
 		})
+		
+		$.ajax({
+		    type: "POST",
+		    url: "/selectBoardPost",
+		    data: JSON.stringify({
+		        parentCommentId: postId
+		    }),
+		    contentType: "application/json",
+		    success: function(response) {
+		         console.log(response);
+		         $('#childPostTitle').text(response.postTitle);
+		         $('#childPostWriter').text('관리자');
+		         var d = new Date(response.postDate);
+			      var formattedDate = d.getFullYear() + "년 " + ("0" + (d.getMonth() + 1)).slice(-2) + "월 " + ("0" + d.getDate()).slice(-2) + "일";
+			      $('#childPostDate').text(formattedDate);
+			      $('#childPostEditor-container').html(response.postContent);
+		    },
+		    error: function(xhr, status, error) {
+		         console.log("자식없음");
+		    }
+		});
 	</script>
 </body>
 </html>

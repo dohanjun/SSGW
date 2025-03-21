@@ -11,16 +11,16 @@ import com.yedam.app.group.service.BoardPostVO;
 public interface BoardPostMapper {
     // 게시글 삽입
 	int insertPost(BoardPostVO post);
-//    
+   
 	// // 게시글 단건 조회
 	BoardPostVO selectPostById(int postId);
-//    
+    
 	// 전체 게시글 조회
 //    List<BoardPostVO> selectAllPosts(int boardId);
 //    
-//     //게시글 수정
-//    void updatePost(BoardPostVO post);
-//    
+    //게시글 수정
+    int updatePost(BoardPostVO post);
+    
     // 게시글 삭제
     int deletePost(int postId);
 
@@ -40,4 +40,5 @@ public interface BoardPostMapper {
 	
 	int modifyBoartFixed(@Param("postId") int postId);
 
+	BoardPostVO selectChildPostById(int postId);
 }
