@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -190,6 +191,7 @@ public class MailController {
 		 model.addAttribute("mails", list);
 	     return "group/mail/putMail";  // mainPage.html을 반환
 	    }	
+	 
 	 //임시메일함 -> 7일뒤 삭제
 	 @GetMapping("temporaryMail")
 	    public String temporaryMail(Model model, PageListVO vo, Paging paging) {
@@ -204,6 +206,7 @@ public class MailController {
 		 model.addAttribute("mails", list);
 	     return "group/mail/temporaryMail";  // mainPage.html을 반환
 	    }	
+	 
 	 //휴지통 -> 30일 뒤 삭제
 	 @GetMapping("deleteMail")
 	    public String deleteMail(Model model, PageListVO vo, Paging paging) {
@@ -218,5 +221,12 @@ public class MailController {
 		 model.addAttribute("mails", list);
 	     return "group/mail/deleteMail";  // mainPage.html을 반환
 	    }	
+	 
+	 
+	 //메일
 
+	     @GetMapping("authenticate")
+	     public ResponseEntity<String> mailTest(@RequestParam("email") String email){
+	         return ResponseEntity.ok(mailService.sendMailToUser(email));
+	     }
 }

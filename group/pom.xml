@@ -111,9 +111,12 @@
 		    <groupId>org.springframework</groupId>
 		    <artifactId>spring-aop</artifactId>
 		</dependency>
-
-
-
+		<!--메일-->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-mail</artifactId>
+</dependency>
+		<!--메일-->
 		<dependency>
     <groupId>org.thymeleaf.extras</groupId>
     <artifactId>thymeleaf-extras-springsecurity6</artifactId>    
