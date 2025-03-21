@@ -25,6 +25,9 @@ public interface DeptMapper {
 
     // 모든 권한 목록 조회
     public List<RightsVO> getAllRights(RightsVO rightsVO);
+    
+    // 직원 조직도
+    public List<DeptVO> getOrgChart(DeptVO deptVO);
 	
 	
 

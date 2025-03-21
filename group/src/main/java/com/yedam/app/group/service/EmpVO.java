@@ -31,9 +31,13 @@ public class EmpVO {
 	
     private byte[] profileImageBLOB; //  이미지 (숫자로 변환되어 저장됨)
     private MultipartFile profileImageFile; //  사용자가 업로드한 파일
+    private String profileImageBase64; // 조회용 base64 이미지 문자열
     
 	private String departmentName;		// 부서이름
-	private String jobTitleName;		// 직급명 
+	private String jobTitleName;		// 직급명
+	private Integer jobTitleLevel;		// 직급레벨
+	
 	private String rightsName;			// 권한명
+	private Integer rightsLevel;		// 권한 레벨
 
 }

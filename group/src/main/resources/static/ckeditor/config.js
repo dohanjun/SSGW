@@ -7,4 +7,10 @@ CKEDITOR.editorConfig = function( config ) {
 	// Define changes to default configuration here. For example:
 	// config.language = 'fr';
 	// config.uiColor = '#AADC6E';
+	
+	config.notification_duration = 1;
+	    CKEDITOR.on('instanceReady', function (ev) {
+	        ev.editor.showNotification = function () {};
+	    });
+	
 };

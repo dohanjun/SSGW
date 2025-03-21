@@ -23,6 +23,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    // 기본 사용자 정보 조회
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
@@ -40,9 +41,17 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         try {
             Map<String, Object> userInfo = jdbcTemplate.queryForMap(query, username);
             session.setAttribute("loginUser", userInfo);
+            
+         // EMPLOYEES 테이블에서 RIGHTS_LEVEL 가져오기
+            String rightsQuery = "SELECT RIGHTS_LEVEL FROM EMPLOYEES E JOIN RIGHTS R ON E.RIGHTS_ID = R.RIGHTS_ID WHERE E.EMPLOYEE_ID = ?";
+            Integer rightsLevel = jdbcTemplate.queryForObject(rightsQuery, Integer.class, username);
+            session.setAttribute("rightsLevel", rightsLevel); // 세션에 저장
+            
         } catch (Exception e) {
             System.out.println("사용자 정보를 가져오는 중 오류 발생: " + e.getMessage());
         }
+        
+        // 권한에 따라 리다이렉트
         if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_MANAGER"))) {
             response.sendRedirect("/");
         } else if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER")) ||

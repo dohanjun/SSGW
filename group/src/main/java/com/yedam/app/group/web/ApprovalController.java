@@ -14,8 +14,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.yedam.app.group.service.ApprovalFormVO;
@@ -23,7 +25,6 @@ import com.yedam.app.group.service.ApprovalService;
 import com.yedam.app.group.service.ApprovalVO;
 import com.yedam.app.group.service.EmpService;
 import com.yedam.app.group.service.EmpVO;
-import com.yedam.app.group.service.ScheduleService;
 
 import lombok.Data;
 
@@ -67,9 +68,17 @@ public class ApprovalController {
 	    	return "group/approval/approval_reference";
 	    } else if ("반려".equals(aprvVO.getAprvStatus())) {
 	    	return "group/approval/approval_return";
+	    } else if ("임시저장".equals(aprvVO.getAprvStatus())) {
+	    	return null;
 	    } else {
 	        return "group/approval/pending_document"; // 기본값 설정
 	    }
+	}
+	
+	// 임시저장, 결재요청
+	@GetMapping("aprv/request")
+	public String aprvRequestList(ApprovalVO aprvVO, Model model){
+		return null;
 	}
 	
 	// 기안문 작성 페이지
@@ -78,43 +87,83 @@ public class ApprovalController {
 			return "group/approval/approval_writing";
 	}
 	
-	@GetMapping("/aprvWriting/content")
-	public ResponseEntity<String> getFormContent(
-	        @RequestParam(required = false) Integer basicsFormId, 
-	        @RequestParam(required = false) Integer formId) {
-	    try {
-	        EmpVO loggedInUser = empService.getLoggedInUserInfo();
-	        int suberNo = loggedInUser.getSuberNo();
-
-	        StringBuilder contentHtml = new StringBuilder();
-
-	        // 기본 양식 조회
-	        if (basicsFormId != null) {
-	            ApprovalVO basicsForm = approvalService.findBasicsForm(basicsFormId);
-	            contentHtml.append("<h5>기본 양식 내용</h5>");
-	            if (basicsForm != null) {
-	                contentHtml.append("<p>").append(basicsForm.getContent()).append("</p>");
-	            } else {
-	                contentHtml.append("<p>해당하는 기본 양식이 없습니다.</p>");
-	            }
-	        }
-
-	        // 회사전용 양식 조회
-	        if (formId != null) {
-	            ApprovalFormVO aprvForm = approvalService.findAprvForm(formId, suberNo);
-	            contentHtml.append("<h5>회사 전용 양식 내용</h5>");
-	            if (aprvForm != null) {
-	                contentHtml.append("<p>").append(aprvForm.getContent()).append("</p>");
-	            } else {
-	                contentHtml.append("<p>해당하는 회사 전용 양식이 없습니다.</p>");
-	            }
-	        }
-
-	        return ResponseEntity.ok(contentHtml.toString());
-	    } catch (Exception e) {
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류: " + e.getMessage());
-	    }
+	// 테스트
+	@GetMapping("test1234")
+	public String test123() {
+		return "group/approval/test12345";
 	}
+	
+	
+	// 양식목록
+	@GetMapping("/aprvWriting/content/{id}")
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> getFormContentById(
+	        @PathVariable("id") int id,
+	        @RequestParam("type") String type,
+	        ApprovalVO aprvVO,
+	        ApprovalFormVO aprvFormVO) {
+
+	    Map<String, Object> response = new HashMap<>();
+
+	    if ("basic".equalsIgnoreCase(type)) {
+	        aprvVO.setBasicsFormId(id);
+	        ApprovalVO basicForm = approvalService.findBasicsForm(aprvVO);
+
+	        if (basicForm != null) {
+	            response.put("content", basicForm.getContent());
+	            response.put("formType", basicForm.getFormType());
+	        } else {
+	            response.put("error", "해당 기본 양식을 찾을 수 없습니다.");
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+	        }
+
+	    } else if ("company".equalsIgnoreCase(type)) {
+	        aprvFormVO.setFormId(id);
+	        EmpVO loginUser = empService.getLoggedInUserInfo();
+	        aprvFormVO.setSuberNo(loginUser.getSuberNo()); // 보안상 회사번호 설정
+	        ApprovalFormVO companyForm = approvalService.findAprvForm(aprvFormVO);
+
+	        if (companyForm != null) {
+	            response.put("content", companyForm.getContent());
+	            response.put("formType", companyForm.getFormType());
+	        } else {
+	            response.put("error", "해당 회사 전용 양식을 찾을 수 없습니다.");
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+	        }
+
+	    } else {
+	        response.put("error", "type 파라미터는 'basic' 또는 'company' 여야 합니다.");
+	        return ResponseEntity.badRequest().body(response);
+	    }
+
+	    return ResponseEntity.ok(response);
+	}
+
+
+
+	
+	
+	// 양식 불러오기 (기본 양식 + 회사 전용 양식)
+	@GetMapping("/aprvWriting/content")
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> getFormContent(ApprovalVO aprvVO, ApprovalFormVO aprvformVO) {
+	    Map<String, Object> response = new HashMap<>();
+
+	    // 기본 양식 가져오기
+	    List<ApprovalVO> basicList = approvalService.findAllBasicsForm(aprvVO);
+	    response.put("basicsForms", basicList); // 기본 양식 리스트 반환
+
+	    // 로그인한 사용자 정보 가져오기
+	    EmpVO loggedInUser = empService.getLoggedInUserInfo();
+	    aprvformVO.setSuberNo(loggedInUser.getSuberNo());
+
+	    // 회사 전용 양식 가져오기
+	    List<ApprovalFormVO> subList = approvalService.findAllAprvForm(aprvformVO);
+	    response.put("aprvForms", subList); // 회사 전용 양식 리스트 반환
+
+	    return ResponseEntity.ok(response); // JSON 형식으로 반환
+	}
+
 
 
 	// 도장등록

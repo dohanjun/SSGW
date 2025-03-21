@@ -6,22 +6,23 @@
 		<selectKey keyProperty="scheduleId" resultType="Integer"
 			order="BEFORE">
 			SELECT NVL(MAX(schedule_id), 1) + 1
-			FROM schedule 
+			FROM schedule
 		</selectKey>
-        INSERT INTO schedule (
-            SCHEDULE_ID, SCHEDULE_TITLE, SCHEDULE_CONTENT, 
-            SCHEDULE_START, SCHEDULE_END, EMPLOYEE_NO, 
-            DEPARTMENT_NO, SCHEDULE_DIVISION, SUBER_NO
-        ) VALUES (
-            #{scheduleId}, #{scheduleTitle}, #{scheduleContent}, 
-            #{scheduleStart}, #{scheduleEnd}, #{employeeNo}, 
-            #{departmentNo}, '개인', #{suberNo}
-        )
-    </insert>
-    
-    <!-- 일정조회 -->
-    <select id="getScheduleList" resultType="ScheduleVO" parameterType="ScheduleVO">
-        SELECT  s.SCHEDULE_ID
+		INSERT INTO schedule (
+		SCHEDULE_ID, SCHEDULE_TITLE, SCHEDULE_CONTENT,
+		SCHEDULE_START, SCHEDULE_END, EMPLOYEE_NO,
+		DEPARTMENT_NO, SCHEDULE_DIVISION, SUBER_NO
+		) VALUES (
+		#{scheduleId}, #{scheduleTitle}, #{scheduleContent},
+		#{scheduleStart}, #{scheduleEnd}, #{employeeNo},
+		#{departmentNo}, #{scheduleDivision}, #{suberNo}
+		)
+	</insert>
+
+	<!-- 일정조회 -->
+	<select id="SelectAllScheduleList" resultType="ScheduleVO"
+		parameterType="ScheduleVO">
+		SELECT  s.SCHEDULE_ID
 				,s.SCHEDULE_TITLE
 				,s.SCHEDULE_CONTENT
 				,s.SCHEDULE_START
@@ -31,14 +32,34 @@
 				,s.SCHEDULE_DIVISION
 				,s.REPEAT_CYCLE
 				,s.SUBER_NO
-        		,d.department_name
-                ,e.employee_name
+				,d.department_name
+				,e.employee_name
 		FROM schedule s
-		JOIN department d
-  		    ON s.department_no = d.department_no
-        JOIN employees e
-            ON s.employee_no = e.employee_no
+		JOIN department d 
+		  ON s.department_no = d.department_no
+		JOIN employees e 
+		  ON s.employee_no = e.employee_no
 		WHERE s.SUBER_NO = #{suberNo}
-		AND s.EMPLOYEE_NO = #{employeeNo}
-    </select>
+		AND (
+		(s.SCHEDULE_DIVISION = '개인' AND s.EMPLOYEE_NO = #{employeeNo})
+		OR (s.SCHEDULE_DIVISION = '부서' AND s.DEPARTMENT_NO = #{departmentNo})
+		OR (s.SCHEDULE_DIVISION = '회사')
+		)
+	</select>
+
+	<!-- 일정수정 -->
+	<update id="updateSchedule" parameterType="ScheduleVO">
+		UPDATE schedule
+		SET schedule_title = #{scheduleTitle}
+		,schedule_content = #{scheduleContent}
+		,schedule_start = #{scheduleStart}
+		,schedule_end = #{scheduleEnd}
+		WHERE schedule_id = #{scheduleId}
+	</update>
+
+	<!-- 일정삭제 -->
+	<delete id="deleteSchedule" parameterType="ScheduleVO">
+		DELETE schedule
+		WHERE schedule_id = #{scheduleId}
+	</delete>
 </mapper>
