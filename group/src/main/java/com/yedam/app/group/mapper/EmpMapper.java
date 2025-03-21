@@ -12,7 +12,7 @@ public interface EmpMapper {
 	public int insertEmpInfo(EmpVO empVO);
 	
 	// 사원전체 조회
-	public List<EmpVO> selectEmpList();
+	public List<EmpVO> selectEmpList(EmpVO empVO);
 	
 	// 사원상세 정보
 	public EmpVO selectEmpInfo(EmpVO empVO);
@@ -27,10 +27,16 @@ public interface EmpMapper {
 	public EmpVO findByEmployeeId(String employeeId);
 	
     //  페이징 적용된 사원 목록 조회
-    public List<EmpVO> pageselectEmp(@Param("offset") int offset, @Param("size") int size, String category, String keyword);
+    public List<EmpVO> pageselectEmp(@Param("offset") int offset,
+							            @Param("size") int size,
+							            @Param("category") String category,
+							            @Param("keyword") String keyword,
+							            @Param("suberNo") Integer suberNo);
 
     //  전체 사원 수 조회
-    public int countEmp(String category, String keyword);
+    public int countEmp(@Param("category") String category,
+			            @Param("keyword") String keyword,
+			            @Param("suberNo") Integer suberNo);
     
     
     //  사원번호로 랜덤 비밀번호를 업데이트

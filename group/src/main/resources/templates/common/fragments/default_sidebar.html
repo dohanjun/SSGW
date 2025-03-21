@@ -48,6 +48,20 @@
                     </div>
                 </div>
             </li>
+            
+            <li class="nav-item">
+                <a class="nav-link collapsed" th:href="@{/orgChart}">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span>조직도</span>
+                </a>
+                <div id="collapseTT" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded" >
+                        <h6 class="collapse-header">인사관리</h6>
+                        <a class="collapse-item"></a>
+                    </div>
+                </div>
+            </li>
+            
             <!-- Nav Item - Utilities Collapse Menu -->
             <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
@@ -131,6 +145,9 @@
                 </div>
             </li>        
                                 <!-- Nav Item - Pages Collapse Menu -->
+                                
+           <th:block th:if="${session.rightsLevel != null and session.rightsLevel >= 7}">
+           <!-- 인사관리 메뉴 시작 -->
             <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseT"
                     aria-expanded="true" aria-controls="collapseTwo">
@@ -138,7 +155,7 @@
                     <span>인사관리</span>
                 </a>
                 <div id="collapseT" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
+                    <div class="bg-white py-2 collapse-inner rounded" >
                         <h6 class="collapse-header">인사관리</h6>
                         <a class="collapse-item" th:href="@{empinsert}">사원등록</a>
                         <a class="collapse-item" th:href="@{empMgmt}">사원관리</a>
@@ -151,6 +168,8 @@
                     </div>
                 </div>
             </li>
+           </th:block>
+           
             <!-- 메일 Menu -->
             <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#mailT"

@@ -13,16 +13,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.yedam.app.group.mapper.EmpMapper;
 import com.yedam.app.group.service.EmpService;
 import com.yedam.app.group.service.EmpVO;
 
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor // 리콰이어알규먼트 쓰고 밑에 final
 @Controller
+@RequiredArgsConstructor // 리콰이어알규먼트 쓰고 밑에 final
 public class EmpController {
 	
 	private final EmpService empService;
+	private final EmpMapper empMapper;
 	
 //	@Autowired @Resource @Qualify 등등 더있음
 //	public EmpController(EmpService empService) {
@@ -56,26 +58,31 @@ public class EmpController {
 	// 사원관리
 	   @GetMapping("/empMgmt")
 	   public String empMgmt(
-		   @RequestParam(value = "page", defaultValue = "1") int page,
-		   @RequestParam(value = "size", defaultValue = "12") int size,
-		   @RequestParam(value = "category", required = false, defaultValue = "all") String category,
-		   @RequestParam(value = "keyword", required = false) String keyword,
-		    Model model) {
-		   
-		   // 검색 결과를 가져옴
-	       List<EmpVO> emps = empService.findAllEmp(page, size, category, keyword);
-	       int totalRecords = empService.countAllEmp(category, keyword);
+	       @RequestParam(value = "page", defaultValue = "1") int page,
+	       @RequestParam(value = "size", defaultValue = "12") int size,
+	       @RequestParam(value = "category", required = false, defaultValue = "all") String category,
+	       @RequestParam(value = "keyword", required = false) String keyword,
+	       Model model) {
+
+	       //  로그인한 사용자 정보 가져오기
+	       EmpVO loggedInUser = empService.getLoggedInUserInfo();
+	       Integer suberNo = loggedInUser.getSuberNo();
+
+	       //  회사 번호(suberNo)를 기준으로 사원 조회
+	       List<EmpVO> emps = empService.findAllEmp(page, size, category, keyword, suberNo);
+	       int totalRecords = empService.countAllEmp(category, keyword, suberNo);
 	       int totalPages = (int) Math.ceil((double) totalRecords / size);
 
-	       // 모델에 데이터 추가
+	       //  모델에 값 담기
 	       model.addAttribute("emps", emps);
 	       model.addAttribute("currentPage", page);
 	       model.addAttribute("totalPages", totalPages);
 	       model.addAttribute("category", category);
 	       model.addAttribute("keyword", keyword);
+	       model.addAttribute("loggedInUser", loggedInUser); // 필요시 사용
 
 	       return "group/personnel/empMgmt";
-	 }
+	   }
 	    
 	// 사원 상세조회   
 	   @GetMapping("empInfo")
@@ -155,5 +162,19 @@ public class EmpController {
 	        // 3) 수정 후 사원 상세 페이지로 이동
 	        return "redirect:/empInfo?employeeNo=" + empVO.getEmployeeNo();
 	    }
+	    
+	    
+	    // 비밀번호 초기화 API
+	    @PostMapping("/resetPassword")
+	    public String resetPassword(@RequestParam int employeeNo) {
+	        empService.resetPassword(employeeNo);
+	        return "비밀번호가 초기화되었습니다.";
+	    }
+	    
+	    // 조직도
+		@GetMapping("orgChart")
+		public String orgChart() {
+			return "group/personnel/orgChart";
+		}
 	   
 }
