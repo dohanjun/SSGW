@@ -52,5 +52,15 @@ public class DeptController {
     	
         return deptMapper.getAllRights(rightsVO);
     }
+    
+    // 조직도 컨트롤러
+    @GetMapping("/orgchart")
+    public List<DeptVO> getOrgChart(DeptVO deptVO) {
+    	// 로그인한 사용자 정보 가져오기
+	    EmpVO loggedInUser = empService.getLoggedInUserInfo();
+	    deptVO.setSuberNo(loggedInUser.getSuberNo());
+    	
+        return deptMapper.getOrgChart(deptVO);
+    }
 
 }
