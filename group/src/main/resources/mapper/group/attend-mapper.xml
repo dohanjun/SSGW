@@ -1,5 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="com.yedam.app.group.mapper.AttendanceMapper">
 
     <!-- ✅ ResultMap 추가 (초과근무 데이터 포함) -->
@@ -22,7 +24,20 @@
         </association >
     </resultMap>
 
-	
+    <!-- ✅ 출근 시간 저장 -->
+    <insert id="clockIn" parameterType="map">
+        INSERT INTO attendance_management (employee_no, attendance_date, clock_in_time)
+        VALUES (#{employeeNo}, TRUNC(SYSDATE), SYSDATE)
+    </insert>
+
+    <!-- ✅ 퇴근 시간 저장 -->
+    <update id="clockOut" parameterType="map">
+        UPDATE attendance_management 
+        SET clock_out_time = SYSDATE
+        WHERE employee_no = #{employeeNo}
+        AND TRUNC(attendance_date) = TRUNC(SYSDATE)
+        AND clock_in_time IS NOT NULL
+    </update>
 
     <!-- ✅ 모든 출결 데이터 조회 (초과근무 포함) -->
     <select id="selectAllList" resultMap="AttendanceResultMap">
@@ -65,7 +80,8 @@
         GROUP BY am.employee_no, am.total_working_hours
     </select>
     
-     <select id="calculateTotalOvertime" parameterType="int" resultType="int">
+    <!-- ✅ 총 초과 근무시간 계산 -->
+    <select id="calculateTotalOvertime" parameterType="int" resultType="int">
         SELECT COALESCE(SUM(o.overtime_time), 0)
         FROM overtime o
         INNER JOIN attendance_management am ON am.work_attitude_id = o.work_attitude_id

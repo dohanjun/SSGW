@@ -20,7 +20,8 @@ public class FileServiceImpl implements FileService {
 
     @Value("${file.upload-dir}")  // 파일 저장 경로
     private String uploadDir;
-
+    
+    
     public FileServiceImpl(FileMapper fileMapper) {
         this.fileMapper = fileMapper;
     }
