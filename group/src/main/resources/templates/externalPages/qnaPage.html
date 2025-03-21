@@ -86,17 +86,16 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr th:each="board : ${boardList}">
-							<td th:text="${board.postId}"></td>
-							<td><a th:href="@{/qna/detail(postId=${board.postId})}"
-								th:text="${board.postTitle}"></a></td>
-							<td th:text="${board.employeeName}"></td>
-							<td th:text="${#dates.format(board.postDate, 'yyyy-MM-dd')}"></td>
-						</tr>
+					    <tr th:each="board : ${boardList}" th:if="${board.parentCommentId == null}">
+					        <td class="postId" th:text="${board.postId}"></td>
+					        <td>
+					            <a th:href="@{/qna/detail(postId=${board.postId})}" th:text="${board.postTitle}"></a>
+					        </td>
+					        <td th:text="${board.employeeName}"></td>
+					        <td th:text="${#dates.format(board.postDate, 'yyyy-MM-dd')}"></td>
+					    </tr>
 					</tbody>
 				</table>
-
-				<!-- 페이지네이션 -->
 				<div class="pagination-container">
 					<nav aria-label="페이지네이션">
 						<ul class="pagination mb-0">
@@ -132,5 +131,43 @@
 
 	<script
 		src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+<script th:inline="javascript">
+    var post = /*[[${boardList}]]*/[];
+
+    post.forEach(e => {
+        if (e.parentCommentId != null) {
+            $(".postId").each((index, num) => {
+                if (String(e.parentCommentId) === num.innerText) {
+                    let postRow = $(num).closest("tr");
+                    let postDate = new Date(e.postDate)
+                        .toLocaleDateString("ko-KR", {
+                            timeZone: "Asia/Seoul",
+                            year: "numeric",
+                            month: "2-digit",
+                            day: "2-digit"
+                        })
+                        .replace(/\./g, '')  
+                        .trim()
+                        .replace(/ /g, '-'); 
+                    postRow.after(`
+                        <tr class="replyRow">
+                            <td></td>
+                            <td style="padding-left: 30px;">
+                                <i class="fa-solid fa-reply"></i>
+                                <a href="/qna/detail?postId=${e.postId}">${e.postTitle}</a>
+                            </td>
+                            <td>관리자</td>
+                            <td>${postDate}</td>
+                        </tr>
+                    `);
+                }
+            });
+        }
+    });
+</script>
+
+
+
+
 </body>
 </html>

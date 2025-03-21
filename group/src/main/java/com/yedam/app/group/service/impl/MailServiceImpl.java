@@ -31,26 +31,26 @@ public class MailServiceImpl implements MailService {
 	
 	//메일전체조회
 	@Override
-	public List<MailVO> findAll(PageListVO vo) {
-		return mailMapper.selectAllList(vo);
+	public List<MailVO> selectAll(PageListVO vo) {
+		return mailMapper.findAll(vo);
 	}
 	
 	//메일상세조회
 	@Override
-	public MailVO findMailId(MailVO mailVO) {
-		return mailMapper.selectMailId(mailVO.getMailId());
+	public MailVO selectInfo(MailVO mailVO) {
+		return mailMapper.findInfo(mailVO.getMailId());
 	}
 	
 	//나의메일상세조회
 	@Override
-	public MailVO MyFindMailId(MailVO mailVO) {
-		return mailMapper.MySelectMailId(mailVO.getMailId());
+	public MailVO MySelectInfo(MailVO mailVO) {
+		return mailMapper.MyfindInfo(mailVO.getMailId());
 	}
 
 	//메일등록
 	@Override
-	public int addInfo(MailVO mailVO) {
-		int result = mailMapper.insertMailInfo(mailVO);
+	public int insert(MailVO mailVO) {
+		int result = mailMapper.create(mailVO);
 		
 		return result == 1 ? mailVO.getMailId() : -1;
 	}
@@ -63,11 +63,11 @@ public class MailServiceImpl implements MailService {
 
 	//메일수정
 	@Override
-	public Map<String, Object> modifyUpdInfo(MailVO mailVO) {
+	public Map<String, Object> update(MailVO mailVO) {
 		Map<String, Object> map = new HashMap<>();
 		boolean isSuccessed = false;
 		
-		int result = mailMapper.UpdateMail(mailVO);
+		int result = mailMapper.modify(mailVO);
 		
 		if(result == 1) {
 			isSuccessed = true;
@@ -112,10 +112,10 @@ public class MailServiceImpl implements MailService {
 
 	//메일삭제
 	@Override
-	public Map<String, Object> removeDelInfo(int mailId) {
+	public Map<String, Object> delete(int mailId) {
 		Map<String, Object> map = new HashMap<>();
 		
-		int result = mailMapper.DeleteMail(mailId);
+		int result = mailMapper.remove(mailId);
 		
 		if(result == 1) {
 			map.put("mailId", mailId);

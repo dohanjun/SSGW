@@ -1,7 +1,6 @@
 package com.yedam.app.group.web;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -59,9 +58,5 @@ public class WorkController {
 	public String chartsManager() {
 		return "group/workPage/chartsManager";
 	}
-    
-    @GetMapping("/mypage")
-	public String myPage() {
-		return "group/workPage/mypage";
-	}
+
 }

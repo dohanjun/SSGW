@@ -41,5 +41,20 @@ public class BoardPostServiceImpl implements BoardPostService {
 	public BoardPostVO getBoardDetail(int postId) {
 		return boardPostMapper.selectPostById(postId);
 	}
+
+	@Override
+	public int modifyBoartFixed(int postId) {
+		return boardPostMapper.modifyBoartFixed(postId);
+	}
+
+	@Override
+	public int removeBoradPost(int postId) {
+		return boardPostMapper.deletePost(postId);
+	}
+
+	@Override
+	public int createBoard(BoardPostVO boardPost) {
+		return boardPostMapper.insertPost(boardPost);
+	}
 }
 

@@ -23,4 +23,6 @@ public class PageListVO extends SearchVO{
 	private String cc;
 	private String recode;
 	private String mailType;
+
+	private String sortKey;
 }

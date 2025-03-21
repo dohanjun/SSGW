@@ -5,166 +5,136 @@
 	layout:fragment="content">
 
 <head>
-
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport"
-	content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="">
-<meta name="author" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>출퇴근 기록</title>
 
-<title>SB Admin 2 - Charts</title>
+<link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+<link href="css/sb-admin-2.css" rel="stylesheet">
 
-<!-- Custom fonts for this template-->
-<link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet"
-	type="text/css">
-<link
-	href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-	rel="stylesheet">
-
-<!-- Custom styles for this template-->
-<link href="css/sb-admin-2.min.css" rel="stylesheet">
-
+<style>
+.container-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.chart-container {
+    width: 40%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.info-container {
+    width: 25%;
+    text-align: center;
+    background: #f8f9fc;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+}
+.info-container h6 {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+.info-container p {
+    font-size: 18px;
+    font-weight: bold;
+    color: #007bff;
+    margin: 0;
+}
+.work-info {
+    width: 100%;
+    overflow-x: auto;
+}
+.work-info table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+.work-info th, .work-info td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+.work-info th {
+    background-color: #f8f9fc;
+    font-weight: bold;
+}
+.work-info tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+.work-info tbody tr:hover {
+    background-color: #e2e6ea;
+}
+</style>
 </head>
 
 <body id="page-top">
 
+<!-- ✅ 출퇴근 기록 -->
+<div class="row">
+    <div class="col">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h5 class="m-0 font-weight-bold">부서원 출퇴근 기록</h5>
+            </div>
+            <div class="card-body">
+                <div class="work-info">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>부서명</th>
+                                <th>사원번호</th>
+                                <th>사원이름</th>
+                                <th>출근시간</th>
+                                <th>퇴근시간</th>
+                                <th>총 근무시간</th>
+                                <th>초과 근무시간</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="deptAttendance : ${departmentAttendanceList}">
+                                <td th:text="${deptAttendance.departmentName}"></td>
+                                <td th:text="${deptAttendance.employeeNo}"></td>
+                                <td th:text="${deptAttendance.employeeName}"></td>
+                                <td th:text="${#dates.format(deptAttendance.clockInTime, 'HH:mm')}"></td>
+                                <td th:text="${#dates.format(deptAttendance.clockOutTime, 'HH:mm')}"></td>
+                                <td th:text="${deptAttendance.totalWorkingHours}"></td>
+                                <td th:text="${deptAttendance.overtimeHours}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-	<!-- Begin Page Content -->
-	<div class="container-fluid">
+<!-- ✅ 부서원 근태 그래프 -->
+<div class="row">
+    <div class="col-xl-8 col-lg-7">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">부서원 근태 현황</h6>
+            </div>
+            <div class="card-body">
+                <canvas id="employeeWorkChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
 
-		<!-- Page Heading -->
-		<h1 class="h3 mb-2 text-gray-800">근태관리 - 관리자</h1>
-		
-
-		<!-- Content Row -->
-		<div class="row">
-
-			<div class="col-xl-8 col-lg-7">
-
- 				<!-- Area Chart -->
-<!-- 				<div class="card shadow mb-4">
-					<div class="card-header py-3">
-						<h6 class="m-0 font-weight-bold text-primary">Bar Chart</h6>
-					</div>
-					<div class="card-body">
-						<div class="chart-bar">
-							<canvas id="myBarChart"></canvas>
-						</div>
-						<hr>
-						Styling for the bar chart can be found in the
-						<code>/js/demo/chart-bar-demo.js</code>
-						file.
-					</div>
-				</div>  -->
-				<div class="card shadow mb-4">
-					<div class="card-header py-3">
-						<h6 class="m-0 font-weight-bold text-primary">사원의 금주 평균 근무시간표</h6>
-					</div>
-					<div class="card-body">
-						<div class="chart-bar">
-							<canvas id="myBarChart"></canvas>
-						</div>
-						<hr>
-						사원의 금주 평균 근무시간표를 나타내는 그래프이다.
-					<!-- 	<code>/js/demo/chart-bar-manager.js</code>  
-						file.  -->
-					</div>
-				</div>
-				<!-- Bar Chart -->
+<!-- ✅ 추가된 부서원 출퇴근 정보 -->
 
 
-			</div>
-
-			<!-- Donut Chart -->
-			<div class="col-xl-4 col-lg-5">
-				<div class="card shadow mb-4">
-					<!-- Card Header - Dropdown -->
-					<div class="card-header py-3">
-						<h6 class="m-0 font-weight-bold text-primary">이달의 사원 근태</h6>
-					</div>
-					<!-- Card Body -->
-					<div class="card-body">
-						<div class="chart-pie pt-4">
-							<canvas id="myPieChart"></canvas>
-						</div>
-						<hr>
-						사원의 근태
-						<!-- <code>/js/demo/chart-pie-manager.js</code>  
-						file. -->
-					</div>
-				</div>
-			</div>
-		</div>
-
-	</div>
-	<!-- /.container-fluid -->
-
-	</div>
-	<!-- End of Main Content -->
-
-	<!-- Footer -->
-	<footer class="sticky-footer bg-white">
-		<div class="container my-auto">
-			<div class="copyright text-center my-auto">
-				<span>Copyright &copy; Your Website 2020</span>
-			</div>
-		</div>
-	</footer>
-	<!-- End of Footer -->
-
-	</div>
-	<!-- End of Content Wrapper -->
-
-	</div>
-	<!-- End of Page Wrapper -->
-
-	<!-- Scroll to Top Button-->
-	<a class="scroll-to-top rounded" href="#page-top"> <i
-		class="fas fa-angle-up"></i>
-	</a>
-
-	<!-- Logout Modal-->
-	<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog"
-		aria-labelledby="exampleModalLabel" aria-hidden="true">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-					<button class="close" type="button" data-dismiss="modal"
-						aria-label="Close">
-						<span aria-hidden="true">×</span>
-					</button>
-				</div>
-				<div class="modal-body">Select "Logout" below if you are ready
-					to end your current session.</div>
-				<div class="modal-footer">
-					<button class="btn btn-secondary" type="button"
-						data-dismiss="modal">Cancel</button>
-					<a class="btn btn-primary" href="login.html">Logout</a>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<!-- Bootstrap core JavaScript-->
-	<script src="vendor/jquery/jquery.min.js"></script>
-	<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-	<!-- Core plugin JavaScript-->
-	<script src="vendor/jquery-easing/jquery.easing.min.js"></script>
-
-	<!-- Custom scripts for all pages-->
-	<script src="js/sb-admin-2.js"></script>
-
-	<!-- Page level plugins -->
-	<script src="vendor/chart.js/Chart.min.js"></script>
-
-	<!-- Page level custom scripts -->
-
-	<script src="js/demo/chart-pie-manager.js"></script>
-	<script src="js/demo/chart-bar-manager.js"></script>
+<!-- ✅ JavaScript -->
+<script src="vendor/jquery/jquery.min.js"></script>
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </body>
-
 </html>

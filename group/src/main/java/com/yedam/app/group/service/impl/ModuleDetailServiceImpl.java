@@ -14,9 +14,12 @@ public class ModuleDetailServiceImpl implements ModuleDetailService {
     private ModuleDetailMapper moduleDetailMapper;
 
     @Override
-    public void saveModuleDetail(List<SubscriptionDetailVO> list) {
+    public List<SubscriptionDetailVO> saveModuleDetail(List<SubscriptionDetailVO> list) {
         for (SubscriptionDetailVO vo : list) {
             moduleDetailMapper.insertModules(vo);
+            System.out.println("✅ 저장된 SUB_DETAILS_NO (MyBatis 반영): " + vo.getSubDetailsNo()); // 🔹 값 확인
         }
+        return list;
     }
+
 }

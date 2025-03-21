@@ -27,7 +27,7 @@ function updatePrice() {
 	$('#tPrice')[0].innerHTML = formattedTPrice;
 
 	if (periodValue == 12) {
-		let discountedPrice = tPrice * 0.8;
+		let discountedPrice = tPrice * 12 * 0.8;
 		$('#ysale')[0].innerHTML = discountedPrice.toLocaleString('ko-KR');
 		$('#endPrice')[0].innerHTML = $('#ysale')[0].innerHTML;
 	} else {
@@ -159,7 +159,7 @@ function payment(type) {
 	var username = $("#subName").val();
 	var userEmail = $("#subEmail").val();
 	var userPhone = $("#phoneNo").val();
-	let num = Number($('#endPrice')[0].innerHTML.replace(/,/g, ''));
+	let num = parseInt($('.periodInput')[0].value) === 12 ? Number($('#endPrice')[0].innerHTML.replace(/,/g, '')) * 12 * 0.8 : Number($('#endPrice')[0].innerHTML.replace(/,/g, ''));
 	IMP.init('imp07168373');
 
 	IMP.request_pay(
@@ -177,7 +177,6 @@ function payment(type) {
 		},
 		function(rsp) {
 			if (rsp.success) {
-
 				$.ajax({
 					type: "POST",
 					url: "/saveSuber",
@@ -198,6 +197,7 @@ function payment(type) {
 					contentType: "application/json",
 					success: function(response) {
 						var suberNo = response;
+
 						$.ajax({
 							type: "POST",
 							url: "/saveSubDetail",
@@ -208,51 +208,107 @@ function payment(type) {
 									subPeriod: $('.periodInput')[0].value,
 									discount: parseInt($('.periodInput')[0].value) === 12 ? 'Y' : 'N',
 									discountRate: parseInt($('.periodInput')[0].value) === 12 ? 0.200 : 0.000,
-									discountPrice: parseInt($('.periodInput')[0].value) === 12 ? Number(module.modulePrice) * 0.8 : Number(module.modulePrice)
+									discountPrice: parseInt($('.periodInput')[0].value) === 12 ? Number(module.modulePrice) * 12 * 0.8 : Number(module.modulePrice)
 								}))
 							),
 							contentType: "application/json",
 							success: function(response) {
+								subDetailsNoList = response.map(detail => ({
+									subDetailsNo: detail.subDetailsNo,
+									discountPrice: detail.discountPrice
+								}));
+
 								$.ajax({
 									type: "POST",
 									url: "/savePayment",
-									data: JSON.stringify(
-										{
-										    paymentType: type,
-										    paymentPrice: num,
-										    suberNo: suberNo,
-										    subPeriod: $('.periodInput')[0].value,
-											paymentStatus:"완료",
-											claim: "Y",
-											claimState:"완료",
-										}
-									),
+									data: JSON.stringify({
+										paymentType: type,
+										paymentPrice: num,
+										suberNo: suberNo,
+										subPeriod: $('.periodInput')[0].value,
+										paymentStatus: "완료",
+										claim: "Y",
+										claimState: "완료"
+									}),
 									contentType: "application/json",
-									success: function(response) {
-										alert("결제 완료.");
-										location.href = "login";
+									success: function(response2) {
+										let paymentNo = response2.paymentNo;
+
+										let paymentDetailsList = subDetailsNoList.map(detail => ({
+											paymentNo: paymentNo,
+											subDetailsNo: detail.subDetailsNo,
+											paymentPrice: detail.discountPrice,
+											paymentState: "완료"
+										}));
+
+										$.ajax({
+											type: "POST",
+											url: "/savePaymentDetails",
+											data: JSON.stringify(paymentDetailsList),
+											contentType: "application/json",
+											success: function(response3) {
+												$.ajax({
+													type: "POST",
+													url: "/saveUser",
+													data: JSON.stringify({
+														  employeeId: $("#subId").val(),         // EMPLOYEE_ID
+														  employeePw: $("#subPw").val(),         // EMPLOYEE_PW
+														  employeeName: $("#subName").val(),     // EMPLOYEE_NAME
+														  resignationStatus: "N",                // RESIGNATION_STATUS: "N"이면 재직 중
+														  tempIp: null,                            // TEMP_IP: 필요시 서버나 클라이언트에서 IP를 설정
+														  passwordChanged: "N",                // PASSWORD_CHANGED: 초기에는 false 처리
+														  hireDate: new Date().toISOString().split('T')[0],  // HIRE_DATE: 오늘 날짜 (YYYY-MM-DD 형식)
+														  exitDate: null,                        // EXIT_DATE: 퇴사시 기록, 초기에는 null
+														  phoneNumber: $("#phoneNo").val(),      // PHONE_NUMBER
+														  address: null,    // ADDRESS: 주소 입력값 (폼에 없으면 빈 문자열)
+														  profileImage: null,                    // PROFILE_IMAGE: 이미지 경로 또는 URL (파일 업로드 시 처리)
+														  suberNo: suberNo,                      // SUBER_NO: 이미 변수로 선언되어 있는 값
+														  rankId: 7,                             // RANK_ID: 초기값 7
+														  rightsId: 1,                           // RIGHTS_ID: 초기값 1
+														  manager: null,                         // MANAGER: 초기에는 매니저 없음
+														  departmentNo: null,                    // DEPARTMENT_NO: 부서 미지정 상태
+														  profileImageBlob: null                 // PROFILE_IMAGE_BLOB: 이미지 파일의 blob 데이터 (필요시 할당)
+													}),
+													contentType: "application/json",
+													success: function(response3) {
+														location.href = "login";
+													},
+													error: function(xhr, status, error) {
+														alert("❌ 결제 상세 정보 저장 중 오류 발생.");
+														console.error(xhr.responseText);
+													}
+												});
+											},
+											error: function(xhr, status, error) {
+												alert("❌ 결제 상세 정보 저장 중 오류 발생.");
+												console.error(xhr.responseText);
+											}
+										});
+
 									},
 									error: function(xhr, status, error) {
-										alert("결제 정보 저장 중 오류가 발생했습니다.");
+										alert("❌ 결제 정보 저장 중 오류가 발생했습니다.");
 										console.error(xhr.responseText);
 									}
 								});
+
 							},
 							error: function(xhr, status, error) {
-								alert("결제 정보 저장 중 오류가 발생했습니다.");
+								alert("❌ 구독 상세 저장 중 오류 발생.");
 								console.error(xhr.responseText);
 							}
 						});
+
 					},
 					error: function(xhr, status, error) {
-						alert("결제 정보 저장 중 오류가 발생했습니다.");
+						alert("❌ 구독자 정보 저장 중 오류 발생.");
 						console.error(xhr.responseText);
 					}
 				});
-			}
-			else {
+
+			} else {
 				var mesg = '결제를 실패하였습니다.';
-				console.log(rsp)
+				console.log(rsp);
 				alert(mesg + rsp.error_msg);
 			}
 		}

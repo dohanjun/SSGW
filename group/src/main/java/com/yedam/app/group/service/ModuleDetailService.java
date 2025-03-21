@@ -4,5 +4,5 @@ import java.util.List;
 
 
 public interface ModuleDetailService {
-    void saveModuleDetail(List<SubscriptionDetailVO> list);
+	List<SubscriptionDetailVO> saveModuleDetail(List<SubscriptionDetailVO> list);
 }

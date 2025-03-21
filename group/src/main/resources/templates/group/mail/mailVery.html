@@ -55,10 +55,11 @@
   <h3>메일전달화면</h3>
   <div class="content-wrapper" id="center">
 	<div class="employee-container">
-	  <div>
-	  <a href="#" lcon="home"></a>
+	  	  <div class="btn-container">
+	  <a lcon="home" class="btn btn-primary" th:onclick="|location.href='@{/mailSelect(mailId=${mail.mailId})}'|">
+	  </a>
+	  </div>
 	<h1>전달하기</h1>
-	</div>
 	  <div>
 	    <hr>
 			<button type="button"

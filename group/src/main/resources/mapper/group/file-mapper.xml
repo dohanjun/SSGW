@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yedam.app.group.mapper.FileMapper">
+
+	<!-- 파일 등록 -->
+    <insert id="insertFile" parameterType="com.yedam.app.group.service.RepositoryFileVO">
+        INSERT INTO repository_file (writing_id, file_name, save_file_name, file_path, file_size, file_extension, creation_date)
+        VALUES (#{writingId}, #{fileName}, #{saveFileName}, #{filePath}, #{fileSize}, #{fileExtension}, NOW())
+    </insert>
+    
+</mapper>

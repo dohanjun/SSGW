@@ -12,6 +12,12 @@ public interface EmpService {
 	// 사원전체 조회
 	public List<EmpVO> findAllEmp();
 	
+    //  기존 목록 조회 메서드 변경: 페이징 지원 추가
+    public List<EmpVO> findAllEmp(int page, int size, String category, String keyword);
+
+    //  전체 데이터 개수 조회 (페이징 계산용)
+    public int countAllEmp(String category, String keyword);
+	
 	// 사원상세 정보
 	public EmpVO findempInfo(EmpVO empVO);
 	
@@ -24,5 +30,8 @@ public interface EmpService {
 	
     // 로그인한 대상 정보 가져오기
     public EmpVO getLoggedInUserInfo();
+    
+    // 비밀번호 초기화 기능 추가
+    public void resetPassword(int employeeNo); 
 
 }

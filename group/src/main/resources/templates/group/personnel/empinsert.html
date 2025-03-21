@@ -80,12 +80,6 @@
                <td>
                    <select id="depa" name="departmentNo">
                    <option value="">부서를 선택하세요</option>
-                   <option value="2">경영기획부</option>
-                   <option value="3">마케팅부</option>
-                   <option value="4">인사팀</option>
-                   <option value="5">회계팀</option>
-                   <option value="6">IT팀</option>
-                   <option value="7">개발팀</option>
                    </select>
                </td>
            </tr>
@@ -94,13 +88,6 @@
                <td>
                    <select id="rank" name="rankId">
                    <option>직급을 선택하세요</option>
-                   <option value="1">사원</option>
-                   <option value="2">주임</option>
-                   <option value="3">대리</option>
-                   <option value="4">과장</option>
-                   <option value="5">부장</option>
-                   <option value="6">이사</option>
-                   <option value="7">대표</option>
                    </select>
                </td>
            </tr>
@@ -109,10 +96,6 @@
                <td>
                    <select id="auth" name="rightsId">
                    <option>권한을 선택하세요</option>
-                   <option value="1">최고관리자</option>
-                   <option value="2">인사관리자</option>
-                   <option value="3">게시판관리자</option>
-                   <option value="4">일반사용자</option>
                    </select>
                </td>
            </tr>
@@ -140,7 +123,7 @@
         </table>
         <div class="container text-center mt-3">
         <button type="submit" class="btn btn-primary">등록</button>
-        <button type="button" class="btn btn-danger">취소</button>
+        <button type="button" class="btn btn-danger" th:onclick="|location.href = '@{ /main }'|">취소</button>
         </div>
     </div>
 </form>
@@ -150,6 +133,29 @@
     <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 
 <script>
+	// Ajax를 사용하여 부서/직급/권한 데이터를 동적으로 로드
+	function loadData(url, selectId) {
+	    fetch(url)
+	        .then(response => response.json())
+	        .then(data => {
+	            let select = document.getElementById(selectId);
+	            data.forEach(item => {
+	                let option = document.createElement("option");
+	                option.value = item.departmentNo || item.rankId || item.rightsId;
+	                option.textContent = item.departmentName || item.jobTitleName || item.rightsName;
+	                select.appendChild(option);
+	            });
+	        })
+	        .catch(error => console.error("Error loading data:", error));
+	}
+	
+	// 페이지 로드 시 데이터 가져오기
+	document.addEventListener("DOMContentLoaded", function() {
+	    loadData("/api/departments", "depa");
+	    loadData("/api/ranks", "rank");
+	    loadData("/api/rights", "auth");
+	});
+
     //  이미지 미리보기 & 클릭 시 파일 업로드 창 열기
     function empimg(event) {
         const image = document.getElementById('imagePreview');
@@ -174,15 +180,51 @@
     }
 
     //  폼 제출 시 주소 + 상세주소 합쳐서 저장
-    document.querySelector("form[name='insertForm']").addEventListener("submit", function (event) {
-        let addressField = document.getElementById("add");
-        let detailAddressField = document.getElementById("detailAdd");
+   // document.querySelector("form[name='insertForm']").addEventListener("submit", function (event) {
+     //   let addressField = document.getElementById("add");
+     //   let detailAddressField = document.getElementById("detailAdd");
 
         // 주소 + 상세주소를 합쳐서 하나의 컬럼에 저장
-        if (addressField.value && detailAddressField.value) {
-            addressField.value = addressField.value + " " + detailAddressField.value;
+    //    if (addressField.value && detailAddressField.value) {
+    //        addressField.value = addressField.value + " " + detailAddressField.value;
+      //  }});
+    
+    document.querySelector("form[name='insertForm']").addEventListener("submit", function (event) {
+    event.preventDefault(); // 기본 제출 방지
+
+    let fields = [
+        { id: "empid", message: "아이디가 입력되지 않았습니다." },
+        { id: "empname", message: "이름이 입력되지 않았습니다." },
+        { id: "depa", message: "부서를 선택해주세요." },
+        { id: "rank", message: "직급을 선택해주세요." },
+        { id: "auth", message: "권한을 선택해주세요." },
+        { id: "pho", message: "연락처가 입력되지 않았습니다." },
+        { id: "add", message: "주소를 입력해주세요." },
+        { id: "detailAdd", message: "상세주소를 입력해주세요." },
+        { id: "hire", message: "입사일을 선택해주세요." }
+    ];
+
+    for (let field of fields) {
+        let inputElement = document.getElementById(field.id);
+        
+        if (!inputElement.value.trim()) {   // 공백 입력 방지
+            alert(field.message); // 경고 메시지 출력
+            inputElement.focus(); // 해당 필드로 포커스 이동
+            return;              // 유효성 검사 실패 시 제출 중단
         }
-    });
+    }
+
+    // 주소 + 상세주소를 합쳐서 저장
+    let addressField = document.getElementById("add");
+    let detailAddressField = document.getElementById("detailAdd");
+    if (addressField.value && detailAddressField.value) {
+        addressField.value = addressField.value + " " + detailAddressField.value;
+    }
+
+    this.submit(); // 모든 필드가 입력되었으면 폼 제출
+    
+    
+});
 </script>
 
 </body>
