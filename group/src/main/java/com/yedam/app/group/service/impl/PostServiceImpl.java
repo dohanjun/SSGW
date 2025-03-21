@@ -49,6 +49,11 @@ public class PostServiceImpl implements PostService {
         params.put("departmentNo", departmentNo);
         return postMapper.getDepartmentRepositoryPosts(params);
     }
+    
+    @Override
+    public RepositoryPostVO getPostDetail(Long writingId) {
+        return postMapper.getPostDetail(writingId);
+    }
 
     // 개인 자료실 게시글 조회
     @Override
@@ -73,5 +78,25 @@ public class PostServiceImpl implements PostService {
     public RepositoryVO getIndividualRepository(int suberNo, int employeeNo) {
         return postMapper.getIndividualRepository(suberNo, employeeNo);
     }
+    
+    @Override
+    public RepositoryVO getRepositoryByUserInfo(int suberNo, int departmentNo, int employeeNo) {
+        // 우선순위: 개인 → 부서 → 전체
+        RepositoryVO personalRepo = postMapper.getIndividualRepository(suberNo, employeeNo);
+        if (personalRepo != null) {
+            return personalRepo;
+        }
 
+        RepositoryVO departmentRepo = postMapper.getDepartmentRepository(suberNo, departmentNo);
+        if (departmentRepo != null) {
+            return departmentRepo;
+        }
+
+        RepositoryVO totalRepo = postMapper.getTotalRepository(suberNo);
+        if (totalRepo != null) {
+            return totalRepo;
+        }
+
+        return null; // 셋 다 없을 경우
+    }
 }

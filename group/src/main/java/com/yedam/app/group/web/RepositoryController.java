@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import com.yedam.app.group.service.EmpService;
 import com.yedam.app.group.service.EmpVO;
@@ -46,8 +47,8 @@ public class RepositoryController {
 	    List<RepositoryPostVO> totalRepositoryList = postService.getTotalRepositoryPosts(loggedInUser.getSuberNo());
 	    
 	    // 디버깅 로그 추가
-	    System.out.println("🔹 최종 전달할 자료실 ID: " + totalRepository.getFileRepositoryId());
-	    System.out.println("🔹 최종 전달할 게시글 개수: " + (totalRepositoryList != null ? totalRepositoryList.size() : "null"));
+	    System.out.println("최종 전달할 자료실 ID: " + totalRepository.getFileRepositoryId());
+	    System.out.println("최종 전달할 게시글 개수: " + (totalRepositoryList != null ? totalRepositoryList.size() : "null"));
 	    
 	    // ull 방지 (리스트가 null이면 빈 리스트로 초기화)
 	    if (totalRepositoryList == null) {
@@ -114,9 +115,16 @@ public class RepositoryController {
 		return "group/repository/detailPost";
 	}
 
-	@GetMapping("/basket")
-	public String basket() {
-		return "group/repository/basket";
+	@GetMapping("/detailPost/{id}")
+	public String detailPost(@PathVariable("id") Long writingId, Model model) {
+	    RepositoryPostVO post = postService.getPostDetail(writingId);
+	    EmpVO loggedInUser = empService.getLoggedInUserInfo();
+
+	    model.addAttribute("post", post);
+	    model.addAttribute("isWriterOrAdmin", 
+	        post.getEmployeeNo() == loggedInUser.getEmployeeNo() || loggedInUser.isAdmin());
+
+	    return "group/repository/detailPost";
 	}
 
 	@GetMapping("/detailBasket")

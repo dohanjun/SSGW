@@ -12,6 +12,7 @@ public class RepositoryPostVO {
     private String title;
     private String content;
     private String fileName;
+    private int fileCount;
     private String writer;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date creationDate;

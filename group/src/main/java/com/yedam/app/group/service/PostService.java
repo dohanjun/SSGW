@@ -24,4 +24,10 @@ public interface PostService {
 
     // 개인 자료실 게시글 조회
     List<RepositoryPostVO> getIndividualRepositoryPosts(int suberNo, int employeeNo);
+    
+    // 사원 정보 기반으로 자료실 자동 판별
+    RepositoryVO getRepositoryByUserInfo(int suberNo, int departmentNo, int employeeNo);
+    
+    // 단건 조회
+    RepositoryPostVO getPostDetail(Long writingId);
 }
