@@ -3,7 +3,6 @@ package com.yedam.app.group.mapper;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
 import com.yedam.app.group.service.ApprovalFormVO;
 import com.yedam.app.group.service.ApprovalVO;
@@ -14,11 +13,20 @@ public interface ApprovalMapper {
 	// 결재문서함
 	public List<ApprovalVO> selectAprvListByStatus(ApprovalVO aprvVO);
 	
+	// 결재요청함, 임시저장함
+	public List<ApprovalVO> selectAllList(ApprovalVO aprvVO);
+	
+	// 양식목록불러오기(기본)
+	public List<ApprovalVO> selectAllBasicsForms(ApprovalVO aprvVO);
+	
+	// 양식목록불러오기(회사전용)
+	public List<ApprovalFormVO> selectAllAprvForms(ApprovalFormVO approvalFormVO);
+	
 	// 양식불러오기(기본)
-	public ApprovalVO selectBasicsForm(@Param("basicsFormId") Integer basicsFormId);
+	public ApprovalVO selectBasicsForm(ApprovalVO aprvVO);
 	
 	// 양식불러오기(회사전용)
-	public ApprovalFormVO selectAprvForm(@Param("formId") Integer formId, @Param("suberNo") int suberNo);
+	public ApprovalFormVO selectAprvForm(ApprovalFormVO aprvformVO);
 	
 	// 결재상세조회(승인창)
 	public ApprovalVO selectAprvInfo(ApprovalVO aprvVO);

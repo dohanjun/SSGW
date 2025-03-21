@@ -8,14 +8,23 @@ public interface ApprovalService {
 	// 결재문서조회
 	public List<ApprovalVO> findAprvListByStatus(ApprovalVO aprvVO);
 	
+	// 결재요청함, 임시저장함
+	public List<ApprovalVO> findAllList(ApprovalVO aprvVO);
+	
 	// 결재 상세 정보 조회
 	public ApprovalVO findAprvInfo(ApprovalVO aprvVO);
 	
+	// 기본양식목록 조회
+	public List<ApprovalVO> findAllBasicsForm(ApprovalVO aprvVO);
+	
+	// 회사전용양식목록 조회
+	public List<ApprovalFormVO> findAllAprvForm(ApprovalFormVO aprvformVO);
+	
 	// 기본양식 조회
-	public ApprovalVO findBasicsForm(Integer basicsFormId);
+	public ApprovalVO findBasicsForm(ApprovalVO aprvVO);
 
 	// 회사전용양식 조회
-	public ApprovalFormVO findAprvForm(Integer formId, int suberNo);
+	public ApprovalFormVO findAprvForm(ApprovalFormVO aprvformVO);
 	
 	// 도장 등록
 	public int createStamp(ApprovalVO aprvVO);
