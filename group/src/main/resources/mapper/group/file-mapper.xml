@@ -17,4 +17,18 @@
         )
     </insert>
     
+    <select id="selectFilesByWritingId" parameterType="long" resultType="com.yedam.app.group.service.RepositoryFileVO">
+    	SELECT 
+        	file_id,
+        	writing_id,
+        	file_name,
+        	save_file_name,
+        	file_path,
+        	creation_date,
+        	file_size,
+        	file_extension
+    	FROM repository_file
+    	WHERE writing_id = #{writingId}
+	</select>
+    
 </mapper>

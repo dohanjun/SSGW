@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.yedam.app.group.service.EmpService;
 import com.yedam.app.group.service.EmpVO;
+import com.yedam.app.group.service.FileService;
 import com.yedam.app.group.service.PostService;
+import com.yedam.app.group.service.RepositoryFileVO;
 import com.yedam.app.group.service.RepositoryPostVO;
 import com.yedam.app.group.service.RepositoryService;
 import com.yedam.app.group.service.RepositoryVO;
@@ -21,11 +23,17 @@ public class RepositoryController {
 	private final RepositoryService repositoryService;
     private final EmpService empService;
     private final PostService postService;
+	private final FileService fileService;
     
-	public RepositoryController(RepositoryService repositoryService, EmpService empService, PostService postService) {
+	public RepositoryController(RepositoryService repositoryService,
+								EmpService empService, 
+								PostService postService,
+								FileService fileService
+	) {
 		this.repositoryService = repositoryService;
 		this.empService = empService;
 		this.postService = postService;
+		this.fileService = fileService;
 	}
 
 	@GetMapping("/totalRepository")
@@ -110,20 +118,18 @@ public class RepositoryController {
 	    return "group/repository/individualRepository";
 	}
 
-	@GetMapping("/detailPost")
-	public String detailPost() {
-		return "group/repository/detailPost";
-	}
-
-	@GetMapping("/detailPost/{id}")
-	public String detailPost(@PathVariable("id") Long writingId, Model model) {
-	    RepositoryPostVO post = postService.getPostDetail(writingId);
+	@GetMapping("/detailPost/{writingId}")
+	public String detailPost(@PathVariable Long writingId, Model model) {
 	    EmpVO loggedInUser = empService.getLoggedInUserInfo();
+	    RepositoryPostVO post = postService.getPostDetail(writingId);
+	    List<RepositoryFileVO> fileList = fileService.getFilesByWritingId(writingId);
+
+	    boolean isOwner = post.getEmployeeNo() == loggedInUser.getEmployeeNo();
+	    boolean isAdmin = loggedInUser.getRightsId() == 3 || loggedInUser.getRightsLevel() == 5;
 
 	    model.addAttribute("post", post);
-	    model.addAttribute("isWriterOrAdmin", 
-	        post.getEmployeeNo() == loggedInUser.getEmployeeNo() || loggedInUser.isAdmin());
-
+	    model.addAttribute("fileList", fileList);
+	    model.addAttribute("canEditOrDelete", isOwner || isAdmin);
 	    return "group/repository/detailPost";
 	}
 

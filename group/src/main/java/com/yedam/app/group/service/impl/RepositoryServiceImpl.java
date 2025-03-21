@@ -3,7 +3,9 @@ package com.yedam.app.group.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.yedam.app.group.mapper.PostMapper;
 import com.yedam.app.group.mapper.RepositoryMapper;
+import com.yedam.app.group.service.RepositoryPostVO;
 import com.yedam.app.group.service.RepositoryService;
 import com.yedam.app.group.service.RepositoryVO;
 
@@ -11,10 +13,13 @@ import com.yedam.app.group.service.RepositoryVO;
 public class RepositoryServiceImpl implements RepositoryService {
 	
 	private final RepositoryMapper repositoryMapper;
+	
+	private final PostMapper postMapper;
 
     @Autowired
-    public RepositoryServiceImpl(RepositoryMapper repositoryMapper) {
+    public RepositoryServiceImpl(RepositoryMapper repositoryMapper, PostMapper postMapper) {
         this.repositoryMapper = repositoryMapper;
+        this.postMapper = postMapper;
     }
 
     @Override
@@ -30,5 +35,10 @@ public class RepositoryServiceImpl implements RepositoryService {
     @Override
     public RepositoryVO getIndividualRepository(int suberNo, int employeeNo) {
         return repositoryMapper.findIndividualRepository(suberNo, employeeNo);
+    }
+    
+    @Override
+    public RepositoryPostVO getPostDetail(Long writingId) {
+        return postMapper.getPostDetail(writingId);
     }
 }

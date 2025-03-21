@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -115,5 +116,10 @@ public class FileServiceImpl implements FileService {
             return ""; // 확장자가 없는 경우 빈 문자열 반환
         }
         return fileName.substring(fileName.lastIndexOf(".") + 1);
+    }
+    
+    @Override
+    public List<RepositoryFileVO> getFilesByWritingId(Long writingId) {
+        return fileMapper.selectFilesByWritingId(writingId);
     }
 }
