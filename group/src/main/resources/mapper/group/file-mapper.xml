@@ -4,8 +4,17 @@
 
 	<!-- 파일 등록 -->
     <insert id="insertFile" parameterType="com.yedam.app.group.service.RepositoryFileVO">
-        INSERT INTO repository_file (writing_id, file_name, save_file_name, file_path, file_size, file_extension, creation_date)
-        VALUES (#{writingId}, #{fileName}, #{saveFileName}, #{filePath}, #{fileSize}, #{fileExtension}, NOW())
+        INSERT INTO repository_file (file_id, writing_id, file_name, save_file_name, file_path, file_size, file_extension, creation_date)
+        VALUES (
+        	repository_file_seq.NEXTVAL,
+        	#{writingId},
+        	#{fileName},
+        	#{saveFileName},
+        	#{filePath},
+        	#{fileSize}, 
+        	#{fileExtension}, 
+        	SYSDATE
+        )
     </insert>
     
 </mapper>

@@ -1,5 +1,7 @@
 package com.yedam.app.group.web;
 
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,7 +31,7 @@ public class PostController {
         this.empService = empService;
     }
 
-    // 게시글 등록 폼 (GET)
+    // 자료글 등록 폼 (GET)
     @GetMapping("/repositoryInsert")
     public String repositoryInsert(Model model) {
         EmpVO loggedInUser = empService.getLoggedInUserInfo();
@@ -44,56 +46,65 @@ public class PostController {
         return "group/repository/repositoryInsert";
     }
 
-    // 게시글 등록 처리 (POST)
+    // 자료글 등록 처리 (POST)
     @PostMapping("/insertPost")
-    public String insertPost(@ModelAttribute RepositoryPostVO postVO,  
-                             @RequestParam(value = "file", required = false) MultipartFile file) {
-        EmpVO loggedInUser = empService.getLoggedInUserInfo();
+    public String insertPost(@ModelAttribute RepositoryPostVO postVO,
+    						 @RequestParam("repositoryType") String repositoryType,
+                             @RequestParam(value = "files", required = false) MultipartFile[] files) {
+    	EmpVO loggedInUser = empService.getLoggedInUserInfo();
 
         if (loggedInUser == null) {
             throw new IllegalStateException("로그인한 사용자 정보를 찾을 수 없습니다.");
         }
 
-        RepositoryVO repository;
+        // 작성일자 기본값 설정
+        if (postVO.getCreationDate() == null) {
+            postVO.setCreationDate(new Date());
+        }
 
-        if ((loggedInUser.getDepartmentNo() == null || loggedInUser.getDepartmentNo() == 0) &&
-        	    (loggedInUser.getEmployeeNo() == 0)) {
-        	    // 회사 전체 자료실
-        	    repository = postService.getTotalRepository(loggedInUser.getSuberNo());
-        	} else if (loggedInUser.getDepartmentNo() != null && loggedInUser.getDepartmentNo() != 0 &&
-        	           loggedInUser.getEmployeeNo() == 0) {
-        	    // 부서 자료실
-        	    repository = postService.getDepartmentRepository(loggedInUser.getSuberNo(), loggedInUser.getDepartmentNo());
-        	} else {
-        	    // 개인 자료실
-        	    repository = postService.getIndividualRepository(loggedInUser.getSuberNo(), loggedInUser.getEmployeeNo());
-        	}
+        if (postVO.getContent() == null || postVO.getContent().trim().isEmpty()) {
+            throw new IllegalArgumentException("content 값이 비어 있습니다.");
+        }
+
+        if (files != null && files.length > 0) {
+            System.out.println("업로드된 파일 개수: " + files.length);
+            for (MultipartFile file : files) {
+                System.out.println("파일 이름: " + file.getOriginalFilename() + ", 크기: " + file.getSize());
+            }
+        } else {
+            System.out.println("업로드된 파일 없음.");
+        }
+
+        // repositoryType 값으로 자료실 결정
+        RepositoryVO repository = switch (repositoryType) {
+            case "전체" -> postService.getTotalRepository(loggedInUser.getSuberNo());
+            case "부서" -> postService.getDepartmentRepository(loggedInUser.getSuberNo(), loggedInUser.getDepartmentNo());
+            case "개인" -> postService.getIndividualRepository(loggedInUser.getSuberNo(), loggedInUser.getEmployeeNo());
+            default -> throw new IllegalArgumentException("올바르지 않은 repositoryType입니다: " + repositoryType);
+        };
 
         if (repository == null) {
             throw new IllegalStateException("해당 사용자의 자료실을 찾을 수 없습니다.");
         }
 
-        // 게시글 정보 설정
         postVO.setEmployeeNo(loggedInUser.getEmployeeNo());
         postVO.setFileRepositoryId(repository.getFileRepositoryId());
 
-        // 게시글 등록
-        int writingId = postService.insertPost(postVO);
+        Long writingId = postService.insertPost(postVO);
 
-        // 파일 업로드 (게시글이 등록된 후)
-        if (file != null && !file.isEmpty()) {
-            fileService.insertFile(writingId, file);
+        if (files != null && files.length > 0) {
+            for (MultipartFile file : files) {
+                if (!file.isEmpty()) {
+                    fileService.insertFile(writingId, file);
+                }
+            }
         }
 
-        // 등록한 자료실로 이동 (어느 자료실인지 체크)
-        if ((loggedInUser.getDepartmentNo() == null || loggedInUser.getDepartmentNo() == 0) &&
-                loggedInUser.getEmployeeNo() == 0) {
-                return "redirect:/totalRepository";
-            } else if (loggedInUser.getDepartmentNo() != null && loggedInUser.getDepartmentNo() != 0 &&
-                       loggedInUser.getEmployeeNo() == 0) {
-                return "redirect:/departmentRepository";
-            } else {
-                return "redirect:/individualRepository";
-            }
+        // 자료실 종류에 따라 리다이렉트
+        return switch (repositoryType) {
+            case "전체" -> "redirect:/totalRepository";
+            case "부서" -> "redirect:/departmentRepository";
+            default -> "redirect:/individualRepository";
+        };
     }
 }
