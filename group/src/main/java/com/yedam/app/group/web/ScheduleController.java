@@ -60,6 +60,7 @@ public class ScheduleController {
 		
 		scheduleVO.setEmployeeNo(loggedInUser.getEmployeeNo());  //  로그인한 사용자 사원번호
 		scheduleVO.setSuberNo(loggedInUser.getSuberNo()); // 로그인한 사용자 회사번호
+		scheduleVO.setDepartmentNo(loggedInUser.getDepartmentNo()); // 로그인한 사용자 부서번호
 		
         List<ScheduleVO> scheduleList = scheduleService.findAllSchedules(scheduleVO);
         

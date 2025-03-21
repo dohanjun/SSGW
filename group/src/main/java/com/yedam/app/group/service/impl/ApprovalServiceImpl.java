@@ -142,14 +142,33 @@ public class ApprovalServiceImpl implements ApprovalService {
 	
 	// 기본양식
 	@Override
-	public ApprovalVO findBasicsForm(Integer basicsFormId) {
-		return approvalMapper.selectBasicsForm(basicsFormId);
+	public ApprovalVO findBasicsForm(ApprovalVO aprvVO) {
+		return approvalMapper.selectBasicsForm(aprvVO);
 	}
 	
 	// 회사전용양식
 	@Override
-	public ApprovalFormVO findAprvForm(Integer formId, int suber) {
-		return approvalMapper.selectAprvForm(formId, suber);
+	public ApprovalFormVO findAprvForm(ApprovalFormVO aprvFormVO) {
+		return approvalMapper.selectAprvForm(aprvFormVO);
+	}
+	
+	
+	// 기본양식목록
+	@Override
+	public List<ApprovalVO> findAllBasicsForm(ApprovalVO aprvVO) {
+		return approvalMapper.selectAllBasicsForms(aprvVO);
+	}
+	
+	// 회사전용양식목록
+	@Override
+	public List<ApprovalFormVO> findAllAprvForm(ApprovalFormVO aprvformVO) {
+		return approvalMapper.selectAllAprvForms(aprvformVO);
+	}
+	
+	// 결재요청함, 임시저장함
+	@Override
+	public List<ApprovalVO> findAllList(ApprovalVO aprvVO) {
+		return approvalMapper.selectAllList(aprvVO);
 	}
 
 	

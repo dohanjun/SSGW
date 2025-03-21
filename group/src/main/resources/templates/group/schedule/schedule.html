@@ -9,7 +9,7 @@
     <!-- FullCalendar와 Google Calendar 플러그인 추가 (CDN) -->
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/google-calendar@6.1.8/index.global.min.js"></script>
-    
+    <script src="https://kit.fontawesome.com/a4d9e872af.js" crossorigin="anonymous"></script>
     <style>
     /* 공휴일 이벤트 배경 제거 및 글자만 표시 */
     .gcal-event {
@@ -53,12 +53,18 @@
     .modal-header {
     	text-align: center;
     }
+    .fa-square-full span {
+    	color: black;
+    }
     </style>
 </head>
 <body>
 
     <div class="form-group">
         <button id="addScheduleBtn">일정 추가</button>
+        	<i class="fa-solid fa-square-full" style="color: #00ff00;"><span>개인일정</span></i>
+        	<i class="fa-solid fa-square-full" style="color: #0000ff;"><span>부서일정</span></i>
+        	<i class="fa-solid fa-square-full" style="color: #FFD43B;"><span>회사일정</span></i>
         <div id='calendar-container'>
             <div id="calendar"></div>
         </div>
@@ -158,26 +164,47 @@
             initialView: 'dayGridMonth',
 			
             
-            // 일정 데이터 가져오기
+         // 일정 데이터 가져오기
             events: function (fetchInfo, successCallback, failureCallback) {
                 fetch('/schedule/list')
                     .then(response => response.json())
                     .then(data => {
 
                         // FullCalendar에서 인식할 수 있도록 데이터 변환
-                        let events = data.map(event => ({
-                            id: event.scheduleId,
-                            title: event.scheduleTitle,
-                            start: event.scheduleStart,
-                            end: event.scheduleEnd,
-                            extendedProps: { 
-                                content: event.scheduleContent,
-                                employeeName: event.employeeName,
-                                departmentName: event.departmentName,
-                                scheduleDivision: event.scheduleDivision
-                            },
-                            allDay: false  // allDay 설정 (true, false)
-                        }));
+                        let events = data.map(event => {
+                            if (!event) {
+                                console.warn("잘못된 일정 데이터 감지:", event);
+                                return null; // 잘못된 데이터는 건너뛰기
+                            }
+
+                            let color;
+                            switch (event.scheduleDivision) {
+                                case "개인":
+                                    color = "#28a745"; // 초록
+                                    break;
+                                case "부서":
+                                    color = "#007bff"; // 파랑
+                                    break;
+                                case "회사":
+                                    color = "#ffc107"; // 노랑
+                                    break;
+                            }
+
+                            return {
+                                id: event.scheduleId,
+                                title: event.scheduleTitle,
+                                start: event.scheduleStart,
+                                end: event.scheduleEnd,
+                                color: color, // 여기에서 색상 적용
+                                extendedProps: { 
+                                    content: event.scheduleContent,
+                                    employeeName: event.employeeName,
+                                    departmentName: event.departmentName,
+                                    scheduleDivision: event.scheduleDivision
+                                },
+                                allDay: false // allDay 설정 (true, false)
+                            };
+                        }).filter(event => event !== null); // null 제거
 
                         successCallback(events);
                     })
@@ -186,6 +213,7 @@
                         failureCallback(error);
                     });
             },
+
 
             // Google Calendar 공휴일
             eventSources: [
@@ -259,9 +287,9 @@ eventClick: function (info) {
                 // 이벤트 내부 텍스트 스타일 적용
                 let eventText = eventEl.querySelector('.fc-event-main');
                 if (eventText) {
-                    eventText.style.color = 'red';  // 글씨 빨간색
+                    eventText.style.color = 'black';
                     eventText.style.fontSize = '12px';
-                    eventText.style.fontWeight = 'bold';  // 글씨 굵게
+                    eventText.style.fontWeight = 'bold';
                 }
             }
         });
