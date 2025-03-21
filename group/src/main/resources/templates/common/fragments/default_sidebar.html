@@ -1,140 +1,133 @@
 <!DOCTYPE html>
-<div xmlns:th="https://www.thymeleaf.org" th:fragment="sidebar">
+<html xmlns:th="https://www.thymeleaf.org" th:fragment="sidebar">
+<head>
     <link th:href="@{/css/sb-admin-2.css}" rel="stylesheet">
+</head>
+<body>
+<div th:fragment="sidebar">
     <!-- Sidebar -->
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-        
+
         <!-- Sidebar - Brand -->
         <a class="sidebar-brand d-flex align-items-center justify-content-center" href="main">
             <div class="sidebar-brand-icon rotate-n-15">
                 <i class="fas fa-laugh-wink"></i>
             </div>
+        </a>
+		<!-- Nav Item - Dashboard -->
+		 <li class="nav-item active"><a class="nav-link" href="index.html">
+			 <i class="fas fa-fw fa-tachometer-alt"></i> <span>Dashboard</span>
+			 </a>
+			 </li>
+		 <!-- Divider -->
+		 <hr class="sidebar-divider">
+        <!-- 일정 -->
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/schedule}">
+                <i class="fas fa-fw fa-cog"></i>
+                <span>일정</span>
+            </a>
+        </li>
 
-            <!-- Nav Item - Pages Collapse Menu--> 
-            <li class="nav-item">
-                <a class="nav-link" th:href="@{/schedule}">
-                    <i class="fas fa-fw fa-cog"></i>
-                    <span>일정</span>
-                </a>
-                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Custom Components:</h6>
-                        <a class="collapse-item"></a>
-                        <a class="collapse-item"></a>
-                        <a class="collapse-item"></a>
-                        <a class="collapse-item"></a>
-                    </div>
-                </div>
-            </li>
-            
-            <li class="nav-item">
-                <a class="nav-link collapsed" th:href="@{/orgChart}">
-                    <i class="fas fa-fw fa-cog"></i>
-                    <span>조직도</span>
-                </a>
-                <div id="collapseTT" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded" >
-                        <h6 class="collapse-header">인사관리</h6>
-                        <a class="collapse-item"></a>
-                    </div>
-                </div>
-            </li>
-            
-            <!-- Nav Item - Utilities Collapse Menu -->
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
-                    aria-expanded="true" aria-controls="collapseUtilities">
-                    <i class="fas fa-fw fa-wrench"></i>
-                    <span>Utilities</span>
-                </a>
-                <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
-                    data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Custom Utilities:</h6>
-                        <a class="collapse-item" href="utilities-color.html">Colors</a>
-                        <a class="collapse-item" href="utilities-border.html">Borders</a>
-                        <a class="collapse-item" href="utilities-animation.html">Animations</a>
-                        <a class="collapse-item" href="utilities-other.html">Other</a>
-                    </div>
+        <!-- 조직도 -->
+        <li class="nav-item">
+            <a class="nav-link collapsed" th:href="@{/orgChart}">
+                <i class="fas fa-fw fa-cog"></i>
+                <span>조직도</span>
+            </a>
+        </li>
+
+        <!-- Utilities -->
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
+               aria-expanded="true" aria-controls="collapseUtilities">
+                <i class="fas fa-fw fa-wrench"></i>
+                <span>Utilities</span>
+            </a>
+            <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
+                 data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <h6 class="collapse-header">Custom Utilities:</h6>
+                    <a class="collapse-item" href="utilities-color.html">Colors</a>
+                    <a class="collapse-item" href="utilities-border.html">Borders</a>
+                    <a class="collapse-item" href="utilities-animation.html">Animations</a>
+                    <a class="collapse-item" href="utilities-other.html">Other</a>
                 </div>
             </div>
         </li>
-        
+
         <!-- Divider -->
         <hr class="sidebar-divider">
-        
-        <!-- Sidebar Heading: Addons -->
+
+        <!-- Addons Heading -->
         <div class="sidebar-heading">
             Addons
         </div>
-        
-        <!-- Nav Item - Pages (Login Screens & Other Pages) -->
+
+        <!-- QnA -->
         <li class="nav-item">
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
                aria-expanded="true" aria-controls="collapsePages">
-				<i class="fas fa-fw fa-question-circle"></i>
+                <i class="fas fa-fw fa-question-circle"></i>
                 <span>QnA</span>
             </a>
-            <div id="collapsePages" class="collapse" aria-labelledby="headingPages"
-                 data-parent="#accordionSidebar">
+            <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <a class="collapse-item" th:href="@{/qnaBoard}">QnA 목록</a>
                     <a class="collapse-item" th:href="@{/qnaBoard}">QnA 등록</a>
                 </div>
             </div>
+        </li>
 
-       
-            </li>
-    
-            <!-- Nav Item - Charts -->
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#work"
-                    aria-expanded="true" aria-controls="collapseTwo">
-                    <i class="fas fa-fw fa-cog"></i>
-                    <span>근태관리</span>
-                </a>
-                <div id="work" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="chartsManager">관리자 근태관리</a>
-                        <a class="collapse-item" href="blank">사원 근태관리</a>
-                    </div>
+        <!-- 근태관리 -->
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#work"
+               aria-expanded="true" aria-controls="collapseTwo">
+                <i class="fas fa-fw fa-cog"></i>
+                <span>근태관리</span>
+            </a>
+            <div id="work" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <a class="collapse-item" href="chartsManager">관리자 근태관리</a>
+                    <a class="collapse-item" href="blank">사원 근태관리</a>
                 </div>
-            </li> 
-            <!-- Nav Item - Tables -->
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#approval"
-                    aria-expanded="true" aria-controls="collapseTwo">
-                    <i class="fas fa-fw fa-cog"></i>
-                    <span>전자결재</span>
-                </a>
-                <div id="approval" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">기안</h6>
-                        <a class="collapse-item" th:href="@{/aprv/write}">기안문작성</a>
-                        <a class="collapse-item">결재요청함</a>
-                        <a class="collapse-item" th:href="@{/aprv/list?aprvStatus=임시저장}">임시저장함</a>
-                        <a class="collapse-item" th:href="@{/write}">전자결재양식추가</a>
-                        <h6 class="collapse-header">결재</h6>
-                        <a class="collapse-item" th:href="@{/aprv/list?aprvStatus=대기}">결재대기함</a>
-                        <a class="collapse-item" th:href="@{/aprv/list?aprvStatus=진행}">결재진행함</a>
-                        <a class="collapse-item" th:href="@{/aprv/list?aprvStatus=완료}">완료문서함</a>
-                        <a class="collapse-item" th:href="@{/aprv/list?aprvStatus=반려}">반려문서함</a>
-                        <a class="collapse-item">참조열람함</a>
-                    </div>
+            </div>
+        </li>
+
+        <!-- 전자결재 -->
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#approval"
+               aria-expanded="true" aria-controls="collapseTwo">
+                <i class="fas fa-fw fa-cog"></i>
+                <span>전자결재</span>
+            </a>
+            <div id="approval" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <h6 class="collapse-header">기안</h6>
+                    <a class="collapse-item" th:href="@{/aprv/write}">기안문작성</a>
+                    <a class="collapse-item">결재요청함</a>
+                    <a class="collapse-item" th:href="@{/aprv/list?aprvStatus=임시저장}">임시저장함</a>
+                    <a class="collapse-item" th:href="@{/write}">전자결재양식추가</a>
+                    <h6 class="collapse-header">결재</h6>
+                    <a class="collapse-item" th:href="@{/aprv/list?aprvStatus=대기}">결재대기함</a>
+                    <a class="collapse-item" th:href="@{/aprv/list?aprvStatus=진행}">결재진행함</a>
+                    <a class="collapse-item" th:href="@{/aprv/list?aprvStatus=완료}">완료문서함</a>
+                    <a class="collapse-item" th:href="@{/aprv/list?aprvStatus=반려}">반려문서함</a>
+                    <a class="collapse-item">참조열람함</a>
                 </div>
-            </li>        
-                                <!-- Nav Item - Pages Collapse Menu -->
-                                
-           <th:block th:if="${session.rightsLevel != null and session.rightsLevel >= 7}">
-           <!-- 인사관리 메뉴 시작 -->
+            </div>
+        </li>
+
+        <!-- 인사관리 (권한 체크) -->
+        <th:block th:if="${session.rightsLevel != null and session.rightsLevel >= 7}">
             <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseT"
-                    aria-expanded="true" aria-controls="collapseTwo">
+                   aria-expanded="true" aria-controls="collapseT">
                     <i class="fas fa-fw fa-cog"></i>
                     <span>인사관리</span>
                 </a>
-                <div id="collapseT" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded" >
+                <div id="collapseT" class="collapse" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">인사관리</h6>
                         <a class="collapse-item" th:href="@{empinsert}">사원등록</a>
                         <a class="collapse-item" th:href="@{empMgmt}">사원관리</a>
@@ -147,38 +140,37 @@
                     </div>
                 </div>
             </li>
-           </th:block>
-           
-            <!-- 메일 Menu -->
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#mailT"
-                    aria-expanded="true" aria-controls="collapseTwo">
-                    <i class="fas fa-fw fa-cog"></i>
-                    <span>메일</span>
-                </a>
-                <div id="mailT" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">메일</h6>
-                        <a class="collapse-item" th:href="@{mail}">메일메인화면</a>
-                        <a class="collapse-item" th:href="@{mailInsert}">메일쓰기</a>
-                        <h6 class="collapse-header">메일세부항목</h6>
-                        <a class="collapse-item" th:href="@{getMail?mailType=받은}">받은메일함</a>
-                        <a class="collapse-item" th:href="@{putMail?mailType=보낸}">보낸메일함</a>
-                        <a class="collapse-item" th:href="@{temporaryMail?mailType=임시}">임시메일함</a>
-                        <a class="collapse-item" th:href="@{deleteMail?mailType=휴지통}">휴지통</a>
-                    </div>
+        </th:block>
+
+        <!-- 메일 -->
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#mailT"
+               aria-expanded="true" aria-controls="mailT">
+                <i class="fas fa-fw fa-cog"></i>
+                <span>메일</span>
+            </a>
+            <div id="mailT" class="collapse" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <h6 class="collapse-header">메일</h6>
+                    <a class="collapse-item" th:href="@{mail}">메일메인화면</a>
+                    <a class="collapse-item" th:href="@{mailInsert}">메일쓰기</a>
+                    <h6 class="collapse-header">메일세부항목</h6>
+                    <a class="collapse-item" th:href="@{getMail?mailType=받은}">받은메일함</a>
+                    <a class="collapse-item" th:href="@{putMail?mailType=보낸}">보낸메일함</a>
+                    <a class="collapse-item" th:href="@{temporaryMail?mailType=임시}">임시메일함</a>
+                    <a class="collapse-item" th:href="@{deleteMail?mailType=휴지통}">휴지통</a>
                 </div>
             </div>
         </li>
-        
-        <!-- Nav Item - 게시판 -->
+
+        <!-- 게시판 -->
         <li class="nav-item">
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#board"
                aria-expanded="true" aria-controls="board">
                 <i class="fas fa-fw fa-cog"></i>
                 <span>게시판</span>
             </a>
-            <div id="board" class="collapse" aria-labelledby="headingBoard" data-parent="#accordionSidebar">
+            <div id="board" class="collapse" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <a class="collapse-item" th:href="@{noticeBoard}">공지 게시판</a>
                     <a class="collapse-item" th:href="@{departmentBoard}">부서 게시판</a>
@@ -186,15 +178,15 @@
                 </div>
             </div>
         </li>
-        
-        <!-- Nav Item - 자료실 -->
+
+        <!-- 자료실 -->
         <li class="nav-item">
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#repository"
                aria-expanded="true" aria-controls="repository">
                 <i class="fas fa-fw fa-cog"></i>
                 <span>자료실</span>
             </a>
-            <div id="repository" class="collapse" aria-labelledby="headingRepository" data-parent="#accordionSidebar">
+            <div id="repository" class="collapse" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <a class="collapse-item" th:href="@{totalRepository}">전체 자료실</a>
                     <a class="collapse-item" th:href="@{departmentRepository}">부서 자료실</a>
@@ -203,7 +195,7 @@
                 </div>
             </div>
         </li>
-        
+
         <!-- Sidebar Toggler -->
         <div class="text-center d-none d-md-inline">
             <button class="rounded-circle border-0" id="sidebarToggle"></button>
@@ -211,4 +203,5 @@
     </ul>
     <!-- End of Sidebar -->
 </div>
-
+</body>
+</html>
