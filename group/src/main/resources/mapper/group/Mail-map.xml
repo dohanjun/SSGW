@@ -13,10 +13,13 @@
 <sql id="mailCondition">
 		  <where>
 		  	<if test="search != null and search != ''">
-		  		 TITLE LIKE '%' || #{search} || '%'
+		  		( TITLE LIKE '%' || #{search} || '%'
 		  		OR GET_USER LIKE '%' || #{search} || '%'
-		  		OR RECODE LIKE '%' || #{search} || '%'
+		  		OR RECODE LIKE '%' || #{search} || '%' )
 		  	</if>	
+		  	<if test="mailType != null">
+     			and mail_type = #{mailType}
+   			 </if>
 		  </where>
 </sql>
 
@@ -192,8 +195,4 @@
 	FROM Mail
 	<include refid="mailCondition"></include>
 	</select>
-
-
-<!-- 세부메일함 -->
-
 </mapper>

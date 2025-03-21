@@ -48,5 +48,9 @@ public interface MailService {
 	public List<MailVO> selectTemList(PageListVO vo);
 	//휴지통
 	public List<MailVO> selectDelList(PageListVO vo);
+
+	//메일
 	
+	 public String sendMailToUser(String email);
 }
+

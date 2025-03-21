@@ -13,6 +13,8 @@ import com.yedam.app.group.service.FileService;
 import com.yedam.app.group.service.RepositoryFileVO;
 import com.yedam.app.utill.AESUtil;
 
+import lombok.Data;
+
 @Service
 public class FileServiceImpl implements FileService {
 

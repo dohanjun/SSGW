@@ -56,10 +56,8 @@
 <div>
 	<h5 th:text="'전체글: '+${paging.totalRecord}+'개'"></h5>
 </div>
-  <div class="btn-container" id="flo">
-	 <button th:onclick="|location.href='@{/mailDelete(mailId=${mail.mailId},country=Kor)}'|">
-      	삭제
-     </button>
+  <div id="flo">
+<button>삭제</button>
   </div>
 
 <!-- 메일목록 창 -->
@@ -123,66 +121,74 @@
 
 <script>
 
-	//버튼
-	const context = ''; //document.querySelector('meta[name="contextPath"]').getAttribute('value');
-	
-	function moveInfoPage(event){
-		let selectedTr = event.currentTarget;
-		let mid = selectedTr.children[1].textContent;
-		let url = context + '/mailInfo?mailId=' + mid;
-	}
-	
-	//바 기능
-	function gopage(p){
-		frmSearch.page.value = p;
-		frmSearch.submit();		
-		//location.href = '/mail?page=' + p;
-	}
-	
-	
-	//체크박스 기능
-	function checkMenuHandler(checkbox) {
-	    menu = document.getElementsByName("checkMenu")
-	    menuArr = [];
+//버튼
+const context = ''; //document.querySelector('meta[name="contextPath"]').getAttribute('value');
 
-	    // 전체 체크 되어 있는 상태에서 자식데이터의 체크박스 해제시 전체 체크박스 해제
-	    const selectall = document.querySelector('input[name="selectall"]');
-	    if (checkbox != null && checkbox.checked === false) {
-	        selectall.checked = false;
-	    }
+function moveInfoPage(event){
+	let selectedTr = event.currentTarget;
+	let mid = selectedTr.children[1].textContent;
+	let url = context + '/mailInfo?mailId=' + mid;
+}
 
-	    
-  // 자식노드 체크가 한개라도 false일때 부모 전체체크 해제 자식노드 체크가 모두 true가 되면 부모 전체체크도 true
-	    let childMenuAll = document.querySelectorAll('[name="checkMenu"]').length;
-	    let childMenuCheckd = document.querySelectorAll('[name="checkMenu"]:checked').length;
-	    if (childMenuAll == childMenuCheckd){
-	        selectall.checked = true;
-	    }else{
-	    	selectall.checked = false;
-	    }
-	}
+//바 기능
+function gopage(p){
+	frmSearch.page.value = p;
+	frmSearch.submit();		
+	//location.href = '/mail?page=' + p;
+}
 
-	/**
-	 * 체크박스 모두 선택/해제
-	 * @param selectAll
-	 */
-	function selectAllcheck(selectAll) {
-	    const checkboxes = document.getElementsByName('checkMenu');
 
-	    checkboxes.forEach((checkbox) => {
-	        checkbox.checked = selectAll.checked
-	    })
-	    menu = document.getElementsByName("checkMenu")
-	    menuArr = [];
+//체크박스 기능
+function checkMenuHandler(checkbox) {
+    menu = document.getElementsByName("checkMenu")
+    menuArr = [];
 
-	    // 체크되어 있는 데이터
-	    for (let i = 0; i < menu.length; i++) {
-	        if (menu[i].checked == true) {
-	            menuArr.push(menu[i].id);
-	        }
-	    }
-	}
-	
+    // 전체 체크 되어 있는 상태에서 자식데이터의 체크박스 해제시 전체 체크박스 해제
+    const selectall = document.querySelector('input[name="selectall"]');
+    if (checkbox != null && checkbox.checked === false) {
+        selectall.checked = false;
+    }
+
+    
+// 자식노드 체크가 한개라도 false일때 부모 전체체크 해제 자식노드 체크가 모두 true가 되면 부모 전체체크도 true
+    let childMenuAll = document.querySelectorAll('[name="checkMenu"]').length;
+    let childMenuCheckd = document.querySelectorAll('[name="checkMenu"]:checked').length;
+    if (childMenuAll == childMenuCheckd){
+        selectall.checked = true;
+    }else{
+    	selectall.checked = false;
+    }
+}
+
+/**
+ * 체크박스 모두 선택/해제
+ * @param selectAll
+ */
+function selectAllcheck(selectAll) {
+    const checkboxes = document.getElementsByName('checkMenu');
+
+    checkboxes.forEach((checkbox) => {
+        checkbox.checked = selectAll.checked
+    })
+    menu = document.getElementsByName("checkMenu")
+    menuArr = [];
+
+    // 체크되어 있는 데이터
+    for (let i = 0; i < menu.length; i++) {
+        if (menu[i].checked == true) {
+            menuArr.push(menu[i].id);
+        }
+    }
+}
+
+ // 폼을 제출하는 함수
+function submitForm() {
+	frmSearch.submit();
+}
+//정렬기능 구현
+
+
+</script>
 </script>
 </body>
 </html>
