@@ -190,10 +190,65 @@
 
 	</nav>
 	<!-- End of Topbar -->
-</div>
 
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    console.log("✅ 헤더에서 JavaScript 로드 완료!");
-});
+	<script>
+	document.addEventListener("DOMContentLoaded", function () {
+	    const startBtn = document.getElementById("startWorkBtn");
+	    const endBtn = document.getElementById("endWorkBtn");
+	    const csrfToken = document.querySelector("[name='_csrf']")?.getAttribute("content") || "";
+
+	    if (startBtn) {
+	        startBtn.addEventListener("click", async () => {
+	            try {
+	                // ✅ 1. 지각 여부 확인
+	                const response = await fetch("/attendance/check-late");
+	                const result = await response.json();
+
+	                let reason = "";
+
+	                // ✅ 2. 지각이면 사유 입력 받기
+	                if (result.status === "LATE") {
+	                    reason = prompt("⏰ 지각입니다. 사유를 입력하세요:");
+	                    if (!reason || reason.trim() === "") {
+	                        alert("❌ 지각 사유를 입력해야 출근할 수 있습니다.");
+	                        return;
+	                    }
+	                }
+
+	                // ✅ 3. 출근 요청 (사유 포함)
+	                fetch("/attendance/clock-in", {
+	                    method: "POST",
+	                    headers: {
+	                        "Content-Type": "application/json",
+	                        "X-CSRF-TOKEN": csrfToken
+	                    },
+	                    body: JSON.stringify({ reason: reason })
+	                })
+	                .then(res => res.json())
+	                .then(data => alert(data.message))
+	                .catch(err => console.error("출근 오류:", err));
+
+	            } catch (err) {
+	                console.error("지각 체크 오류:", err);
+	            }
+	        });
+	    }
+
+	    if (endBtn) {
+	        endBtn.addEventListener("click", () => {
+	            fetch("/attendance/clock-out", {
+	                method: "POST",
+	                headers: {
+	                    "X-CSRF-TOKEN": csrfToken
+	                }
+	            })
+	            .then(res => res.json())
+	            .then(data => alert(data.message))
+	            .catch(err => console.error("퇴근 오류:", err));
+	        });
+	    }
+	});
+
 </script>
+
+</div>
