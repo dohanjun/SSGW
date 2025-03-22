@@ -1,16 +1,5 @@
 <!DOCTYPE html>
 <div xmlns:th="https://www.thymeleaf.org" th:fragment="header">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <title>SSGW - Strong Security Groupware</title>
-    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
-    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css" />
-    <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" type="text/css" th:href="@{/css/index.css}">
-  </head>
-  
   <!-- Navigation -->
   <nav class="navbar navbar-expand-lg bg-secondary text-uppercase" id="mainNav">
     <div class="container">
@@ -45,4 +34,4 @@
 		<p th:text="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}"></p>
     </div>
   </nav>
- 
+</div>

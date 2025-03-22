@@ -12,4 +12,5 @@ public interface SubscriberMapper {
     void insertSubscriber(SubscriberVO subscriber);
 	List<SubscriptionSummaryVO> selectAllSubers();
 	List<SubscriberVO> selectinfoSuber(int suberNo);
+	SubscriberVO selectSuber(int suberNo);
 }

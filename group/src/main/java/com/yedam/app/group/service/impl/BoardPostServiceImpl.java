@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import com.yedam.app.group.mapper.BoardPostMapper;
 import com.yedam.app.group.service.BoardPostService;
 import com.yedam.app.group.service.BoardPostVO;
+import com.yedam.app.group.service.PaymentDetailsVO;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
@@ -66,5 +68,7 @@ public class BoardPostServiceImpl implements BoardPostService {
 	public BoardPostVO findinfoChildPostByParentId(int postId) {
 		return boardPostMapper.selectChildPostById(postId);
 	}
+
+
 }
 

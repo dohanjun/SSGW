@@ -176,7 +176,9 @@ function payment(type) {
 			vbank_due: "YYYYMMDD",
 		},
 		function(rsp) {
+			console.log(rsp)
 			if (rsp.success) {
+				console.log("maxUpSize 전송값 확인:", $(".uploadInput").val());
 				$.ajax({
 					type: "POST",
 					url: "/saveSuber",
@@ -196,7 +198,6 @@ function payment(type) {
 					}),
 					contentType: "application/json",
 					success: function(response) {
-						console.log("성공",response)
 						var suberNo = response;
 
 						$.ajax({
@@ -214,7 +215,6 @@ function payment(type) {
 							),
 							contentType: "application/json",
 							success: function(response) {
-								console.log("성공2",response)
 								subDetailsNoList = response.map(detail => ({
 									subDetailsNo: detail.subDetailsNo,
 									discountPrice: detail.discountPrice
@@ -234,7 +234,6 @@ function payment(type) {
 									}),
 									contentType: "application/json",
 									success: function(response2) {
-										console.log("성공3")
 										let paymentNo = response2.paymentNo;
 
 										let paymentDetailsList = subDetailsNoList.map(detail => ({
@@ -274,7 +273,6 @@ function payment(type) {
 													}),
 													contentType: "application/json",
 													success: function(response3) {
-														console.log("성공4")
 														location.href = "login";
 														
 													},
