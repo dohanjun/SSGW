@@ -183,9 +183,16 @@
                     <label for="leave-date">퇴사일</label>
                     <input type="date" id="leave-date" th:field="*{exitDate}">
                 </div>
+                <div class="form-group">
+				    <label for="resign">퇴사 처리</label>
+				    <select id="resign" th:field="*{resignationStatus}">
+				        <option value="N">재직</option>
+				        <option value="Y">퇴사</option>
+				    </select>
+				</div>
             </div>
 
-            <button type="button">엑셀 등록</button>
+            <!-- <button type="button">엑셀 등록</button> -->
 
             <div class="btn-group">
                 <button type="submit" id="btn1" class="btn btn-primary">수정</button>
@@ -352,6 +359,9 @@
 
         //  폼 제출 시 주소 + 상세주소 합쳐서 저장
         document.querySelector("form[name='updateForm']").addEventListener("submit", function (event) {
+            const resignStatus = document.getElementById("resign").value;
+            const exitDate = document.getElementById("leave-date").value;
+            
             let addressField = document.getElementById("address");
             let detailAddressField = document.getElementById("detailAddress");
 
@@ -360,6 +370,32 @@
                 addressField.value = addressField.value + " " + detailAddressField.value;
             }
         });
+        
+     // 퇴사여부 변경 시 퇴사일 입력 비활성화
+		document.getElementById('resign').addEventListener('change', function () {
+		    const status = this.value;
+		    const exitDateInput = document.getElementById('leave-date');
+		
+		    if (status === 'N') {
+		        // 재직이면 퇴사일 입력 비활성화 및 제거
+		        exitDateInput.value = '';
+		        exitDateInput.disabled = true;
+		    } else {
+		        // 퇴사 상태면 입력 가능
+		        exitDateInput.disabled = false;
+		    }
+		});
+     
+		document.addEventListener("DOMContentLoaded", function () {
+		    const status = document.getElementById('resign').value;
+		    const exitDateInput = document.getElementById('leave-date');
+
+		    if (status === 'N') {
+		        exitDateInput.disabled = true;
+		    } else {
+		        exitDateInput.disabled = false;
+		    }
+		});
         
         // 비밀번호 초기화 API 버튼
 		function resetPassword() {
