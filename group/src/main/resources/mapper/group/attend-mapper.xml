@@ -4,87 +4,133 @@
 
 <mapper namespace="com.yedam.app.group.mapper.AttendanceMapper">
 
-    <!-- ✅ ResultMap 추가 (초과근무 데이터 포함) -->
-    <resultMap id="AttendanceResultMap" type="com.yedam.app.group.service.AttendanceManagementVO">
-        <id property="workAttitudeId" column="work_attitude_id"/>
-        <result property="attendanceDate" column="attendance_date"/>
-        <result property="clockInTime" column="clock_in_time"/>
-        <result property="clockOutTime" column="clock_out_time"/>
-        <result property="workAttitudeType" column="work_attitude_type"/>
-        <result property="reason" column="reason"/>
-        <result property="totalWorkingHours" column="total_working_hours"/>
+	<!-- ✅ ResultMap 추가 (초과근무 데이터 포함) -->
+	<resultMap id="AttendanceResultMap"
+		type="com.yedam.app.group.service.AttendanceManagementVO">
+		<id property="workAttitudeId" column="work_attitude_id" />
+		<result property="attendanceDate" column="attendance_date" />
+		<result property="clockInTime" column="clock_in_time" />
+		<result property="clockOutTime" column="clock_out_time" />
+		<result property="workAttitudeType" column="work_attitude_type" />
+		<result property="reason" column="reason" />
+		<result property="totalWorkingHours"
+			column="total_working_hours" />
 
-        <!-- ✅ OvertimeVO 데이터를 리스트로 매핑 -->
-        <association  property="overtimeList" javaType="com.yedam.app.group.service.OvertimeVO">
-            <result property="overtimeTime" column="overtime_time" javaType="java.lang.Integer"/>
-            <result property="overtimeDate" column="overtime_date"/>
-            <result property="overtimeType" column="overtime_type"/>
-            <result property="overtimeId" column="overtime_id"/>
-            <result property="draftDocumentNumber" column="draft_document_number"/>
-        </association >
-    </resultMap>
+		<!-- ✅ OvertimeVO 데이터를 리스트로 매핑 -->
+		<association property="overtimeList"
+			javaType="com.yedam.app.group.service.OvertimeVO">
+			<result property="overtimeTime" column="overtime_time"
+				javaType="java.lang.Integer" />
+			<result property="overtimeDate" column="overtime_date" />
+			<result property="overtimeType" column="overtime_type" />
+			<result property="overtimeId" column="overtime_id" />
+			<result property="draftDocumentNumber"
+				column="draft_document_number" />
+		</association>
+	</resultMap>
 
-    <!-- ✅ 출근 시간 저장 -->
-    <insert id="clockIn" parameterType="map">
-        INSERT INTO attendance_management (employee_no, attendance_date, clock_in_time)
-        VALUES (#{employeeNo}, TRUNC(SYSDATE), SYSDATE)
-    </insert>
+	<!-- ✅ 출근 시간 저장 -->
+	<insert id="clockIn" parameterType="map">
+		INSERT INTO attendance_management (employee_no, attendance_date,
+		clock_in_time)
+		VALUES (#{employeeNo}, TRUNC(SYSDATE), SYSDATE)
+	</insert>
 
-    <!-- ✅ 퇴근 시간 저장 -->
-    <update id="clockOut" parameterType="map">
-        UPDATE attendance_management 
-        SET clock_out_time = SYSDATE
-        WHERE employee_no = #{employeeNo}
-        AND TRUNC(attendance_date) = TRUNC(SYSDATE)
-        AND clock_in_time IS NOT NULL
-    </update>
+	<!-- ✅ 퇴근 시간 저장 -->
+	<update id="clockOut" parameterType="map">
+		UPDATE attendance_management
+		SET clock_out_time = SYSDATE
+		WHERE employee_no = #{employeeNo}
+		AND TRUNC(attendance_date) = TRUNC(SYSDATE)
+		AND clock_in_time IS NOT NULL
+	</update>
 
-    <!-- ✅ 모든 출결 데이터 조회 (초과근무 포함) -->
-    <select id="selectAllList" resultMap="AttendanceResultMap">
-        SELECT am.employee_no, am.attendance_date, am.clock_in_time, am.clock_out_time, 
-               am.work_attitude_type, am.reason, am.total_working_hours,
-               o.overtime_time, o.overtime_date, o.overtime_type, o.overtime_id, o.work_attitude_id, o.draft_document_number
-        FROM attendance_management am
-        LEFT JOIN overtime o ON am.work_attitude_id = o.work_attitude_id
-        ORDER BY am.attendance_date DESC
-    </select>
+	<!-- ✅ 모든 출결 데이터 조회 (초과근무 포함) -->
+	<select id="selectAllList" resultMap="AttendanceResultMap">
+		SELECT am.employee_no, am.attendance_date, am.clock_in_time,
+		am.clock_out_time,
+		am.work_attitude_type, am.reason, am.total_working_hours,
+		o.overtime_time, o.overtime_date, o.overtime_type, o.overtime_id, o.work_attitude_id,
+		o.draft_document_number
+		FROM attendance_management am
+		LEFT JOIN overtime o ON am.work_attitude_id = o.work_attitude_id
+		ORDER BY am.attendance_date DESC
+	</select>
 
-    <!-- ✅ 특정 사원의 출결 데이터 조회 (초과근무 포함) -->
-    <select id="selectInfo" parameterType="int" resultMap="AttendanceResultMap">
-        SELECT am.employee_no, am.attendance_date, am.clock_in_time, am.clock_out_time, 
-               am.work_attitude_type, am.reason, am.total_working_hours,
-               o.overtime_time, o.overtime_date, o.overtime_type, o.overtime_id, o.work_attitude_id, o.draft_document_number
-        FROM attendance_management am
-        LEFT JOIN overtime o ON am.work_attitude_id = o.work_attitude_id
-        WHERE am.employee_no = #{employeeNo}
-        ORDER BY am.attendance_date DESC
-    </select>
+	<!-- ✅ 특정 사원의 출결 데이터 조회 (초과근무 포함) -->
+	<select id="selectInfo" parameterType="int"
+		resultMap="AttendanceResultMap">
+		SELECT am.employee_no, am.attendance_date, am.clock_in_time,
+		am.clock_out_time,
+		am.work_attitude_type, am.reason, am.total_working_hours,
+		o.overtime_time, o.overtime_date, o.overtime_type, o.overtime_id, o.work_attitude_id,
+		o.draft_document_number
+		FROM attendance_management am
+		LEFT JOIN overtime o ON am.work_attitude_id = o.work_attitude_id
+		WHERE am.employee_no = #{employeeNo}
+		ORDER BY am.attendance_date DESC
+	</select>
 
-    <!-- ✅ 특정 출퇴근 기록의 초과근무 데이터 조회 -->
-    <select id="getOvertimeByWorkAttitudeId" parameterType="int" resultType="com.yedam.app.group.service.OvertimeVO">
-        SELECT overtime_time, overtime_date, overtime_type, overtime_id, work_attitude_id, draft_document_number
-        FROM overtime
-        WHERE work_attitude_id = #{workAttitudeId}
-        ORDER BY overtime_date DESC
-    </select>
+	<!-- ✅ 특정 출퇴근 기록의 초과근무 데이터 조회 -->
+	<select id="getOvertimeByWorkAttitudeId" parameterType="int"
+		resultType="com.yedam.app.group.service.OvertimeVO">
+		SELECT overtime_time, overtime_date, overtime_type, overtime_id,
+		work_attitude_id, draft_document_number
+		FROM overtime
+		WHERE work_attitude_id = #{workAttitudeId}
+		ORDER BY overtime_date DESC
+	</select>
 
-    <!-- ✅ 총 근무시간 및 초과근무시간 조회 -->
-    <select id="getAttendanceSummary" parameterType="int" resultMap="AttendanceResultMap">
-        SELECT 
-            am.employee_no, 
-            am.total_working_hours, 
-            COALESCE(SUM(o.overtime_time), 0) AS total_overtime_time
-        FROM attendance_management am
-        LEFT JOIN overtime o ON am.work_attitude_id = o.work_attitude_id
-        WHERE am.employee_no = #{employeeNo} 
-        GROUP BY am.employee_no, am.total_working_hours
-    </select>
-    
-    <!-- ✅ 총 초과 근무시간 계산 -->
-    <select id="calculateTotalOvertime" parameterType="int" resultType="int">
-        SELECT COALESCE(SUM(o.overtime_time), 0)
-        FROM overtime o
-        INNER JOIN attendance_management am ON am.work_attitude_id = o.work_attitude_id
-        WHERE am.employee_no = #{employeeNo}
-    </select>
+	<!-- ✅ 총 근무시간 및 초과근무시간 조회 -->
+	<select id="getAttendanceSummary" parameterType="int"
+		resultMap="AttendanceResultMap">
+		SELECT
+		am.employee_no,
+		am.total_working_hours,
+		COALESCE(SUM(o.overtime_time), 0) AS total_overtime_time
+		FROM attendance_management am
+		LEFT JOIN overtime o ON am.work_attitude_id = o.work_attitude_id
+		WHERE am.employee_no = #{employeeNo}
+		GROUP BY am.employee_no, am.total_working_hours
+	</select>
+
+	<!-- ✅ 총 초과 근무시간 계산 -->
+	<select id="calculateTotalOvertime" parameterType="int"
+		resultType="int">
+		SELECT COALESCE(SUM(o.overtime_time), 0)
+		FROM overtime o
+		INNER JOIN attendance_management am ON am.work_attitude_id =
+		o.work_attitude_id
+		WHERE am.employee_no = #{employeeNo}
+	</select>
+
+
+	<insert id="insertClockIn"
+		parameterType="com.yedam.app.group.service.AttendanceManagementVO">
+		INSERT INTO attendance_management (
+		work_attitude_id,
+		employee_no,
+		attendance_date,
+		clock_in_time,
+		work_attitude_type,
+		reason
+		) VALUES (
+		ATTENDANCE_MANAGEMENT_SEQ.NEXTVAL,
+		#{employeeNo},
+		#{attendanceDate},
+		#{clockInTime},
+		#{workAttitudeType},
+		#{reason}
+		)
+	</insert>
+
+	<update id="updateClockOut"
+		parameterType="com.yedam.app.group.service.AttendanceManagementVO">
+		UPDATE attendance_management
+		SET clock_out_time = #{clockOutTime}
+		WHERE employee_no = #{employeeNo}
+		AND attendance_date = #{attendanceDate}
+	</update>
+	
+	
 </mapper>
