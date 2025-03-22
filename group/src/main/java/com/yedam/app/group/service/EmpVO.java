@@ -29,9 +29,9 @@ public class EmpVO {
 	private Integer manager;			  // 매니저Id
 	private Integer departmentNo;		  // 부서번호
 	
-    private byte[] profileImageBLOB; //  이미지 (숫자로 변환되어 저장됨)
+    private byte[] profileImageBLOB; 		//  이미지 (숫자로 변환되어 저장됨)
     private MultipartFile profileImageFile; //  사용자가 업로드한 파일
-    private String profileImageBase64; // 조회용 base64 이미지 문자열
+    private String profileImageBase64; 		// 	조회용 base64 이미지 문자열
     
 	private String departmentName;		// 부서이름
 	private String jobTitleName;		// 직급명

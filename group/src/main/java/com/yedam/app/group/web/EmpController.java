@@ -111,13 +111,17 @@ public class EmpController {
 		//  사원 정보 수정 페이지 이동
 	   @GetMapping("empUpdate")
 	   public String empUpdate(@RequestParam("employeeNo") int employeeNo, Model model) {
-	       // 1) 기본 생성자로 EmpVO 객체 생성 후 employeeNo 설정
-	       EmpVO empVO = new EmpVO();
-	       empVO.setEmployeeNo(employeeNo);
-	       
+		    //  1) 로그인 사용자에서 suberNo 꺼내기
+		    EmpVO loginUser = empService.getLoggedInUserInfo();
+		    Integer suberNo = loginUser.getSuberNo();
 
-	       // 2) 사원 정보 조회
-	       EmpVO findVO = empService.findempInfo(empVO);
+		    //  2) 사원번호 + suberNo로 EmpVO 생성
+		    EmpVO empVO = new EmpVO();
+		    empVO.setEmployeeNo(employeeNo);
+		    empVO.setSuberNo(suberNo);
+
+		    //  3) 사원 조회
+		    EmpVO findVO = empService.findempInfo(empVO);
 	       
 	       // 3) 사원 정보가 없을 경우 리디렉트
 	       if (findVO == null) {
@@ -154,6 +158,15 @@ public class EmpController {
 	            }
 	        } catch (IOException e) {
 	            e.printStackTrace();
+	        }
+	        
+	        // 로그인한 사용자 회사번호
+	        EmpVO loginUser = empService.getLoggedInUserInfo();
+	        empVO.setSuberNo(loginUser.getSuberNo());
+	        
+	        // 퇴사에서 재직 되면 퇴사일 지움
+	        if ("N".equals(empVO.getResignationStatus())) {
+	            empVO.setExitDate(null);
 	        }
 
 	        // 2) 사원 정보 수정

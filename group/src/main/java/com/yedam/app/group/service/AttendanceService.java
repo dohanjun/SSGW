@@ -16,8 +16,9 @@ public interface AttendanceService {
     AttendanceManagementVO getAttendanceSummary(Integer employeeNo);
     
     
-    void clockIn(Integer employeeNo);  // ✅ 출근 처리
-    
-    
-    void clockOut(Integer employeeNo); // ✅ 퇴근 처리
+    // ✅ 출근
+    Integer createClockIn(AttendanceManagementVO vo);
+
+    // ✅ 퇴근
+    Integer modifyClockOut(AttendanceManagementVO vo);
 }
