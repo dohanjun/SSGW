@@ -58,38 +58,42 @@
 	<div class="card-header py-3">
 	  <h6 class="m-0 font-weight-bold text-primary">메일쓰기</h6>
 	</div>
-	  <div class="btn-container">
-	     <button href="login.html" class="btn btn-primary">
+
+<div class="card-body">
+  <form th:action="@{mailInsert}" method="post" class="user">
+  	  <div class="btn-container">
+	     <button class="btn btn-primary">
       		보내기
         </button>
-	     <button href="login.html" class="btn btn-primary">
+	     <button class="btn btn-primary">
       		임시저장
         </button>
       </div>
-<div class="card-body">
-  <form th:action="@{/mailInsert}" method="post" class="user">
+  <input type="hidden" name="sentState" value="0">
+  <input type="hidden" name="mailType" value="보낸">
    <table class="table file-info-table">	  
    <tbody>
 		<tr>
-			<th for="getName">받는사람</th>
-			<td><input type="text" class="form-control" id="getName" name="getName"></td>
-			<th for="cc">참조</th>
+			<th>받는사람</th>
+			<td><input type="text" class="form-control" id="getUser" name="getUser"></td>
+			<th>참조</th>
 			<td><input type="text" class="form-control" id="cc" name="cc"></td>
 		</tr>
 		<tr>
-			<th for="title">제목</th>
+			<th>제목</th>
 			<td><input type="text" class="form-control" id="title" name="title"></td>
-			<th for="file">파일내용</th>
+			<th>파일내용</th>
 			<td><input type="file" class="form-control" id="file" name="file"></td>
 		</tr>
 	</tbody>
    </table>
-  </form>
+
   <!-- 내용 입력 영역 -->
 		<div class="content-area-container">
 			<div class="content-area-title">내용 입력</div>
-			<div id="editor" class="editor-container"></div>
+			<div id="editor" class="editor-container" contenteditable="true">여기에서 텍스트를 입력하세요.</div>
 		</div>
+  </form>		
 	</div>
   </div>
  </div>

@@ -121,8 +121,8 @@ public class RepositoryController {
 	    EmpVO loggedInUser = empService.getLoggedInUserInfo();
 
 	    model.addAttribute("post", post);
-	    model.addAttribute("isWriterOrAdmin", 
-	        post.getEmployeeNo() == loggedInUser.getEmployeeNo() || loggedInUser.isAdmin());
+	    //model.addAttribute("isWriterOrAdmin", 
+	        //post.getEmployeeNo() == loggedInUser.getEmployeeNo() || loggedInUser.isAdmin());
 
 	    return "group/repository/detailPost";
 	}

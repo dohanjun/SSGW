@@ -55,8 +55,8 @@ public interface MailMapper {
 	
 	
 	//메일보내기
-	public void sendEmail(String to, String subject, String text);
+	public void insertMail(MailVO vo);
 	
 	//메일받기
-	public void receiveEmails();
+	public void receiveEmails(MailVO vo);
 }
