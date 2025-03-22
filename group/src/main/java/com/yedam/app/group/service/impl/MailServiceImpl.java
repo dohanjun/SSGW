@@ -22,6 +22,7 @@ public class MailServiceImpl implements MailService {
 	private JavaMailSender javaMailSender;
 	private MailMapper mailMapper;
 
+
 	@Autowired
 	public MailServiceImpl(MailMapper mailMapper, JavaMailSender javaMailSender) {
 		this.mailMapper = mailMapper;
@@ -166,22 +167,22 @@ public class MailServiceImpl implements MailService {
 
 	@Value("${spring.mail.username}")
 	private String ADMIN_SEND_EMAIL;
-
-	public String sendMailToUser(String email) {
-
-		String generatedString = "test";// .randomAlphanumeric(10);
+	
+	public String sendMailToUser(MailVO vo) {
 
 		SimpleMailMessage message = new SimpleMailMessage();
 		message.setFrom(ADMIN_SEND_EMAIL); // 이메일을 보낼 송신자
-		message.setTo(email); // 이메일을 받을 수신자
-		message.setSubject("Mail Test"); // 이메일 제목
-		message.setText("Authentication String : " + generatedString); // 이메일 본문
+		message.setTo(vo.getGetUser()); // 이메일을 받을 수신자
+		message.setSubject(vo.getTitle()); // 이메일 제목
+		message.setText(vo.getContent()); // 이메일 본문
 		try {
 			javaMailSender.send(message);
+			
+			mailMapper.insertMail(vo);
 		} catch (MailException e) {
 			e.printStackTrace();
-			return null;
+			return "전송 실패";
 		}
-		return generatedString;
+		return "전송성공";
 	}
 }

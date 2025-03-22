@@ -51,6 +51,6 @@ public interface MailService {
 
 	//메일
 	
-	 public String sendMailToUser(String email);
+	 public String sendMailToUser(MailVO vo);
 }
 

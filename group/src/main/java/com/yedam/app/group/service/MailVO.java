@@ -14,7 +14,7 @@ public class MailVO {
 	private int sentState;
 	@DateTimeFormat(pattern="yyyy-MM-dd")
 	private Date sentDate;
-	private Integer employeeId;
+	private String employeeId;
 	private String attachedFileName;
 	private String getUser;
 	private String cc;

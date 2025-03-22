@@ -4,15 +4,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.yedam.app.group.service.EmpService;
+import com.yedam.app.group.service.EmpVO;
 import com.yedam.app.group.service.MailService;
 import com.yedam.app.group.service.MailVO;
 import com.yedam.app.group.service.PageListVO;
@@ -22,10 +22,12 @@ import com.yedam.app.group.service.Paging;
 public class MailController {
 
 	private MailService mailService;
+	private EmpService empService;
 	
 	@Autowired
-	public MailController(MailService mailService) {
+	public MailController(MailService mailService, EmpService empService) {
 		this.mailService = mailService;
+		this.empService = empService;
 	}
 	
 
@@ -73,19 +75,19 @@ public class MailController {
 	
 	//등록 - 처리
 	
-	//메일등록처리
-	 @PostMapping("/mailInsert")
-	    public String mailInsertProcess(MailVO mailVO) {
-	     int mid = mailService.insert(mailVO);
-		 String url = null;
-		 if (mid > -1) {
-			 url = "redirect:mailInfo?mailId="+mid;
-		 }
-		 else {
-			 url = "redirect:mailList";
-		 }
-		 return url;
-	    }	
+//	//메일등록처리
+//	 @PostMapping("/mailInsert")
+//	    public String mailInsertProcess(MailVO mailVO) {
+//	     int mid = mailService.insert(mailVO);
+//		 String url = null;
+//		 if (mid > -1) {
+//			 url = "redirect:mailInfo?mailId="+mid;
+//		 }
+//		 else {
+//			 url = "redirect:mailList";
+//		 }
+//		 return url;
+//	    }	
 	
 	//수정 - 페이지
 		
@@ -165,7 +167,7 @@ public class MailController {
 	 //받은메일함
 	 @GetMapping("getMail")
 	    public String getMail(Model model, PageListVO vo, Paging paging) {
-		 
+		 EmpVO loggedInUser = empService.getLoggedInUserInfo();
 		 //페이징처리
 		 vo.setStart(paging.getFirst());
 		 vo.setEnd(paging.getLast());
@@ -180,8 +182,8 @@ public class MailController {
 	 //보낸메일함
 	 @GetMapping("putMail")
 	    public String putMail(Model model, PageListVO vo, Paging paging) {
-		 
-		 //페이징처리
+		 EmpVO loggedInUser = empService.getLoggedInUserInfo();
+		 //페이징처리loggedInUser
 		 vo.setStart(paging.getFirst());
 		 vo.setEnd(paging.getLast());
 		 paging.setTotalRecord(mailService.pageGetCount(vo));
@@ -195,7 +197,7 @@ public class MailController {
 	 //임시메일함 -> 7일뒤 삭제
 	 @GetMapping("temporaryMail")
 	    public String temporaryMail(Model model, PageListVO vo, Paging paging) {
-		 
+		 EmpVO loggedInUser = empService.getLoggedInUserInfo();
 		 //페이징처리
 		 vo.setStart(paging.getFirst());
 		 vo.setEnd(paging.getLast());
@@ -210,7 +212,7 @@ public class MailController {
 	 //휴지통 -> 30일 뒤 삭제
 	 @GetMapping("deleteMail")
 	    public String deleteMail(Model model, PageListVO vo, Paging paging) {
-		 
+		 EmpVO loggedInUser = empService.getLoggedInUserInfo();
 		 //페이징처리
 		 vo.setStart(paging.getFirst());
 		 vo.setEnd(paging.getLast());
@@ -225,8 +227,11 @@ public class MailController {
 	 
 	 //메일
 
-	     @GetMapping("authenticate")
-	     public ResponseEntity<String> mailTest(@RequestParam("email") String email){
-	         return ResponseEntity.ok(mailService.sendMailToUser(email));
+	     @PostMapping("/mailInsert")
+	     public String mailTest(MailVO vo){
+	    	 EmpVO loggedInUser = empService.getLoggedInUserInfo();
+	    	 vo.setEmployeeId(loggedInUser.getEmployeeId());
+	         mailService.sendMailToUser(vo);
+	         return "redirect:mail";
 	     }
 }

@@ -96,7 +96,7 @@
 	</select>
 	
 	<!-- 메일등록 -->
-	<insert id="create" parameterType="MailVO">
+	<insert id="insertMail" parameterType="MailVO">
 	<selectKey keyProperty="mailId" resultType="Integer" order="BEFORE">
 	SELECT NVL(MAX(mail_id) + 1, 100) as mail_id
 	FROM Mail
@@ -117,14 +117,7 @@
     			 ,#{title}
     			 ,#{content}
     			 ,#{sentState}
-    			 <choose>
-    			   <when test="sentDate !=null">
-    			 	,#{sentDate}
-    			   </when>
-    			    <otherwise>
-    			   		,sysdate
-    			    </otherwise>
-   				 </choose>
+    			 ,sysdate
     			 ,#{employeeId}
     			 ,#{attachedFileName}
     			 ,#{getUser}
