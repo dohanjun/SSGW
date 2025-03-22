@@ -32,5 +32,9 @@ public class SubscriberServiceImpl implements SubscriberService {
 	public List<SubscriberVO> findinfoSuberByNo(int suberNo) {
 		return subscriberMapper.selectinfoSuber(suberNo);
 	}
-
+	
+	@Override
+	public SubscriberVO findinfoSuber(int suberNo) {
+		return subscriberMapper.selectSuber(suberNo);
+	}
 }

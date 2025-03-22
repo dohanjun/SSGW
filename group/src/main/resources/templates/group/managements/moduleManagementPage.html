@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/layouts/default_layout}"
+      layout:fragment="content">
+<head>
+    <meta charset="UTF-8">
+    <title>모듈 관리</title>
+    <style>
+        .module-container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: #eee;
+            border-radius: 10px;
+        }
+
+        .module-container h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #5a5a5a;
+        }
+
+        .module-row {
+            display: flex;
+            align-items: center;
+            background-color: #ddd;
+            padding: 15px 20px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            min-width: 100%;
+        }
+
+        .module-name {
+            font-weight: bold;
+            font-size: 16px;
+            width: 200px;
+            text-align: left;
+        }
+
+        .module-dates {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            width: 350px;
+            text-align: left;
+            padding-left: 10px;
+        }
+
+        .module-actions {
+            cursor: pointer;
+            font-size: 20px;
+            width: 30px;
+            text-align: right;
+            margin-left: auto;
+        }
+
+        .footer-buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 50px;
+            padding-top: 30px;
+        }
+
+        .footer-buttons button {
+            padding: 14px 32px;
+            font-size: 16px;
+            font-weight: bold;
+            background-color: #ccc;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .footer-buttons button:hover {
+            background-color: #bbb;
+        }
+    </style>
+</head>
+<body>
+<div class="module-container">
+    <h2>모듈 관리</h2>
+
+    <div th:each="item : ${moduleList}" class="module-row">
+        <div class="module-name" th:text="${item.moduleName}">모듈명</div>
+        <div class="module-dates" th:text="${#dates.format(item.paymentStartDate, 'yyyy-MM-dd')} + ' ~ ' + ${#dates.format(item.paymentEndDate, 'yyyy-MM-dd')}">
+            2025-01-01 ~ 2025-02-01
+        </div>
+        <div class="module-actions">&#8942;</div>
+    </div>
+
+    <div class="footer-buttons">
+        <button>청구서 다운</button>
+        <button>청구내역 보기</button>
+        <button>모듈 추가</button>
+    </div>
+</div>
+</body>
+</html>

@@ -16,6 +16,7 @@ import com.yedam.app.group.service.BoardPostService;
 import com.yedam.app.group.service.BoardPostVO;
 import com.yedam.app.group.service.ModuleService;
 import com.yedam.app.group.service.ModuleVO;
+import com.yedam.app.group.service.PaymentService;
 import com.yedam.app.group.service.PaymentVO;
 import com.yedam.app.group.service.SubscriberService;
 import com.yedam.app.group.service.SubscriberVO;
@@ -26,6 +27,26 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
+import com.lowagie.text.Document;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.Chunk;
+import com.lowagie.text.Font;
+import com.lowagie.text.PageSize;
+import com.lowagie.text.pdf.BaseFont;
+import com.lowagie.text.pdf.PdfWriter;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.Element;
+
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
+
+import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
+
 
 
 @Controller
@@ -35,6 +56,8 @@ public class mainController {
 	private final ModuleService moduleService;
 	private final BoardPostService boardPostService;
 	private final SubscriberService subscriberService;
+	private final PaymentService paymentService;
+	
 	
 	@GetMapping("main")
 	public String mainPage() {
@@ -163,5 +186,89 @@ public class mainController {
 	        return ResponseEntity.noContent().build();
 	    }
 	}
+	
+	@PostMapping("/payMentDetail")
+	public ResponseEntity<List<PaymentVO>> selectAllpayMentDetail(@RequestParam int suberNo) {
+		List<PaymentVO> childPost = paymentService.findAllpayMent(suberNo);
+	    return ResponseEntity.ok(childPost);
+	}
+	
+	@PostMapping("/download")
+	public ResponseEntity<ByteArrayResource> createReceiptFromData(
+	        @RequestParam String paymentNo,
+	        @RequestParam String paymentDate,
+	        @RequestParam String paymentPrice,
+	        @RequestParam String paymentType,
+	        @RequestParam String paymentStatus,
+	        @RequestParam String subPeriod
+	) {
+	    try {
+	        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	        Document document = new Document(PageSize.A6, 30, 30, 30, 30);
+	        PdfWriter.getInstance(document, baos);
+	        document.open();
+
+	        BaseFont bf = BaseFont.createFont("C:/Windows/Fonts/malgun.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+	        Font font = new Font(bf, 10);
+	        Font boldFont = new Font(bf, 10, Font.BOLD);
+	        Font titleFont = new Font(bf, 16, Font.BOLD);
+
+	        // 제목
+	        Paragraph title = new Paragraph("결제 영수증", titleFont);
+	        title.setAlignment(Element.ALIGN_CENTER);
+	        document.add(title);
+	        document.add(Chunk.NEWLINE);
+
+	        // 테이블 (2열)
+	        PdfPTable table = new PdfPTable(2);
+	        table.setWidthPercentage(100);
+	        table.setWidths(new int[]{1, 2});
+
+	        table.addCell(new PdfPCell(new Paragraph("결제번호", boldFont)));
+	        table.addCell(new PdfPCell(new Paragraph(paymentNo, font)));
+
+	        table.addCell(new PdfPCell(new Paragraph("결제일자", boldFont)));
+	        table.addCell(new PdfPCell(new Paragraph(paymentDate, font)));
+
+	        table.addCell(new PdfPCell(new Paragraph("결제금액", boldFont)));
+	        table.addCell(new PdfPCell(new Paragraph(paymentPrice + "원", font)));
+
+	        table.addCell(new PdfPCell(new Paragraph("결제수단", boldFont)));
+	        table.addCell(new PdfPCell(new Paragraph(paymentType, font)));
+
+	        table.addCell(new PdfPCell(new Paragraph("결제상태", boldFont)));
+	        table.addCell(new PdfPCell(new Paragraph(paymentStatus, font)));
+
+	        table.addCell(new PdfPCell(new Paragraph("구독개월", boldFont)));
+	        table.addCell(new PdfPCell(new Paragraph(subPeriod + "개월", font)));
+
+	        document.add(table);
+	        document.add(Chunk.NEWLINE);
+
+	        Paragraph thankYou = new Paragraph("이용해 주셔서 감사합니다!", font);
+	        thankYou.setAlignment(Element.ALIGN_CENTER);
+	        document.add(thankYou);
+
+	        document.close();
+
+	        ByteArrayResource resource = new ByteArrayResource(baos.toByteArray());
+
+	        HttpHeaders headers = new HttpHeaders();
+	        headers.setContentType(MediaType.APPLICATION_PDF);
+	        headers.setContentDisposition(
+	                ContentDisposition.attachment()
+	                        .filename("receipt_" + paymentNo + ".pdf", StandardCharsets.UTF_8)
+	                        .build()
+	        );
+
+	        return ResponseEntity.ok()
+	                .headers(headers)
+	                .body(resource);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+	    }
+	}
+
 
 }

@@ -18,4 +18,29 @@
             #{cancelState}, #{cancelDate}
         )
     </insert>
+    
+    	
+	<select id="selectAllpayMent" parameterType="int" resultType="com.yedam.app.group.service.PaymentVO">
+	    SELECT
+			p.payment_no,
+		    p.payment_date,
+		    p.payment_type,
+		    p.payment_price,
+		    p.payment_status,
+		    p.invoice_date,
+		    p.overdue_period,
+		    p.suber_no,
+		    p.claim,
+		    p.claimstate,
+		    p.overdue_day,
+		    p.payment_start_date,
+		    p.payment_end_date,
+		    p.sub_period,
+		    p.cancel_state,
+		    p.cancel_date
+	    FROM
+	        suber s JOIN payment p ON s.suber_no = p.suber_no
+	    WHERE
+	        s.suber_no = #{suberNo}
+	</select>
 </mapper>

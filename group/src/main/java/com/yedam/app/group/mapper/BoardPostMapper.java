@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.yedam.app.group.service.BoardPostVO;
+import com.yedam.app.group.service.PaymentDetailsVO;
 
 @Mapper
 public interface BoardPostMapper {

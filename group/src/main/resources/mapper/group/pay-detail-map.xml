@@ -13,5 +13,4 @@
 	        #{paymentDetailsNo}, #{paymentNo}, #{subDetailsNo}, #{paymentPrice}, #{paymentState}, SYSDATE
 	    )
 	</insert>
-
 </mapper>

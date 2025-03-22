@@ -20,4 +20,5 @@ public interface BoardPostService {
 	int createBoard(BoardPostVO boardPost);
 	
 	BoardPostVO findinfoChildPostByParentId(int postId);
+
 }
