@@ -7,4 +7,5 @@ public interface RepositoryService {
     
     RepositoryVO getIndividualRepository(int suberNo, int employeeNo);  // 개인 자료실 조회 
     
+    RepositoryPostVO getPostDetail(Long writingId);
 }

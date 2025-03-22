@@ -109,7 +109,15 @@ public class EmpServiceImpl implements EmpService{
 //        System.out.println("새로운 비밀번호: " + randomPassword); // 콘솔 확인용
     }
     
-    
+    @Override
+    public String getFirstIpByEmployeeNo(Integer employeeNo) {
+        return empMapper.getFirstIpByEmployeeNo(employeeNo);
+    }
+
+    @Override
+    public String getSecondIpByEmployeeNo(Integer employeeNo) {
+        return empMapper.getSecondIpByEmployeeNo(employeeNo);
+    }
 	
 
 }

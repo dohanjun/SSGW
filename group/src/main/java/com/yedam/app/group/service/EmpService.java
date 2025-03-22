@@ -33,5 +33,10 @@ public interface EmpService {
     
     // 비밀번호 초기화 기능 추가
     public void resetPassword(int employeeNo); 
-
+    
+    // 첫번째 ip
+    String getFirstIpByEmployeeNo(Integer employeeNo);
+    
+    // 두번째 ip
+    String getSecondIpByEmployeeNo(Integer employeeNo);
 }

@@ -103,7 +103,7 @@
             p.title,
             p.content,
             e.employee_name AS writer,
-            TO_CHAR(p.creation_date, 'YYYY-MM-DD') AS creationDate,
+            p.creation_date AS creationDate,
             p.employee_no,
             p.file_repository_id,
             p.fix

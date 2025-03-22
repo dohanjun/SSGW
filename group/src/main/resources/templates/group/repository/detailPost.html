@@ -25,31 +25,43 @@
                             <table class="table table-bordered file-info-table">
                                 <tbody>
                                     <tr>
-                                        <th>제목</th><td></td>
-                                        <th>작성자</th><td></td>
+                                        <th>제목</th><td th:text="${post.title}"></td>
+                                        <th>작성자</th><td th:text="${post.writer}"></td>
                                     </tr>
                                     <tr>
-                                        <th>등록일</th><td></td>
-                                        <th>첨부파일</th><td></td>
+                                        <th>등록일</th><td th:text="${#dates.format(post.creationDate, 'yyyy-MM-dd')}"></td>
+                                        <th>첨부파일</th>
+                                        <td>
+                                        	<ul>
+                								<li th:each="file : ${fileList}">
+                    								<a th:href="@{'/download/' + ${file.fileId}}" th:text="${file.fileName}"></a>
+                								</li>
+                								<li th:if="${#lists.isEmpty(fileList)}">첨부파일 없음</li>
+            								</ul>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td colspan="4">
-                                            <textarea class="content-area" readonly></textarea>
+                                            <textarea class="content-area" th:utext="${post.content}"></textarea>
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
                             <div class="text-center mb-3">
-    							<button class="btn btn-secondary" onclick="">
+    							<a th:href="@{/totalRepository}" class="btn btn-secondary">
         							<i class="fas fa-arrow-left"></i>
-    							</button>
-    							<button class="btn btn-warning" onclick="">
-        							<i class="fas fa-edit"></i>
-    							</button>
-                                <button class="btn btn-danger" onclick="">
-        							<i class="fas fa-trash"></i>
-    							</button>
-    						</div>
+    							</a>
+
+    							<!-- 수정, 삭제 버튼은 작성자 또는 게시판 관리자만 보이도록 -->
+    							<div th:if="${isEditable}">
+        							<a th:href="@{/editPost(writingId=${post.writingId})}" class="btn btn-warning">
+            							<i class="fas fa-edit"></i>
+        							</a>
+        							<a th:href="@{/deletePost(writingId=${post.writingId})}" class="btn btn-danger">
+            							<i class="fas fa-trash"></i>
+        							</a>
+    							</div>
+							</div>
                         </div>
                     </div>
                 </div>
@@ -61,5 +73,9 @@
     <script src="/static/js/sb-admin-2.min.js"></script>
 </body>
 </html>
-
+<script>
+  function goToDetail(writingId) {
+    window.location.href = '/detailPost/' + writingId;
+  }
+</script>
 

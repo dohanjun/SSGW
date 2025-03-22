@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -11,11 +12,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.yedam.app.group.mapper.FileMapper;
+import com.yedam.app.group.service.DownloadVO;
 import com.yedam.app.group.service.FileService;
 import com.yedam.app.group.service.RepositoryFileVO;
 import com.yedam.app.utill.AESUtil;
 
 import jakarta.annotation.PostConstruct;
+
 
 @Service
 public class FileServiceImpl implements FileService {
@@ -115,5 +118,40 @@ public class FileServiceImpl implements FileService {
             return ""; // 확장자가 없는 경우 빈 문자열 반환
         }
         return fileName.substring(fileName.lastIndexOf(".") + 1);
+    }
+    
+    @Override
+    public List<RepositoryFileVO> getFilesByWritingId(Long writingId) {
+        return fileMapper.selectFilesByWritingId(writingId);
+    }
+    
+    @Override
+    public RepositoryFileVO getFile(Long fileId) {
+    	RepositoryFileVO fileVO = fileMapper.selectFileById(fileId);
+
+        if (fileVO == null) {
+            throw new IllegalArgumentException("해당 파일이 존재하지 않습니다.");
+        }
+
+        try {
+            // AES 복호화 수행
+            String decryptedPath = AESUtil.decrypt(fileVO.getFilePath());
+            String decryptedName = AESUtil.decrypt(fileVO.getSaveFileName());
+
+            // 복호화된 값으로 덮어쓰기
+            fileVO.setFilePath(decryptedPath);
+            fileVO.setSaveFileName(decryptedName);
+
+        } catch (Exception e) {
+            throw new RuntimeException("파일 복호화 중 오류 발생", e);
+        }
+
+        return fileVO;
+    }
+
+    @Override
+    public void insertDownloadLog(DownloadVO downloadVO) {
+        downloadVO.setDownloadDate(new Timestamp(System.currentTimeMillis())); // 현재 시간 기록
+        fileMapper.insertDownloadLog(downloadVO);
     }
 }
