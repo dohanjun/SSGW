@@ -135,10 +135,13 @@
                   PHONE_NUMBER =   #{phoneNumber},
                   ADDRESS     =    #{address},
                  <if test="hireDate != null"> HIRE_DATE = #{hireDate},</if>
-			     <if test="exitDate != null"> EXIT_DATE = #{exitDate},</if>
+			     <if test="exitDate != null or exitDate == null"> EXIT_DATE = #{exitDate,  jdbcType=DATE},</if>
+			     <if test="resignationStatus != null"> RESIGNATION_STATUS = #{resignationStatus},</if>
 			     <if test="profileImageBLOB != null"> PROFILE_IMAGE_BLOB = #{profileImageBLOB,jdbcType=BLOB}</if>
                </set>
                  WHERE EMPLOYEE_NO = #{employeeNo}
+                 AND SUBER_NO = #{suberNo}
+                 
       </update>
       <!-- 로그인한 사람 아이디 -->
 	  <select id="findByEmployeeId" parameterType="String" resultType="EmpVO">
