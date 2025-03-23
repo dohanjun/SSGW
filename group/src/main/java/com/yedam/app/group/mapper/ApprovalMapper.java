@@ -6,15 +6,19 @@ import org.apache.ibatis.annotations.Mapper;
 
 import com.yedam.app.group.service.ApprovalFormVO;
 import com.yedam.app.group.service.ApprovalVO;
+import com.yedam.app.group.service.AprvRoutesVO;
 
 @Mapper
 public interface ApprovalMapper {
 
-	// 결재문서함
+	// 결재문서함(대기, 진행, 완료, 반려)
 	public List<ApprovalVO> selectAprvListByStatus(ApprovalVO aprvVO);
 	
 	// 결재요청함, 임시저장함
 	public List<ApprovalVO> selectAllList(ApprovalVO aprvVO);
+	
+	// 참조열람함
+	public List<ApprovalVO> selectAprvListByRole(ApprovalVO aprvVO);
 	
 	// 양식목록불러오기(기본)
 	public List<ApprovalVO> selectAllBasicsForms(ApprovalVO aprvVO);
@@ -46,7 +50,11 @@ public interface ApprovalMapper {
 	// 회사 전자결재양식 등록
 	public int insertForm(ApprovalFormVO aprvformVO);
 	
-
+	// 문서 상신
+	public int insertAprvDocuments(ApprovalVO aprvVO);
+	
+	// 결재선 등록
+	public int insertAprvRoutes(AprvRoutesVO aprvRoutesVO);
 	
 
 }

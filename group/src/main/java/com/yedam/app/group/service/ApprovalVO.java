@@ -29,9 +29,9 @@ public class ApprovalVO {
 	@DateTimeFormat(pattern = "yyyy/MM/dd")
 	private Date draftDate;       // 상신일
 	private Date aprvDate;        // 결재일
-	private int formId;           // 양식번호
+	private Integer formId;       // 양식번호
 	private int suberNo;          // 회사번호
 	
 	private String employeeName;  // 사원이름
-	
+	private String aprvRole;
 }
