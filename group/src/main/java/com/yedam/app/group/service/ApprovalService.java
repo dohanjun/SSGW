@@ -11,6 +11,9 @@ public interface ApprovalService {
 	// 결재요청함, 임시저장함
 	public List<ApprovalVO> findAllList(ApprovalVO aprvVO);
 	
+	// 참조열람함
+	public List<ApprovalVO> findAprvListByRole(ApprovalVO aprvVO);
+	
 	// 결재 상세 정보 조회
 	public ApprovalVO findAprvInfo(ApprovalVO aprvVO);
 	
@@ -44,7 +47,10 @@ public interface ApprovalService {
 	// 회사 전자결재 양식 등록
 	public int createForm(ApprovalFormVO aprvformVO);
 	
+	// 전자결재 문서상신
+	public int createAprvDocu(ApprovalVO aprvVO);
 	
-
+	// 결재선 등록
+	public int createAprvRout(AprvRoutesVO aprvRoutesVO);
   
 }
