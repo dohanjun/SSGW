@@ -31,6 +31,7 @@ public class SecurityConfig {
                 .requestMatchers("/module","/insertModule","/updateModule","/deleteModule/*","/updateModuleBasic/*","/updateModuleActive/*","/qna","/fixed").hasAuthority("ROLE_MANAGER")
                 .requestMatchers("/aprv/modify", "/aprv/upload","/saveSubDetail","/saveSubDetail","/saveSuber","/savePayment","/savePaymentDetails","/saveUser","/insertBoardPost","/selectBoardPost","/updateBoardPost").permitAll()
                 .requestMatchers("/insertPost").permitAll()
+                .requestMatchers("/basket/**").permitAll()
 
 
                 .anyRequest().authenticated()
@@ -47,7 +48,7 @@ public class SecurityConfig {
                 .invalidateHttpSession(true)   
                 .permitAll()
             )
-            .csrf(csrf -> csrf.ignoringRequestMatchers("/logout","/savePayment","/insertModule", "/updateModule","/deleteModule/*","/updateModuleBasic/*","/updateModuleActive/*","/qna", "/aprv/**","/insertModule","/saveForm", "/schedule/**","/qna","/fixed","/saveSubDetail","/saveSubDetail","/saveSuber","/savePaymentDetails","/saveUser","/insertBoardPost","/selectBoardPost","/updateBoardPost"));
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/logout","/savePayment","/insertModule", "/updateModule","/deleteModule/*","/updateModuleBasic/*","/updateModuleActive/*","/qna", "/aprv/**","/insertModule","/saveForm", "/schedule/**","/qna","/fixed","/saveSubDetail","/saveSubDetail","/saveSuber","/savePaymentDetails","/saveUser","/insertBoardPost","/selectBoardPost","/updateBoardPost","/basket/**"));
         return http.build();
     }
 

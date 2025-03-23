@@ -123,14 +123,26 @@ public class RepositoryController {
 	    EmpVO loggedInUser = empService.getLoggedInUserInfo();
 	    RepositoryPostVO post = postService.getPostDetail(writingId);
 	    List<RepositoryFileVO> fileList = fileService.getFilesByWritingId(writingId);
-
-	    boolean isOwner = post.getEmployeeNo() == loggedInUser.getEmployeeNo();
+	    
+	    Integer writerId = post.getEmployeeNo();
+	    Integer currentUserId = loggedInUser.getEmployeeNo();
+	    
+	    boolean isOwner = writerId != null && writerId.equals(currentUserId);
 	    boolean isAdmin = 
 	        (loggedInUser.getRightsId() != null && loggedInUser.getRightsId() == 3) ||
 	        (loggedInUser.getRightsLevel() != null && loggedInUser.getRightsLevel() == 5);
+	    
+	    boolean isEditable = isOwner || isAdmin;
+	    
+	    System.out.println("작성자 ID: " + post.getEmployeeNo());
+	    System.out.println("현재 로그인 ID: " + loggedInUser.getEmployeeNo());
+	    System.out.println("isOwner: " + isOwner);
+	    System.out.println("isAdmin: " + isAdmin);
+	    System.out.println("최종 isEditable: " + isEditable);
 
 	    model.addAttribute("post", post);
 	    model.addAttribute("fileList", fileList);
+	    model.addAttribute("isEditable", isOwner || isAdmin);
 	    model.addAttribute("canEditOrDelete", isOwner || isAdmin);
 	    return "group/repository/detailPost";
 	}

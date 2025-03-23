@@ -47,6 +47,7 @@
         	WHERE suber_no = #{suberNo}
           	AND file_repository_type = '전체'
     	)
+    	AND p.writing_id NOT IN (SELECT writing_id FROM basket)
     	GROUP BY p.writing_id, p.title, e.employee_name, p.creation_date
     	ORDER BY p.creation_date DESC
     </select>
@@ -70,6 +71,7 @@
           		AND department_no = #{departmentNo}
           		AND file_repository_type = '부서'
     	)
+    	AND p.writing_id NOT IN (SELECT writing_id FROM basket)
     	GROUP BY p.writing_id, p.title, e.employee_name, p.creation_date
     	ORDER BY p.creation_date DESC
     </select>
@@ -93,6 +95,7 @@
           		AND employee_no = #{employeeNo}
           		AND file_repository_type = '개인'
     	)
+    	AND p.writing_id NOT IN (SELECT writing_id FROM basket)
     	GROUP BY p.writing_id, p.title, e.employee_name, p.creation_date
     	ORDER BY p.creation_date DESC
     </select>

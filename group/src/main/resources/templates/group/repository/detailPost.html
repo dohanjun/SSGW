@@ -48,21 +48,21 @@
                                 </tbody>
                             </table>
                             <div class="text-center mb-3">
+    							<div class="d-inline-flex gap-2">
     							<a th:href="@{/totalRepository}" class="btn btn-secondary">
         							<i class="fas fa-arrow-left"></i>
     							</a>
-
-    							<!-- 수정, 삭제 버튼은 작성자 또는 게시판 관리자만 보이도록 -->
-    							<div th:if="${isEditable}">
-        							<a th:href="@{/editPost(writingId=${post.writingId})}" class="btn btn-warning">
-            							<i class="fas fa-edit"></i>
-        							</a>
-        							<a th:href="@{/deletePost(writingId=${post.writingId})}" class="btn btn-danger">
-            							<i class="fas fa-trash"></i>
-        							</a>
-    							</div>
+    
+    							<a th:if="${isEditable}" th:href="@{/editPost(writingId=${post.writingId})}" class="btn btn-warning">
+        							<i class="fas fa-edit"></i>
+    							</a>
+    
+    							<a th:if="${isEditable}" th:href="@{/deletePost(writingId=${post.writingId})}" class="btn btn-danger">
+        							<i class="fas fa-trash"></i>
+    							</a>
 							</div>
                         </div>
+                    </div>
                     </div>
                 </div>
             </div>
