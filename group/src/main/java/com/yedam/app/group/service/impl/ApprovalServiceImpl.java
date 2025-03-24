@@ -202,6 +202,24 @@ public class ApprovalServiceImpl implements ApprovalService {
 		return approvalMapper.selectAprvListByRole(aprvVO);
 	}
 
+	@Override
+	public List<AprvRoutesVO> findRoutes(AprvRoutesVO aprvRoutesVO) {
+		return approvalMapper.selectAprvRout(aprvRoutesVO);
+	}
+
+	@Override
+	public Map<String, Object> modifyStampForRoute(AprvRoutesVO routVO) {
+		Integer stampId = approvalMapper.selectActiveStampId(routVO.getEmployeeNo());
+		
+	    routVO.setStampId(stampId);
+	    int updated = approvalMapper.updateStampId(routVO);
+	    
+	    Map<String, Object> result = new HashMap<>();
+	    result.put("success", updated > 0);
+	    result.put("stampId", stampId);
+	    return result;
+	}
+
 	
 	
 }

@@ -29,11 +29,14 @@ public interface ApprovalService {
 	// 회사전용양식 조회
 	public ApprovalFormVO findAprvForm(ApprovalFormVO aprvformVO);
 	
-	// 도장 등록
+	// 사원의 도장 등록
 	public int createStamp(ApprovalVO aprvVO);
 	
 	// 도장 수정(기존 도장 active= '0')
 	public Map<String, Object> modifyStamp(ApprovalVO aprvVO);
+	
+	// 결재페이지 승인시 도장등록
+	public Map<String, Object> modifyStampForRoute(AprvRoutesVO routVO);
 	
 	// 도장 비활성화
 	public Map<String, Object> removeStamp(ApprovalVO aprvVO);
@@ -52,5 +55,8 @@ public interface ApprovalService {
 	
 	// 결재선 등록
 	public int createAprvRout(AprvRoutesVO aprvRoutesVO);
+	
+	// 결재선 출력
+	public List<AprvRoutesVO> findRoutes(AprvRoutesVO aprvRoutesVO);
   
 }

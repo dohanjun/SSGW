@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.yedam.app.group.service.ApprovalFormVO;
@@ -476,19 +477,41 @@ public class ApprovalController {
 	 * @return 결재페이지
 	 */
 	@GetMapping("aprv/info")
-	public String aprvInfo(@RequestParam("draftNo") Integer draftNo, Model model) {
-		ApprovalVO aprvVO = new ApprovalVO();
-		aprvVO.setDraftNo(draftNo);
-
-		ApprovalVO findVO = approvalService.findAprvInfo(aprvVO);
-
-		model.addAttribute("aprv", findVO);
+	public String aprvInfo(AprvRoutesVO routVO, Model model) {
+		EmpVO loggedInUser = empService.getLoggedInUserInfo();
+		model.addAttribute("loggedInEmpNo", loggedInUser.getEmployeeNo());
+		ApprovalVO infoVO = new ApprovalVO();
+	    infoVO.setDraftNo(routVO.getDraftNo());
 		
-		// List<AprvRoutesVO> routList = approvalService.find !!!!!! 집에가서 하기 !!!!!!
+		ApprovalVO aprvVO = approvalService.findAprvInfo(infoVO);
+		
+		routVO.setSuberNo(loggedInUser.getSuberNo());
+
+		List<AprvRoutesVO> routList = approvalService.findRoutes(routVO);
+		
+		model.addAttribute("aprv", aprvVO);
+		model.addAttribute("aprvroutes", routList);
 		
 
-		return "group/approval/approval"; //
+		return "group/approval/approval";
 	}
+	
+	@PostMapping("/aprv/stampsave")
+	@ResponseBody
+	public Map<String, Object> registerStamp(@RequestBody AprvRoutesVO routVO) {
+	    Map<String, Object> result = new HashMap<>();
+
+	    try {
+	        approvalService.modifyStampForRoute(routVO);  // 서비스 호출
+	        result.put("success", true);
+	    } catch (Exception e) {
+	        result.put("success", false);
+	        result.put("message", e.getMessage());
+	    }
+
+	    return result;
+	}
+
 	
 	/**
 	 * CKeditor로 양식을 추가하는 페이지
@@ -524,10 +547,6 @@ public class ApprovalController {
 		return url;
 	}
 
-	@GetMapping("approvalRequest")
-	public String edmsRequest() {
-		return "group/approval/approval_request";
-	}
 	
 	@GetMapping("schedulePage")
 	public String scheduleList() {
