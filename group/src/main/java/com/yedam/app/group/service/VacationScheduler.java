@@ -20,8 +20,8 @@ public class VacationScheduler {
     }
 
     // 5초마다 연차 자동 부여
-    @Scheduled(cron = "*/5 * * * * ?")  // 5초마다 실행
-//    @Scheduled(cron = "0 0 * * * ?")  // 5초마다 실행
+//    @Scheduled(cron = "*/5 * * * * ?")  // 5초마다 실행
+    @Scheduled(cron = "0 0 * * * ?")  // 1시간 마다 실행
     public void autoGrantAnnualLeaveForAllEmployees() {
         // 모든 사원 목록을 가져오는 로직 (예: DB에서 사원 목록을 가져옴)
         List<VacationVO> allEmployees = vacationMapper.getAllEmployeesWithHireDate(1);  // 예시로 1번 회사 번호 사용

@@ -6,7 +6,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication(scanBasePackages = {"com.yedam.app"})
-@EnableScheduling
 @MapperScan(basePackages="com.yedam.app.**.mapper")
 @EnableScheduling  // 스케줄링 기능 활성화
 public class GroupApplication {
