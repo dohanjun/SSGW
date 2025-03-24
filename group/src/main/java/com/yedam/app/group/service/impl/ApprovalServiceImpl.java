@@ -3,6 +3,7 @@ package com.yedam.app.group.service.impl;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import com.yedam.app.group.mapper.ApprovalMapper;
 import com.yedam.app.group.service.ApprovalFormVO;
 import com.yedam.app.group.service.ApprovalService;
 import com.yedam.app.group.service.ApprovalVO;
+import com.yedam.app.group.service.AprvRoutesVO;
 import com.yedam.app.group.service.EmpService;
 import com.yedam.app.group.service.EmpVO;
 
@@ -137,7 +139,12 @@ public class ApprovalServiceImpl implements ApprovalService {
 	// 전자결재 문서조회
 	@Override
 	public List<ApprovalVO> findAprvListByStatus(ApprovalVO aprvVO) {
-	    return approvalMapper.selectAprvListByStatus(aprvVO);
+		 List<ApprovalVO> list = approvalMapper.selectAprvListByStatus(aprvVO);
+	    
+	 // '참조' 역할인 문서는 제외
+	    return list.stream()
+	               .filter(aprv -> !"참조".equals(aprv.getAprvRole()))  // '참조'는 필터링
+	               .collect(Collectors.toList());
 	}
 	
 	// 기본양식
@@ -169,6 +176,30 @@ public class ApprovalServiceImpl implements ApprovalService {
 	@Override
 	public List<ApprovalVO> findAllList(ApprovalVO aprvVO) {
 		return approvalMapper.selectAllList(aprvVO);
+	}
+	
+	
+	// 결재문서 상신, 임시저장
+	@Override
+	public int createAprvDocu(ApprovalVO aprvVO) {
+		// 문서 저장 시 상태가 임시로 저장되도록 처리
+	    if ("임시".equals(aprvVO.getAprvStatus())) {
+	        aprvVO.setAprvStatus("임시");  // 임시 상태로 설정
+	    } else {
+	        aprvVO.setAprvStatus("대기");  // 상신 상태로 설정
+	    }
+		return approvalMapper.insertAprvDocuments(aprvVO);
+	}
+	
+	// 결재선 등록
+	@Override
+	public int createAprvRout(AprvRoutesVO aprvRoutesVO) {
+		return approvalMapper.insertAprvRoutes(aprvRoutesVO);
+	}
+
+	@Override
+	public List<ApprovalVO> findAprvListByRole(ApprovalVO aprvVO) {
+		return approvalMapper.selectAprvListByRole(aprvVO);
 	}
 
 	

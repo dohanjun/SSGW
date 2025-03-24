@@ -147,6 +147,7 @@
 </div>
 
     <script>
+    const url = '/schedule';
     document.addEventListener('DOMContentLoaded', function () {
         const calendarEl = document.getElementById('calendar');
 
@@ -166,7 +167,7 @@
             
          // 일정 데이터 가져오기
             events: function (fetchInfo, successCallback, failureCallback) {
-                fetch('/schedule/list')
+                fetch(url)
                     .then(response => response.json())
                     .then(data => {
 
@@ -336,7 +337,7 @@ eventClick: function (info) {
             scheduleDivision: selectedType
         };
 
-        fetch("/schedule/save", {
+        fetch(url, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -383,7 +384,7 @@ eventClick: function (info) {
             scheduleEnd: document.getElementById("editScheduleEnd").value
         };
 
-        fetch("/schedule/update", {
+        fetch(url, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"
@@ -405,7 +406,7 @@ eventClick: function (info) {
     function deleteSchedule() {
         let scheduleId = document.getElementById("editScheduleId").value;
 
-        fetch(`/schedule/delete/${scheduleId}`, {
+        fetch(`${url}/${scheduleId}`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json"

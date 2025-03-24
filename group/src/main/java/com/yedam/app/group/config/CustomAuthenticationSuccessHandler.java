@@ -35,7 +35,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 "UNION ALL " +
                 "SELECT SUB_ID AS username, SUB_PW AS password, 'ROLE_MANAGERUSER' AS role FROM SUBER " +
                 "UNION ALL " +
-                "SELECT EMPLOYEE_ID AS username, EMPLOYEE_PW AS password, 'ROLE_USER' AS role FROM EMPLOYEES " +
+                "SELECT EMPLOYEE_ID AS username, EMPLOYEE_PW AS password, 'ROLE_USER' AS role FROM EMPLOYEES WHERE RESIGNATION_STATUS ='N'" +
                 ") WHERE username = ?";
 
         try {

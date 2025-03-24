@@ -2,6 +2,8 @@ package com.yedam.app.group.service;
 
 import java.util.Date;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import lombok.Data;
 
 @Data
@@ -15,9 +17,17 @@ public class VacationVO {
 	private Integer grantedVacation;		// 부여된 휴가일
 	private Integer userVacation;			// 사용한 휴가일
 	private Integer remainingVacation;		// 휴가 잔여일
-	private Integer emplkoyeeNo;			// 사원번호
+	private Integer employeeNo;				// 사원번호
 	private Integer leaveHistoryId;			// 휴가내역번호
-	private Date Yeat;						// 연도
+	private Date year;						// 연도
 	private Integer draftNo;				// 기안문서번호
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date hireDate;			  // 입사일
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date exitDate;			  // 퇴사일
+	private String resignationStatus; // 퇴사여부
+	
+	
+	
 
 }

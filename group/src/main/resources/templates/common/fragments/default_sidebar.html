@@ -23,7 +23,7 @@
 		 <hr class="sidebar-divider">
         <!-- 일정 -->
         <li class="nav-item">
-            <a class="nav-link" th:href="@{/schedule}">
+            <a class="nav-link" th:href="@{/schedulePage}">
                 <i class="fas fa-fw fa-cog"></i>
                 <span>일정</span>
             </a>
@@ -99,15 +99,15 @@
                 <div class="bg-white py-2 collapse-inner rounded">
                     <h6 class="collapse-header">기안</h6>
                     <a class="collapse-item" th:href="@{/aprv/write}">기안문작성</a>
-                    <a class="collapse-item">결재요청함</a>
-                    <a class="collapse-item" th:href="@{/aprv/list?aprvStatus=임시저장}">임시저장함</a>
+                    <a class="collapse-item" th:href="@{/aprv/request}">결재요청함</a>
+                    <a class="collapse-item" th:href="@{/aprv/request?aprvStatus=임시}">임시저장함</a>
                     <a class="collapse-item" th:href="@{/write}">전자결재양식추가</a>
                     <h6 class="collapse-header">결재</h6>
                     <a class="collapse-item" th:href="@{/aprv/list?aprvStatus=대기}">결재대기함</a>
                     <a class="collapse-item" th:href="@{/aprv/list?aprvStatus=진행}">결재진행함</a>
                     <a class="collapse-item" th:href="@{/aprv/list?aprvStatus=완료}">완료문서함</a>
                     <a class="collapse-item" th:href="@{/aprv/list?aprvStatus=반려}">반려문서함</a>
-                    <a class="collapse-item">참조열람함</a>
+                    <a class="collapse-item" th:href="@{/aprv/reference}">참조열람함</a>
                 </div>
             </div>
         </li>

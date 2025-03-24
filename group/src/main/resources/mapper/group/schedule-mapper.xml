@@ -9,7 +9,9 @@
 			FROM schedule
 		</selectKey>
 		INSERT INTO schedule (
-		SCHEDULE_ID, SCHEDULE_TITLE, SCHEDULE_CONTENT,
+		SCHEDULE_ID, 
+		SCHEDULE_TITLE, 
+		SCHEDULE_CONTENT,
 		SCHEDULE_START, SCHEDULE_END, EMPLOYEE_NO,
 		DEPARTMENT_NO, SCHEDULE_DIVISION, SUBER_NO
 		) VALUES (
@@ -51,9 +53,9 @@
 	<update id="updateSchedule" parameterType="ScheduleVO">
 		UPDATE schedule
 		SET schedule_title = #{scheduleTitle}
-		,schedule_content = #{scheduleContent}
-		,schedule_start = #{scheduleStart}
-		,schedule_end = #{scheduleEnd}
+			,schedule_content = #{scheduleContent}
+			,schedule_start = #{scheduleStart}
+			,schedule_end = #{scheduleEnd}
 		WHERE schedule_id = #{scheduleId}
 	</update>
 

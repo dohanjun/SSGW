@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.yedam.app.group.mapper.EmpMapper;
 import com.yedam.app.group.service.EmpService;
 import com.yedam.app.group.service.EmpVO;
+import com.yedam.app.group.service.EmpserchVO;
 import com.yedam.app.group.service.PasswordUtils;
 
 @Service
@@ -82,15 +83,16 @@ public class EmpServiceImpl implements EmpService{
 	}
 	
     //  페이징된 사원 목록 조회
-    public List<EmpVO> findAllEmp(int page, int size, String category, String keyword, Integer suberNo) {
-        int offset = (page - 1) * size; // OFFSET 계산
-        return empMapper.pageselectEmp(offset, size, category, keyword, suberNo);
+    public List<EmpVO> findAllEmp(EmpserchVO empsVO) {
+        int offset = (empsVO.getPage() - 1) * empsVO.getSize(); // OFFSET 계산
+        empsVO.setOffset(offset);
+        return empMapper.pageselectEmp(empsVO);
     }
 
     //  전체 사원 수 조회
     @Override
-    public int countAllEmp(String category, String keyword, Integer suberNo) {
-        return empMapper.countEmp(category, keyword, suberNo);
+    public int countAllEmp(EmpserchVO empsVO) {
+        return empMapper.countEmp(empsVO);
     }
 
     // 비밀번호 업데이트
@@ -108,7 +110,7 @@ public class EmpServiceImpl implements EmpService{
 //        // 4️ (선택) 이메일 전송 가능
 //        System.out.println("새로운 비밀번호: " + randomPassword); // 콘솔 확인용
     }
-    
+  
     @Override
     public String getFirstIpByEmployeeNo(Integer employeeNo) {
         return empMapper.getFirstIpByEmployeeNo(employeeNo);

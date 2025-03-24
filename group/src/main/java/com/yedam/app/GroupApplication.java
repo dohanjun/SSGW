@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication(scanBasePackages = {"com.yedam.app"})
 @EnableScheduling
 @MapperScan(basePackages="com.yedam.app.**.mapper")
+@EnableScheduling  // 스케줄링 기능 활성화
 public class GroupApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(GroupApplication.class, args);

@@ -15,6 +15,18 @@ import com.yedam.app.group.service.RightsVO;
 
 import lombok.RequiredArgsConstructor;
 
+
+/** 
+ *  그룹웨어 부서관리 등록,조회,조직도 등컨트롤러   
+ *  @author DEPT관리자 개발팀 김예찬
+ *  @serial 2025-03-24
+ *  <pre>
+ *  <pre>
+ *  	수정일자		수정자		수정내용
+ * ---------------------------------------------------
+ *  </pre>
+ */
+
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor

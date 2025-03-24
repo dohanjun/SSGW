@@ -1,41 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yedam.app.group.mapper.ApprovalMapper">
-
 	
-	<!-- 전자결재문서함 -->
-	<select id="selectAprvListByStatus" parameterType="ApprovalVO"
-		resultType="ApprovalVO">
-		SELECT d.DRAFT_NO,
-		d.TITLE,
-		d.CONTENT,
-		d.APRV_STATUS,
-		d.REJECT_REASON,
-		d.DRAFT_DATE,
-		e.EMPLOYEE_NAME,
-		d.APRV_DATE,
-		d.FORM_ID,
-		d.BASICS_FORM_ID,
-		d.SUBER_NO,
-		r.EMPLOYEE_NO
-		FROM aprv_documents d
-		JOIN employees e
-		ON d.EMPLOYEE_NO = e.EMPLOYEE_NO
-		JOIN aprv_routes r
-		ON r.DRAFT_NO = d.DRAFT_NO
-		WHERE d.APRV_STATUS = #{aprvStatus}
-		AND r.EMPLOYEE_NO = #{employeeNo}
-		AND d.SUBER_NO = #{suberNo}
-		<if test="employeeName != null and employeeName != ''">
-        	AND e.EMPLOYEE_NAME LIKE '%' || #{employeeName} || '%'
-    	</if>
-    	<if test="title != null and title != ''">
-        	AND d.TITLE LIKE '%' || #{title} || '%'
-    	</if>
-    	<if test="draftDate != null">
-        	AND d.DRAFT_DATE = #{draftDate}
-    	</if>
-	</select>
+	<!-- 결재문서함(대기,완료,반려,진행) -->
+	<select id="selectAprvListByStatus" parameterType="ApprovalVO" resultType="ApprovalVO">
+    SELECT d.DRAFT_NO,
+           d.TITLE,
+           d.CONTENT,
+           d.APRV_STATUS,
+           d.REJECT_REASON,
+           d.DRAFT_DATE,
+           e.EMPLOYEE_NAME,
+           d.APRV_DATE,
+           d.FORM_ID,
+           d.BASICS_FORM_ID,
+           d.SUBER_NO,
+           r.EMPLOYEE_NO,
+           r.APRV_ROLE
+    FROM aprv_documents d
+    JOIN employees e ON d.EMPLOYEE_NO = e.EMPLOYEE_NO
+    JOIN aprv_routes r ON r.DRAFT_NO = d.DRAFT_NO
+    WHERE d.APRV_STATUS = #{aprvStatus}
+    AND r.EMPLOYEE_NO = #{employeeNo}
+    AND d.SUBER_NO = #{suberNo}
+    <if test="employeeName != null and employeeName != ''">
+        AND e.EMPLOYEE_NAME LIKE '%' || #{employeeName} || '%'
+    </if>
+    <if test="title != null and title != ''">
+        AND d.TITLE LIKE '%' || #{title} || '%'
+    </if>
+    <if test="draftDate != null">
+        AND d.DRAFT_DATE >= #{draftDate} AND d.DRAFT_DATE <![CDATA[ < ]]> #{draftDate} +1
+    </if>
+    <if test="aprvStatus != '참조'">
+        AND r.APRV_ROLE != '참조'
+    </if>
+    ORDER BY d.DRAFT_NO
+</select>
+
+<!-- 참조열람함 -->
+<select id="selectAprvListByRole" parameterType="ApprovalVO" resultType="ApprovalVO">
+    SELECT d.DRAFT_NO,
+           d.TITLE,
+           d.CONTENT,
+           d.APRV_STATUS,
+           d.REJECT_REASON,
+           d.DRAFT_DATE,
+           e.EMPLOYEE_NAME,
+           d.APRV_DATE,
+           d.FORM_ID,
+           d.BASICS_FORM_ID,
+           d.SUBER_NO,
+           r.EMPLOYEE_NO,
+           r.APRV_ROLE
+    FROM aprv_documents d
+    JOIN employees e ON d.EMPLOYEE_NO = e.EMPLOYEE_NO
+    JOIN aprv_routes r ON r.DRAFT_NO = d.DRAFT_NO
+    WHERE r.APRV_ROLE = '참조'
+    AND r.EMPLOYEE_NO = #{employeeNo}
+    AND d.SUBER_NO = #{suberNo}
+    <if test="employeeName != null and employeeName != ''">
+        AND e.EMPLOYEE_NAME LIKE '%' || #{employeeName} || '%'
+    </if>
+    <if test="title != null and title != ''">
+        AND d.TITLE LIKE '%' || #{title} || '%'
+    </if>
+    <if test="draftDate != null">
+        AND d.DRAFT_DATE = #{draftDate}
+    </if>
+    ORDER BY d.DRAFT_NO
+</select>
+
 
 	<!-- 결재 상세 조회 (도장 정보 포함) -->
 	<select id="selectAprvInfo" resultType="ApprovalVO"
@@ -111,20 +146,22 @@
 			SELECT NVL(MAX(form_id), 1) + 1
 			FROM aprv_forms
 		</selectKey>
-		INSERT INTO aprv_forms (form_id
-		, form_type
-		, content
-		, version
-		, active
-		, creation_date
-		, suber_no)
-		VALUES(#{formId}
-		,#{formType}
-		,#{content}
-		,1
-		,'1'
-		,sysdate
-		,#{suberNo})
+		INSERT INTO aprv_forms (
+					form_id
+					, form_type
+					, content
+					, version
+					, active
+					, creation_date
+					, suber_no)
+		VALUES(
+					#{formId}
+					,#{formType}
+					,#{content}
+					,1
+					,'1'
+					,sysdate
+					,#{suberNo})
 	</insert>
 	
 	<!-- 기본양식목록 불러오기 -->
@@ -139,6 +176,7 @@
 		SELECT FORM_ID
 		       ,FORM_TYPE
 		FROM   APRV_FORMS
+		WHERE  SUBER_NO = #{suberNo}
 	</select>
 	
 	<!-- 기본양식불러오기 -->
@@ -169,26 +207,80 @@
 	</select>
 	
 	<!-- 결재요청함 ,임시저장함 -->
-	<select id="selectAllList" parameterType="ApprovalVO" resultType="ApprovalVO">	
-	SELECT  d.DRAFT_NO
-			,d.TITLE
-			,d.CONTENT
-			,d.APRV_STATUS
-			,d.REJECT_REASON
-			,d.DRAFT_DATE
-			,e.EMPLOYEE_NAME
-			,d.APRV_DATE
-			,d.FORM_ID
-			,d.BASICS_FORM_ID
-			,d.SUBER_NO
-			,d.EMPLOYEE_NO
-	FROM aprv_documents d
-	JOIN employees e
-		ON d.EMPLOYEE_NO = e.EMPLOYEE_NO
-	WHERE d.EMPLOYEE_NO = #{employeeNo}
-	<if test="aprv_status eq '임시'">
-	  AND d.APRV_STATUS = '임시'	
-	</if>
-	  AND d.SUBER_NO = #{suberNo}
-	</select>
+<select id="selectAllList" parameterType="ApprovalVO" resultType="ApprovalVO">    
+    SELECT  d.DRAFT_NO,
+            d.TITLE,
+            d.CONTENT,
+            d.APRV_STATUS,
+            d.REJECT_REASON,
+            d.DRAFT_DATE,
+            e.EMPLOYEE_NAME,
+            d.APRV_DATE,
+            d.FORM_ID,
+            d.BASICS_FORM_ID,
+            d.SUBER_NO,
+            d.EMPLOYEE_NO
+    FROM aprv_documents d
+    JOIN employees e ON d.EMPLOYEE_NO = e.EMPLOYEE_NO
+    WHERE d.EMPLOYEE_NO = #{employeeNo}
+    AND d.SUBER_NO = #{suberNo}
+    <!-- 임시저장함 상태 조건 추가 -->
+    <if test="aprvStatus eq '임시'">
+        AND d.APRV_STATUS = '임시'  
+    </if>
+    <!-- 결재요청함은 임시를 제외한 모든 상태를 조회 -->
+    <if test="aprvStatus != '임시'">
+        AND d.APRV_STATUS != '임시'  
+    </if>
+    ORDER BY d.draft_no
+</select>
+
+	
+	<!-- 결재문서상신 -->
+	<insert id="insertAprvDocuments" parameterType="ApprovalVO">
+	  <selectKey keyProperty="draftNo" resultType="Integer" order="BEFORE">
+	  	 SELECT NVL(MAX(draft_no), 1) + 1
+	     FROM aprv_documents
+	  </selectKey>
+	     INSERT INTO aprv_documents
+	     (DRAFT_NO
+		  ,TITLE
+		  ,CONTENT
+		  ,APRV_STATUS
+		  ,EMPLOYEE_NO
+		  ,FORM_ID
+		  ,BASICS_FORM_ID
+		  ,SUBER_NO)
+	     VALUES(
+	     #{draftNo}
+	     ,#{title}
+	     ,#{content}
+	     ,#{aprvStatus}
+	     ,#{employeeNo}
+	     ,#{formId}
+	     ,#{basicsFormId}
+	     ,#{suberNo}) 
+	</insert>
+	
+	<!-- 결재선등록 -->
+	<insert id="insertAprvRoutes" parameterType="AprvRoutesVO">
+		<selectKey keyProperty="aprvId" resultType="Integer" order="BEFORE">
+			SELECT NVL(MAX(aprv_id), 1) + 1
+	        FROM aprv_routes 
+		</selectKey>
+		 INSERT INTO aprv_routes
+		 (APRV_ID
+		  ,APRV_ORDER
+		  ,DRAFT_NO
+		  ,APRV_ROLE
+		  ,APRV_STATUS
+		  ,EMPLOYEE_NO)
+		 VALUES
+		 (#{aprvId}
+		  ,#{aprvOrder}
+		  ,#{draftNo}
+		  ,#{aprvRole}
+		  ,#{aprvStatus}
+		  ,#{employeeNo})
+	</insert>
 </mapper>

@@ -132,22 +132,9 @@
     <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=843f623b54841d7e48c15c0667f81957&libraries=services"></script>
     <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 
+    <script src="/js/emp.js"></script>
 <script>
-	// Ajax를 사용하여 부서/직급/권한 데이터를 동적으로 로드
-	function loadData(url, selectId) {
-	    fetch(url)
-	        .then(response => response.json())
-	        .then(data => {
-	            let select = document.getElementById(selectId);
-	            data.forEach(item => {
-	                let option = document.createElement("option");
-	                option.value = item.departmentNo || item.rankId || item.rightsId;
-	                option.textContent = item.departmentName || item.jobTitleName || item.rightsName;
-	                select.appendChild(option);
-	            });
-	        })
-	        .catch(error => console.error("Error loading data:", error));
-	}
+
 	
 	// 페이지 로드 시 데이터 가져오기
 	document.addEventListener("DOMContentLoaded", function() {
