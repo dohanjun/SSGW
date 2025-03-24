@@ -8,6 +8,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import com.yedam.app.group.service.BasketService;
+import com.yedam.app.group.service.BasketVO;
 import com.yedam.app.group.service.EmpService;
 import com.yedam.app.group.service.EmpVO;
 import com.yedam.app.group.service.FileService;
@@ -24,16 +26,19 @@ public class RepositoryController {
     private final EmpService empService;
     private final PostService postService;
 	private final FileService fileService;
+	private final BasketService basketService;
     
 	public RepositoryController(RepositoryService repositoryService,
 								EmpService empService, 
 								PostService postService,
-								FileService fileService
+								FileService fileService,
+								BasketService basketService
 	) {
 		this.repositoryService = repositoryService;
 		this.empService = empService;
 		this.postService = postService;
 		this.fileService = fileService;
+		this.basketService = basketService;
 	}
 
 	@GetMapping("/totalRepository")
@@ -170,9 +175,16 @@ public class RepositoryController {
 	    return "group/repository/detailPost";
 	}
 
-	@GetMapping("/detailBasket")
-	public String detailBasket() {
-		return "group/repository/detailBasket";
+	@GetMapping("/detailBasket/{writingId}")
+	public String detailBasket(@PathVariable Long writingId, Model model) {
+	    BasketVO basket = basketService.getBasketPostDetail(writingId); // ← 이 메서드 구현했는지 확인
+	    List<RepositoryFileVO> fileList = fileService.getFilesByWritingId(writingId);
+
+	    model.addAttribute("post", basket);
+	    model.addAttribute("fileList", fileList);
+	    model.addAttribute("isEditable", false); // 휴지통에서는 수정/삭제 제어
+
+	    return "group/repository/detailBasket"; // 📄 templates/group/repository/detailBasket.html
 	}
 
 }

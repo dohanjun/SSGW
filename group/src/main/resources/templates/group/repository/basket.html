@@ -1,87 +1,126 @@
-<!-- 휴지통 페이지 HTML (수정 완료) -->
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{common/layouts/default_layout}"
-      layout:fragment="content">
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{common/layouts/default_layout}"
+	layout:fragment="content">
 <head>
-    <meta charset="UTF-8">
-    <title>휴지통</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+<meta charset="UTF-8">
+<title>휴지통</title>
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+	rel="stylesheet">
 </head>
 <body>
-<form id="basketForm" method="get" action="/basket">
-    <div class="card shadow mb-4" style="width: 100%; margin-top: 20px;">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">휴지통</h6>
-        </div>
-        <div class="card-body">
-        <label for="repositoryType" class="form-label font-weight-bold">휴지통 유형</label>
-        <select id="repositoryType" name="repositoryType"
-        class="form-control"
-        style="width: 200px; display: inline-block;"
-        onchange="document.getElementById('basketForm').submit();">
-            <option value="전체" th:selected="${repositoryType == '전체'}">전체</option>
+
+	<!-- 휴지통 유형 선택용 별도 GET form -->
+	<form id="filterForm" method="get" action="/basket">
+		<label for="repositoryType" class="form-label font-weight-bold">휴지통
+			유형</label> <select id="repositoryType" name="repositoryType"
+			class="form-control" style="width: 200px; display: inline-block;"
+			onchange="document.getElementById('filterForm').submit();">
+			<option value="전체" th:selected="${repositoryType == '전체'}">전체</option>
 			<option value="부서" th:selected="${repositoryType == '부서'}">부서</option>
 			<option value="개인" th:selected="${repositoryType == '개인'}">개인</option>
-        </select>
-            <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                    <thead>
-                    <tr>
-                        <th><input type="checkbox" id="selectAll"></th>
-                        <th>제목</th>
-                        <th>작성자</th>
-                        <th>파일명</th>
-                        <th>작성일</th>
-                        <th>삭제일</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="post : ${basketList}">
-                        <td><input type="checkbox" name="writingIds" th:value="${post.writingId}" class="file-checkbox"></td>
-                        <td th:text="${post.title}"></td>
-                        <td th:text="${post.writer}"></td>
-                        <td th:text="${post.fileCount > 1 ? post.fileName + ' 외 ' + (post.fileCount - 1) + '건' : post.fileName}"></td>
-                        <td th:text="${#dates.format(post.creationDate, 'yyyy-MM-dd')}"></td>
-                        <td th:text="${#dates.format(post.delDate, 'yyyy-MM-dd')}"></td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
+		</select>
+	</form>
 
-            <!-- 버튼 영역 -->
-            <div class="d-flex align-items-center justify-content-between mt-3">
-                <div>
-                    <!-- 복원 버튼 -->
-                    <button type="submit" class="btn btn-success" formaction="/basket/restore">복원</button>
-                    <!-- 삭제 버튼 -->
-                    <button type="submit" class="btn btn-danger" formaction="/basket/delete">삭제</button>
-                </div>
+	<!-- 실제 복원/삭제용 POST form -->
+	<form id="basketForm" method="post">
+		<!-- repositoryType을 hidden으로 전송 -->
+		<input type="hidden" name="repositoryType"
+			th:value="${repositoryType}" />
 
-                <!-- 페이지네이션 -->
-                <div class="flex-grow-1 text-center">
-                    <nav aria-label="페이지네이션">
-                        <ul class="pagination mb-0 d-inline-flex">
-                            <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1">&laquo;</a></li>
-                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                            <li class="page-item"><a class="page-link" href="#">2</a></li>
-                            <li class="page-item"><a class="page-link" href="#">3</a></li>
-                            <li class="page-item"><a class="page-link" href="#">&raquo;</a></li>
-                        </ul>
-                    </nav>
-                </div>
-            </div>
-        </div>
-    </div>
-</form>
+		<div class="card shadow mb-4" style="width: 100%; margin-top: 20px;">
+			<div class="card-header py-3">
+				<h6 class="m-0 font-weight-bold text-primary">휴지통</h6>
+			</div>
+			<div class="card-body">
+				<div class="table-responsive">
+					<table class="table table-bordered" id="dataTable" width="100%"
+						cellspacing="0">
+						<thead>
+							<tr>
+								<th><input type="checkbox" id="selectAll"></th>
+								<th>제목</th>
+								<th>작성자</th>
+								<th>파일명</th>
+								<th>작성일</th>
+								<th>삭제일</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="post : ${basketList}"
+								th:onclick="'goToBasketDetail(' + ${post.writingId} + ')'"
+								style="cursor: pointer;">
+								<td><input type="checkbox" name="writingIds"
+									th:value="${post.writingId}" class="file-checkbox"
+									onclick="event.stopPropagation();"></td>
+								<td th:text="${post.title}"></td>
+								<td th:text="${post.writer}"></td>
+								<td
+									th:text="${post.fileCount > 1 ? post.fileName + ' 외 ' + (post.fileCount - 1) + '건' : post.fileName}"></td>
+								<td th:text="${#dates.format(post.creationDate, 'yyyy-MM-dd')}"></td>
+								<td th:text="${#dates.format(post.delDate, 'yyyy-MM-dd')}"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
 
+				<!-- 버튼 영역 -->
+				<div class="d-flex align-items-center justify-content-between mt-3">
+					<div>
+						<!-- 복원 버튼 -->
+						<button type="submit" class="btn btn-success"
+							formaction="/basket/restore">복원</button>
+						<!-- 삭제 버튼 -->
+						<button type="submit" class="btn btn-danger"
+							formaction="/basket/delete">삭제</button>
+					</div>
+
+					<!-- 페이지네이션 -->
+					<div class="flex-grow-1 text-center">
+						<nav aria-label="페이지네이션">
+							<ul class="pagination mb-0 d-inline-flex">
+								<li class="page-item disabled"><a class="page-link"
+									href="#" tabindex="-1">&laquo;</a></li>
+								<li class="page-item active"><a class="page-link" href="#">1</a></li>
+								<li class="page-item"><a class="page-link" href="#">2</a></li>
+								<li class="page-item"><a class="page-link" href="#">3</a></li>
+								<li class="page-item"><a class="page-link" href="#">&raquo;</a></li>
+							</ul>
+						</nav>
+					</div>
+				</div>
+			</div>
+		</div>
+	</form>
+</body>
+</html>
 <script>
     // 전체 선택
     document.getElementById('selectAll').addEventListener('change', function () {
         const checkboxes = document.querySelectorAll('.file-checkbox');
         checkboxes.forEach(cb => cb.checked = this.checked);
     });
+
+    // ✅ form 제출 시 체크된 항목 없으면 alert 띄우고 막기
+    document.getElementById('basketForm').addEventListener('submit', function (e) {
+        const checked = document.querySelectorAll('.file-checkbox:checked');
+        if (checked.length === 0) {
+            alert("삭제 또는 복원할 항목을 선택해주세요.");
+            e.preventDefault(); // submit 막기
+        }
+    });
 </script>
-</body>
-</html>
+<script>
+function goToBasketDetail(writingId) {
+    window.location.href = '/detailBasket/' + writingId;
+  }
+
+  // 체크박스 클릭시 이벤트 버블링 막기
+  document.querySelectorAll('.file-checkbox').forEach(cb => {
+    cb.addEventListener('click', function(event) {
+      event.stopPropagation();
+    });
+  });
+</script>

@@ -19,6 +19,8 @@ public interface BasketMapper {
     
     BasketVO selectBasketByWritingId(Long writingId);
     
+    BasketVO getBasketDetailById(Long writingId);
+    
     // writingId로 자료실 유형 조회
     String getRepositoryTypeByWritingId(Long writingId);
 
@@ -40,7 +42,10 @@ public interface BasketMapper {
     void restoreToDepartmentRepository(Long writingId);
     void restoreToIndividualRepository(Long writingId);
     
+    List<Long> getFileIdsByWritingId(Long writingId); // 🔍 repository_file의 file_id 리스트 조회
+    void deleteDownloadLogsByFileId(Long fileId);
+    
     void deleteFilesByWritingId(Long writingId);
-    void deletePostByWritingId(Long writingId);
+    int deletePostByWritingId(Long writingId);
     void deleteBasketByWritingId(Long writingId);
 }

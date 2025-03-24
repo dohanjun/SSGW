@@ -13,6 +13,7 @@ public class BasketVO {
     private String writer;
     private Date creationDate;
     private String fileName;
+    private String content;
     
     private String repositoryType;
     private int fileCount;

@@ -1,10 +1,13 @@
 package com.yedam.app.group.web;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,7 +41,7 @@ public class BasketController {
 			};
 		}
 
-		basketService.moveToBasket(writingIds);
+		basketService.moveToBasket(writingIds, repositoryType);
 
 		// 어떤 자료실에서 왔는지에 따라 다시 리다이렉트
 		return switch (repositoryType) {
@@ -91,15 +94,34 @@ public class BasketController {
 
 	// 선택 게시글 복원
 	@PostMapping("/restore")
-	public String restoreSelected(@RequestParam("writingIds") List<Long> writingIds) {
-		basketService.restoreSelectedPosts(writingIds);
-		return "redirect:/basket";
+	public String restoreSelected(@RequestParam("writingIds") List<Long> writingIds,
+	                              @RequestParam("repositoryType") String repositoryType) {
+
+	    basketService.restoreSelectedPosts(writingIds);
+
+	    String encoded = URLEncoder.encode(repositoryType, StandardCharsets.UTF_8);
+	    return "redirect:/basket?repositoryType=" + encoded;
 	}
 
-	// 선택 게시글 완전 삭제
 	@PostMapping("/delete")
-	public String deleteSelected(@RequestParam("writingIds") List<Long> writingIds) {
-		basketService.permanentlyDeletePosts(writingIds);
-		return "redirect:/basket";
+	public String deleteSelected(@RequestParam("writingIds") List<Long> writingIds,
+	                             @RequestParam("repositoryType") String repositoryType) {
+
+	    basketService.permanentlyDeletePosts(writingIds);
+
+	    String encoded = URLEncoder.encode(repositoryType, StandardCharsets.UTF_8);
+	    return "redirect:/basket?repositoryType=" + encoded;
+	}
+	
+	@GetMapping("/detailBasket/{writingId}")
+	public String detailBasket(@PathVariable("writingId") Long writingId, Model model) {
+	    BasketVO basket = basketService.getBasketPostDetail(writingId);
+	    
+	    if (basket == null) {
+	        throw new IllegalArgumentException("해당 게시글을 찾을 수 없습니다.");
+	    }
+
+	    model.addAttribute("post", basket);
+	    return "group/repository/detailBasket";
 	}
 }

@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface BasketService {
 	
-	void moveToBasket(List<Long> writingIds);
+	void moveToBasket(List<Long> writingIds, String repositoryType);
 	
     List<BasketVO> getAllBasketPosts();
     
@@ -21,4 +21,7 @@ public interface BasketService {
     void permanentlyDeletePosts(List<Long> writingIds);
     
     List<BasketVO> getOwnTotalBasketPosts(EmpVO emp);
+    
+    BasketVO getBasketPostDetail(Long writingId);
+    
 }

@@ -109,9 +109,11 @@
             p.creation_date AS creationDate,
             p.employee_no,
             p.file_repository_id,
-            p.fix
+            p.fix,
+            r.file_repository_type AS RepositoryType
         FROM repository_post p
         JOIN employees e ON p.employee_no = e.employee_no
+        JOIN repository r ON p.file_repository_id = r.file_repository_id
         WHERE p.writing_id = #{writingId}
     </select>
     
