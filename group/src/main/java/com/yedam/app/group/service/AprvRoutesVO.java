@@ -1,6 +1,7 @@
 package com.yedam.app.group.service;
 
 import java.util.Date;
+import java.util.List;
 
 import lombok.Data;
 
@@ -17,6 +18,6 @@ public class AprvRoutesVO {
 	private int employeeNo;       // 결재자 사원번호
 	private int stampId;          // 결재자 도장 id
 	
-	private String approvers; // 결재자 목록
-	private String references; // 참조자 목록
+	private List<Integer> approvers; // 결재자 목록
+	private List<Integer> references; // 참조자 목록
 }
