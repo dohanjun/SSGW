@@ -12,31 +12,31 @@ public interface MailMapper {
 	public PageListVO getPageList(PageListVO vo);
 	
 	//메일전체조회
-	public List<MailVO> findAll(PageListVO vo);
+	public List<MailVO> MailFindAll(PageListVO vo);
 	
 	//메일단건조회
-	public MailVO findInfo(int mailId);
+	public MailVO MailFindInfo(int mailId);
 	
 	//나의 메일단건조회
-	public MailVO MyfindInfo(int mailId);
+	public MailVO MyMailFindInfo(int mailId);
 	
 	//메일등록
-	public int create(MailVO mailVO);
-	
-	//메일수정
-	public int modify(MailVO mailVO);
+	public int MailCreate(MailVO mailVO);
 	
 	//메일검색기록
-	public int RecodeMail(MailVO mailVO);
+	public int MailRecode(MailVO mailVO);
+	
+	//메일수정
+	public int MailModify(MailVO mailVO);
 	
 	//메일답장
-	public int PutDateMail(MailVO mailVO);
+	public int MailPutDate(MailVO mailVO);
 	
 	//메일전달
-	public int VeryDateMail(MailVO mailVO);
+	public int MailVeryDate(MailVO mailVO);
 	
 	//메일삭제
-	public int remove(int mailId);
+	public int MailRemove(int mailId);
 	
 	//메일페이지네이션
 	public int getCount(PageListVO pagelistVO);

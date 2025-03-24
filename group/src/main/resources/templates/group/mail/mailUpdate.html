@@ -60,16 +60,17 @@
 	  </a>
 	  </div>
 	<h1>메일수정하기</h1>
-	  <div>
-	    <hr>
-			<a href="#">저장</a>
-			<a href="#">임시저장</a>
-		<hr>
-	  </div>
+	  <form th:action="@{mailUpdate}" method="post" class="user">
+  	  <div class="btn-container">
+	     <button class="btn btn-primary">
+      		저장
+        </button>
+	     <button class="btn btn-primary">
+      		임시저장
+        </button>
+      </div>
 
 	<!-- 메일수정 -->
-	
-	<form name="form" method="post">
 	<table class="table">
 		<tr>
 			<td>받는사람</td>

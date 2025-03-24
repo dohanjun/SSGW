@@ -4,9 +4,12 @@ import java.util.Date;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import lombok.Data;
+
+@Data
 public class AddressBookVO {
 
-	private int addressBookId;
+	private Integer addressBookId;
 	private String addressBookName;
 	private String addressBookNumber;
 	private String addressBookEmail;
