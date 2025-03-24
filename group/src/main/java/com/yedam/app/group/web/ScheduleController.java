@@ -33,7 +33,7 @@ public class ScheduleController {
 	private final EmpService empService;
 	
 	// 일정등록
-	@PostMapping("/save")
+	@PostMapping("")
     public ResponseEntity<?> saveSchedule(@RequestBody ScheduleVO scheduleVO) {
 		
 		// 로그인한 사용자 정보 가져오기
@@ -53,8 +53,8 @@ public class ScheduleController {
     }
 	
 	// 일정 조회
-	@GetMapping("/list")
-    public ResponseEntity<List<ScheduleVO>> getScheduleList(ScheduleVO scheduleVO, Model model) {
+	@GetMapping("")
+    public List<ScheduleVO> getScheduleList(ScheduleVO scheduleVO, Model model) {
 		
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 		
@@ -62,13 +62,11 @@ public class ScheduleController {
 		scheduleVO.setSuberNo(loggedInUser.getSuberNo()); // 로그인한 사용자 회사번호
 		scheduleVO.setDepartmentNo(loggedInUser.getDepartmentNo()); // 로그인한 사용자 부서번호
 		
-        List<ScheduleVO> scheduleList = scheduleService.findAllSchedules(scheduleVO);
-        
-        return ResponseEntity.ok(scheduleList);
+        return scheduleService.findAllSchedules(scheduleVO);
     }
 	
 	// 일정 수정
-    @PutMapping("/update")
+    @PutMapping("")
     public ResponseEntity<?> updateSchedule(@RequestBody ScheduleVO scheduleVO) {
         int result = scheduleService.modifySchedule(scheduleVO);
         if (result > 0) {
@@ -79,7 +77,7 @@ public class ScheduleController {
     }
 
     // 일정 삭제
-    @DeleteMapping("/delete/{scheduleId}")
+    @DeleteMapping("/{scheduleId}")
     public ResponseEntity<?> deleteSchedule(@PathVariable int scheduleId) {
         ScheduleVO scheduleVO = new ScheduleVO();
         scheduleVO.setScheduleId(scheduleId);

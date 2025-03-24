@@ -14,7 +14,7 @@ public interface ApprovalService {
 	// 참조열람함
 	public List<ApprovalVO> findAprvListByRole(ApprovalVO aprvVO);
 	
-	// 결재 상세 정보 조회
+	// 결재 문서 상세 정보 조회
 	public ApprovalVO findAprvInfo(ApprovalVO aprvVO);
 	
 	// 기본양식목록 조회

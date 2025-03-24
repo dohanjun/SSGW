@@ -32,16 +32,15 @@
             <form action="/aprv/writing" method="POST">
                 <input type="hidden" name="formId" id="formIdInput">
                 <input type="hidden" name="basicsFormId" id="basicsFormIdInput">
-                <input type="hidden" name="content" id="contentHidden">
                 <input type="hidden" name="status" id="statusInput">
                 <div class="form-group">
                     <label>제목</label>
-                    <input type="text" class="form-control" name="title">
+                    <input type="text" class="form-control" name="title"
+                           th:value="${aprvVO != null} ? ${aprvVO.title} : ''">
                 </div>
                 <div class="form-group">
                     <label>내용</label>
                     <div id="Content" class="p-3 border rounded" style="min-height: 200px; background-color: #f8f9fc;"></div>
-                    <textarea name="content" id="contentHidden" hidden></textarea>
                 </div>
                 <div class="form-group">
                     <label>결재자</label>
@@ -55,7 +54,7 @@
                 </div>
 
                 <div class="text-right">
-                    <button type="submit" class="btn btn-primary">등록</button>
+                    <button type="button" class="btn btn-primary" id="ajaxSubmitBtn">등록</button>
                     <button type="button" class="btn btn-primary" id="tempSaveButton">임시저장</button>
                     <button type="reset" class="btn btn-secondary">초기화</button>
                 </div>
@@ -130,6 +129,7 @@ function forceCloseModal(modalId) {
         $('body').focus();
 }
 
+// 조직도 불러오기
 function buildTree(data, treeId) {
     const tree = document.getElementById(treeId);
     tree.innerHTML = "";
@@ -188,7 +188,9 @@ function filterTree(inputId, treeId) {
 
 $('#searchApprover').on('input', () => filterTree('searchApprover', 'orgTreeApprover'));
 $('#searchReference').on('input', () => filterTree('searchReference', 'orgTreeReference'));
+// 여기까지 조직도
 
+// 모달창열기
 $('#approverModal').on('show.bs.modal', function () {
     fetch('/api/orgchart')
         .then(res => res.json())
@@ -313,12 +315,95 @@ $('#loadFormBtn').click(function () {
     });
 });
 
-// 임시저장 버튼 클릭 시 status를 '임시'로 설정하고 폼 제출
+/* // 임시저장 버튼 클릭 시 status를 '임시'로 설정하고 폼 제출
 document.getElementById("tempSaveButton").addEventListener("click", function() {
     document.getElementById("statusInput").value = "임시";
   
     document.querySelector("form").submit();
+}); */
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    const contentHidden = document.getElementById("contentHidden");
+
+    if (contentHidden && contentHidden.value) {
+        // HTML Entity 디코딩
+        const textarea = document.createElement("textarea");
+        textarea.innerHTML = contentHidden.value;
+        const decodedHtml = textarea.value;
+
+        // 콘텐츠 영역에 HTML 삽입
+        document.getElementById("Content").innerHTML = decodedHtml;
+    }
 });
+
+// 전송
+$('#ajaxSubmitBtn').on('click', function () {
+    const finalContent = prepareFinalContent();
+	// let obj = [];
+	
+    const formData = {
+        formId: $('#formIdInput').val(),
+        basicsFormId: $('#basicsFormIdInput').val(),
+        title: $('input[name="title"]').val(),
+        content: finalContent, //document.getElementById("Content").innerHTML,
+        status: '대기', // 또는 '상신' 등 원하는 상태값
+        approvers: $('#approversInput').val().split(',').map(Number),
+        references: $('#referencesInput').val()
+    };
+
+    $.ajax({
+        url: '/aprv/writing',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(formData),
+        success: function (res) {
+            alert('기안문이 성공적으로 등록되었습니다!');
+            location.href = '/aprv/list'; // 목록 페이지 등으로 이동
+        },
+        error: function (xhr) {
+            alert('등록 중 오류 발생: ' + xhr.responseText);
+        }
+    });
+});
+
+// 양식 불러온 후 내용 채워넣고 등록
+function prepareFinalContent() {
+    const contentDiv = document.getElementById("Content");
+    const clonedContent = contentDiv.cloneNode(true);
+
+    // input
+    clonedContent.querySelectorAll("input").forEach(input => {
+        if (input.type === "checkbox" || input.type === "radio") {
+            if (input.checked) input.setAttribute("checked", "checked");
+            else input.removeAttribute("checked");
+        } else {
+            input.setAttribute("value", input.value);
+        }
+    });
+
+    // textarea
+    clonedContent.querySelectorAll("textarea").forEach(textarea => {
+        textarea.innerHTML = textarea.value;
+    });
+
+    // select
+    clonedContent.querySelectorAll("select").forEach(select => {
+        Array.from(select.options).forEach(option => {
+            if (option.value === select.value) {
+                option.setAttribute("selected", "selected");
+            } else {
+                option.removeAttribute("selected");
+            }
+        });
+    });
+
+    return clonedContent.innerHTML;
+}
+
+
+
+
 </script>
 
 </body>
