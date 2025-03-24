@@ -196,7 +196,19 @@
 		 WHERE EMPLOYEE_NO = #{employeeNo}
       </update>
 	  
-	  
+	  <select id="getFirstIpByEmployeeNo" parameterType="int" resultType="string">
+    	SELECT s.first_ip
+    	FROM employees e
+    	JOIN suber s ON e.suber_no = s.suber_no
+    	WHERE e.employee_no = #{employeeNo}
+	 </select>
+
+	<select id="getSecondIpByEmployeeNo" parameterType="int" resultType="string">
+    	SELECT s.second_ip
+    	FROM employees e
+    	JOIN suber s ON e.suber_no = s.suber_no
+    	WHERE e.employee_no = #{employeeNo}
+	</select>
 	  
 
 </mapper>

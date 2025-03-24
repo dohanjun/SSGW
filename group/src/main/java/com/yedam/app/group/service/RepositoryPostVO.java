@@ -19,4 +19,6 @@ public class RepositoryPostVO {
     private int employeeNo;
     private int fileRepositoryId;
     private char fix;
+    
+    private String repositoryType;
 }

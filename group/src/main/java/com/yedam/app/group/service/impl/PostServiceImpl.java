@@ -99,4 +99,14 @@ public class PostServiceImpl implements PostService {
 
         return null; // 셋 다 없을 경우
     }
+    
+    @Override
+    public void updatePost(RepositoryPostVO postVO) {
+        postMapper.updatePost(postVO);
+    }
+    
+    @Override
+    public void updateFixStatus(Long writingId, char fix) {
+        postMapper.updateFixStatus(writingId, fix);
+    }
 }

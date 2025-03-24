@@ -107,4 +107,44 @@ public class PostController {
             default -> "redirect:/individualRepository";
         };
     }
+    
+    @GetMapping("/editPost")
+    public String editPostForm(@RequestParam("writingId") Long writingId, Model model) {
+        RepositoryPostVO post = postService.getPostDetail(writingId);
+        model.addAttribute("post", post);
+        return "group/repository/editPost";
+    }
+    
+    @PostMapping("/editPost")
+    public String updatePost(@ModelAttribute RepositoryPostVO postVO,
+                             @RequestParam(value = "files", required = false) MultipartFile[] files) {
+
+        // 게시글 제목/내용 수정
+        postService.updatePost(postVO);
+
+        // 기존 파일 삭제 전 다운로드 로그 먼저 삭제!
+        fileService.deleteDownloadLogByWritingId(postVO.getWritingId());
+
+        // 기존 파일 삭제
+        fileService.deleteFilesByWritingId(postVO.getWritingId());
+
+        // 새 파일 저장
+        if (files != null && files.length > 0) {
+            for (MultipartFile file : files) {
+                if (!file.isEmpty()) {
+                    fileService.insertFile(postVO.getWritingId(), file);
+                }
+            }
+        }
+
+        return "redirect:/detailPost/" + postVO.getWritingId();
+    }
+    
+    @PostMapping("/toggleFix")
+    public String toggleFix(@RequestParam("writingId") Long writingId) {
+        RepositoryPostVO post = postService.getPostDetail(writingId);
+        char newFix = (post.getFix() == 'Y') ? 'N' : 'Y';
+        postService.updateFixStatus(writingId, newFix);
+        return "redirect:/detailPost/" + writingId;
+    }
 }

@@ -12,6 +12,8 @@
 <title>자료실</title>
 </head>
 <body>
+	<form id="moveForm" th:action="@{/basket/moveToBasket}" method="post">
+		<input type="hidden" name="repositoryType" value="전체" />
 		<div class="card shadow mb-4" style="width: 100%; margin-top: 20px; margin-bottom: auto;">
 			<div class="card-header py-3">
 				<h6 class="m-0 font-weight-bold text-primary" th:text="${repository.fileRepositoryType}">전체 자료실</h6>
@@ -24,13 +26,13 @@
 							style="top: 50%; left: 10px; transform: translateY(-50%); color: #aaa;"></i>
 					</div>
 					<div class="text-right mb-3">
-						<button class="btn btn-primary" th:onclick="|location.href='@{/repositoryInsert}'|">동륵</button>
+						<a class="btn btn-primary"  th:href='@{/repositoryInsert}'>동륵</a>
 					</div>
 					<table class="table table-bordered" id="dataTable" width="100%"
 						cellspacing="0">
 						<thead>
 						    <tr>
-            					<td><input type="checkbox" class="file-checkbox"></td>
+            					<td><input type="checkbox" id="selectAll"></td>
            						<td>자료이름</td>
             					<td>파일명</td>
             					<td>작성자</td>
@@ -38,16 +40,23 @@
         				    </tr>
 						</thead>
 						<tbody>
-							<!-- 리스트가 비어 있을 경우 예외 처리 -->
-    						<tr th:if="${#lists.isEmpty(totalRepositoryList)}">
-        						<td colspan="4" class="text-center">등록된 자료가 없습니다.</td>
-    						</tr>
-						
 							<tr th:each="post : ${totalRepositoryList}" 
-      							class="clickable-row" 
-      							th:data-id="${post.writingId}">
-								<td><input type="checkbox" class="file-checkbox"></td>
-           						<td th:text="${post.title}"></td>
+      							th:data-url="@{'/detailPost/' + ${post.writingId}}"
+      							onclick="location.href=this.dataset.url"
+      							style="cursor: pointer;">
+								<td>
+									<input type="checkbox" name="writingIds"
+       										th:value="${post.writingId}"
+       										th:disabled="${post.employeeNo != loggedInEmpNo and !isAdmin}"
+       										class="file-checkbox"
+       									 	onclick="event.stopPropagation()" />
+								</td>
+								<td>
+    								<span th:if="${post.fix?.toString() == 'Y'}">
+        								<i class="fas fa-thumbtack text-warning mr-1"></i>
+    								</span>
+    								<span th:text="${post.title}"></span>
+								</td>
             					<td th:text="${post.fileCount > 1 ? post.fileName + ' 외 ' + (post.fileCount - 1) + '건' : post.fileName}"></td>
             					<td th:text="${post.writer}"></td>
             					<td th:text="${#dates.format(post.creationDate, 'yyyy-MM-dd')}"></td>
@@ -55,10 +64,12 @@
 						</tbody>
 					</table>
 					<div class="d-flex align-items-center justify-content-between mt-3">
-
-						<a href="#" class="btn btn-danger">
-							<i class="fas fa-trash"></i>
-						</a>
+						<!-- 왼쪽: 휴지통 버튼 -->
+						<div>
+							<button type="submit" class="btn btn-danger">
+								<i class="fas fa-trash"></i>
+							</button>
+						</div>
 
 						<div class="flex-grow-1 d-flex justify-content-center">
 							<nav aria-label="페이지네이션">
@@ -83,22 +94,21 @@
 				</div>
 			</div>
 		</div>
+	</form>
 </body>
 </html>
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const rows = document.querySelectorAll(".clickable-row");
-
-    rows.forEach(row => {
-      row.addEventListener("click", function (e) {
-        // 체크박스를 클릭한 경우는 제외
-        if (e.target.type !== "checkbox") {
-          const writingId = this.dataset.id;
-          if (writingId) {
-            window.location.href = "/detailPost" + writingId;
-          }
-        }
-      });
-    });
-  });
+	document.getElementById('selectAll').addEventListener('change', function () {
+		const checkboxes = document.querySelectorAll('input[name="writingIds"]:not(:disabled)');
+		checkboxes.forEach(cb => cb.checked = this.checked);
+	});
+	
+	// 휴지통 버튼 눌렀을 때 체크된 항목이 없으면 알림
+	document.getElementById('moveForm').addEventListener('submit', function(e) {
+		const checked = document.querySelectorAll('input[name="writingIds"]:checked');
+		if (checked.length === 0) {
+			alert('선택된 게시글이 없습니다.');
+			e.preventDefault(); // 폼 전송 막기
+		}
+	});
 </script>

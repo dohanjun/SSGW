@@ -37,6 +37,9 @@ public interface EmpMapper {
     //  사원번호로 랜덤 비밀번호를 업데이트
     public void updatePassword(@Param("employeeNo") int employeeNo, @Param("employeePw") String employeePw);
     
+    // 첫번째 ip
+    String getFirstIpByEmployeeNo(Integer employeeNo);
     
-	
+    // 두번째 ip
+    String getSecondIpByEmployeeNo(Integer employeeNo);
 }

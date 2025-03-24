@@ -17,4 +17,64 @@
         )
     </insert>
     
+    <select id="selectFilesByWritingId" parameterType="long" resultType="com.yedam.app.group.service.RepositoryFileVO">
+    	SELECT 
+        	file_id,
+        	writing_id,
+        	file_name,
+        	save_file_name,
+        	file_path,
+        	creation_date,
+        	file_size,
+        	file_extension
+    	FROM repository_file
+    	WHERE writing_id = #{writingId}
+	</select>
+    
+    <!-- 파일 목록 조회 -->
+    <select id="selectFileById" parameterType="long" 
+        resultType="com.yedam.app.group.service.RepositoryFileVO">
+    	SELECT 
+    		file_id,
+    		writing_id,
+    		file_name AS fileName,
+    		save_file_name AS saveFileName,
+    		file_path AS filePath,
+    		creation_date,
+    		file_size AS fileSize,
+    		file_extension AS fileExtension
+  		FROM repository_file 
+  		WHERE file_id = #{fileId}
+	</select>
+	
+	<!-- 파일 단건 조회 -->
+    <select id="getFile" parameterType="long"
+            resultType="com.yedam.app.group.service.RepositoryFileVO">
+        SELECT * FROM repository_file WHERE file_id = #{fileId}
+    </select>
+
+    <!-- 다운로드 기록 등록 -->
+    <insert id="insertDownloadLog" parameterType="com.yedam.app.group.service.DownloadVO">
+    	<selectKey keyProperty="downloadNo" resultType="long" order="BEFORE">
+        	SELECT download_seq.NEXTVAL FROM dual
+    	</selectKey>
+    	INSERT INTO download(
+        	download_no, file_id, employee_no, download_date, ip
+    	) VALUES (
+        	#{downloadNo}, #{fileId}, #{employeeNo}, #{downloadDate}, #{ip}
+    	)
+	</insert>
+	
+	<delete id="deleteFilesByWritingId" parameterType="long">
+    	DELETE FROM repository_file WHERE writing_id = #{writingId}
+	</delete>
+	
+	<delete id="deleteDownloadLogByWritingId" parameterType="long">
+    	DELETE FROM download
+    	WHERE file_id IN (
+        	SELECT file_id
+        	FROM repository_file
+        	WHERE writing_id = #{writingId}
+    	)
+	</delete>
 </mapper>

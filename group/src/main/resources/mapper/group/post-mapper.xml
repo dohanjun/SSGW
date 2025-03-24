@@ -34,21 +34,22 @@
         SELECT 
         	p.writing_id,
         	p.title,
+        	p.fix,
+        	p.employee_no,
         	e.employee_name AS writer,
         	p.creation_date AS creationDate,
         	MIN(f.file_name) AS fileName,
-        	COUNT(f.file_id) AS fileCount
+        	COUNT(f.file_id) AS fileCount,
+        	r.file_repository_type AS repositoryType
     	FROM repository_post p
     	JOIN employees e ON p.employee_no = e.employee_no
+    	JOIN repository r ON p.file_repository_id = r.file_repository_id
     	LEFT JOIN repository_file f ON p.writing_id = f.writing_id
-    	WHERE p.file_repository_id IN (
-        	SELECT file_repository_id
-        	FROM repository
-        	WHERE suber_no = #{suberNo}
-          	AND file_repository_type = '전체'
-    	)
-    	GROUP BY p.writing_id, p.title, e.employee_name, p.creation_date
-    	ORDER BY p.creation_date DESC
+    	WHERE r.suber_no = #{suberNo}
+          AND r.file_repository_type = '전체'
+    	  AND p.writing_id NOT IN (SELECT writing_id FROM basket)
+    	GROUP BY p.writing_id, p.title, e.employee_name, p.creation_date, p.fix, p.employee_no, r.file_repository_type
+    	ORDER BY p.fix DESC, p.creation_date DESC
     </select>
 
     <!-- 부서 자료실 게시글 목록 조회 -->
@@ -56,22 +57,23 @@
         SELECT 
         	p.writing_id,
         	p.title,
+        	p.fix,
+        	p.employee_no,
         	e.employee_name AS writer,
         	p.creation_date AS creationDate,
        		MIN(f.file_name) AS fileName,
-        	COUNT(f.file_id) AS fileCount
+        	COUNT(f.file_id) AS fileCount,
+        	r.file_repository_type AS repositoryType
     	FROM repository_post p
     	JOIN employees e ON p.employee_no = e.employee_no
+    	JOIN repository r ON p.file_repository_id = r.file_repository_id
     	LEFT JOIN repository_file f ON p.writing_id = f.writing_id
-    	WHERE p.file_repository_id IN (
-        	SELECT file_repository_id
-       		FROM repository
-        	WHERE suber_no = #{suberNo}
-          		AND department_no = #{departmentNo}
-          		AND file_repository_type = '부서'
-    	)
-    	GROUP BY p.writing_id, p.title, e.employee_name, p.creation_date
-    	ORDER BY p.creation_date DESC
+    	 WHERE r.suber_no = #{suberNo}
+      		AND r.department_no = #{departmentNo}
+      		AND r.file_repository_type = '부서'
+      		AND p.writing_id NOT IN (SELECT writing_id FROM basket)
+    	GROUP BY p.writing_id, p.title, e.employee_name, p.creation_date, p.fix, p.employee_no, r.file_repository_type
+    	ORDER BY p.fix DESC, p.creation_date DESC
     </select>
 
     <!-- 개인 자료실 게시글 목록 조회 -->
@@ -79,22 +81,23 @@
         SELECT 
         	p.writing_id,
         	p.title,
+        	p.fix,
+        	p.employee_no,
         	e.employee_name AS writer,
         	p.creation_date AS creationDate,
         	MIN(f.file_name) AS fileName,
-        	COUNT(f.file_id) AS fileCount
+        	COUNT(f.file_id) AS fileCount,
+        	r.file_repository_type AS repositoryType
     	FROM repository_post p
     	JOIN employees e ON p.employee_no = e.employee_no
+    	JOIN repository r ON p.file_repository_id = r.file_repository_id
     	LEFT JOIN repository_file f ON p.writing_id = f.writing_id
-    	WHERE p.file_repository_id IN (
-        	SELECT file_repository_id
-        	FROM repository
-        	WHERE suber_no = #{suberNo}
-          		AND employee_no = #{employeeNo}
-          		AND file_repository_type = '개인'
-    	)
-    	GROUP BY p.writing_id, p.title, e.employee_name, p.creation_date
-    	ORDER BY p.creation_date DESC
+    	WHERE r.suber_no = #{suberNo}
+      		AND r.employee_no = #{employeeNo}
+      		AND r.file_repository_type = '개인'
+      		AND p.writing_id NOT IN (SELECT writing_id FROM basket)
+    	GROUP BY p.writing_id, p.title, e.employee_name, p.creation_date, p.fix, p.employee_no, r.file_repository_type
+    	ORDER BY p.fix DESC, p.creation_date DESC
     </select>
 	
 	<select id="getPostDetail" parameterType="long" resultType="com.yedam.app.group.service.RepositoryPostVO">
@@ -103,7 +106,7 @@
             p.title,
             p.content,
             e.employee_name AS writer,
-            TO_CHAR(p.creation_date, 'YYYY-MM-DD') AS creationDate,
+            p.creation_date AS creationDate,
             p.employee_no,
             p.file_repository_id,
             p.fix
@@ -111,4 +114,17 @@
         JOIN employees e ON p.employee_no = e.employee_no
         WHERE p.writing_id = #{writingId}
     </select>
+    
+    <update id="updatePost" parameterType="com.yedam.app.group.service.RepositoryPostVO">
+    	UPDATE repository_post
+    	SET title = #{title},
+        	content = #{content}
+    	WHERE writing_id = #{writingId}
+	</update>
+	
+	<update id="updateFixStatus">
+    	UPDATE repository_post
+    	SET fix = #{fix}
+    	WHERE writing_id = #{writingId}
+	</update>
 </mapper>

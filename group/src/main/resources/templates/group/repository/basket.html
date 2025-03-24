@@ -1,89 +1,87 @@
+<!-- 휴지통 페이지 HTML (수정 완료) -->
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="~{common/layouts/default_layout}"
-	layout:fragment="content">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/layouts/default_layout}"
+      layout:fragment="content">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>휴지통</title>
-<link
-	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
-	rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>휴지통</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
 </head>
-<body id="page-top">
-	<div id="wrapper">
-		<div id="content-wrapper" class="d-flex flex-column">
-			<div id="content">
-				<div class="container-fluid px-0">
-					<div class="card shadow mb-4" style="width: 100%; margin-top: 20px; margin-bottom: auto;">
-						<div class="card-header py-3">
-							<h6 class="m-0 font-weight-bold text-primary">휴지통</h6>
-						</div>
-						<div class="card-body">
-							<div class="table-responsive">
-								<div class="position-relative mb-4"
-									style="width: 350px; margin: 0 auto;">
-									<input type="text" class="form-control pl-4"
-										placeholder="검색어 입력"> <i
-										class="fas fa-search position-absolute"
-										style="top: 50%; left: 10px; transform: translateY(-50%); color: #aaa;"></i>
-								</div>
-								
-								
-								<table class="table table-bordered" id="dataTable" width="100%"
-									cellspacing="0">
-									<thead>
-										<tr>
-											<th><input type="checkbox" id="selectAll"></th>
-											<th>제목</th>
-											<th>작성자</th>
-											<th>파일명</th>
-											<th>작성일</th>
-											<th>삭제일</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr>
-											<td><input type="checkbox" class="file-checkbox"></td>
-											<td>업무 보고서</td>
-											<td>홍길동</td>
-											<td>report.pdf</td>
-											<td>2025-03-10</td>
-											<td>2025-03-17</td>
-										</tr>
-									</tbody>
-								</table>
-							</div>
-							<div
-								class="d-flex align-items-center justify-content-between mt-3">
-								<div>
-									<button class="btn btn-success">복원</button>
-									<button class="btn btn-danger">삭제</button>
-								</div>
+<body>
+<form id="basketForm" method="get" action="/basket">
+    <div class="card shadow mb-4" style="width: 100%; margin-top: 20px;">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">휴지통</h6>
+        </div>
+        <div class="card-body">
+        <label for="repositoryType" class="form-label font-weight-bold">휴지통 유형</label>
+        <select id="repositoryType" name="repositoryType"
+        class="form-control"
+        style="width: 200px; display: inline-block;"
+        onchange="document.getElementById('basketForm').submit();">
+            <option value="전체" th:selected="${repositoryType == '전체'}">전체</option>
+			<option value="부서" th:selected="${repositoryType == '부서'}">부서</option>
+			<option value="개인" th:selected="${repositoryType == '개인'}">개인</option>
+        </select>
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                    <tr>
+                        <th><input type="checkbox" id="selectAll"></th>
+                        <th>제목</th>
+                        <th>작성자</th>
+                        <th>파일명</th>
+                        <th>작성일</th>
+                        <th>삭제일</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="post : ${basketList}">
+                        <td><input type="checkbox" name="writingIds" th:value="${post.writingId}" class="file-checkbox"></td>
+                        <td th:text="${post.title}"></td>
+                        <td th:text="${post.writer}"></td>
+                        <td th:text="${post.fileCount > 1 ? post.fileName + ' 외 ' + (post.fileCount - 1) + '건' : post.fileName}"></td>
+                        <td th:text="${#dates.format(post.creationDate, 'yyyy-MM-dd')}"></td>
+                        <td th:text="${#dates.format(post.delDate, 'yyyy-MM-dd')}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
 
-								<div class="flex-grow-1 text-center">
-									<nav aria-label="페이지네이션">
-										<ul class="pagination mb-0 d-inline-flex">
-											<li class="page-item disabled"><a class="page-link"
-												href="#" tabindex="-1">&laquo;</a></li>
-											<li class="page-item active"><a class="page-link"
-												href="#">1</a></li>
-											<li class="page-item"><a class="page-link" href="#">2</a></li>
-											<li class="page-item"><a class="page-link" href="#">3</a></li>
-											<li class="page-item"><a class="page-link" href="#">&raquo;</a>
-											</li>
-										</ul>
-									</nav>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+            <!-- 버튼 영역 -->
+            <div class="d-flex align-items-center justify-content-between mt-3">
+                <div>
+                    <!-- 복원 버튼 -->
+                    <button type="submit" class="btn btn-success" formaction="/basket/restore">복원</button>
+                    <!-- 삭제 버튼 -->
+                    <button type="submit" class="btn btn-danger" formaction="/basket/delete">삭제</button>
+                </div>
+
+                <!-- 페이지네이션 -->
+                <div class="flex-grow-1 text-center">
+                    <nav aria-label="페이지네이션">
+                        <ul class="pagination mb-0 d-inline-flex">
+                            <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1">&laquo;</a></li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item"><a class="page-link" href="#">&raquo;</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    // 전체 선택
+    document.getElementById('selectAll').addEventListener('change', function () {
+        const checkboxes = document.querySelectorAll('.file-checkbox');
+        checkboxes.forEach(cb => cb.checked = this.checked);
+    });
+</script>
 </body>
 </html>
