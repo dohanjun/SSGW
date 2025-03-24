@@ -50,7 +50,7 @@
 ### 🧰 Frontend
 - Thymeleaf
 - HTML5 / CSS3 / JavaScript (ES6)
-- Bootstrap 5
+- Bootstrap 4
 
 ### ☁️ DevOps & Infra
 - AWS EC2 (Linux)
