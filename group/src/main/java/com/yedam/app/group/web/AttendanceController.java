@@ -27,7 +27,7 @@ public class AttendanceController {
     private AttendanceService attendanceService;
     @Autowired
     private EmpService empService;
-    
+
     @GetMapping("/check-late")
     public Map<String, String> checkLate() {
         LocalDateTime now = LocalDateTime.now();
@@ -35,13 +35,32 @@ public class AttendanceController {
 
         return Map.of("status", now.isAfter(nineAM) ? "LATE" : "OK");
     }
+
+    // ✅ 출근 여부 체크 (하루 한 번 제한)
+    @GetMapping("/already-clock-in")
+    public boolean alreadyClockedIn(HttpSession session) {
+        EmpVO emp = empService.getLoggedInUserInfo();
+        return attendanceService.hasClockedInToday(emp.getEmployeeNo());
+    }
+
+    // ✅ 퇴근 여부 체크 (하루 한 번 제한)
+    @GetMapping("/already-clock-out")
+    public boolean alreadyClockedOut(HttpSession session) {
+        EmpVO emp = empService.getLoggedInUserInfo();
+        return attendanceService.hasClockedOutToday(emp.getEmployeeNo());
+    }
+
     // ✅ 출근 기록 저장 (지각이면 reason 포함)
     @PostMapping("/clock-in")
     public String clockIn(@RequestBody Map<String, String> payload, HttpSession session) {
-    	String reason = payload.get("reason");
-        EmpVO loggedInUser = empService.getLoggedInUserInfo(); // 로그인 정보
+        String reason = payload.get("reason");
+        EmpVO loggedInUser = empService.getLoggedInUserInfo();
         if (loggedInUser == null) {
             return "{\"message\": \"로그인이 필요합니다.\"}";
+        }
+
+        if (attendanceService.hasClockedInToday(loggedInUser.getEmployeeNo())) {
+            return "{\"message\": \"⚠️ 이미 오늘 출근 기록이 있습니다.\"}";
         }
 
         AttendanceManagementVO vo = new AttendanceManagementVO();
@@ -54,27 +73,32 @@ public class AttendanceController {
         LocalDateTime nineAM = now.withHour(9).withMinute(0).withSecond(0).withNano(0);
         if (now.isAfter(nineAM)) {
             vo.setWorkAttitudeType("지각");
-            vo.setReason(payload.get("reason")); // ✅ 지각 사유 저장
+            vo.setReason(reason);
         } else {
             vo.setWorkAttitudeType("정상출근");
-            vo.setReason(null); // 정상출근이면 사유 없음
+            vo.setReason(null);
         }
 
-        attendanceService.createClockIn(vo); // DB 저장
+        attendanceService.createClockIn(vo);
         return "{\"message\": \"✅ 출근 시간이 등록되었습니다.\"}";
     }
+
     // ✅ 퇴근
     @PostMapping("/clock-out")
     public String clockOut(HttpSession session) {
-    	EmpVO loggedInUser = empService.getLoggedInUserInfo();
+        EmpVO loggedInUser = empService.getLoggedInUserInfo();
         if (loggedInUser == null) {
             return "{\"message\": \"로그인이 필요합니다.\"}";
         }
 
+        if (attendanceService.hasClockedOutToday(loggedInUser.getEmployeeNo())) {
+            return "{\"message\": \"⚠️ 이미 오늘 퇴근 기록이 있습니다.\"}";
+        }
+
         AttendanceManagementVO vo = new AttendanceManagementVO();
         vo.setEmployeeNo(loggedInUser.getEmployeeNo());
-        vo.setAttendanceDate(java.sql.Date.valueOf(LocalDate.now())); // 오늘 날짜
-        vo.setClockOutTime(Timestamp.valueOf(LocalDateTime.now()));   // 현재 시간
+        vo.setAttendanceDate(java.sql.Date.valueOf(LocalDate.now()));
+        vo.setClockOutTime(Timestamp.valueOf(LocalDateTime.now()));
 
         int updated = attendanceService.modifyClockOut(vo);
         if (updated == 0) {

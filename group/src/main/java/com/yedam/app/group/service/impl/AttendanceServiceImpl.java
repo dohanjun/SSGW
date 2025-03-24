@@ -21,7 +21,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         this.attendanceMapper = attendanceMapper;
     }
 
-    // ✅ 기존 코드 유지 (출근/퇴근 이외의 기능)
+    // ✅ 기존 출결 데이터 관련 메서드
     @Override
     public List<AttendanceManagementVO> selectAll() {
         return attendanceMapper.selectAll();
@@ -43,14 +43,27 @@ public class AttendanceServiceImpl implements AttendanceService {
         return attendanceMapper.getAttendanceSummary(employeeNo);
     }
 
+    // ✅ 출근 처리
     @Override
     public Integer createClockIn(AttendanceManagementVO vo) {
-      return  attendanceMapper.insertClockIn(vo);
-      
+        return attendanceMapper.insertClockIn(vo);
     }
 
+    // ✅ 퇴근 처리
     @Override
     public Integer modifyClockOut(AttendanceManagementVO vo) {
-       return attendanceMapper.updateClockOut(vo);
+        return attendanceMapper.updateClockOut(vo);
+    }
+
+    // ✅ 출근 여부 체크 (하루 1회 제한용)
+    @Override
+    public boolean hasClockedInToday(int employeeNo) {
+        return attendanceMapper.countTodayClockIn(employeeNo) > 0;
+    }
+
+    // ✅ 퇴근 여부 체크 (하루 1회 제한용)
+    @Override
+    public boolean hasClockedOutToday(int employeeNo) {
+        return attendanceMapper.countTodayClockOut(employeeNo) > 0;
     }
 }

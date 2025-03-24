@@ -21,4 +21,10 @@ public interface AttendanceService {
 
     // ✅ 퇴근
     Integer modifyClockOut(AttendanceManagementVO vo);
+    
+    
+    boolean hasClockedInToday(int employeeNo); 
+    
+    
+    boolean hasClockedOutToday(int employeeNo); 
 }

@@ -175,7 +175,6 @@ public class ApprovalServiceImpl implements ApprovalService {
 	// 결재요청함, 임시저장함
 	@Override
 	public List<ApprovalVO> findAllList(ApprovalVO aprvVO) {
-		aprvVO.setAprvStatus("임시");  // 임시 상태로 설정
 		return approvalMapper.selectAllList(aprvVO);
 	}
 	

@@ -30,7 +30,7 @@
         AND d.TITLE LIKE '%' || #{title} || '%'
     </if>
     <if test="draftDate != null">
-        AND d.DRAFT_DATE = #{draftDate}
+        AND d.DRAFT_DATE >= #{draftDate} AND d.DRAFT_DATE <![CDATA[ < ]]> #{draftDate} +1
     </if>
     <if test="aprvStatus != '참조'">
         AND r.APRV_ROLE != '참조'
@@ -146,20 +146,22 @@
 			SELECT NVL(MAX(form_id), 1) + 1
 			FROM aprv_forms
 		</selectKey>
-		INSERT INTO aprv_forms (form_id
-		, form_type
-		, content
-		, version
-		, active
-		, creation_date
-		, suber_no)
-		VALUES(#{formId}
-		,#{formType}
-		,#{content}
-		,1
-		,'1'
-		,sysdate
-		,#{suberNo})
+		INSERT INTO aprv_forms (
+					form_id
+					, form_type
+					, content
+					, version
+					, active
+					, creation_date
+					, suber_no)
+		VALUES(
+					#{formId}
+					,#{formType}
+					,#{content}
+					,1
+					,'1'
+					,sysdate
+					,#{suberNo})
 	</insert>
 	
 	<!-- 기본양식목록 불러오기 -->
@@ -174,6 +176,7 @@
 		SELECT FORM_ID
 		       ,FORM_TYPE
 		FROM   APRV_FORMS
+		WHERE  SUBER_NO = #{suberNo}
 	</select>
 	
 	<!-- 기본양식불러오기 -->
@@ -229,6 +232,7 @@
     <if test="aprvStatus != '임시'">
         AND d.APRV_STATUS != '임시'  
     </if>
+    ORDER BY d.draft_no
 </select>
 
 	
