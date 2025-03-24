@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
@@ -20,6 +21,13 @@ public class SecurityConfig {
     public SecurityConfig(CustomAuthenticationSuccessHandler successHandler) {
         this.successHandler = successHandler;
     }
+    
+    // 암호화 빈 추가
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    } 
+
     
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -50,7 +58,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.ignoringRequestMatchers("/logout","/savePayment","/insertModule", "/updateModule","/deleteModule/*","/updateModuleBasic/*","/updateModuleActive/*","/qna", "/aprv/**","/insertModule","/saveForm", "/schedule/**","/qna","/fixed","/saveSubDetail","/saveSubDetail","/saveSuber","/savePaymentDetails","/saveUser","/insertBoardPost","/selectBoardPost","/updateBoardPost"));
         return http.build();
     }
-
+    // 비밀번호 암호화
     @Bean
     public JdbcUserDetailsManager userDetailsService(DataSource dataSource) {
         JdbcUserDetailsManager manager = new JdbcUserDetailsManager(dataSource);
@@ -78,10 +86,7 @@ public class SecurityConfig {
     }
 
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return NoOpPasswordEncoder.getInstance();
-    }
+  
     
     
 }

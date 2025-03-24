@@ -2,43 +2,99 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yedam.app.group.mapper.VacationMapper">
 
-	    <!-- 해당 연도 연차 부여 여부 확인 -->
-	    <select id="findAllLeaveHistory" resultType="VacationVO">
-	        SELECT COUNT(*) > 0
-	        FROM LEAVE_HISTORY
-	        WHERE EMPLOYEE_NO = #{employeeNo}
-	        AND TO_CHAR(YEAR, 'YYYY') = #{year}
-	    </select>
+
+        <!-- 연차 유형 조회 -->
+    <select id="getAnnualVacationType" resultType="VacationVO">
+        SELECT VACATION_TYPE_ID,
+               VACATION_TYPE_NAME,
+               VACATION_DATE,
+               REQUIRED_PROOF_DOCUMENT_FILE,
+               SUBER_NO
+        FROM VACATION_TYPE
+        WHERE VACATION_TYPE_NAME = '연차'
+          AND SUBER_NO = #{suberNo}
+    </select>
+
+    <!-- 연차 존재 여부 
+    <select id="existsLeaveHistory" resultType="int">
+        SELECT COUNT(*) FROM LEAVE_HISTORY
+        WHERE EMPLOYEE_NO = #{employeeNo}
+        AND TO_CHAR(YEAR, 'YYYY') = #{year}
+    </select>-->
+    
+        <!-- 연차 존재 여부 확인 -->
+    <select id="existsLeaveHistory" resultType="int">
+        SELECT COUNT(*)
+        FROM LEAVE_HISTORY
+        WHERE EMPLOYEE_NO = #{employeeNo}
+          AND TO_CHAR(YEAR, 'YYYY') = #{year}
+    </select>
+
+        <!-- 연차 내역 등록 -->
+    <insert id="insertLeaveHistory" parameterType="VacationVO">
+        INSERT INTO LEAVE_HISTORY (
+            LEAVE_HISTORY_ID,
+            EMPLOYEE_NO,
+            GRANTED_VACATION,
+            USED_VACATION,
+            REMAINING_VACATION,
+            YEAR,
+            DRAFT_NO
+        ) VALUES (
+            #{leaveHistoryId},
+            #{employeeNo},
+            #{grantedVacation},
+            0,
+            #{remainingVacation},
+            #{year},
+            #{draftNo}
+            
+        )
+    </insert>
+
+    <!-- 전체 사원 목록 (입사일 포함) -->
+    <select id="getAllEmployeesWithHireDate" resultType="VacationVO">
+        SELECT EMPLOYEE_NO, SUBER_NO, HIRE_DATE
+        FROM EMPLOYEES
+        WHERE RESIGNATION_STATUS = 'N'
+        AND HIRE_DATE IS NOT NULL
+        AND SUBER_NO = #{suberNo}
+    </select>
+    
+    <!-- 시퀀스 (임시) -->
+    <select id="getNextLeaveHistoryId" resultType="int">
+        SELECT NVL(MAX(LEAVE_HISTORY_ID), 100) + 1 FROM LEAVE_HISTORY
+    </select>
+    
+    <!-- 기안문서번호 가져오기--> 
+	<select id="getNextDraftNo" resultType="int">
+	    SELECT NVL(MAX(DRAFT_NO), 100) + 1
+   		FROM APRV_DOCUMENTS
+	</select>
 	
-	    <!-- 연차 자동 부여 -->
-	    <insert id="createLeaveHistory" parameterType="VacationVO">
-	        INSERT INTO leave_history (
-	            LEAVE_HISTORY_ID,
-	            EMPLOYEE_NO,
-	            GRANTED_VACATION,
-	            USED_VACATION,
-	            REMAINING_VACATION,
-	            YEAR,
-	            DRAFT_NO
-	        )
-	        VALUES (
-	            #{leaveHistoryId},
-	            #{employeeNo},
-	            #{grantedVacation},
-	            0,
-	            #{grantedVacation},
-	            #{year},
-	            NULL
-	        )
-	    </insert>
+	<!-- 기안문서번호 가져오기 (시퀀스 사용) 
+	<select id="getNextDraftNo" resultType="int">
+	    SELECT APRV_DOCUMENTS_SEQ.NEXTVAL FROM DUAL
+	</select>-->
 	
-	    <!-- 연차 유형 조회 -->
-	    <select id="LeaveHistVO findAllVacationType" resultType="VacationVO">
-	        SELECT VACATION_TYPE_ID, VACATION_TYPE_NAME, VACATION_DATE, SUBER_NO
-	        FROM VACATION_TYPE
-	        WHERE VACATION_TYPE_NAME = '연차'
-	        AND SUBER_NO = #{suberNo}
-	    </select>
+	<!--  
+	<update id="updateLeaveHistory" parameterType="VacationVO">
+	    UPDATE LEAVE_HISTORY
+	    SET GRANTED_VACATION = #{grantedVacation},
+	        REMAINING_VACATION = #{remainingVacation},
+	        DRAFT_NO = #{draftNo}
+	    WHERE EMPLOYEE_NO = #{employeeNo}
+	      AND YEAR = #{year}
+	</update>-->
+	
+	<update id="updateLeaveHistory" parameterType="VacationVO">
+		    UPDATE LEAVE_HISTORY
+		    SET GRANTED_VACATION = 0,
+		        REMAINING_VACATION = 0,
+		        DRAFT_NO = #{draftNo}
+		    WHERE EMPLOYEE_NO = #{employeeNo}
+		      AND YEAR = #{year}
+	</update>
 
 
 </mapper>

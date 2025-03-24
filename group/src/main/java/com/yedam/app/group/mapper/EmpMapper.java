@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 import com.yedam.app.group.service.EmpVO;
+import com.yedam.app.group.service.EmpserchVO;
 
 public interface EmpMapper {
 	
@@ -27,16 +28,10 @@ public interface EmpMapper {
 	public EmpVO findByEmployeeId(String employeeId);
 	
     //  페이징 적용된 사원 목록 조회
-    public List<EmpVO> pageselectEmp(@Param("offset") int offset,
-							            @Param("size") int size,
-							            @Param("category") String category,
-							            @Param("keyword") String keyword,
-							            @Param("suberNo") Integer suberNo);
+    public List<EmpVO> pageselectEmp(EmpserchVO empsVO);
 
     //  전체 사원 수 조회
-    public int countEmp(@Param("category") String category,
-			            @Param("keyword") String keyword,
-			            @Param("suberNo") Integer suberNo);
+    public int countEmp(EmpserchVO empsVO);
     
     
     //  사원번호로 랜덤 비밀번호를 업데이트
