@@ -17,7 +17,7 @@ import com.yedam.app.group.service.EmpService;
 import com.yedam.app.group.service.EmpVO;
 
 @Controller
-public class MyPageController {
+public class MyPageController {  
 
     private final EmpService empService;
 
