@@ -17,7 +17,7 @@ public class PageListVO extends SearchVO{
 	private int sentState;
 	@DateTimeFormat(pattern="yyyy-MM-dd")
 	private Date sentDate;
-	private Integer employeeId;
+	private String employeeId;
 	private String attachedFileName;
 	private String getUser;
 	private String cc;
@@ -25,4 +25,16 @@ public class PageListVO extends SearchVO{
 	private String mailType;
 
 	private String sortKey;
+	
+	private Integer addressBookId;
+	private String addressBookName;
+	private String addressBookNumber;
+	private String addressBookEmail;
+	@DateTimeFormat(pattern="yyyy-MM-dd")
+	private Date addressBookUpdateDate;
+	private String addressBookCompanyName;
+	private String addressBookCompanyNumber;
+	private String zipCode;
+	private String streetAddress;
+	private String addressBookType;
 }

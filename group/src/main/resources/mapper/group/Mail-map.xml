@@ -18,14 +18,26 @@
 		  		OR RECODE LIKE '%' || #{search} || '%' )
 		  	</if>	
 		  	<if test="mailType != null">
-     			and mail_type = #{mailType}
+		  	   and mail_type = #{mailType}  
+		  	   <if test= "mailType == '받은'">
+     			and get_user = #{getUser}	  	   
+		  	   </if>
+		  	   <if test= "mailType == '보낸'">
+     			and employee_id = #{employeeId}   
+		  	   </if>
+		  	   <if test= "mailType == '임시'">
+     			and employee_id = #{employeeId}   
+		  	   </if>
+		  	   <if test= "mailType == '휴지통'">
+     			and employee_id = #{employeeId}   
+		  	   </if>
    			 </if>
 		  </where>
 </sql>
 
  
 	<!-- 메일전체조회 -->
-	<select id="findAll" resultType="MailVO">
+	<select id="MailFindAll" resultType="MailVO">
 	SELECT B.* FROM ( SELECT A.*, ROWNUM RN FROM(
 	SELECT   mail_id
 	        ,title
@@ -62,7 +74,7 @@
 	</select>
 
 	<!-- 메일단건조회 -->
-	<select id="findInfo" resultType="MailVO">
+	<select id="MailFindInfo" resultType="MailVO">
 	SELECT   mail_id
 	        ,title
 	        ,content
@@ -76,10 +88,13 @@
 	        ,mail_type
 	FROM Mail
 	WHERE mail_id = #{mailId}
+	<if test= "employeeId != null and employeeId != ''">
+    and employee_id = #{employeeId}
+	</if>
 	</select>
 	
 	<!-- 나의메일단건조회 -->
-	<select id="MyfindInfo" resultType="MailVO">
+	<select id="MyMailFindInfo" resultType="MailVO">
 	SELECT   mail_id
 	        ,title
 	        ,content
@@ -96,7 +111,7 @@
 	</select>
 	
 	<!-- 메일등록 -->
-	<insert id="insertMail" parameterType="MailVO">
+	<insert id="MailCreate" parameterType="MailVO">
 	<selectKey keyProperty="mailId" resultType="Integer" order="BEFORE">
 	SELECT NVL(MAX(mail_id) + 1, 100) as mail_id
 	FROM Mail
@@ -126,13 +141,13 @@
 	</insert>
 	
 	<!-- 메일검색기록 -->
-	<insert id="RecodeMail" parameterType="MailVO">
+	<insert id="MailRecode" parameterType="MailVO">
 	INSERT INTO Mail recode
     VALUES      #{recode}
 	</insert>
 	
 	<!-- 메일수정 -->
-	<update id="modify" parameterType="MailVO">
+	<update id="MailModify" parameterType="MailVO">
 	UPDATE  Mail
 	   SET  get_user = #{getUser}
 	       ,cc = #{cc}
@@ -143,7 +158,7 @@
 	</update>
 	
 	<!-- 메일답장 -->
-	<update id="PutDateMail" parameterType="MailVO">
+	<update id="MailPutDate" parameterType="MailVO">
 	UPDATE  Mail
 	   SET  get_user = #{getUser}
 	       ,cc = #{cc}
@@ -152,7 +167,7 @@
 	</update>
 	
 	<!-- 메일전달 -->
-	<update id="VeryMail" parameterType="MailVO">
+	<update id="MailVeryDate" parameterType="MailVO">
 	<selectKey keyProperty="mailId" resultType="Integer" order="BEFORE">
 	SELECT NVL(MAX(mail_id) + 1, 100) as mail_id
 	FROM Mail
@@ -177,7 +192,7 @@
 	</update>
 	
 	<!-- 메일삭제 -->
-	<delete id="remove" parameterType="int">
+	<delete id="MailRemove" parameterType="int">
 	DELETE FROM Mail
 	WHERE mail_id = #{mailId}
 	</delete>

@@ -9,31 +9,31 @@ public interface MailService {
 	public PageListVO getPageList(PageListVO vo);
 	
 	//메일전체조회
-	public List<MailVO> selectAll(PageListVO vo);
+	public List<MailVO> MailSelectAll(PageListVO vo);
 	
 	//메일단건조회
-	public MailVO selectInfo(MailVO mailVO);
+	public MailVO MailSelectInfo(MailVO mailVO);
 	
 	//나의메일단건조회
-	public MailVO MySelectInfo(MailVO mailVO);
+	public MailVO MyMailSelectInfo(MailVO mailVO);
 	
 	//메일등록
-	public int insert(MailVO mailVO);
-	
-	//메일수정
-	public Map<String, Object> update(MailVO mailVO);
+	public int MailInsert(MailVO mailVO);
 	
 	//메일검색기록
-	public int RecodeInfo(MailVO mailVO);
+	public int MailRecodeInfo(MailVO mailVO);
+	
+	//메일수정
+	public Map<String, Object> MailUpdate(MailVO mailVO);
 	
 	//메일답장
-	public int PutInfo(MailVO mailVO);
+	public int MailPutInfo(MailVO mailVO);
 	
 	//메일전달
-	public Map<String, Object> VeryInfo(MailVO mailVO);
+	public Map<String, Object> MailVeryInfo(MailVO mailVO);
 	
 	//메일삭제
-	public Map<String, Object> delete(int mailId);
+	public Map<String, Object> MailDelete(int mailId);
 
 	//메일 페이지네이션
 	public int pageGetCount(PageListVO pagelistVO);

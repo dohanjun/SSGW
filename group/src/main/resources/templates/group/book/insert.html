@@ -3,22 +3,17 @@
 	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	  layout:decorate="~{common/layouts/default_layout}"
 	  layout:fragment="content">
-
 <head>
 <meta charset="UTF-8">
-<title>mail Reply</title>
+<title>Book Insert</title>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
 
 <!-- Quill.js CSS -->
 <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 </head>
+
 <style>
-	#flo{
-		float : left;
-		display : flex;
-		justify-content : center;
-		}
 		     /* 메인 컨테이너를 가운데 정렬하고 화면에 맞게 조정 */
         .content-wrapper {
             display: flex;
@@ -53,7 +48,8 @@
             font-size: 20px;
         }
 </style>
-<!-- 메일답장 페이지-->
+
+<!-- 메일쓰기 페이지-->
 <body>
 <div id="content-wrapper" class="d-flex flex-column">
   <div id="container-fluid px-0">
@@ -73,26 +69,26 @@
       		임시저장
         </button>
       </div>
-  <input type="hidden" name="sentState" value="1">
-  <input type="hidden" name="mailType" value="받은">
+  <input type="hidden" name="sentState" value="0">
+  <input type="hidden" name="mailType" value="보낸">
    <table class="table file-info-table">	  
    <tbody>
 		<tr>
 			<th>받는사람</th>
-			<td><input type="text" id="getName" th:value="${mail.getUser}" readonly></td>
+			<td><input type="text" class="form-control" id="getUser" name="getUser"></td>
 			<th>참조</th>
-			<td><input type="text" id="cc" name="cc"></td>
+			<td><input type="text" class="form-control" id="cc" name="cc"></td>
 		</tr>
 		<tr>
 			<th>제목</th>
-			<td><input type="text" id="mid" th:value="${mail.title}" readonly></td>
-			<th>파일첨부</th>
-			<td><input th:value="${mail.attachedFileName}" readonly></td>
+			<td><input type="text" class="form-control" id="title" name="title"></td>
+			<th>파일내용</th>
+			<td><input type="file" class="form-control" id="file" name="file"></td>
 		</tr>
 	</tbody>
    </table>
-   
- <!-- 내용 입력 영역 -->
+
+  <!-- 내용 입력 영역 -->
 		<div class="content-area-container">
 			<div class="content-area-title">내용 입력</div>
 			<div id="editor" class="editor-container" contenteditable="true">여기에서 텍스트를 입력하세요.</div>
@@ -123,11 +119,6 @@
 		document.querySelector('.ql-editor').style.minHeight = "250px";
 		document.querySelector('.ql-editor').style.height = "300px";
 		document.querySelector('.ql-editor').style.maxHeight = "500px";
-	
-		function setEditorContent(value) {
-		    document.getElementById('editor').textContent = value;
-		}
-		setEditorContent("Hello, World!");
-		</script>
+	</script>
   </body>
 </html>

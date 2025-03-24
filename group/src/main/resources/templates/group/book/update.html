@@ -3,9 +3,10 @@
 	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	  layout:decorate="~{common/layouts/default_layout}"
 	  layout:fragment="content">
+
 <head>
 <meta charset="UTF-8">
-<title>mail Select</title>
+<title>Book Update</title>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
 </head>
@@ -49,52 +50,51 @@
             font-size: 20px;
         }
 </style>
-<!-- 메일상세화면 페이지-->
+<!-- 메일수정하기 페이지-->
   <body>
-  <div class="content-wrapper" id="center">
+  <h3>메일수정화면</h3>
+  <div class="content-wrapper">
 	<div class="employee-container">
 	  <div class="btn-container">
-	  <a lcon="home" class="btn btn-primary" th:onclick="|location.href='@{/mail(mailId=${mail.mailId})}'|">
+	  <a lcon="back" class="btn btn-primary" th:onclick="|location.href='@{/myMailSelect(mailId=${mail.mailId})}'|">
 	  </a>
 	  </div>
-	<h1>메일상세화면</h1>
+	<h1>메일수정하기</h1>
 	  <div>
 	    <hr>
-			<button type="button"
-			th:onclick="|location.href='@{/mailReply(mailId=${mail.mailId})}'|">답장</button>
-			<button type="button"
-			th:onclick="|location.href='@{/mailVery(mailId=${mail.mailId})}'|">전달</button>
-			<button type="button"
-			th:onclick="|location.href='@{/mailDelete(mailId=${mail.mailId},country=Kor)}'|">삭제</button>
+			<a href="#">저장</a>
+			<a href="#">임시저장</a>
 		<hr>
 	  </div>
 
-	<!-- 메일상세기능 -->
-	<div>
-		<div>
-			<label for="mid">제목</label>
-			<input type="text" id="mid" th:value="${mail.title}" readonly>
-		</div>
-		<div>
-			<label for="giveName">보낸사람</label>
-			<input type="text" id="giveName" th:value="${mail.employeeId}" readonly>
-		</div>
-		<div>
-			<label for="getName">받는사람</label>
-			<input type="text" id="getName" th:value="${mail.getUser}" readonly>
-		</div>
-		<span th:text="${#calendars.format(#calendars.createNow(), 'yyyy-MM-dd HH:mm:ss')}"></span>
-		<div>
-			<label for="file">파일첨부</label>
-			<input th:value="${mail.attachedFileName}" readonly>
-		</div>
-		<div>
-			<label for="content">내용</label>
-			<input type="text" id="content" th:value="${mail.content}">
+	<!-- 메일수정 -->
+	
+	<form name="form" method="post">
+	<table class="table">
+		<tr>
+			<td>받는사람</td>
+			<td><input name="giveName" th:value="${mail.employeeId}"></td>
+		</tr>
+		<tr>
+			<td>참조</td>
+			<td><input name="cc" th:value="${mail.cc}"></td>
+		</tr>
+		<tr>
+			<td>제목</td>
+			<td><input name="title" th:value="${mail.title}"></td>
+		</tr>
+		<tr>
+			<td>파일첨부</td>
+			<td><input name="file" th:value="${mail.attachedFileName}"></td>
+		</tr>
+		<tr>
+			<td>내용</td>
+			<td><input name="content" th:value="${mail.content}"></td>
+		</tr>
+	</table>
+	</form>
+	<!-- 메일수정 마침 -->
 		</div>
 	</div>
-	<!-- 메일상세기능 마침 -->
-	</div>
-	</div>
-  </body>
+  </body>	    
 </html>

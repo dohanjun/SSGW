@@ -1,4 +1,4 @@
-package com.yedam.app.group.service.impl;
+ package com.yedam.app.group.service.impl;
 
 import java.util.HashMap;
 import java.util.List;
@@ -38,43 +38,43 @@ public class MailServiceImpl implements MailService {
 
 	// 메일전체조회
 	@Override
-	public List<MailVO> selectAll(PageListVO vo) {
-		return mailMapper.findAll(vo);
+	public List<MailVO> MailSelectAll(PageListVO vo) {
+		return mailMapper.MailFindAll(vo);
 	}
 
 	// 메일상세조회
 	@Override
-	public MailVO selectInfo(MailVO mailVO) {
-		return mailMapper.findInfo(mailVO.getMailId());
+	public MailVO MailSelectInfo(MailVO mailVO) {
+		return mailMapper.MailFindInfo(mailVO.getMailId());
 	}
 
 	// 나의메일상세조회
 	@Override
-	public MailVO MySelectInfo(MailVO mailVO) {
-		return mailMapper.MyfindInfo(mailVO.getMailId());
+	public MailVO MyMailSelectInfo(MailVO mailVO) {
+		return mailMapper.MyMailFindInfo(mailVO.getMailId());
 	}
 
 	// 메일등록
 	@Override
-	public int insert(MailVO mailVO) {
-		int result = mailMapper.create(mailVO);
+	public int MailInsert(MailVO mailVO) {
+		int result = mailMapper.MailCreate(mailVO);
 
 		return result == 1 ? mailVO.getMailId() : -1;
 	}
 
 	// 메일검색기록
 	@Override
-	public int RecodeInfo(MailVO mailVO) {
-		return mailMapper.RecodeMail(mailVO);
+	public int MailRecodeInfo(MailVO mailVO) {
+		return mailMapper.MailRecode(mailVO);
 	}
 
 	// 메일수정
 	@Override
-	public Map<String, Object> update(MailVO mailVO) {
+	public Map<String, Object> MailUpdate(MailVO mailVO) {
 		Map<String, Object> map = new HashMap<>();
 		boolean isSuccessed = false;
 
-		int result = mailMapper.modify(mailVO);
+		int result = mailMapper.MailModify(mailVO);
 
 		if (result == 1) {
 			isSuccessed = true;
@@ -90,8 +90,8 @@ public class MailServiceImpl implements MailService {
 
 	// 메일답장
 	@Override
-	public int PutInfo(MailVO mailVO) {
-		int result = mailMapper.PutDateMail(mailVO);
+	public int MailPutInfo(MailVO mailVO) {
+		int result = mailMapper.MailPutDate(mailVO);
 
 		return result == 1 ? mailVO.getMailId() : -1;
 	}
@@ -99,11 +99,11 @@ public class MailServiceImpl implements MailService {
 	// 메일전달
 
 	@Override
-	public Map<String, Object> VeryInfo(MailVO mailVO) {
+	public Map<String, Object> MailVeryInfo(MailVO mailVO) {
 		Map<String, Object> map = new HashMap<>();
 		boolean isSuccessed = false;
 
-		int result = mailMapper.VeryDateMail(mailVO);
+		int result = mailMapper.MailVeryDate(mailVO);
 
 		if (result == 1) {
 			isSuccessed = true;
@@ -119,10 +119,10 @@ public class MailServiceImpl implements MailService {
 
 	// 메일삭제
 	@Override
-	public Map<String, Object> delete(int mailId) {
+	public Map<String, Object> MailDelete(int mailId) {
 		Map<String, Object> map = new HashMap<>();
 
-		int result = mailMapper.remove(mailId);
+		int result = mailMapper.MailRemove(mailId);
 
 		if (result == 1) {
 			map.put("mailId", mailId);
