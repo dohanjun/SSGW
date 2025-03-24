@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{common/layouts/default_layout}"
+	layout:fragment="content">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Context Path 추가
+    <meta name="contextPath" value="/myapp">-->
+
+<title>내정보 수정</title>
+<style>
+/* 메인 컨테이너*/
+.content-wrapper {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: calc(100vh - 100px);
+	width: 100%;
+	padding: 20px;
+	box-sizing: border-box;
+}
+
+/* 사원 상세정보 박스 크기 조정 */
+.employee-container {
+	width: 700px;
+	background: white;
+	padding: 15px;
+	border-radius: 10px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+	text-align: center;
+}
+
+.emph2 {
+	margin-bottom: 15px;
+	font-size: 18px;
+}
+
+.profile-img {
+	width: 100px;
+	height: 100px;
+	object-fit: cover; /* 원본 비율을 유지하면서 박스 크기에 맞춤 */
+	border: 1px solid #ddd; /* 테두리 추가 */
+	display: block;
+	margin: 0 auto;
+}
+
+.profile-img img {
+	width: 100px;
+	height: 100px;
+	object-fit: cover; /* 비율을 유지하면서 크기에 맞게 자름 */
+	display: block;
+	margin: 0 auto;
+}
+
+.form-container {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	gap: 10px;
+}
+
+.form-group {
+	flex: 1 1 calc(50% - 10px);
+	min-width: 250px;
+	text-align: left;
+}
+
+.form-group label {
+	font-weight: bold;
+	display: block;
+	margin-bottom: 5px;
+	font-size: 14px;
+}
+
+.form-group input, .form-group select {
+	width: 100%;
+	padding: 6px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	background-color: #f8f9fa;
+	font-size: 14px;
+}
+
+.btn-group {
+	display: flex;
+	justify-content: space-between;
+	margin-top: 15px;
+}
+
+.btn {
+	padding: 8px 12px;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	font-size: 14px;
+	width: 48%;
+}
+
+.btn-update {
+	background: #007bff;
+	color: white;
+}
+
+.btn-cancel {
+	background: #dc3545;
+	color: white;
+}
+</style>
+</head>
+<body>
+
+	<form name="updateForm" th:action="@{/MyPageUpdate}" th:object="${emp}"
+		method="post" enctype="multipart/form-data">
+
+		<div class="content-wrapper">
+			<div class="employee-container">
+				<h2 class="emph2">내정보 수정</h2>
+
+				<!-- 프로필 이미지 -->
+				<div class="profile-container">
+					<img id="imagePreview" class="profile-img"
+						th:src="'data:image/png;base64,' + ${profileImageBase64}"
+						alt="프로필 이미지" onclick="document.getElementById('photo').click();">
+					<input type="file" id="photo" name="profileImageFile"
+						accept="image/*" style="display: none;"
+						onchange="previewImage(event)">
+				</div>
+
+				<div class="form-container">
+					<!-- 사원 ID (readonly) -->
+					<div class="form-group">
+						<label>ID</label> <input type="text" th:value="${emp.employeeId}"
+							readonly>
+					</div>
+
+					<!-- 비밀번호 -->
+					<div class="form-group">
+						<label>비밀번호</label> <input type="password"
+							th:field="*{employeePw}">
+						<button type="button" onclick="resetPassword()">비밀번호 초기화</button>
+					</div>
+
+					<!-- 사원 번호 (readonly) -->
+					<div class="form-group">
+						<label>사원번호</label> <input type="hidden" name="employeeNo"
+							th:value="${emp.employeeNo}" readonly>
+					</div>
+
+					<!-- 이름 (readonly) -->
+					<div class="form-group">
+						<label>이름</label> <input type="text" name="employeeName"
+							th:value="${emp.employeeName}" readonly required>
+					</div>
+
+					<!-- 부서명 (readonly) -->
+					<div class="form-group">
+						<label>부서</label> <input type="text"
+							th:value="${emp.departmentName}" readonly>
+					</div>
+
+					<!-- 직급 (readonly) -->
+					<div class="form-group">
+						<label>직급</label> <input type="text"
+							th:value="${emp.jobTitleName}" readonly> <input
+							type="hidden" name="rankId" th:value="${emp.rankId}">
+						<!-- ✅ 서버 전송용 -->
+					</div>
+
+					<!-- 권한 (readonly) -->
+					<div class="form-group">
+						<label>권한</label> <input type="text" th:value="${emp.rightsName}"
+							readonly> <input type="hidden" name="rightsId"
+							th:value="${emp.rightsId}">
+					</div>
+
+					<!-- 연락처 -->
+					<div class="form-group">
+						<label>연락처</label> <input type="text" th:field="*{phoneNumber}">
+					</div>
+
+					<!-- 주소 (readonly, 상세주소는 별도 입력) -->
+					<div class="form-group">
+						<label>주소</label> <input type="text" id="address"
+							th:field="*{address}" readonly>
+						<button type="button" onclick="searchAddress()">주소 검색</button>
+					</div>
+
+					<!-- 상세주소 -->
+					<div class="form-group">
+						<label>상세주소</label> <input type="text" id="detailAddress"
+							placeholder="상세주소 입력">
+					</div>
+
+					<!-- 입사일 (readonly) -->
+					<div class="form-group">
+						<label>입사일</label> <input type="text"
+							th:value="${#dates.format(emp.hireDate, 'yyyy-MM-dd')}" readonly>
+					</div>
+
+					<!-- 임시 IP -->
+					<div class="form-group">
+						<label>접속 IP</label> <input type="text" th:field="*{tempIp}">
+					</div>
+				</div>
+
+				<!-- 버튼 -->
+				<div class="btn-group">
+					<button type="submit" class="btn btn-update">수정</button>
+					<button type="button" class="btn btn-cancel"
+						th:onclick="|location.href='@{/MyPageInfo}'|">취소</button>
+				</div>
+			</div>
+		</div>
+	</form>
+
+
+
+	<!--  카카오 주소 API -->
+	<script
+		src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=843f623b54841d7e48c15c0667f81957&libraries=services"></script>
+	<script
+		src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+
+	<script>
+	// 📌 이미지 미리보기
+	function previewImage(event) {
+		const file = event.target.files[0];
+		if (file) {
+			const reader = new FileReader();
+			reader.onload = (e) => {
+				document.getElementById('imagePreview').src = e.target.result;
+			};
+			reader.readAsDataURL(file);
+		}
+	}
+
+	// 🔐 비밀번호 초기화
+	function resetPassword() {
+		const employeeNo = document.getElementById("employeeNo").value;
+
+		fetch(`/api/resetPassword?employeeNo=${employeeNo}`, {
+			method: "POST"
+		})
+			.then(res => res.text())
+			.then(msg => alert(msg))
+			.catch(err => console.error("비밀번호 초기화 실패:", err));
+	}
+
+	// 📤 FormData 방식 AJAX 전송
+	document.forms.updateForm.addEventListener("submit", function (event) {
+		event.preventDefault(); // 기본 제출 막기
+
+		// 📦 주소 병합
+		const addressField = document.getElementById("address");
+		const detailField = document.getElementById("detailAddress");
+		if (addressField && detailField) {
+			addressField.value = addressField.value + " " + detailField.value;
+		}
+
+		// 📤 FormData 생성 (파일 포함)
+		const formData = new FormData(this);
+		
+		const employeeNoInput = document.getElementById("employeeNo");
+		if (employeeNoInput) {
+			formData.append("employeeNo", employeeNoInput.value);
+		}
+		fetch("/MyPageUpdate", {
+			method: "POST",
+			body: formData // ✅ 헤더 생략, 자동 설정됨
+		})
+			.then(response => {
+				if (response.redirected) {
+					window.location.href = response.url;
+				} else {
+					return response.text();
+				}
+			})
+			.then(data => {
+				if (typeof data === "string" && data.includes("에러")) {
+					alert("오류 발생: " + data);
+				}
+			})
+			.catch(error => {
+				console.error("수정 실패:", error);
+				alert("정보 수정 중 문제가 발생했습니다.");
+			});
+	});
+
+	// 🏠 카카오 주소 검색
+	function searchAddress() {
+		new daum.Postcode({
+			oncomplete: function (data) {
+				const fullAddress = `[${data.zonecode}] ${data.roadAddress}`;
+				document.getElementById("address").value = fullAddress;
+			}
+		}).open();
+	}
+
+	// 🔧 상세주소 분리
+	function splitAddressOnLoad() {
+		const addressField = document.getElementById("address");
+		const detailField = document.getElementById("detailAddress");
+
+		if (addressField && detailField && addressField.value.includes("]")) {
+			const parts = addressField.value.split("] ");
+			addressField.value = parts[0] + "]";
+			detailField.value = parts[1] || "";
+		}
+	}
+
+	// 📥 셀렉트박스 데이터 비동기 로드
+	function loadSelectData(url, selectId, valueField, textField, selectedValue = null) {
+		fetch(url)
+			.then(res => res.json())
+			.then(data => {
+				const select = document.getElementById(selectId);
+				if (!select) return;
+				select.innerHTML = '<option value="">선택하세요</option>';
+
+				data.forEach(item => {
+					const option = document.createElement("option");
+					option.value = item[valueField];
+					option.textContent = item[textField];
+					if (selectedValue && selectedValue == item[valueField]) {
+						option.selected = true;
+					}
+					select.appendChild(option);
+				});
+			})
+			.catch(error => {
+				console.error(`Error loading select box '${selectId}':`, error);
+			});
+	}
+
+	// 📦 페이지 로드시 자동 실행
+	document.addEventListener("DOMContentLoaded", function () {
+		const selectedDepartment = "[[${emp.departmentNo}]]";
+		const selectedRank = "[[${emp.rankId}]]";
+		const selectedRight = "[[${emp.rightsId}]]";
+
+		loadSelectData("/api/departments", "department", "departmentNo", "departmentName", selectedDepartment);
+		loadSelectData("/api/ranks", "position", "rankId", "jobTitleName", selectedRank);
+		loadSelectData("/api/rights", "role", "rightsId", "rightsName", selectedRight);
+
+		splitAddressOnLoad();
+	});
+</script>
+
+
+</body>
+</html>

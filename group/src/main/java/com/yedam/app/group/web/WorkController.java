@@ -14,10 +14,36 @@ import com.yedam.app.group.service.EmpVO;
 import jakarta.servlet.http.HttpSession;
 import lombok.Data;
 
+/** 사원의 근태관리
+ * @author
+ * @since
+ * <pre>
+ * <pre>
+ * 수정일자   수정자   수정내용
+ * -------------------------
+ * 
+ * 
+ * 
+ * 
+ * 
+ * </pre>
+ */
+
+
+
+
+
 @Data
 @Controller
 public class WorkController {
-
+	
+	
+	
+	/**
+	 * 사원의 근태관리 페이지로 이동
+	 * @param VO : 
+	 * @return
+	 */
     private final AttendanceService attendanceService;
     private final EmpService empService;
 
