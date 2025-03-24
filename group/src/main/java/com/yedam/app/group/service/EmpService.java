@@ -13,10 +13,10 @@ public interface EmpService {
 	public List<EmpVO> findAllEmp(EmpVO empVO);
 	
     //  기존 목록 조회 메서드 변경: 페이징 지원 추가
-    public List<EmpVO> findAllEmp(int page, int size, String category, String keyword, Integer suberNo);
+    public List<EmpVO> findAllEmp(EmpserchVO empsVO);
 
     //  전체 데이터 개수 조회 (페이징 계산용)
-    public int countAllEmp(String category, String keyword, Integer suberNo);
+    public int countAllEmp(EmpserchVO empsVO);
 	
 	// 사원상세 정보
 	public EmpVO findempInfo(EmpVO empVO);

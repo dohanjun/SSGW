@@ -135,7 +135,7 @@
                   PHONE_NUMBER =   #{phoneNumber},
                   ADDRESS     =    #{address},
                  <if test="hireDate != null"> HIRE_DATE = #{hireDate},</if>
-			     <if test="exitDate != null or exitDate == null"> EXIT_DATE = #{exitDate,  jdbcType=DATE},</if>
+			     EXIT_DATE = #{exitDate,  jdbcType=DATE},
 			     <if test="resignationStatus != null"> RESIGNATION_STATUS = #{resignationStatus},</if>
 			     <if test="profileImageBLOB != null"> PROFILE_IMAGE_BLOB = #{profileImageBLOB,jdbcType=BLOB}</if>
                </set>
@@ -150,6 +150,20 @@
 	  		 WHERE employee_id = #{employeeId}
 	  </select>
 	  
+	  <sql id="criteria">
+	   WHERE 1=1
+		      AND d.SUBER_NO = #{suberNo}
+		      
+		        <if test="departmentNo != null and departmentNo !=''">
+		          AND e.DEPARTMENT_NO = #{departmentNo}
+		        </if>
+		        <if test="rankId != null and rankId != ''">
+		          AND e.RANK_ID = #{rankId}
+		        </if>
+		        <if test="employeeName != null and employeeName != ''">
+		          AND e.EMPLOYEE_NAME LIKE '%' || #{employeeName} || '%'
+		        </if>
+	  </sql>
 	  <!--  페이징을 적용한 사원 목록 조회 -->
 		<select id="pageselectEmp" resultType="EmpVO">
 		  SELECT EMPLOYEE_NO, EMPLOYEE_NAME, EMPLOYEE_ID, HIRE_DATE, PHONE_NUMBER, DEPARTMENT_NAME, JOB_TITLE_NAME
@@ -160,19 +174,8 @@
 		    FROM EMPLOYEES e
 		    LEFT JOIN DEPARTMENT d ON e.DEPARTMENT_NO = d.DEPARTMENT_NO
 		    LEFT JOIN RANK r ON e.RANK_ID = r.RANK_ID
-		    WHERE 1=1
-		      AND d.SUBER_NO = #{suberNo}
-		      <choose>
-		        <when test="category == 'departmentName'">
-		          AND d.DEPARTMENT_NAME LIKE '%' || #{keyword} || '%'
-		        </when>
-		        <when test="category == 'jobTitleName'">
-		          AND r.JOB_TITLE_NAME LIKE '%' || #{keyword} || '%'
-		        </when>
-		        <when test="category == 'employeeName'">
-		          AND e.EMPLOYEE_NAME LIKE '%' || #{keyword} || '%'
-		        </when>
-		      </choose>
+		   <include refid="criteria"></include>
+		    
 		  ) sub
 		  WHERE sub.rn BETWEEN #{offset} + 1 AND #{offset} + #{size}
 		</select>
@@ -183,19 +186,7 @@
 		  FROM EMPLOYEES e
 		  LEFT JOIN DEPARTMENT d ON e.DEPARTMENT_NO = d.DEPARTMENT_NO
 		  LEFT JOIN RANK r ON e.RANK_ID = r.RANK_ID
-		  WHERE 1=1
-		    AND d.SUBER_NO = #{suberNo}
-		    <choose>
-		      <when test="category == 'departmentName'">
-		        AND d.DEPARTMENT_NAME LIKE '%' || #{keyword} || '%'
-		      </when>
-		      <when test="category == 'jobTitleName'">
-		        AND r.JOB_TITLE_NAME LIKE '%' || #{keyword} || '%'
-		      </when>
-		      <when test="category == 'employeeName'">
-		        AND e.EMPLOYEE_NAME LIKE '%' || #{keyword} || '%'
-		      </when>
-		    </choose>
+		 <include refid="criteria"></include>
 		</select>
 	  
 	  <!-- 사원번호로 랜덤 비밀번호를 업데이트 -->
