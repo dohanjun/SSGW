@@ -3,6 +3,7 @@ package com.yedam.app.group.mapper;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import com.yedam.app.group.service.ModuleVO;
 
@@ -14,4 +15,6 @@ public interface ModuleMapper {
 	int deleteModule(int moduleNo);
 	int updateBasic(int moduleNo);
 	int updateActive(int moduleNo);
+	List<Integer> findSubscribedModuleNos(@Param("suberNo") int suberNo, @Param("moduleNos") List<Integer> moduleNos);
+
 }

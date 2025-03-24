@@ -45,4 +45,8 @@ public class ModuleServiceImpl implements ModuleService{
 	public void updateModuleActive(int moduleNo) {
 		moduleMapper.updateActive(moduleNo);
 	}
+	@Override
+	public List<Integer> findSubscribedModuleNos(int suberNo, List<Integer> moduleNos) {
+	    return moduleMapper.findSubscribedModuleNos(suberNo, moduleNos);
+	}
 }

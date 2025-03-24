@@ -37,4 +37,9 @@ public class SubscriberServiceImpl implements SubscriberService {
 	public SubscriberVO findinfoSuber(int suberNo) {
 		return subscriberMapper.selectSuber(suberNo);
 	}
+
+	@Override
+	public void updateSuber(SubscriberVO vo) {
+		subscriberMapper.updateSuber(vo);
+	}
 }

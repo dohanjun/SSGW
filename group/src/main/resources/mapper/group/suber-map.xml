@@ -76,4 +76,21 @@ ORDER BY module_name
 		from suber
 		where suber_no = #{suberNo}
 	</select>
+	
+	<update id="updateSuber" parameterType="com.yedam.app.group.service.SubscriberVO">
+    UPDATE suber
+    SET 
+        sub_pw = #{subPw},
+        sub_name = #{subName},
+        sub_email = #{subEmail},
+        sub_bnis_no = #{subBnisNo},
+        company_name = #{companyName},
+        first_ip = #{firstIp},
+        second_ip = #{secondIp},
+        max_count = #{maxCount},
+        max_size = #{maxSize},
+        max_up_size = #{maxUpSize}
+    WHERE suber_no = #{suberNo}
+</update>
+	
 </mapper>

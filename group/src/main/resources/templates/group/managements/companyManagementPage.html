@@ -26,10 +26,6 @@
 	margin-bottom: 20px;
 }
 
-.row.single {
-	justify-content: center;
-}
-
 .form-group {
 	flex: 1;
 	display: flex;
@@ -41,7 +37,7 @@ label {
 	margin-bottom: 5px;
 }
 
-input {
+input, select {
 	padding: 10px;
 	font-size: 14px;
 	border: 1px solid #ccc;
@@ -64,74 +60,296 @@ input {
 	cursor: pointer;
 }
 
-.btn-manage {
-	background-color: #3498db;
+.btn-save {
+	background-color: #2ecc71;
 	color: white;
 }
 
-.btn-edit {
-	background-color: #2ecc71;
+.btn-manage {
+	background-color: #3498db;
 	color: white;
 }
 </style>
 </head>
 <body>
 	<div class="company-container">
-		<h2>회사 정보</h2>
+		<h2>회사 정보 수정</h2>
 
-		<div class="row single">
-			<div class="form-group" style="flex: 1.5;">
-				<label>회사 이름</label> <input type="text"
-					th:value="${suber.companyName}" readonly>
-			</div>
-			<div class="form-group">
-				<label>사업자 명</label> <input type="text" th:value="${suber.subName}"
-					readonly>
-			</div>
-			<div class="form-group">
-				<label>사업자 번호</label> <input type="text"
-					th:value="${suber.subBnisNo}" readonly>
-			</div>
-		</div>
+		<form method="post" th:action="@{/updateCompanyInfo}">
+			<input type="hidden" name="suberNo" th:value="${suber.suberNo}" />
 
-		<div class="row">
-			<div class="form-group">
-				<label>이메일</label> <input type="text" th:value="${suber.subEmail}"
-					readonly>
+			<div class="row">
+				<div class="form-group">
+					<label>회사 이름</label> <input type="text" name="companyName"
+						th:value="${suber.companyName}">
+				</div>
+				<div class="form-group">
+					<label>이름</label> <input type="text" name="subName"
+						th:value="${suber.subName}">
+				</div>
 			</div>
-			<div class="form-group">
-				<label>도메인</label> <input type="text" th:value="${suber.domain}"
-					readonly>
-			</div>
-		</div>
+			<div class="row">
 
-		<div class="row">
-			<div class="form-group">
-				<label>아이디</label> <input type="text" th:value="${suber.subId}"
-					readonly>
+				<div class="form-group">
+					<label>아이디</label> <input type="text" name="subId"
+						th:value="${suber.subId}" readonly>
+				</div>
+				<div class="form-group">
+					<label>비밀번호</label> <input type="password" name="subPw"
+						th:value="${suber.subPw}">
+				</div>
+				<div class="form-group">
+					<label>UID</label> <input type="text" name="subUid"
+						th:value="${suber.subUid}" readonly>
+				</div>
 			</div>
-			<div class="form-group">
-				<label>비밀번호</label> <input type="password" th:value="${suber.subPw}"
-					readonly>
+
+			<div class="row">
+				<div class="form-group">
+					<label>이메일</label> <input type="text" name="subEmail"
+						th:value="${suber.subEmail}">
+				</div>
+				<div class="form-group">
+					<label>사업자 번호</label> <input type="text" name="subBnisNo"
+						th:value="${suber.subBnisNo}">
+				</div>
+				<div class="form-group">
+					<label>도메인</label> <input type="text" name="domain"
+						th:value="${suber.domain}" readonly>
+				</div>
 			</div>
-		</div>
 
-		<div class="row">
-			<div class="form-group">
-				<label>회사 IP</label> <input type="text" th:value="${suber.firstIp}"
-					readonly>
+			<div class="row">
+				<div class="form-group">
+					<label>회사 IP</label> <input type="text" name="firstIp"
+						th:value="${suber.firstIp}">
+				</div>
+				<div class="form-group">
+					<label>서브 IP</label> <input type="text" name="secondIp"
+						th:value="${suber.secondIp}">
+				</div>
 			</div>
-			<div class="form-group">
-				<label>서브 IP</label> <input type="text" th:value="${suber.secondIp ?: '입력해 주세요'}" readonly>
+
+			<div class="row">
+				<div class="form-group">
+					<label>최대 인원</label> <select name="maxCount">
+						<option th:each="i : ${#numbers.sequence(10, 100, 10)}"
+							th:value="${i}" th:text="${i + '명'}"
+							th:selected="${i == suber.maxCount}"></option>
+					</select>
+				</div>
+				<div class="form-group">
+					<label>최대 업로드 용량</label> <select name="maxUpSize">
+						<option th:value="10" th:selected="${suber.maxUpSize == 10}">10
+							MB</option>
+						<option th:value="25" th:selected="${suber.maxUpSize == 25}">25
+							MB</option>
+						<option th:value="50" th:selected="${suber.maxUpSize == 50}">50
+							MB</option>
+						<option th:value="100" th:selected="${suber.maxUpSize == 100}">100
+							MB</option>
+					</select>
+				</div>
+				<div class="form-group">
+					<label>최대 저장 용량</label> <select name="maxSize">
+						<option th:each="i : ${#numbers.sequence(1, 5)}" th:value="${i}"
+							th:text="${i + ' GB'}" th:selected="${i == suber.maxSize}">
+						</option>
+					</select>
+				</div>
 			</div>
-		</div>
-
-		<div class="button-row">
-			<button class="btn btn-manage" th:onclick="|location.href='@{/suberModuleInfo(suberNo=${suber.suberNo})}'|"> 모듈관리 </button>
-
-
-			<button class="btn btn-edit" th:onclick="|location.href='@{/companyManagements}'|">회사 정보 수정</button>
-		</div>
+			<div class="button-row">
+				<button type="submit" class="btn btn-save">저장</button>
+				<button type="button" class="btn btn-manage"
+					th:onclick="|location.href='@{/suberModuleInfo(suberNo=${suber.suberNo})}'|">
+					모듈 관리</button>
+			</div>
+		</form>
 	</div>
+	<div id="payModal" style="display:none; position:fixed; top:30%; left:50%; transform:translate(-50%, -30%); background:white; padding:20px; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.3);">
+  <p style="font-weight:bold;">결제 수단을 선택해주세요</p>
+  <button onclick="selectPay('card')">💳 카드결제</button>
+  <button onclick="selectPay('bank')">🏦 계좌이체</button>
+  <button onclick="closePayModal()">❌ 취소</button>
+</div>
+
+	
 </body>
+<script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+<script th:inline="javascript">
+	var suber = /*[[${suber}]]*/[];
+	const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+	const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+	document.addEventListener("DOMContentLoaded", function () {
+		  const current = {
+		    maxSize: Number(suber.maxSize),
+		    maxCount: Number(suber.maxCount),
+		    maxUpSize: Number(suber.maxUpSize)
+		  };
+
+		  $("select[name='maxSize'] option").each(function () {
+		    if (Number($(this).val()) < current.maxSize) {
+		      $(this).prop("disabled", true);
+		    }
+		  });
+
+		  $("select[name='maxCount'] option").each(function () {
+		    if (Number($(this).val()) < current.maxCount) {
+		      $(this).prop("disabled", true);
+		    }
+		  });
+
+		  $("select[name='maxUpSize'] option").each(function () {
+		    if (Number($(this).val()) < current.maxUpSize) {
+		      $(this).prop("disabled", true);
+		    }
+		  });
+		});
+
+	$('.btn-save').on('click',e=>{
+		e.preventDefault();
+		const current = {
+				  maxSize: Number(suber.maxSize),
+				  maxCount: Number(suber.maxCount),
+				  maxUpSize: Number(suber.maxUpSize)
+				};
+
+				const selected = {
+				  maxSize: Number($('select[name="maxSize"]').val()),
+				  maxCount: Number($('select[name="maxCount"]').val()),
+				  maxUpSize: Number($('select[name="maxUpSize"]').val())
+				};
+
+				// 단가
+				const unitPrice = {
+				  maxCount: 100000 / 10,
+				  maxUpSize: 10000 / 5,
+				  maxSize: 100000 
+				};
+
+				let totalDiff = 0;
+				let details = [];
+				for (let key in current) {
+					  const diff = selected[key] - current[key];
+					  if (diff > 0) {
+					    const price = diff * unitPrice[key];
+					    totalDiff += price;
+					    details.push(`${key}: +${price.toLocaleString()}원`);
+					  }
+					}
+
+				if (totalDiff > 0) {
+					  if (confirm(`💳 ${totalDiff.toLocaleString()}원이 결제됩니다. 결제 하시겠습니까?`)) {
+						  let phoneNumber = prompt("결제를 진행하시겠습니까?\n전화번호나 주문번호를 입력해주세요:");
+						  if (phoneNumber !== null) {
+						      if (confirm("결제 수단을 선택하세요.\n확인을 누르면 카드결제, 취소는 계좌이체입니다.")) {
+						    	  payment("card",phoneNumber,totalDiff);
+						      } else {
+						    	  payment();
+						      }
+						  } else {
+						      alert("결제가 취소되었습니다.");
+						  }
+						  
+					  } else {
+					    console.log("결제 취소");
+					  }
+					} else {
+					  saveSuber();
+					}
+
+
+	})
+
+	
+function payment(type,phonenumber,totalDiff) {
+	var merchant_uid = "order" + new Date().getTime();
+	var username = suber.subName;
+	var userEmail = suber.subEmail;
+	var userPhone = phonenumber;
+	let num = totalDiff;
+	
+	IMP.init('imp07168373');
+
+	IMP.request_pay(
+		{
+			pg: "html5_inicis",
+			pay_method: type,
+			merchant_uid: merchant_uid,
+			name: username + "님의 결제",
+			amount: 100,
+			buyer_email: userEmail,
+			buyer_name: username,
+			buyer_tel: userPhone,
+			escrow: true,
+			vbank_due: "YYYYMMDD",
+		},
+		function(rsp) {
+			if (rsp.success) {
+				$.ajax({
+					type: "POST",
+					url: "/savePayment",
+					data: JSON.stringify({
+						paymentType: type,
+						paymentPrice: num,
+						suberNo: suber.suberNo,
+						paymentStatus: "완료",
+						claim: "Y",
+						claimState: "완료"
+					}),
+		            beforeSend: function(xhr) {
+		                xhr.setRequestHeader(header, token);
+		            },
+					contentType: "application/json",
+					success: function(response2) {
+						updateSuber()
+					},
+					error: function(xhr, status, error) {
+						alert("❌ 결제 정보 저장 중 오류가 발생했습니다.");
+					}
+				});
+
+			} else {
+				var mesg = '결제를 실패하였습니다.';
+				alert(mesg + rsp.error_msg);
+			}
+		}
+	);
+}
+
+	
+	
+function updateSuber() {
+		$.ajax({
+			type: "POST",
+			url: "/updateSuber",
+			data: JSON.stringify({
+				suberNo: suber.suberNo,
+				subPw: $("input[name='subPw']").val(),
+				subName: $("input[name='subName']").val(),
+				subEmail: $("input[name='subEmail']").val(),
+				subBnisNo: $("input[name='subBnisNo']").val(),
+				companyName: $("input[name='companyName']").val(),
+				firstIp: $("input[name='firstIp']").val(),
+				secondIp: $("input[name='secondIp']").val(),
+				maxCount: Number($("select[name='maxCount']").val()),
+				maxSize: Number($("select[name='maxSize']").val()),
+				maxUpSize: Number($("select[name='maxUpSize']").val())
+			}),
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader(header, token);
+            },
+			contentType: "application/json",
+			success: function(response) {
+				alert("✅ 저장되었습니다.");
+			},
+			error: function(xhr, status, error) {
+				alert("❌ 구독자 정보 저장 중 오류 발생.");
+				console.error(xhr.responseText);
+			}
+		});
+	}
+</script>
 </html>
