@@ -35,6 +35,9 @@ public interface ApprovalMapper {
 	// 결재상세조회(승인창)
 	public ApprovalVO selectAprvInfo(ApprovalVO aprvVO);
 	
+	// 결재승인페이지
+	public List<AprvRoutesVO> selectAprvRout(AprvRoutesVO routVO);
+	
 	// 도장 등록
 	public int insertStamp(ApprovalVO aprvVO);
 	
@@ -46,6 +49,12 @@ public interface ApprovalMapper {
 	
 	// 도장이미지불러오기
 	public ApprovalVO selectActiveStamp(ApprovalVO aprvVO);
+	
+	// 결재페이지 도장
+	public Integer selectActiveStampId(Integer employeeNo);
+	
+	// 업데이트
+	public int updateStampId(AprvRoutesVO aprvRoutVO);
 	
 	// 회사 전자결재양식 등록
 	public int insertForm(ApprovalFormVO aprvformVO);

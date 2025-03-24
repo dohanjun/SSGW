@@ -283,4 +283,45 @@
 		  ,#{aprvStatus}
 		  ,#{employeeNo})
 	</insert>
+	
+	<select id="selectAprvRout" parameterType="AprvRoutesVO" resultType="AprvRoutesVO">
+		SELECT a.APRV_ID
+       		   ,a.APRV_ORDER
+		       ,a.APRV_DATE
+		       ,a.DRAFT_NO
+		       ,a.APRV_ROLE
+		       ,a.APRV_STATUS
+		       ,a.EMPLOYEE_NO
+		       ,e.EMPLOYEE_NAME
+		       ,e.RANK_ID
+		       ,r.job_title_name
+		       ,s.STAMP_IMG_PATH
+		       ,a.stamp_id
+		FROM   aprv_routes a
+		JOIN   employees e
+		  ON   a.employee_no = e.employee_no
+		JOIN   rank r
+		  ON   e.rank_id = r.rank_id
+		LEFT JOIN stamp s 
+		  ON a.employee_no = s.employee_no AND s.active = '1'
+		WHERE  a.draft_no = #{draftNo}
+		  AND  e.suber_no = #{suberNo}
+	</select>
+	
+	<select id="findActiveStampId" resultType="Integer">
+    	SELECT stamp_id
+    	FROM stamp
+    	WHERE employee_no = #{employeeNo}
+      	AND active = '1'
+	</select>
+	
+	<update id="updateStampId" parameterType="AprvRoutesVO">
+    	UPDATE aprv_routes
+    	SET stamp_id = #{stampId}
+    	WHERE draft_no = #{draftNo}
+      	AND employee_no = #{employeeNo}
+	</update>
+	
+	
+	
 </mapper>

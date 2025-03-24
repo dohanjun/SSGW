@@ -10,36 +10,102 @@
 </head>
 <body>
 	<p>결재선</p>
+	<p th:text="'결재선 사이즈: ' + ${#lists.size(aprvroutes)}"></p>
+	<ul>
+		<li th:each="r : ${aprvroutes}"
+			th:text="'order:' + ${r.aprvOrder} + ', name:' + ${r.employeeName} + ', 직책:' + ${r.jobTitleName}">테스트</li>
+	</ul>
 	<table class="routes">
 		<tr>
-		  <th>직책</th>
-		  <th>직책</th>
-		  <th>직책</th>
+			<th><span th:each="r : ${aprvroutes}"
+				th:if="${r.aprvOrder eq '1'}" th:text="${r.jobTitleName}"></span></th>
+			<th><span th:each="r : ${aprvroutes}"
+				th:if="${r.aprvOrder eq '2'}" th:text="${r.jobTitleName}"></span></th>
+			<th><span th:each="r : ${aprvroutes}"
+				th:if="${r.aprvOrder eq '3'}" th:text="${r.jobTitleName}"></span></th>
 		</tr>
 		<tr>
-		  <td>도장</td>
-		  <td>도장</td>
-		  <td>도장</td>
+			<td>
+				<div th:each="r : ${aprvroutes}" th:if="${r.aprvOrder eq '1'}">
+					<button
+						th:if="${r.employeeNo.toString() eq loggedInEmpNo.toString() and r.stampId == null}"
+						th:data-draftno="${r.draftNo}" th:data-empno="${r.employeeNo}"
+						class="btn btn-sm btn-primary insert-stamp-btn">도장등록</button>
+					<img th:if="${r.stampImgPath != null and r.stampId != null}"
+						th:src="@{${r.stampImgPath}}" width="50">
+				</div>
+			</td>
+			<td>
+				<div th:each="r : ${aprvroutes}" th:if="${r.aprvOrder eq '2'}">
+					<button
+						th:if="${r.employeeNo.toString() eq loggedInEmpNo.toString() and r.stampId == null}"
+						th:data-draftno="${r.draftNo}" th:data-empno="${r.employeeNo}"
+						class="btn btn-sm btn-primary insert-stamp-btn">도장등록</button>
+					<img th:if="${r.stampImgPath != null and r.stampId != null}"
+						th:src="@{${r.stampImgPath}}" width="50">
+				</div>
+			</td>
+			<td>
+				<div th:each="r : ${aprvroutes}" th:if="${r.aprvOrder eq '3'}">
+					<button
+						th:if="${r.employeeNo.toString() eq loggedInEmpNo.toString() and r.stampId == null}"
+						th:data-draftno="${r.draftNo}" th:data-empno="${r.employeeNo}"
+						class="btn btn-sm btn-primary insert-stamp-btn">도장등록</button>
+					<img th:if="${r.stampImgPath != null and r.stampId != null}"
+						th:src="@{${r.stampImgPath}}" width="50">
+				</div>
+			</td>
 		</tr>
 		<tr>
-		  <td>이름</td>
-		  <td>이름</td>
-		  <td>이름</td>
+			<td><span th:each="r : ${aprvroutes}"
+				th:if="${r.aprvOrder eq '1'}" th:text="${r.employeeName}"></span></td>
+			<td><span th:each="r : ${aprvroutes}"
+				th:if="${r.aprvOrder eq '2'}" th:text="${r.employeeName}"></span></td>
+			<td><span th:each="r : ${aprvroutes}"
+				th:if="${r.aprvOrder eq '3'}" th:text="${r.employeeName}"></span></td>
 		</tr>
 	</table>
-	
+
 	<h4>문서 제목 : [[${aprv.title}]]</h4>
 
-    <table border="1">
-        <tr>
-            <th>내용</th>
-            <td th:utext="${aprv.content}" style="padding: 10px;"></td>
-        </tr>
-        <tr>
-            <th>상신일</th>
-            <td th:text="${#dates.format(aprv.draftDate, 'yyyy-MM-dd')}" style="padding: 10px;"></td>
-        </tr>
-    </table>
+	<table border="1">
+		<tr>
+			<th>내용</th>
+			<td th:utext="${aprv.content}" style="padding: 10px;"></td>
+		</tr>
+		<tr>
+			<th>상신일</th>
+			<td th:text="${#dates.format(aprv.draftDate, 'yyyy-MM-dd')}"
+				style="padding: 10px;"></td>
+		</tr>
+	</table>
 
 </body>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".insert-stamp-btn").forEach(btn => {
+        btn.addEventListener("click", function () {
+            const draftNo = this.getAttribute("data-draftno");
+            const employeeNo = this.getAttribute("data-empno");
+
+            fetch('/aprv/stampsave', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ draftNo: draftNo, employeeNo: employeeNo })
+            })
+            .then(res => res.json())
+            .then(result => {
+                if (result.success) {
+                    alert("도장이 등록되었습니다!");
+                    location.reload();
+                } else {
+                    alert("도장 등록 실패: " + result.message);
+                }
+            })
+            .catch(err => console.error("에러 발생:", err));
+        });
+    });
+});
+</script>
+
 </html>
