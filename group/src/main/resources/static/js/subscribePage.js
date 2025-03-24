@@ -176,7 +176,6 @@ function payment(type) {
 			vbank_due: "YYYYMMDD",
 		},
 		function(rsp) {
-			console.log(rsp)
 			if (rsp.success) {
 				console.log("maxUpSize 전송값 확인:", $(".uploadInput").val());
 				$.ajax({

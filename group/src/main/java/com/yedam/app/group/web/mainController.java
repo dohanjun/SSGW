@@ -47,6 +47,16 @@ import org.springframework.http.HttpStatus;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 
+/** 외부페이지 컨트롤
+ * @author 조성민
+ * @since 2025-03-20
+ * <pre>
+ * <pre>
+ * 수정일자      수정자    수정내용
+ * --------------------------------
+ * 2025-03-24  조성민
+ * </pre>
+ * */
 
 
 @Controller
@@ -59,6 +69,11 @@ public class mainController {
 	private final PaymentService paymentService;
 	
 	
+	
+	/**
+	 * 메인페이지로 이동
+	 * @return group/mainPage
+	 */
 	@GetMapping("main")
 	public String mainPage() {
 		return "group/mainPage";
@@ -213,13 +228,11 @@ public class mainController {
 	        Font boldFont = new Font(bf, 10, Font.BOLD);
 	        Font titleFont = new Font(bf, 16, Font.BOLD);
 
-	        // 제목
 	        Paragraph title = new Paragraph("결제 영수증", titleFont);
 	        title.setAlignment(Element.ALIGN_CENTER);
 	        document.add(title);
 	        document.add(Chunk.NEWLINE);
 
-	        // 테이블 (2열)
 	        PdfPTable table = new PdfPTable(2);
 	        table.setWidthPercentage(100);
 	        table.setWidths(new int[]{1, 2});

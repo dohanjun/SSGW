@@ -7,4 +7,5 @@ public interface SubscriberService {
     List<SubscriptionSummaryVO> findAllSubscribers();
     List<SubscriberVO> findinfoSuberByNo(int suberNo);
     SubscriberVO findinfoSuber(int suberNo);
+	void updateSuber(SubscriberVO vo);
 }

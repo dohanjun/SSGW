@@ -1,99 +1,475 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{common/layouts/default_layout}"
-      layout:fragment="content">
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{common/layouts/default_layout}"
+	layout:fragment="content">
 <head>
-    <meta charset="UTF-8">
-    <title>모듈 관리</title>
-    <style>
-        .module-container {
-            max-width: 1100px;
-            margin: 40px auto;
-            padding: 30px;
-            background-color: #eee;
-            border-radius: 10px;
-        }
+<meta charset="UTF-8">
+<title>모듈 관리</title>
+<style>
+.period-select-wrapper {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-weight: bold;
+}
 
-        .module-container h2 {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #5a5a5a;
-        }
+.select-section {
+	display: flex;
+	justify-content: space-between;
+	margin: 20px 0;
+	gap: 30px;
+}
 
-        .module-row {
-            display: flex;
-            align-items: center;
-            background-color: #ddd;
-            padding: 15px 20px;
-            border-radius: 6px;
-            margin-bottom: 12px;
-            min-width: 100%;
-        }
+.select-box {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	font-weight: bold;
+	flex: 1;
+}
 
-        .module-name {
-            font-weight: bold;
-            font-size: 16px;
-            width: 200px;
-            text-align: left;
-        }
+.period-select {
+	padding: 8px 12px;
+	font-size: 14px;
+	border: 2px solid #ccc;
+	border-radius: 6px;
+	background-color: #fff;
+	cursor: pointer;
+	transition: border-color 0.2s ease;
+}
 
-        .module-dates {
-            font-size: 16px;
-            font-weight: bold;
-            color: #333;
-            width: 350px;
-            text-align: left;
-            padding-left: 10px;
-        }
+.period-select:hover {
+	border-color: #999;
+}
 
-        .module-actions {
-            cursor: pointer;
-            font-size: 20px;
-            width: 30px;
-            text-align: right;
-            margin-left: auto;
-        }
+.selected-module {
+	background-color: #d1e7dd !important;
+	font-weight: bold;
+	box-shadow: 0 0 10px rgba(25, 135, 84, 0.4);
+	transition: all 0.2s ease-in-out;
+}
 
-        .footer-buttons {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 50px;
-            padding-top: 30px;
-        }
+.module-container {
+	max-width: 1100px;
+	margin: 40px auto;
+	padding: 30px;
+	background-color: #eee;
+	border-radius: 10px;
+}
 
-        .footer-buttons button {
-            padding: 14px 32px;
-            font-size: 16px;
-            font-weight: bold;
-            background-color: #ccc;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-        }
+.module-container h2 {
+	text-align: center;
+	margin-bottom: 30px;
+	color: #5a5a5a;
+}
 
-        .footer-buttons button:hover {
-            background-color: #bbb;
-        }
-    </style>
+.module-row {
+	display: flex;
+	align-items: center;
+	background-color: #ddd;
+	padding: 15px 20px;
+	border-radius: 6px;
+	margin-bottom: 12px;
+	min-width: 100%;
+}
+
+.module-name {
+	font-weight: bold;
+	font-size: 16px;
+	width: 200px;
+	text-align: left;
+}
+
+.module-dates {
+	font-size: 16px;
+	font-weight: bold;
+	color: #333;
+	width: 350px;
+	text-align: center;
+	padding-left: 10px;
+}
+
+.module-actions {
+	cursor: pointer;
+	font-size: 20px;
+	width: 30px;
+	text-align: right;
+	margin-left: auto;
+}
+
+.footer-buttons {
+	display: flex;
+	justify-content: space-around;
+	margin-top: 50px;
+	padding-top: 30px;
+}
+
+.footer-buttons button {
+	padding: 14px 32px;
+	font-size: 16px;
+	font-weight: bold;
+	background-color: #ccc;
+	border: none;
+	border-radius: 8px;
+	cursor: pointer;
+}
+
+.footer-buttons button:hover {
+	background-color: #bbb;
+}
+</style>
 </head>
 <body>
-<div class="module-container">
-    <h2>모듈 관리</h2>
+	<div class="module-container">
+		<h2>모듈 관리</h2>
 
-    <div th:each="item : ${moduleList}" class="module-row">
-        <div class="module-name" th:text="${item.moduleName}">모듈명</div>
-        <div class="module-dates" th:text="${#dates.format(item.paymentStartDate, 'yyyy-MM-dd')} + ' ~ ' + ${#dates.format(item.paymentEndDate, 'yyyy-MM-dd')}">
-            2025-01-01 ~ 2025-02-01
-        </div>
-        <div class="module-actions">&#8942;</div>
-    </div>
+		<div th:each="item : ${moduleList}" class="module-row">
+			<div class="module-name" th:text="${item.moduleName}">모듈명</div>
+			<div class="module-dates"
+				th:text="${#dates.format(item.paymentStartDate, 'yyyy-MM-dd')} + ' ~ ' + ${#dates.format(item.paymentEndDate, 'yyyy-MM-dd')}">
+				2025-01-01 ~ 2025-02-01</div>
+		</div>
 
-    <div class="footer-buttons">
-        <button>청구서 다운</button>
-        <button>청구내역 보기</button>
-        <button>모듈 추가</button>
-    </div>
-</div>
+		<div class="footer-buttons">
+			<button id="payment">청구내역 보기</button>
+			<button id="upDateModule">모듈 추가</button>
+		</div>
+	</div>
+
+	<div id="invoiceModal" class="modal"
+		style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); z-index: 9999; justify-content: center; align-items: center;">
+		<div
+			style="background: white; padding: 30px; border-radius: 10px; width: 800px; position: relative;">
+			<h5 style="margin-bottom: 20px;">청구내역</h5>
+			<p>
+				청구 대상 회사번호: <span id="modalSuberNo"></span>
+			</p>
+			<div id="modalResult" style="margin-top: 20px;"></div>
+			<p>※ 실제 데이터는 서버 연동 후 표시됩니다.</p>
+			<button onclick="closeInvoiceModal()" style="margin-top: 20px;"
+				class="btn btn-secondary">닫기</button>
+		</div>
+	</div>
+
+	<div id="moduleDetailModal" class="modal"
+		style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); z-index: 9999; justify-content: center; align-items: center;">
+		<div
+			style="background: white; padding: 30px; border-radius: 10px; width: 800px; position: relative;">
+			<h5 style="margin-bottom: 20px;">모듈 추가</h5>
+			<div class="period-select-wrapper">
+				<div class="select-section">
+					<div class="select-box">
+						<label>결제 방법</label> <label><input type="radio"
+							name="payMethod" value="card" checked> 카드</label> <label><input
+							type="radio" name="payMethod" value="trans"> 계좌이체</label>
+					</div>
+					<div class="select-box">
+						<label for="modulePeriod">구독 기간</label> <select id="modulePeriod"
+							class="period-select">
+							<option value="1">1개월</option>
+							<option value="12">12개월</option>
+						</select>
+					</div>
+				</div>
+			</div>
+			<div id="moduleDetailResult"></div>
+			<button style="margin-top: 20px;" class="btn btn-success payment">결제</button>
+			<button onclick="closeInvoiceModal()" style="margin-top: 20px;"
+				class="btn btn-secondary">닫기</button>
+		</div>
+	</div>
+
+
+
 </body>
+<script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+<script th:inline="javascript">
+    var suber = /*[[${suber}]]*/[];
+    var moduleList = /*[[${moduleList}]]*/[];
+    var dataList = [];
+    const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelector('#payment').addEventListener('click', function() {
+        	$.ajax({
+				type: "POST",
+				url: "/paymentInfoManagement",
+				data: { suberNo: suber.suberNo},
+	            beforeSend: function(xhr) {
+	                xhr.setRequestHeader(header, token);
+	            },
+				success: function(response) {
+					if (response.paymentList.length === 0) {
+						$('#modalResult').html("<p>결제 정보가 없습니다.</p>");
+						return;
+					}
+
+					let html = `
+						<table class="table table-bordered table-hover table-sm">
+							<thead>
+								<tr>
+									<th>결제일</th>
+									<th>결제유형</th>
+									<th>결제금액</th>
+									<th>결제상태</th>
+									<th>시작일</th>
+									<th>종료일</th>
+									<th>구독개월</th>
+									<th>다운로드</th>
+								</tr>
+							</thead>
+							<tbody>
+					`;
+
+					response.paymentList.forEach(item => {
+						html += `
+							<tr>
+							<td>${formatDate(item.paymentDate)}</td>
+							<td>${item.paymentType ?? '-'}</td>
+							<td>${item.paymentPrice?.toLocaleString() ?? '-'}</td>
+							<td>${item.paymentStatus ?? '-'}</td>
+							<td>${formatDate(item.paymentStartDate)}</td>
+							<td>${formatDate(item.paymentEndDate)}</td>
+							<td>${item.subPeriod ?? '-'}</td>
+							<td>
+							<form method="POST" action="/download" target="_blank">
+								<input type="hidden" name="_csrf" value="${token}" />
+								<input type="hidden" name="paymentNo" value="${item.paymentNo}" />
+								<input type="hidden" name="paymentDate" value="${item.paymentDate}" />
+								<input type="hidden" name="paymentPrice" value="${item.paymentPrice}" />
+								<input type="hidden" name="paymentType" value="${item.paymentType}" />
+								<input type="hidden" name="paymentStatus" value="${item.paymentStatus}" />
+								<input type="hidden" name="subPeriod" value="${item.subPeriod}" />
+								<button type="submit" class="btn btn-sm btn-outline-primary">
+									<i class="bi bi-file-earmark-pdf"></i> 다운로드
+								</button>
+							</form>
+						</td>
+
+						</tr>
+
+						`;
+					});
+
+					html += `
+							</tbody>
+						</table>
+					`;
+
+					$('#modalResult').html(html);
+				},
+
+				error: function(xhr, status, error) {
+					$('#modalResult').html("<p style='color:red;'>결제 정보가 없습니다.</p>");
+				}
+			});
+        	document.getElementById('invoiceModal').style.display = 'flex';
+        });
+        
+        document.querySelector('#upDateModule').addEventListener('click', function () {
+            $.ajax({
+                type: "GET",
+                url: "/moduleList",
+                success: function (modules) {
+                    let html = `
+                        <table class="table table-bordered table-hover table-sm">
+                            <thead>
+                                <tr>
+                                    <th>모듈 이름</th>
+                                    <th>가격</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+
+                    modules.forEach(item => {
+                        html += `
+                            <tr class="module-select-row" data-module-no="${item.moduleNo}">
+                                <td>${item.moduleName}</td>
+                                <td>${item.modulePrice?.toLocaleString() ?? '-'}</td>
+                            </tr>
+                        `;
+                    });
+
+                    html += `</tbody></table>`;
+                    $('#moduleDetailResult').html(html);
+
+                    document.querySelectorAll('.module-select-row').forEach(row => {
+                        row.addEventListener('click', function () {
+                            const moduleNo = Number(row.dataset.moduleNo);
+                            row.classList.toggle('selected-module');
+                            const selectedModule = modules.find(m => m.moduleNo === moduleNo);
+
+                            if (row.classList.contains('selected-module')) {
+                                if (!dataList.some(m => m.moduleNo === moduleNo)) {
+                                    dataList.push(selectedModule);
+                                }
+                            } else {
+                                dataList = dataList.filter(m => m.moduleNo !== moduleNo);
+                            }
+
+                            console.log("선택된 모듈 리스트:", dataList);
+                        });
+                    });
+                    document.getElementById('moduleDetailModal').style.display = 'flex';
+                },
+                error: function () {
+                    $('#moduleDetailResult').html("<p style='color:red;'>모듈 정보를 불러오지 못했습니다.</p>");
+                    document.getElementById('moduleDetailModal').style.display = 'flex';
+                }
+            });
+        });
+
+        document.querySelector('.payment').addEventListener('click', function () {
+    		let selectedPeriod = $("#modulePeriod").val();
+    		let payMethod = document.querySelector('input[name="payMethod"]:checked').value;
+    		let num = selectedPeriod === "12"
+    		    ? dataList.reduce((sum, m) => sum + Number(m.modulePrice) * 12 * 0.8, 0)
+    		    : dataList.reduce((sum, m) => sum + Number(m.modulePrice), 0);
+        	var merchant_uid = "order" + new Date().getTime();
+        	var username = suber.employeeName;
+        	var userPhone = suber.phoneNumber;
+        	const selectedModuleNos = dataList.map(m => m.moduleNo);
+
+    	    $.ajax({
+    	        type: 'POST',
+    	        url: '/checkSubscribedModules',
+    	        data: JSON.stringify({
+    	            suberNo: suber.suberNo,
+    	            moduleNos: selectedModuleNos
+    	        }),
+    	        contentType: 'application/json',
+    	        beforeSend: function (xhr) {
+    	            xhr.setRequestHeader(header, token);
+    	        },
+    	        success: function (response) {
+    	            if (response.status==="duplicated") {
+    	                alert("이미 구독 중인 모듈이 있습니다" );
+    	            } else {
+    	                payment(payMethod);
+    	            }
+    	        },
+    	        error: function () {
+    	            alert("중복 확인 중 오류 발생");
+    	        }
+    	    });
+
+        	
+        	function payment(type) {
+        		IMP.init('imp07168373');
+        		IMP.request_pay(
+        			{
+        				pg: "html5_inicis",
+        				pay_method: type,
+        				merchant_uid: merchant_uid,
+        				name: username + "님의 결제",
+        				amount: 100,
+        				buyer_name: username,
+        				buyer_tel: userPhone,
+        				escrow: true,
+        				vbank_due: "YYYYMMDD",
+        			},
+        			function(rsp) {
+        				if (rsp.success) {
+        					$.ajax({
+        						type: "POST",
+        						url: "/saveSubDetail",
+        						data: JSON.stringify(
+        							dataList.map(module => ({
+        								suberNo: suber.suberNo,
+        								moduleNo: module.moduleNo,
+        								subPeriod: selectedPeriod,
+        								discount: selectedPeriod === 12 ? 'Y' : 'N',
+        								discountRate: selectedPeriod === 12 ? 0.200 : 0.000,
+        								discountPrice: selectedPeriod === 12 ? Number(module.modulePrice) * 12 * 0.8 : Number(module.modulePrice)
+        							}))
+        						),
+        						contentType: "application/json",
+        						success: function(response) {
+        							subDetailsNoList = response.map(detail => ({
+        								subDetailsNo: detail.subDetailsNo,
+        								discountPrice: detail.discountPrice
+        							}));
+
+        							$.ajax({
+        								type: "POST",
+        								url: "/savePayment",
+        								data: JSON.stringify({
+        									paymentType: type,
+        									paymentPrice: num,
+        									suberNo: suber.suberNo,
+        									subPeriod: selectedPeriod,
+        									paymentStatus: "완료",
+        									claim: "Y",
+        									claimState: "완료"
+        								}),
+        								contentType: "application/json",
+        								success: function(response2) {
+        									let paymentNo = response2.paymentNo;
+
+        									let paymentDetailsList = subDetailsNoList.map(detail => ({
+        										paymentNo: paymentNo,
+        										subDetailsNo: detail.subDetailsNo,
+        										paymentPrice: detail.discountPrice,
+        										paymentState: "완료"
+        									}));
+
+        									$.ajax({
+        										type: "POST",
+        										url: "/savePaymentDetails",
+        										data: JSON.stringify(paymentDetailsList),
+        										contentType: "application/json",
+        										success: function(response3) {
+        											location.reload();
+        										},
+        										error: function(xhr, status, error) {
+        											alert("❌ 결제 상세 정보 저장 중 오류 발생.");
+        											console.error(xhr.responseText);
+        										}
+        									});
+        								},
+        								error: function(xhr, status, error) {
+        									alert("❌ 결제 정보 저장 중 오류가 발생했습니다.");
+        									console.error(xhr.responseText);
+        								}
+        							});
+        						},
+        						error: function(xhr, status, error) {
+        							alert("❌ 구독 상세 저장 중 오류 발생.");
+        							console.error(xhr.responseText);
+        						}
+        					});
+        				} else {
+        					var mesg = '결제를 실패하였습니다.';
+        					console.log(rsp);
+        					alert(mesg + rsp.error_msg);
+        				}
+        			}
+        		);
+        	}
+        });
+
+
+    });
+
+    function closeInvoiceModal() {
+        document.getElementById('invoiceModal').style.display = 'none';
+        document.getElementById('moduleDetailModal').style.display = 'none';
+    }
+    function formatDate(dateStr) {
+        if (!dateStr) return '-';
+        const date = new Date(dateStr);
+        if (isNaN(date)) return '-';
+
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+
+        return `${year}-${month}-${day}`;
+    }
+
+
+</script>
+
 </html>

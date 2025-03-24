@@ -10,4 +10,5 @@ public interface ModuleService {
     void deleteModule(int moduleNo);
     void updateModuleBasic(int moduleNo);
     void updateModuleActive(int moduleNo);
+	List<Integer> findSubscribedModuleNos(int suberNo, List<Integer> moduleNos);
 }

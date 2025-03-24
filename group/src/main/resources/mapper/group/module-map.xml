@@ -57,4 +57,15 @@
 	    SET ACTIVATE = CASE WHEN ACTIVATE = 'Y' THEN 'N' ELSE 'Y' END
 	    WHERE MODULE_NO = #{moduleNo}
 	</update>
+	
+	<select id="findSubscribedModuleNos" parameterType="map" resultType="int">
+	    SELECT module_no
+	    FROM sub_details
+	    WHERE suber_no = #{suberNo}
+	    AND module_no IN
+	    <foreach item="no" collection="moduleNos" open="(" separator="," close=")">
+	        #{no}
+	    </foreach>
+	</select>
+	
 </mapper>
