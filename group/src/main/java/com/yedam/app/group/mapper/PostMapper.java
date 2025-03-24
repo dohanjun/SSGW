@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import com.yedam.app.group.service.RepositoryPostVO;
 import com.yedam.app.group.service.RepositoryVO;
@@ -37,5 +38,9 @@ public interface PostMapper {
     
     // 자료글 상세 보기
     RepositoryPostVO getPostDetail(Long writingId);
+    
+    void updatePost(RepositoryPostVO postVO);
+    
+    void updateFixStatus(@Param("writingId") Long writingId, @Param("fix") char fix);
     
 }

@@ -82,13 +82,15 @@
         p.creation_date, 
         e.employee_name AS writer,
         p.writing_id,
-        MIN(f.file_name) AS fileName
+        MIN(f.file_name) AS fileName,
+        COUNT(f.file_id) AS fileCount
     FROM basket b
     JOIN repository_post p ON b.writing_id = p.writing_id
     JOIN repository r ON p.file_repository_id = r.file_repository_id
     JOIN employees e ON p.employee_no = e.employee_no
     LEFT JOIN repository_file f ON p.writing_id = f.writing_id
     WHERE r.suber_no = #{suberNo}
+    AND r.file_repository_type = '전체'
     GROUP BY b.basket_id, b.del_date, p.title, p.creation_date, e.employee_name, p.writing_id
     ORDER BY b.del_date DESC
 </select>
@@ -101,7 +103,8 @@
         p.creation_date, 
         e.employee_name AS writer,
         p.writing_id,
-        MIN(f.file_name) AS fileName
+        MIN(f.file_name) AS fileName,
+        COUNT(f.file_id) AS fileCount
     FROM basket b
     JOIN repository_post p ON b.writing_id = p.writing_id
     JOIN repository r ON p.file_repository_id = r.file_repository_id
@@ -122,6 +125,70 @@
             1 = 0
         </otherwise>
     </choose>
+    GROUP BY b.basket_id, b.del_date, p.title, p.creation_date, e.employee_name, p.writing_id
+    ORDER BY b.del_date DESC
+</select>
+
+<select id="selectOwnTotalBasketPosts" resultType="com.yedam.app.group.service.BasketVO">
+    SELECT 
+        b.basket_id, 
+        b.del_date, 
+        p.title, 
+        p.creation_date, 
+        e.employee_name AS writer,
+        p.writing_id,
+        MIN(f.file_name) AS fileName,
+        COUNT(f.file_id) AS fileCount
+    FROM basket b
+    JOIN repository_post p ON b.writing_id = p.writing_id
+    JOIN repository r ON p.file_repository_id = r.file_repository_id
+    JOIN employees e ON p.employee_no = e.employee_no
+    LEFT JOIN repository_file f ON p.writing_id = f.writing_id
+    WHERE r.suber_no = #{suberNo}
+      AND r.file_repository_type = '전체'
+      AND p.employee_no = #{employeeNo}
+    GROUP BY b.basket_id, b.del_date, p.title, p.creation_date, e.employee_name, p.writing_id
+    ORDER BY b.del_date DESC
+</select>
+
+<select id="selectDepartmentBasketFiltered" resultType="com.yedam.app.group.service.BasketVO">
+    SELECT 
+        b.basket_id, 
+        b.del_date, 
+        p.title, 
+        p.creation_date, 
+        e.employee_name AS writer,
+        p.writing_id,
+        MIN(f.file_name) AS fileName,
+        COUNT(f.file_id) AS fileCount
+    FROM basket b
+    JOIN repository_post p ON b.writing_id = p.writing_id
+    JOIN repository r ON p.file_repository_id = r.file_repository_id
+    JOIN employees e ON p.employee_no = e.employee_no
+    LEFT JOIN repository_file f ON p.writing_id = f.writing_id
+    WHERE r.department_no = #{departmentNo}
+      AND r.file_repository_type = '부서'
+    GROUP BY b.basket_id, b.del_date, p.title, p.creation_date, e.employee_name, p.writing_id
+    ORDER BY b.del_date DESC
+</select>
+
+<select id="selectIndividualBasket" resultType="com.yedam.app.group.service.BasketVO">
+    SELECT 
+        b.basket_id, 
+        b.del_date, 
+        p.title, 
+        p.creation_date, 
+        e.employee_name AS writer,
+        p.writing_id,
+        MIN(f.file_name) AS fileName,
+        COUNT(f.file_id) AS fileCount
+    FROM basket b
+    JOIN repository_post p ON b.writing_id = p.writing_id
+    JOIN repository r ON p.file_repository_id = r.file_repository_id
+    JOIN employees e ON p.employee_no = e.employee_no
+    LEFT JOIN repository_file f ON p.writing_id = f.writing_id
+    WHERE r.file_repository_type = '개인'
+      AND p.employee_no = #{employeeNo}
     GROUP BY b.basket_id, b.del_date, p.title, p.creation_date, e.employee_name, p.writing_id
     ORDER BY b.del_date DESC
 </select>

@@ -12,7 +12,13 @@ public interface BasketService {
     
     List<BasketVO> getBasketPostsByType(EmpVO emp, String repositoryType);
     
+    List<BasketVO> getDepartmentBasketFiltered(EmpVO emp);
+    
+    List<BasketVO> getIndividualBasket(EmpVO emp);
+    
     void restoreSelectedPosts(List<Long> writingIds);
 
     void permanentlyDeletePosts(List<Long> writingIds);
+    
+    List<BasketVO> getOwnTotalBasketPosts(EmpVO emp);
 }

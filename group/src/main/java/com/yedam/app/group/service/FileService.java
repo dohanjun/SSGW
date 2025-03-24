@@ -14,4 +14,8 @@ public interface FileService {
     void insertDownloadLog(DownloadVO download); // 다운로드 로그 저장
     
     List<RepositoryFileVO> getFilesByWritingId(Long writingId);
+    
+    void deleteFilesByWritingId(Long writingId);
+    
+    void deleteDownloadLogByWritingId(Long writingId);
 }

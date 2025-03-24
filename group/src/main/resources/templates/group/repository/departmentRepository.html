@@ -43,8 +43,19 @@
 								th:data-url="@{'/detailPost/' + ${post.writingId}}"
       							onclick="location.href=this.dataset.url"
       							style="cursor: pointer;">
-								<td><input type="checkbox" class="file-checkbox"></td>
-           						<td th:text="${post.title}"></td>
+								<td>
+								<input type="checkbox" name="writingIds"
+       									th:value="${post.writingId}"
+       									th:disabled="${post.employeeNo != loggedInEmpNo and !isManager}"
+       									class="file-checkbox"
+       									onclick="event.stopPropagation()" />
+       							</td>
+           						<td>
+    								<span th:if="${post.fix?.toString() == 'Y'}">
+        								<i class="fas fa-thumbtack text-warning mr-1"></i>
+    								</span>
+    								<span th:text="${post.title}"></span>
+								</td>
             					<td th:text="${post.fileCount > 1 ? post.fileName + ' 외 ' + (post.fileCount - 1) + '건' : post.fileName}"></td>
             					<td th:text="${post.writer}"></td>
             					<td th:text="${#dates.format(post.creationDate, 'yyyy-MM-dd')}"></td>
@@ -83,3 +94,18 @@
 	</div>
 </body>
 </html>
+<script>
+	document.getElementById('selectAll').addEventListener('change', function () {
+		const checkboxes = document.querySelectorAll('input[name="writingIds"]:not(:disabled)');
+		checkboxes.forEach(cb => cb.checked = this.checked);
+	});
+	
+	// 휴지통 버튼 눌렀을 때 체크된 항목이 없으면 알림
+	document.getElementById('moveForm').addEventListener('submit', function(e) {
+		const checked = document.querySelectorAll('input[name="writingIds"]:checked');
+		if (checked.length === 0) {
+			alert('선택된 게시글이 없습니다.');
+			e.preventDefault(); // 폼 전송 막기
+		}
+	});
+</script>

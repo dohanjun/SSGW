@@ -52,27 +52,41 @@ public class BasketController {
 	// 휴지통 목록 조회
 	@GetMapping("")
 	public String viewBasket(@RequestParam(value = "repositoryType", required = false) String repositoryType,
-			Model model) {
+	                         Model model) {
 
-		// 로그인한 사용자 정보 조회
-		EmpVO loggedInUser = empService.getLoggedInUserInfo();
-		if (loggedInUser == null) {
-			throw new IllegalStateException("로그인한 사용자 정보를 찾을 수 없습니다.");
-		}
+	    EmpVO loggedInUser = empService.getLoggedInUserInfo();
+	    if (loggedInUser == null) {
+	        throw new IllegalStateException("로그인한 사용자 정보를 찾을 수 없습니다.");
+	    }
 
-		List<BasketVO> basketList;
+	    List<BasketVO> basketList;
+	    
+	    if ("전체".equals(repositoryType)) {
+	        // 전체 휴지통: 관리자 → 전체 / 일반 → 본인 작성 글
+	        boolean isAdmin = (loggedInUser.getRightsId() != null && loggedInUser.getRightsId() == 3)
+	                       || (loggedInUser.getRightsLevel() != null && loggedInUser.getRightsLevel() == 5);
 
-		if (repositoryType == null || repositoryType.isEmpty()) {
-			// repositoryType 없으면 전체 목록 (회사 기준 전체 휴지통)
-			basketList = basketService.getAllBasketPostsByEmp(loggedInUser);
-		} else {
-			// repositoryType 있을 경우 필터링된 휴지통 목록 조회
-			basketList = basketService.getBasketPostsByType(loggedInUser, repositoryType);
-		}
+	        basketList = isAdmin
+	                ? basketService.getAllBasketPostsByEmp(loggedInUser)
+	                : basketService.getOwnTotalBasketPosts(loggedInUser);
 
-		model.addAttribute("basketList", basketList);
-		model.addAttribute("repositoryType", repositoryType); // 선택값 유지용
-		return "group/repository/basket";
+	    } else if ("부서".equals(repositoryType)) {
+	        // 부서 휴지통: 작성자 or 부서장
+	    	basketList = basketService.getDepartmentBasketFiltered(loggedInUser);
+
+	    } else if ("개인".equals(repositoryType)) {
+	        // 개인 휴지통: 본인만
+	        basketList = basketService.getIndividualBasket(loggedInUser);
+
+	    } else {
+	        // repositoryType이 없을 때 기본값 처리 (전체)
+	        basketList = basketService.getAllBasketPostsByEmp(loggedInUser);
+	    }
+
+	    model.addAttribute("basketList", basketList);
+	    model.addAttribute("repositoryType", repositoryType);
+
+	    return "group/repository/basket";
 	}
 
 	// 선택 게시글 복원

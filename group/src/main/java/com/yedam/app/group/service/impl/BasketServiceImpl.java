@@ -59,7 +59,27 @@ public class BasketServiceImpl implements BasketService {
 	        params.put("employeeNo", emp.getEmployeeNo());
 	        params.put("repositoryType", repositoryType);
 
-	        return basketMapper.selectBasketByTypeFiltered(params);
+	        if ("부서".equals(repositoryType)) {
+	            // 부서 자료실 휴지통 접근: 작성자 또는 부서장만
+	            return basketMapper.selectDepartmentBasketFiltered(params);
+	        } else {
+	            // 그 외는 기존 로직 유지
+	            return basketMapper.selectBasketByTypeFiltered(params);
+	        }
+	    }
+	    
+	    @Override
+	    public List<BasketVO> getDepartmentBasketFiltered(EmpVO emp) {
+	        Map<String, Object> params = new HashMap<>();
+	        params.put("departmentNo", emp.getDepartmentNo());
+	        return basketMapper.selectDepartmentBasketFiltered(params);
+	    }
+
+	    @Override
+	    public List<BasketVO> getIndividualBasket(EmpVO emp) {
+	        Map<String, Object> params = new HashMap<>();
+	        params.put("employeeNo", emp.getEmployeeNo());
+	        return basketMapper.selectIndividualBasket(params);
 	    }
 	    
 	    @Override
@@ -74,5 +94,10 @@ public class BasketServiceImpl implements BasketService {
 	            basketMapper.deletePostByWritingId(id);    // 게시글 삭제
 	            basketMapper.deleteBasketByWritingId(id);  // 휴지통에서 삭제
 	        }
+	    }
+	    
+	    @Override
+	    public List<BasketVO> getOwnTotalBasketPosts(EmpVO emp) {
+	        return basketMapper.selectOwnTotalBasketPosts(emp.getSuberNo(), emp.getEmployeeNo());
 	    }
 }

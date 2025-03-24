@@ -17,9 +17,24 @@
             <div id="content">
                 <div class="container-fluid px-0">
                     <div class="card shadow mb-4" style="width: 100%; margin-top: 20px; margin-bottom: auto;">
-                        <div class="card-header py-3 d-flex align-items-center">
+                        <div class="card-header py-3 d-flex d-flex justify-content-between align-items-center">
+                          <div class="d-flex align-items-center">
                             <h6 class="m-0 font-weight-bold text-primary">자료 정보</h6>
-                            <i class="fa-solid fa-thumbtack text-primary ml-2"></i>
+                            <!-- 고정 상태일 때 뱃지처럼 표시 -->
+        					<span th:if="${post.fix == 'Y'}" class="badge badge-warning ml-2">
+            					<i class="fas fa-thumbtack"></i> 고정됨
+        					</span>
+                          </div>
+                          
+                          <!-- 고정/해제 버튼 -->
+    						<form th:if="${isEditable}" th:action="@{/toggleFix}" method="post" class="mb-0">
+        						<input type="hidden" name="writingId" th:value="${post.writingId}" />
+        						<button type="submit" class="btn btn-sm"
+                						th:classappend="${post.fix?.equals('Y')} ? 'btn-outline-danger' : 'btn-outline-primary'">
+            						<i class="fas fa-thumbtack"></i>
+            						<span th:text="${post.fix == 'Y' ? '고정 해제' : '고정'}"></span>
+        						</button>
+    						</form>
                         </div>
                         <div class="card-body">
                             <table class="table table-bordered file-info-table">
@@ -57,9 +72,13 @@
         							<i class="fas fa-edit"></i>
     							</a>
     
-    							<a th:if="${isEditable}" th:href="@{/deletePost(writingId=${post.writingId})}" class="btn btn-danger">
-        							<i class="fas fa-trash"></i>
-    							</a>
+    							<form th:if="${isEditable}" th:action="@{/basket/moveToBasket}" method="post" style="display:inline;">
+        						<input type="hidden" name="writingIds" th:value="${post.writingId}" />
+        						<input type="hidden" name="repositoryType" th:value="${post.repositoryType ?: '전체'}" />
+        						<button type="submit" class="btn btn-danger">
+            						<i class="fas fa-trash"></i>
+        						</button>
+    							</form>
 							</div>
                         </div>
                     </div>

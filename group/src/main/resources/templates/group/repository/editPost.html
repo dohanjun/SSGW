@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{common/layouts/default_layout}"
+	layout:fragment="content">
+<head>
+<meta charset="UTF-8">
+<title>자료 수정</title>
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+	rel="stylesheet">
+</head>
+<body>
+	<div class="container mt-4">
+		<div class="card shadow mb-4">
+			<div class="card-header py-3 d-flex align-items-center">
+				<h6 class="m-0 font-weight-bold text-primary">자료 수정</h6>
+				<i class="fas fa-pen text-primary ml-2"></i>
+			</div>
+			<div class="card-body">
+				<form th:action="@{/editPost}" method="post"
+					enctype="multipart/form-data">
+					<input type="hidden" name="writingId" th:value="${post.writingId}" />
+
+					<div class="form-group">
+						<label for="title">제목</label> <input type="text"
+							class="form-control" id="title" name="title"
+							th:value="${post.title}" required />
+					</div>
+
+					<div class="form-group">
+						<label for="content">내용</label>
+						<textarea class="form-control" id="content" name="content"
+							rows="10" th:text="${post.content}"></textarea>
+					</div>
+
+					<div class="form-group">
+						<label for="files">첨부파일</label> <input type="file" id="files"
+							name="files" class="form-control" multiple />
+					</div>
+
+					<div class="text-center">
+						<button type="submit" class="btn btn-primary">
+							<i class="fas fa-save"></i> 저장
+						</button>
+						<a th:href="@{/detailPost/{id}(id=${post.writingId})}"
+							class="btn btn-secondary"> <i class="fas fa-arrow-left"></i>
+							취소
+						</a>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

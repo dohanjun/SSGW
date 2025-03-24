@@ -30,4 +30,8 @@ public interface PostService {
     
     // 단건 조회
     RepositoryPostVO getPostDetail(Long writingId);
+    
+    void updatePost(RepositoryPostVO postVO);
+    
+    void updateFixStatus(Long writingId, char fix);
 }

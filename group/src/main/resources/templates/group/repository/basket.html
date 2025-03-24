@@ -42,7 +42,7 @@
                         <td><input type="checkbox" name="writingIds" th:value="${post.writingId}" class="file-checkbox"></td>
                         <td th:text="${post.title}"></td>
                         <td th:text="${post.writer}"></td>
-                        <td th:text="${post.fileName}"></td>
+                        <td th:text="${post.fileCount > 1 ? post.fileName + ' 외 ' + (post.fileCount - 1) + '건' : post.fileName}"></td>
                         <td th:text="${#dates.format(post.creationDate, 'yyyy-MM-dd')}"></td>
                         <td th:text="${#dates.format(post.delDate, 'yyyy-MM-dd')}"></td>
                     </tr>

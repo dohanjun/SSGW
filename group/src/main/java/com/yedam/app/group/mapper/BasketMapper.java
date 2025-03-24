@@ -29,6 +29,13 @@ public interface BasketMapper {
 
     List<BasketVO> selectBasketByTypeFiltered(Map<String, Object> params);
     
+    List<BasketVO> selectOwnTotalBasketPosts(int suberNo, int employeeNo);
+    
+    // 부서 휴지통 (작성자 or 부서장만 접근 가능하도록 파라미터 하나로 처리)
+    List<BasketVO> selectDepartmentBasketFiltered(Map<String, Object> params);
+    
+    List<BasketVO> selectIndividualBasket(Map<String, Object> params);
+    
     void restoreToTotalRepository(Long writingId);
     void restoreToDepartmentRepository(Long writingId);
     void restoreToIndividualRepository(Long writingId);

@@ -154,4 +154,14 @@ public class FileServiceImpl implements FileService {
         downloadVO.setDownloadDate(new Timestamp(System.currentTimeMillis())); // 현재 시간 기록
         fileMapper.insertDownloadLog(downloadVO);
     }
+    
+    @Override
+    public void deleteFilesByWritingId(Long writingId) {
+        fileMapper.deleteFilesByWritingId(writingId);
+    }
+    
+    @Override
+    public void deleteDownloadLogByWritingId(Long writingId) {
+        fileMapper.deleteDownloadLogByWritingId(writingId);
+    }
 }

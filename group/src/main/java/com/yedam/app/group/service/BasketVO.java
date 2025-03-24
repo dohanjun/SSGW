@@ -15,5 +15,6 @@ public class BasketVO {
     private String fileName;
     
     private String repositoryType;
+    private int fileCount;
 }
 

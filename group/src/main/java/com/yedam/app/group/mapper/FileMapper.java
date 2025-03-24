@@ -23,4 +23,8 @@ public interface FileMapper {
     
     // 파일 ID로 단건 조회 (다운로드용)
     RepositoryFileVO selectFileById(Long fileId);
+    
+    void deleteFilesByWritingId(Long writingId);
+    
+    void deleteDownloadLogByWritingId(Long writingId);
 }
