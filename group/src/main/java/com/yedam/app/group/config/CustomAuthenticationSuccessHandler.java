@@ -35,9 +35,9 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         String query = "SELECT * FROM ( " +
                 "SELECT MANAGER_ID AS username, MANAGER_PW AS password,'ROLE_MANAGER' AS role FROM MANAGER_LOGIN " +
                 "UNION ALL " +
-                "SELECT SUB_ID AS username, SUB_PW AS password, 'ROLE_MANAGERUSER' AS role FROM SUBER " +
+                "SELECT EMPLOYEE_ID AS username, EMPLOYEE_PW AS password, 'ROLE_MANAGERUSER' AS role FROM EMPLOYEES WHERE RANK_ID = 7 and RESIGNATION_STATUS ='N'" +
                 "UNION ALL " +
-                "SELECT EMPLOYEE_ID AS username, EMPLOYEE_PW AS password, 'ROLE_USER' AS role FROM EMPLOYEES WHERE RESIGNATION_STATUS ='N'" +
+                "SELECT EMPLOYEE_ID AS username, EMPLOYEE_PW AS password, 'ROLE_USER' AS role FROM EMPLOYEES WHERE RANK_ID != 7 and RESIGNATION_STATUS ='N'" +
                 ") WHERE username = ?";
         
         String query2 = "select s.* "

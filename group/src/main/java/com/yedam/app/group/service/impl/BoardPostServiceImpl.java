@@ -1,74 +1,68 @@
 package com.yedam.app.group.service.impl;
 
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.yedam.app.group.mapper.BoardPostMapper;
 import com.yedam.app.group.service.BoardPostService;
 import com.yedam.app.group.service.BoardPostVO;
-import com.yedam.app.group.service.PaymentDetailsVO;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 @Service
 public class BoardPostServiceImpl implements BoardPostService {
+
     private final BoardPostMapper boardPostMapper;
 
     @Autowired
     public BoardPostServiceImpl(BoardPostMapper boardPostMapper) {
         this.boardPostMapper = boardPostMapper;
     }
-
+    // 내 글 + 조건 검색 포함 공통 메서드
     @Override
-    public List<BoardPostVO> getBoardList(int page) {
-        return boardPostMapper.getBoardList(page);
+    public List<BoardPostVO> getBoardListWithOptionalFilter(Integer employeeNo, String keyword, int offset) {
+        return boardPostMapper.selectBoardListWithFilter(employeeNo, keyword, offset);
     }
 
     @Override
-    public int getTotalCount() {
-        return boardPostMapper.getTotalCount();
+    public int getBoardCountWithOptionalFilter(Integer employeeNo, String keyword) {
+        return boardPostMapper.selectBoardCountWithFilter(employeeNo, keyword);
     }
 
-	@Override
-	public List<BoardPostVO> getPagedPostsByKeyword(String keyword, int page) {
-		  return boardPostMapper.getPagedPostsByKeyword(keyword, page);
-	}
+    // 게시글 상세
+    @Override
+    public BoardPostVO getBoardDetail(int postId) {
+        return boardPostMapper.selectPostById(postId);
+    }
 
-	@Override
-	public int getTotalCountByKeyword(String keyword) {
-		return boardPostMapper.getTotalCountByKeyword(keyword);
-	}
+    // 고정 상태 수정
+    @Override
+    public int modifyBoartFixed(int postId) {
+        return boardPostMapper.modifyBoartFixed(postId);
+    }
 
-	@Override
-	public BoardPostVO getBoardDetail(int postId) {
-		return boardPostMapper.selectPostById(postId);
-	}
+    // 게시글 삭제
+    @Override
+    public int removeBoradPost(int postId) {
+        return boardPostMapper.deletePost(postId);
+    }
 
-	@Override
-	public int modifyBoartFixed(int postId) {
-		return boardPostMapper.modifyBoartFixed(postId);
-	}
+    // 게시글 등록
+    @Override
+    public int createBoard(BoardPostVO boardPost) {
+        return boardPostMapper.insertPost(boardPost);
+    }
 
-	@Override
-	public int removeBoradPost(int postId) {
-		return boardPostMapper.deletePost(postId);
-	}
+    // 게시글 수정
+    @Override
+    public int modifyBoard(BoardPostVO boardPost) {
+        return boardPostMapper.updatePost(boardPost);
+    }
 
-	@Override
-	public int createBoard(BoardPostVO boardPost) {
-		return boardPostMapper.insertPost(boardPost);
-	}
-
-	@Override
-	public int modifyBoard(BoardPostVO boardPost) {
-		return boardPostMapper.updatePost(boardPost);
-	}
-
-	@Override
-	public BoardPostVO findinfoChildPostByParentId(int postId) {
-		return boardPostMapper.selectChildPostById(postId);
-	}
-
+    // 자식 답글 조회
+    @Override
+    public BoardPostVO findinfoChildPostByParentId(int postId) {
+        return boardPostMapper.selectChildPostById(postId);
+    }
 
 }
-

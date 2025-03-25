@@ -92,5 +92,15 @@ ORDER BY module_name
         max_up_size = #{maxUpSize}
     WHERE suber_no = #{suberNo}
 </update>
+<select id="checkedId" parameterType="String" resultType="boolean">
+    SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
+    FROM employees
+    WHERE EMPLOYEE_ID = #{subId}
+</select>
+	<update id="updateSubscriberPassword" parameterType="SubscriberVO">
+    UPDATE suber
+    SET sub_pw = #{subPw}
+    WHERE suber_no = #{suberNo}
+</update>
 	
 </mapper>

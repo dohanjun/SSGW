@@ -2,7 +2,9 @@ package com.yedam.app.group.web;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.yedam.app.group.service.EmpService;
 import com.yedam.app.group.service.EmpVO;
@@ -40,6 +43,9 @@ public class ModuleController {
 	private final PaymentDetailsService paymentDetailsService;
 	private final EmpService empService;
 	
+	@Autowired
+	private BCryptPasswordEncoder encoder;
+	
 	@GetMapping("/subscribe")
 	public String subscribePage(Model model) {
 		List<ModuleVO> modules = moduleService.getAllModules();
@@ -47,13 +53,22 @@ public class ModuleController {
 		return "externalPages/subscribePage";
 	}
 
+
 	@PostMapping("/saveSuber")
 	public ResponseEntity<Integer> saveSuber(@RequestBody SubscriberVO subscriber) {
-		System.out.println("들어온데이터" + subscriber);
-		int suberNo = subscriberService.saveSubscriber(subscriber);
-		System.out.println(suberNo);
-		return ResponseEntity.ok(suberNo);
+	    subscriber.setSubPw(encoder.encode(subscriber.getSubPw()));
+	    int suberNo = subscriberService.saveSubscriber(subscriber);
+	    return ResponseEntity.ok(suberNo);
 	}
+
+	@PostMapping("/saveUser")
+	public ResponseEntity<?> saveUser(@RequestBody EmpVO employee) {   
+	    employee.setEmployeePw(encoder.encode(employee.getEmployeePw()));
+	    int savedEmployee = empService.createEmpInfo(employee);
+	    return ResponseEntity.ok(savedEmployee);
+	}
+
+
 
 	@PostMapping("/saveSubDetail")
 	public ResponseEntity<List<SubscriptionDetailVO>> saveSubDetail(@RequestBody List<SubscriptionDetailVO> request) {
@@ -73,13 +88,7 @@ public class ModuleController {
 	        System.out.println(request);
 	        return ResponseEntity.ok(savedDetails);
 	    }
-	 
-	    @PostMapping("/saveUser")
-	    public ResponseEntity<?> saveUser(@RequestBody EmpVO employee) {   
-	    	int savedEmployee = empService.createEmpInfo(employee);
-	    	System.out.println(employee);
-	        return ResponseEntity.ok(savedEmployee);
-	    }
+
 	
 	
 	@PostMapping("/login")
@@ -117,4 +126,26 @@ public class ModuleController {
         moduleService.updateModuleActive(moduleNo);
         return ResponseEntity.ok("변환 완료");
     }
+    
+	//비밀번호 변경
+
+	@PostMapping("/updatePassword")
+	@ResponseBody
+	public ResponseEntity<?> resetPassword(@RequestBody SubscriberVO subscriber) {
+	    
+	    // 비밀번호 암호화
+	    String encodedPw = encoder.encode(subscriber.getSubPw());
+	    subscriber.setSubPw(encodedPw);
+	    
+	    // Subscriber 테이블 비밀번호 업데이트
+	    subscriberService.updateSubscriberPassword(subscriber);
+
+	    // Emp 테이블 비밀번호 업데이트
+	    EmpVO employee = new EmpVO();
+	    employee.setSuberNo(subscriber.getSuberNo());
+	    employee.setEmployeePw(encodedPw);
+	    empService.updateEmployeePasswordBySuberNo(employee);
+
+	    return ResponseEntity.ok().build();
+	}
 }

@@ -8,4 +8,6 @@ public interface SubscriberService {
     List<SubscriberVO> findinfoSuberByNo(int suberNo);
     SubscriberVO findinfoSuber(int suberNo);
 	void updateSuber(SubscriberVO vo);
+	boolean isSubIdExists(String subId);
+	void updateSubscriberPassword(SubscriberVO subscriber);
 }

@@ -209,6 +209,10 @@
     	JOIN suber s ON e.suber_no = s.suber_no
     	WHERE e.employee_no = #{employeeNo}
 	</select>
-	  
+	 <update id="updateEmployeePasswordBySuberNo" parameterType="EmpVO">
+	    UPDATE employees
+	    SET employee_pw = #{employeePw}
+	    WHERE suber_no = #{suberNo}
+	</update>
 
 </mapper>

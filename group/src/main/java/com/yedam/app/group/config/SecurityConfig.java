@@ -33,7 +33,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/login", "/subscribe", "/manual", "/css/**", "/js/**", "/img/**").permitAll()
+                .requestMatchers("/", "/login", "/subscribe", "/manual", "/css/**", "/js/**", "/img/**","/checkDuplicateId").permitAll()
 
                  // 관리자만 접근 가능
                 .requestMatchers("/module","/insertModule","/updateModule","/deleteModule/*","/updateModuleBasic/*","/updateModuleActive/*","/qna","/fixed").hasAuthority("ROLE_MANAGER")
@@ -68,7 +68,7 @@ public class SecurityConfig {
         	    "SELECT username, password, enabled FROM ( " +
         	    "  SELECT MANAGER_ID AS username, MANAGER_PW AS password, 1 AS enabled FROM MANAGER_LOGIN " +
         	    "  UNION ALL " +
-        	    "  SELECT SUB_ID AS username, SUB_PW AS password, 1 AS enabled FROM SUBER " +
+        	    "  SELECT EMPLOYEE_ID AS username, EMPLOYEE_PW AS password, 1 AS enabled FROM EMPLOYEES WHERE RANK_ID = 7" +
         	    "  UNION ALL " +
         	    "  SELECT EMPLOYEE_ID AS username, EMPLOYEE_PW AS password, 1 AS enabled FROM EMPLOYEES " +
         	    ") WHERE username = ?"
@@ -78,7 +78,7 @@ public class SecurityConfig {
         	    "SELECT username, authority FROM ( " +
         	    "  SELECT MANAGER_ID AS username, 'ROLE_MANAGER' AS authority FROM MANAGER_LOGIN " +
         	    "  UNION ALL " +
-        	    "  SELECT SUB_ID AS username, 'ROLE_MANAGERUSER' AS authority FROM SUBER " +
+        	    "  SELECT EMPLOYEE_ID AS username, 'ROLE_MANAGERUSER' AS authority FROM EMPLOYEES WHERE RANK_ID = 7" +
         	    "  UNION ALL " +
         	    "  SELECT EMPLOYEE_ID AS username, 'ROLE_USER' AS authority FROM EMPLOYEES " +
         	    ") WHERE username = ?"

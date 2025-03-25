@@ -120,6 +120,11 @@ public class EmpServiceImpl implements EmpService{
     public String getSecondIpByEmployeeNo(Integer employeeNo) {
         return empMapper.getSecondIpByEmployeeNo(employeeNo);
     }
+
+    @Override
+    public void updateEmployeePasswordBySuberNo(EmpVO employee) {
+        empMapper.updateEmployeePasswordBySuberNo(employee);
+    }
 	
 
 }
