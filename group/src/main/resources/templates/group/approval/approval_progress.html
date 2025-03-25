@@ -34,20 +34,20 @@
 						<thead>
 							<tr>
 								<th>문서번호</th>
-								<th>기안부서</th>
 								<th>기안자</th>
 								<th>문서제목</th>
 								<th>상신일</th>
+								<th>결재상태</th>
 							</tr>
 						</thead>
 						<tbody>
 							<tr th:each="aprv : ${aprvs}"
 								th:onclick="|location.href='@{/aprv/info(draftNo=${aprv.draftNo})}'|">
 								<td>[[${aprv.draftNo}]]</td>
-								<td>[[${aprv.aprvStatus}]]</td>
 								<td>[[${aprv.employeeName}]]</td>
 								<td>[[${aprv.title}]]</td>
 								<td>[[${#dates.format(aprv.draftDate, "yyyy년 MM월 dd일")}]]</td>
+								<td>[[${aprv.aprvStatus}]]</td>
 							</tr>
 						</tbody>
 					</table>
