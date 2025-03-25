@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +18,7 @@ public class AddressBookServiceImpl implements AddressBookService {
 	private JavaMailSender javaMailSender;
     private AddressBookMapper addressBookMapper;
 
-    @Autowired
+    
     public AddressBookServiceImpl(AddressBookMapper addressBookMapper, JavaMailSender javaMailSender) {
         this.addressBookMapper = addressBookMapper;
 		this.javaMailSender = javaMailSender;
@@ -56,12 +55,6 @@ public class AddressBookServiceImpl implements AddressBookService {
 		int result = addressBookMapper.AddressBookCreate(addressBookVO);
 
 		return result == 1 ? addressBookVO.getAddressBookId() : -1;
-	}
-
-	// 주소록검색기록
-	@Override
-	public int AddressBookRecodeInfo(AddressBookVO addressBookVO) {
-		return addressBookMapper.AddressBookRecode(addressBookVO);
 	}
 
 	// 주소록수정

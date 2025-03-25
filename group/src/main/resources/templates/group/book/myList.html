@@ -41,14 +41,16 @@
 </style>
 
 <body>
-<h3>부서주소록</h3>
+<h3>개인주소록</h3>
+
+<!-- 검색기능 -->
 	<div class="btn-container">
-		<a class="btn btn-primary" th:onclick="|location.href='@{/myBookList}'|">
-		개인주소록 이동
+		<a class="btn btn-primary" th:onclick="|location.href='@{/bookList}'|">
+		부서주소록 이동
 		</a>
 	</div>
-	
-<!-- 검색기능 -->
+
+
 <form role="search" name="frmSearch">
   <div class="left" id="se">
 	  <input type="hidden" name="page" value="1">
@@ -89,12 +91,12 @@
 	<th:block th:each="info : ${books}">
 		<tr>
 		    <td><input type="checkbox" name="checkMenu" class="checkbox" onchange="checkMenuHandler(this)"/></td>
-			<td th:onclick="|location.href='@{/bookSelect(addressBookId=${info.addressBookId})}';|">[[ ${info.addressBookName} ]]</td>
-			<td th:onclick="|location.href='@{/bookSelect(addressBookId=${info.addressBookId})}';|">[[ ${info.addressBookNumber} ]]</td>
-			<td th:onclick="|location.href='@{/bookSelect(addressBookId=${info.addressBookId})}';|">[[ ${info.addressBookEmail} ]]</td>
-			<td th:onclick="|location.href='@{/bookSelect(addressBookId=${info.addressBookId})}';|">[[ ${info.addressBookCompanyName} ]]</td>
-			<td th:onclick="|location.href='@{/bookSelect(addressBookId=${info.addressBookId})}';|">[[ ${info.addressBookCompanyNumber} ]]</td>
-			<td th:onclick="|location.href='@{/bookSelect(addressBookId=${info.addressBookId})}';|">[[ ${info.bookDepartmentType} ]]</td>
+			<td th:onclick="|location.href='@{/myBookSelect(addressBookId=${info.addressBookId})}';|">[[ ${info.addressBookName} ]]</td>
+			<td th:onclick="|location.href='@{/myBookSelect(addressBookId=${info.addressBookId})}';|">[[ ${info.addressBookNumber} ]]</td>
+			<td th:onclick="|location.href='@{/myBookSelect(addressBookId=${info.addressBookId})}';|">[[ ${info.addressBookEmail} ]]</td>
+			<td th:onclick="|location.href='@{/myBookSelect(addressBookId=${info.addressBookId})}';|">[[ ${info.addressBookCompanyName} ]]</td>
+			<td th:onclick="|location.href='@{/myBookSelect(addressBookId=${info.addressBookId})}';|">[[ ${info.addressBookCompanyNumber} ]]</td>
+			<td th:onclick="|location.href='@{/myBookSelect(addressBookId=${info.addressBookId})}';|">[[ ${info.bookDepartmentType} ]]</td>
 		  	<td th:onclick="|location.href='@{/myBookSelect(addressBookId=${info.addressBookId})}';|">[[ ${ #dates.format(info.addressBookUpdateDate, "yyyy년MM월dd일") } ]]</td>
 		</tr>
  	  </th:block>
@@ -142,7 +144,7 @@
 	function moveInfoPage(event){
 		let selectedTr = event.currentTarget;
 		let did = selectedTr.children[1].textContent;
-		let url = context + '/bookSelect?addressBookId=' + did;
+		let url = context + '/myBookSelect?addressBookId=' + did;
 	}
 	
 	//바 기능
@@ -165,7 +167,7 @@
 	    }
 
 	    
-  // 자식노드 체크가 한개라도 false일때 부모 전체체크 해제 자식노드 체크가 모두 true가 되면 부모 전체체크도 true
+  	//자식노드 체크가 한개라도 false일때 부모 전체체크 해제 자식노드 체크가 모두 true가 되면 부모 전체체크도 true
 	    let childMenuAll = document.querySelectorAll('[name="checkMenu"]').length;
 	    let childMenuCheckd = document.querySelectorAll('[name="checkMenu"]:checked').length;
 	    if (childMenuAll == childMenuCheckd){

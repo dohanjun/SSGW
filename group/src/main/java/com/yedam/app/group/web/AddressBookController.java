@@ -65,6 +65,19 @@ public class AddressBookController {
 		     return "group/book/list";  // mainPage.html을 반환
 		    }	
 		
+			//나의메일목록
+		 @GetMapping("myBookList")
+		    public String myBookList(Model model, PageListVO vo, Paging paging) {
+			 //페이징처리
+			 vo.setStart(paging.getFirst());
+			 vo.setEnd(paging.getLast());
+			 paging.setTotalRecord(addressBookService.pageGetCount(vo));
+			 model.addAttribute("paging", paging);
+			// model.addAttribute("vo", vo);
+			 List<AddressBookVO> list = addressBookService.AddressBookSelectAll(vo);
+			 model.addAttribute("books", list);
+		     return "group/book/myList";  // mainPage.html을 반환
+		    }	
 
 		 //메일상세보기
 		 @GetMapping("bookSelect")
@@ -100,10 +113,10 @@ public class AddressBookController {
 		     int did = addressBookService.AddressBookInsert(addressBookVO);
 			 String url = null;
 			 if (did > -1) {
-				 url = "redirect:bookSelect?addressBookId="+did;
+				 url = "redirect:myBookSelect?addressBookId="+did;
 			 }
 			 else {
-				 url = "redirect:bookList";
+				 url = "redirect:myList";
 			 }
 			 return url;
 		    }	
