@@ -489,9 +489,16 @@ public class ApprovalController {
 
 		List<AprvRoutesVO> routList = approvalService.findRoutes(routVO);
 		
+		// 로그인한 사용자의 aprvOrder 찾기
+	    String aprvOrder = routList.stream()
+	            .filter(r -> r.getEmployeeNo() == (loggedInUser.getEmployeeNo()))
+	            .map(AprvRoutesVO::getAprvOrder)
+	            .findFirst()
+	            .orElse("0"); // 일치하는 aprvOrder가 없으면 기본값 0
+		
 		model.addAttribute("aprv", aprvVO);
 		model.addAttribute("aprvroutes", routList);
-		
+		model.addAttribute("aprvOrder", aprvOrder);
 
 		return "group/approval/approval";
 	}
@@ -546,10 +553,63 @@ public class ApprovalController {
 
 		return url;
 	}
+	
+	// 승인시 '진행', '완료'로 update
+	@PostMapping("/aprv/approve")
+	@ResponseBody
+	public Map<String, Object> approve(@RequestBody AprvRoutesVO vo) {
+	    Map<String, Object> result = new HashMap<>();
+	    try {
+	        // 최대 결재 순서를 가져옴
+	        String maxAprvOrder = approvalService.getMaxAprvOrder(vo.getDraftNo());
 
+	        // 최대 결재 순서와 비교하여 상태 설정
+	        if (vo.getAprvOrder().equals(maxAprvOrder)) {
+	            vo.setAprvStatus("완료");
+	        } else {
+	            vo.setAprvStatus("진행");
+	        }
+
+	        // 결재 승인 처리
+	        approvalService.processApproval(vo);  
+	        result.put("success", true);
+	    } catch (Exception e) {
+	        result.put("success", false);
+	        result.put("message", e.getMessage());
+	    }
+	    return result;
+	}
+
+
+
+
+	
+	// 결재페이지 반려처리
+	@PostMapping("/aprv/reject")
+	@ResponseBody
+	public Map<String, Object> reject(@RequestBody AprvRoutesVO vo) {
+	    Map<String, Object> result = new HashMap<>();
+	    try {
+	        approvalService.rejectApproval(vo);
+	        result.put("success", true);
+	    } catch (Exception e) {
+	        result.put("success", false);
+	        result.put("message", e.getMessage());
+	    }
+	    return result;
+	}
+
+	
+	
 	
 	@GetMapping("schedulePage")
 	public String scheduleList() {
 		return "group/schedule/schedule";
 	}
+	
+	@GetMapping("/tes")
+	public String testdfasdf() {
+		return "group/approval/test";
+	}
+	
 }

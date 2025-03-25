@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{common/layouts/default_layout}"
+	  layout:fragment="content">
+<head>
+<meta charset="UTF-8">
+<title></title>
+<link rel="stylesheet" th:href="@{/css/approval.css}">
+</head>
+<body>
+	<div class="container vacationdd">
+		<h2 class="vacationtitle">휴가원</h2>
+		<table class="vacationtable">
+			<tr>
+				<th colspan="4">신청인</th>
+			</tr>
+			<tr>
+				<th>소속</th>
+				<td colspan="3"><input type="text" class="input-field"></td>
+			</tr>
+			<tr>
+				<th>직책</th>
+				<td colspan="3"><input type="text" class="input-field"></td>
+			</tr>
+			<tr>
+				<th>성명</th>
+				<td colspan="3"><input type="text" class="input-field"></td>
+			</tr>
+		</table>
+		<table class="vacationtable">
+			<tr>
+				<th>휴가종류</th>
+				<td colspan="3"><input type="text" class="input-field"></td>
+			</tr>
+			<tr>
+				<th>휴가기간</th>
+				<td><input type="date" class="date-field"> ~ <input
+					type="date" class="date-field"></td>
+			</tr>
+			<tr>
+				<th>휴가사유</th>
+				<td colspan="3"><textarea rows="5" cols="50"></textarea></td>
+			</tr>
+			<tr>
+				<td colspan="4" class="end">휴가기준 제 13조에 의거 휴가를 신청하오니 허락하여 주시기바랍니다.</td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>

@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.yedam.app.group.service.AttendanceManagementVO;
+import com.yedam.app.group.service.EmpVO;
 
 @Mapper
 public interface AttendanceMapper {
@@ -33,4 +34,6 @@ public interface AttendanceMapper {
 
     // ✅ 오늘 퇴근 여부 확인
     Integer countTodayClockOut(@Param("employeeNo") int employeeNo);
+    
+    List<EmpVO> getDepartmentAttendanceSummary(@Param("departmentNo") Integer departmentNo);
 }

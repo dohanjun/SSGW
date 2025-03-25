@@ -22,9 +22,12 @@ public interface AttendanceService {
     // ✅ 퇴근
     Integer modifyClockOut(AttendanceManagementVO vo);
     
-    
+    // 출근1회 확인
     boolean hasClockedInToday(int employeeNo); 
     
-    
+    // 퇴근1회 확인    
     boolean hasClockedOutToday(int employeeNo); 
+    
+    
+    List<EmpVO> getDepartmentAttendanceSummary(Integer departmentNo);
 }
