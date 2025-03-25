@@ -54,43 +54,71 @@ public class BasketController {
 
 	// 휴지통 목록 조회
 	@GetMapping("")
-	public String viewBasket(@RequestParam(value = "repositoryType", required = false) String repositoryType,
-	                         Model model) {
+    public String viewBasket(@RequestParam(value = "repositoryType", required = false) String repositoryType,
+                              @RequestParam(value = "page", defaultValue = "1") int page,
+                              @RequestParam(value = "keyword", required = false) String keyword,
+                              Model model) {
 
-	    EmpVO loggedInUser = empService.getLoggedInUserInfo();
-	    if (loggedInUser == null) {
-	        throw new IllegalStateException("로그인한 사용자 정보를 찾을 수 없습니다.");
-	    }
+        EmpVO loggedInUser = empService.getLoggedInUserInfo();
+        if (loggedInUser == null) {
+            throw new IllegalStateException("로그인한 사용자 정보를 찾을 수 없습니다.");
+        }
 
-	    List<BasketVO> basketList;
-	    
-	    if ("전체".equals(repositoryType)) {
-	        // 전체 휴지통: 관리자 → 전체 / 일반 → 본인 작성 글
-	        boolean isAdmin = (loggedInUser.getRightsId() != null && loggedInUser.getRightsId() == 3)
-	                       || (loggedInUser.getRightsLevel() != null && loggedInUser.getRightsLevel() == 5);
+        int pageSize = 10;
+        int pageGroup = 10;
+        int offset = (page - 1) * pageSize;
+        int limit = pageSize;
 
-	        basketList = isAdmin
-	                ? basketService.getAllBasketPostsByEmp(loggedInUser)
-	                : basketService.getOwnTotalBasketPosts(loggedInUser);
+        List<BasketVO> basketList;
+        int totalCount = 0;
 
-	    } else if ("부서".equals(repositoryType)) {
-	        // 부서 휴지통: 작성자 or 부서장
-	    	basketList = basketService.getDepartmentBasketFiltered(loggedInUser);
+        if ("전체".equals(repositoryType)) {
+            boolean isAdmin = (loggedInUser.getRightsId() != null && loggedInUser.getRightsId() == 3)
+                            || (loggedInUser.getRightsLevel() != null && loggedInUser.getRightsLevel() == 5);
 
-	    } else if ("개인".equals(repositoryType)) {
-	        // 개인 휴지통: 본인만
-	        basketList = basketService.getIndividualBasket(loggedInUser);
+            if (isAdmin) {
+                totalCount = basketService.countAllBasketPosts(keyword, loggedInUser.getSuberNo());
+                basketList = basketService.getAllBasketPostsPaged(keyword, loggedInUser.getSuberNo(), offset, limit);
+            } else {
+                totalCount = basketService.countOwnTotalBasketPosts(keyword, loggedInUser.getEmployeeNo());
+                basketList = basketService.getOwnTotalBasketPostsPaged(keyword, loggedInUser.getEmployeeNo(), offset, limit);
+            }
 
-	    } else {
-	        // repositoryType이 없을 때 기본값 처리 (전체)
-	        basketList = basketService.getAllBasketPostsByEmp(loggedInUser);
-	    }
+        } else if ("부서".equals(repositoryType)) {
+            totalCount = basketService.countDepartmentBasketPosts(keyword,
+                    loggedInUser.getSuberNo(),
+                    loggedInUser.getDepartmentNo(),
+                    loggedInUser.getEmployeeNo(),
+                    loggedInUser.getManager());
 
-	    model.addAttribute("basketList", basketList);
-	    model.addAttribute("repositoryType", repositoryType);
+            basketList = basketService.getDepartmentBasketPostsPaged(keyword,
+                    loggedInUser.getSuberNo(),
+                    loggedInUser.getDepartmentNo(),
+                    loggedInUser.getEmployeeNo(),
+                    loggedInUser.getManager(),
+                    offset, limit);
 
-	    return "group/repository/basket";
-	}
+        } else if ("개인".equals(repositoryType)) {
+            totalCount = basketService.countIndividualBasketPosts(keyword, loggedInUser.getEmployeeNo());
+            basketList = basketService.getIndividualBasketPostsPaged(keyword, loggedInUser.getEmployeeNo(), offset, limit);
+
+        } else {
+            // 기본 전체 처리
+            totalCount = basketService.countOwnTotalBasketPosts(keyword, loggedInUser.getEmployeeNo());
+            basketList = basketService.getOwnTotalBasketPostsPaged(keyword, loggedInUser.getEmployeeNo(), offset, limit);
+        }
+
+        int totalPages = (int) Math.ceil((double) totalCount / pageSize);
+
+        model.addAttribute("basketList", basketList);
+        model.addAttribute("repositoryType", repositoryType);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("page", page);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("pageGroup", pageGroup);
+
+        return "group/repository/basket";
+    }
 
 	// 선택 게시글 복원
 	@PostMapping("/restore")

@@ -223,4 +223,205 @@
 <delete id="deleteDownloadLogsByFileId" parameterType="long">
     DELETE FROM download WHERE file_id = #{fileId}
 </delete>
+
+<!-- 전체 자료실 - 관리자 -->
+  <select id="countAllBasketPosts" resultType="int">
+    SELECT COUNT(*)
+    FROM basket b
+    JOIN repository_post p ON b.writing_id = p.writing_id
+    JOIN employees e ON p.employee_no = e.employee_no
+    WHERE p.file_repository_id IN (
+      SELECT file_repository_id FROM repository WHERE suber_no = #{suberNo} AND file_repository_type = '전체'
+    )
+    <if test="keyword != null and keyword != ''">
+      AND (
+        LOWER(p.title) LIKE '%' || LOWER(#{keyword}) || '%'
+        OR LOWER(p.content) LIKE '%' || LOWER(#{keyword}) || '%'
+        OR LOWER(e.employee_name) LIKE '%' || LOWER(#{keyword}) || '%'
+      )
+    </if>
+  </select>
+
+  <select id="selectAllBasketPostsPaged" resultType="com.yedam.app.group.service.BasketVO">
+SELECT * FROM (
+    SELECT 
+      b.writing_id,
+      p.title,
+      p.content,
+      e.employee_name AS writer,
+      r.file_repository_type AS repositoryType,
+      MIN(f.file_name) AS fileName,
+      COUNT(f.file_id) AS fileCount,
+      p.creation_date,
+      b.del_date,
+      ROW_NUMBER() OVER (ORDER BY p.creation_date DESC) AS rn
+    FROM basket b
+    JOIN repository_post p ON b.writing_id = p.writing_id
+    JOIN employees e ON p.employee_no = e.employee_no
+    JOIN repository r ON p.file_repository_id = r.file_repository_id
+    LEFT JOIN repository_file f ON p.writing_id = f.writing_id
+    WHERE r.suber_no = #{suberNo}
+      <if test="keyword != null and keyword != ''">
+        AND (
+          LOWER(p.title) LIKE '%' || LOWER(#{keyword}) || '%' OR
+          LOWER(p.content) LIKE '%' || LOWER(#{keyword}) || '%' OR
+          LOWER(e.employee_name) LIKE '%' || LOWER(#{keyword}) || '%' OR
+          LOWER(f.file_name) LIKE '%' || LOWER(#{keyword}) || '%'
+        )
+      </if>
+    GROUP BY b.writing_id, p.title, p.content, e.employee_name, r.file_repository_type, p.creation_date, b.del_date
+)
+WHERE rn BETWEEN #{offset} + 1 AND #{offset} + #{limit}
+</select>
+  
+  <!-- 전체 자료실 - 일반 직원 -->
+  <select id="countOwnTotalBasketPosts" resultType="int">
+    SELECT COUNT(*)
+    FROM basket b
+    JOIN repository_post p ON b.writing_id = p.writing_id
+    JOIN employees e ON p.employee_no = e.employee_no
+    WHERE p.employee_no = #{employeeNo}
+    <if test="keyword != null and keyword != ''">
+      AND (
+        LOWER(p.title) LIKE '%' || LOWER(#{keyword}) || '%'
+        OR LOWER(p.content) LIKE '%' || LOWER(#{keyword}) || '%'
+        OR LOWER(e.employee_name) LIKE '%' || LOWER(#{keyword}) || '%'
+      )
+    </if>
+  </select>
+
+  <select id="selectOwnTotalBasketPostsPaged" resultType="com.yedam.app.group.service.BasketVO">
+SELECT * FROM (
+    SELECT 
+        b.writing_id,
+        p.title,
+        p.content,
+        e.employee_name AS writer,
+        r.file_repository_type AS repositoryType,
+        MIN(f.file_name) AS fileName,
+        COUNT(f.file_id) AS fileCount,
+        p.creation_date,
+        b.del_date,
+        ROW_NUMBER() OVER (ORDER BY p.creation_date DESC) AS rn
+    FROM basket b
+    JOIN repository_post p ON b.writing_id = p.writing_id
+    JOIN employees e ON p.employee_no = e.employee_no
+    JOIN repository r ON p.file_repository_id = r.file_repository_id
+    LEFT JOIN repository_file f ON p.writing_id = f.writing_id
+    WHERE p.employee_no = #{employeeNo}
+    <if test="keyword != null and keyword != ''">
+      AND (
+        LOWER(p.title) LIKE '%' || LOWER(#{keyword}) || '%'
+        OR LOWER(p.content) LIKE '%' || LOWER(#{keyword}) || '%'
+        OR LOWER(e.employee_name) LIKE '%' || LOWER(#{keyword}) || '%'
+        OR LOWER(f.file_name) LIKE '%' || LOWER(#{keyword}) || '%'
+      )
+    </if>
+    GROUP BY b.writing_id, p.title, p.content, e.employee_name, r.file_repository_type, p.creation_date, b.del_date
+)
+WHERE rn BETWEEN #{offset} + 1 AND #{offset} + #{limit}
+</select>
+  
+  <!-- 부서 자료실 휴지통 -->
+  <select id="countDepartmentBasketPosts" resultType="int">
+    SELECT COUNT(*)
+    FROM basket b
+    JOIN repository_post p ON b.writing_id = p.writing_id
+    JOIN employees e ON p.employee_no = e.employee_no
+    JOIN repository r ON p.file_repository_id = r.file_repository_id
+    WHERE r.suber_no = #{suberNo}
+      AND r.department_no = #{departmentNo}
+      AND r.file_repository_type = '부서'
+      AND (p.employee_no = #{employeeNo} OR #{manager} = p.employee_no)
+    <if test="keyword != null and keyword != ''">
+      AND (
+        LOWER(p.title) LIKE '%' || LOWER(#{keyword}) || '%'
+        OR LOWER(p.content) LIKE '%' || LOWER(#{keyword}) || '%'
+        OR LOWER(e.employee_name) LIKE '%' || LOWER(#{keyword}) || '%'
+      )
+    </if>
+  </select>
+
+  <select id="selectDepartmentBasketPostsPaged" resultType="com.yedam.app.group.service.BasketVO">
+SELECT * FROM (
+    SELECT 
+        b.writing_id,
+        p.title,
+        p.content,
+        e.employee_name AS writer,
+        r.file_repository_type AS repositoryType,
+        MIN(f.file_name) AS fileName,
+        COUNT(f.file_id) AS fileCount,
+        p.creation_date,
+        b.del_date,
+        ROW_NUMBER() OVER (ORDER BY p.creation_date DESC) AS rn
+    FROM basket b
+    JOIN repository_post p ON b.writing_id = p.writing_id
+    JOIN employees e ON p.employee_no = e.employee_no
+    JOIN repository r ON p.file_repository_id = r.file_repository_id
+    LEFT JOIN repository_file f ON p.writing_id = f.writing_id
+    WHERE r.suber_no = #{suberNo}
+      AND r.department_no = #{departmentNo}
+      AND r.file_repository_type = '부서'
+      AND (p.employee_no = #{employeeNo} OR #{manager} = p.employee_no)
+    <if test="keyword != null and keyword != ''">
+      AND (
+        LOWER(p.title) LIKE '%' || LOWER(#{keyword}) || '%'
+        OR LOWER(p.content) LIKE '%' || LOWER(#{keyword}) || '%'
+        OR LOWER(e.employee_name) LIKE '%' || LOWER(#{keyword}) || '%'
+        OR LOWER(f.file_name) LIKE '%' || LOWER(#{keyword}) || '%'
+      )
+    </if>
+    GROUP BY b.writing_id, p.title, p.content, e.employee_name, r.file_repository_type, p.creation_date, b.del_date
+)
+WHERE rn BETWEEN #{offset} + 1 AND #{offset} + #{limit}
+</select>
+  
+  <!-- 개인 자료실 휴지통 -->
+  <select id="countIndividualBasketPosts" resultType="int">
+    SELECT COUNT(*)
+    FROM basket b
+    JOIN repository_post p ON b.writing_id = p.writing_id
+    JOIN employees e ON p.employee_no = e.employee_no
+    WHERE p.employee_no = #{employeeNo}
+    <if test="keyword != null and keyword != ''">
+      AND (
+        LOWER(p.title) LIKE '%' || LOWER(#{keyword}) || '%'
+        OR LOWER(p.content) LIKE '%' || LOWER(#{keyword}) || '%'
+        OR LOWER(e.employee_name) LIKE '%' || LOWER(#{keyword}) || '%'
+      )
+    </if>
+  </select>
+
+  <select id="selectIndividualBasketPostsPaged" resultType="com.yedam.app.group.service.BasketVO">
+SELECT * FROM (
+    SELECT 
+        b.writing_id,
+        p.title,
+        p.content,
+        e.employee_name AS writer,
+        r.file_repository_type AS repositoryType,
+        MIN(f.file_name) AS fileName,
+        COUNT(f.file_id) AS fileCount,
+        p.creation_date,
+        b.del_date,
+        ROW_NUMBER() OVER (ORDER BY p.creation_date DESC) AS rn
+    FROM basket b
+    JOIN repository_post p ON b.writing_id = p.writing_id
+    JOIN employees e ON p.employee_no = e.employee_no
+    JOIN repository r ON p.file_repository_id = r.file_repository_id
+    LEFT JOIN repository_file f ON p.writing_id = f.writing_id
+    WHERE p.employee_no = #{employeeNo}
+    <if test="keyword != null and keyword != ''">
+      AND (
+        LOWER(p.title) LIKE '%' || LOWER(#{keyword}) || '%'
+        OR LOWER(p.content) LIKE '%' || LOWER(#{keyword}) || '%'
+        OR LOWER(e.employee_name) LIKE '%' || LOWER(#{keyword}) || '%'
+        OR LOWER(f.file_name) LIKE '%' || LOWER(#{keyword}) || '%'
+      )
+    </if>
+    GROUP BY b.writing_id, p.title, p.content, e.employee_name, r.file_repository_type, p.creation_date, b.del_date
+)
+WHERE rn BETWEEN #{offset} + 1 AND #{offset} + #{limit}
+</select>
 </mapper>

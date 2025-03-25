@@ -1,5 +1,7 @@
 package com.yedam.app.group.service;
 
+import java.util.List;
+
 public interface RepositoryService {
 	RepositoryVO getTotalRepository(int suberNo);  // 회사 자료실 조회
 	
@@ -8,4 +10,5 @@ public interface RepositoryService {
     RepositoryVO getIndividualRepository(int suberNo, int employeeNo);  // 개인 자료실 조회 
     
     RepositoryPostVO getPostDetail(Long writingId);
+    
 }

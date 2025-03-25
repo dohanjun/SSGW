@@ -1,12 +1,12 @@
 package com.yedam.app.group.web;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.yedam.app.group.service.BasketService;
 import com.yedam.app.group.service.BasketVO;
@@ -42,96 +42,144 @@ public class RepositoryController {
 	}
 
 	@GetMapping("/totalRepository")
-	public String totalRepository(Model model) {
-		EmpVO loggedInUser = empService.getLoggedInUserInfo();
+	public String totalRepository(@RequestParam(value = "page", defaultValue = "1") int page,
+	                              @RequestParam(value = "keyword", required = false) String keyword,
+	                              Model model) {
 
+	    EmpVO loggedInUser = empService.getLoggedInUserInfo();
 	    if (loggedInUser == null) {
 	        throw new IllegalStateException("로그인한 사용자 정보를 찾을 수 없습니다.");
 	    }
-
-	    // 자료실 정보 가져오기
-	    RepositoryVO totalRepository = repositoryService.getTotalRepository(loggedInUser.getSuberNo());
-
-	    if (totalRepository == null) {
-	        throw new IllegalStateException("해당 회사의 자료실을 찾을 수 없습니다.");
-	    }
-
-	    // 자료실에 등록된 게시글 목록 가져오기
-	    List<RepositoryPostVO> totalRepositoryList = postService.getTotalRepositoryPosts(loggedInUser.getSuberNo());
 	    
-	    // 디버깅 로그 추가
-	    System.out.println("최종 전달할 자료실 ID: " + totalRepository.getFileRepositoryId());
-	    System.out.println("최종 전달할 게시글 개수: " + (totalRepositoryList != null ? totalRepositoryList.size() : "null"));
+	    // 고정글 조회 (fix = 'Y')
+	    List<RepositoryPostVO> fixedList = postService.getFixedPosts(loggedInUser.getSuberNo(), keyword);
+
+	    // 1. 전체 게시글 수
+	    int totalCount = postService.getTotalRepositoryPostCount(loggedInUser.getSuberNo(), keyword);
+
+	    // 2. 페이지 설정
+	    int pageSize = 10;
+	    int pageGroup = 10;
+	    int totalPages = (int) Math.ceil((double) totalCount / pageSize);
 	    
-	    // ull 방지 (리스트가 null이면 빈 리스트로 초기화)
-	    if (totalRepositoryList == null) {
-	        totalRepositoryList = new ArrayList<>();
-	    }
-	    
+	    // ROW_NUMBER 기반 페이징용 offset, limit 계산
+	    int offset = (page - 1) * pageSize;
+	    int limit = pageSize;
+
+	    // 3. 게시글 목록
+	    List<RepositoryPostVO> totalRepositoryList = postService.getTotalRepositoryPostsPaged(
+	            loggedInUser.getSuberNo(), keyword, offset, limit
+	    );
+
+	    // 4. 권한 체크
 	    boolean isAdmin = (loggedInUser.getRightsId() != null && loggedInUser.getRightsId() == 3)
-                || (loggedInUser.getRightsLevel() != null && loggedInUser.getRightsLevel() == 5);
-	    
-	    // Model에 추가하여 HTML에서 사용할 수 있도록 설정
+	            || (loggedInUser.getRightsLevel() != null && loggedInUser.getRightsLevel() == 5);
+
+	    // 5. 모델 전달
 	    model.addAttribute("loginUser", loggedInUser);
-	    model.addAttribute("repository", totalRepository);
+	    model.addAttribute("repository", repositoryService.getTotalRepository(loggedInUser.getSuberNo()));
+	    model.addAttribute("fixedList", fixedList); // 고정글 따로 전달
 	    model.addAttribute("totalRepositoryList", totalRepositoryList);
 	    model.addAttribute("isAdmin", isAdmin);
 	    model.addAttribute("loggedInEmpNo", loggedInUser.getEmployeeNo());
-	    
+
+	    // 페이징 관련
+	    model.addAttribute("page", page);
+	    model.addAttribute("totalPages", totalPages);
+	    model.addAttribute("pageGroup", pageGroup); // 선택적 (페이지 그룹 묶음 단위)
+	    model.addAttribute("keyword", keyword);
+
 	    return "group/repository/totalRepository";
 	}
 
-	@GetMapping("/departmentRepository")
-	public String departmentRepository(Model model) {
-		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 
+	@GetMapping("/departmentRepository")
+	public String departmentRepository(@RequestParam(value = "page", defaultValue = "1") int page,
+	                                   @RequestParam(value = "keyword", required = false) String keyword,
+	                                   Model model) {
+
+	    EmpVO loggedInUser = empService.getLoggedInUserInfo();
 	    if (loggedInUser == null) {
 	        throw new IllegalStateException("로그인한 사용자 정보를 찾을 수 없습니다.");
 	    }
 
-	    RepositoryVO departmentRepository = repositoryService.getDepartmentRepository(
-	            loggedInUser.getSuberNo(), loggedInUser.getDepartmentNo());
+	    // 1. 고정글 조회
+	    List<RepositoryPostVO> fixedList = postService.getDepartmentFixedPosts(
+	        loggedInUser.getSuberNo(), loggedInUser.getDepartmentNo(), keyword
+	    );
 
-	    if (departmentRepository == null) {
-	        throw new IllegalStateException("해당 부서의 자료실을 찾을 수 없습니다.");
-	    }
-	    
-	    List<RepositoryPostVO> departmentRepositoryList = postService.getDepartmentRepositoryPosts(
-                loggedInUser.getSuberNo(), loggedInUser.getDepartmentNo());
-	    
-	    boolean isManager = loggedInUser.getManager() == null ? false : true;
-	    
+	    // 2. 일반글 개수
+	    int totalCount = postService.getDepartmentRepositoryPostCount(
+	        loggedInUser.getSuberNo(), loggedInUser.getDepartmentNo(), keyword
+	    );
+
+	    // 3. 페이징 설정
+	    int pageSize = 10;
+	    int pageGroup = 10;
+	    int totalPages = (int) Math.ceil((double) totalCount / pageSize);
+	    int offset = (page - 1) * pageSize;
+	    int limit = pageSize;
+
+	    // 4. 일반글 조회 (페이징)
+	    List<RepositoryPostVO> departmentRepositoryList = postService.getDepartmentRepositoryPostsPaged(
+	        loggedInUser.getSuberNo(), loggedInUser.getDepartmentNo(), keyword, offset, limit
+	    );
+
+	    boolean isManager = loggedInUser.getManager() != null;
+
 	    model.addAttribute("loginUser", loggedInUser);
-	    model.addAttribute("repository", departmentRepository);
-	    model.addAttribute("departmentRepositoryList", departmentRepositoryList);
-	    model.addAttribute("loggedInEmpNo", loggedInUser.getEmployeeNo());
+	    model.addAttribute("repository", repositoryService.getDepartmentRepository(
+	        loggedInUser.getSuberNo(), loggedInUser.getDepartmentNo()
+	    ));
+	    model.addAttribute("fixedList", fixedList); // ✅ 고정글
+	    model.addAttribute("departmentRepositoryList", departmentRepositoryList); // ✅ 일반글
 	    model.addAttribute("isManager", isManager);
-	    
+	    model.addAttribute("loggedInEmpNo", loggedInUser.getEmployeeNo());
+
+	    model.addAttribute("page", page);
+	    model.addAttribute("totalPages", totalPages);
+	    model.addAttribute("pageGroup", pageGroup);
+	    model.addAttribute("keyword", keyword);
+
 	    return "group/repository/departmentRepository";
 	}
 
 	@GetMapping("/individualRepository")
-	public String individualRepository(Model model) {
-		EmpVO loggedInUser = empService.getLoggedInUserInfo();
+	public String individualRepository(@RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "keyword", required = false) String keyword,
+            Model model) {
+
+	    EmpVO loggedInUser = empService.getLoggedInUserInfo();
 
 	    if (loggedInUser == null) {
 	        throw new IllegalStateException("로그인한 사용자 정보를 찾을 수 없습니다.");
 	    }
 
-	    RepositoryVO individualRepository = repositoryService.getIndividualRepository(
-	            loggedInUser.getSuberNo(), loggedInUser.getEmployeeNo());
+	    // 1. 전체 게시글 수
+	    int totalCount = postService.getIndividualRepositoryPostCount(loggedInUser.getSuberNo(), loggedInUser.getEmployeeNo(), keyword);
 
-	    if (individualRepository == null) {
-	        throw new IllegalStateException("해당 사원의 자료실을 찾을 수 없습니다.");    
-	    }
-	    
-	    List<RepositoryPostVO> individualRepositoryList = postService.getIndividualRepositoryPosts(
-                loggedInUser.getSuberNo(), loggedInUser.getEmployeeNo());
-	    
+	    // 2. 페이지 설정
+	    int pageSize = 10;
+	    int pageGroup = 10;
+	    int totalPages = (int) Math.ceil((double) totalCount / pageSize);
+	    int offset = (page - 1) * pageSize;
+	    int limit = pageSize;
+
+	    // 3. 게시글 목록
+	    List<RepositoryPostVO> individualRepositoryList = postService.getIndividualRepositoryPostsPaged(
+	        loggedInUser.getSuberNo(), loggedInUser.getEmployeeNo(), keyword, offset, limit
+	    );
+
 	    model.addAttribute("loginUser", loggedInUser);
-	    model.addAttribute("repository", individualRepository);
+	    model.addAttribute("repository", repositoryService.getIndividualRepository(loggedInUser.getSuberNo(), loggedInUser.getEmployeeNo()));
 	    model.addAttribute("individualRepositoryList", individualRepositoryList);
 	    model.addAttribute("loggedInEmpNo", loggedInUser.getEmployeeNo());
+
+	    // 페이징 관련
+	    model.addAttribute("page", page);
+	    model.addAttribute("totalPages", totalPages);
+	    model.addAttribute("pageGroup", pageGroup);
+	    model.addAttribute("keyword", keyword);
 	    
 	    return "group/repository/individualRepository";
 	}
@@ -184,7 +232,7 @@ public class RepositoryController {
 	    model.addAttribute("fileList", fileList);
 	    model.addAttribute("isEditable", false); // 휴지통에서는 수정/삭제 제어
 
-	    return "group/repository/detailBasket"; // 📄 templates/group/repository/detailBasket.html
+	    return "group/repository/detailBasket"; // templates/group/repository/detailBasket.html
 	}
 
 }

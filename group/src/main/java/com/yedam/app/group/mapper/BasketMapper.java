@@ -38,6 +38,22 @@ public interface BasketMapper {
     
     List<BasketVO> selectIndividualBasket(Map<String, Object> params);
     
+    // 전체 자료실 - 관리자
+    int countAllBasketPosts(Map<String, Object> map);
+    List<BasketVO> selectAllBasketPostsPaged(Map<String, Object> map);
+
+    // 전체 자료실 - 일반 직원
+    int countOwnTotalBasketPosts(Map<String, Object> map);
+    List<BasketVO> selectOwnTotalBasketPostsPaged(Map<String, Object> map);
+
+    // 부서 자료실
+    int countDepartmentBasketPosts(Map<String, Object> map);
+    List<BasketVO> selectDepartmentBasketPostsPaged(Map<String, Object> map);
+
+    // 개인 자료실
+    int countIndividualBasketPosts(Map<String, Object> map);
+    List<BasketVO> selectIndividualBasketPostsPaged(Map<String, Object> map);
+    
     void restoreToTotalRepository(Long writingId);
     void restoreToDepartmentRepository(Long writingId);
     void restoreToIndividualRepository(Long writingId);

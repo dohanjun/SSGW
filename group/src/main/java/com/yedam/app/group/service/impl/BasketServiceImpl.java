@@ -150,4 +150,86 @@ public class BasketServiceImpl implements BasketService {
 	        return basketMapper.getBasketDetailById(writingId);
 	    }
 	    
+	    // 전체 자료실 - 관리자
+	    @Override
+	    public int countAllBasketPosts(String keyword, int suberNo) {
+	        Map<String, Object> map = new HashMap<>();
+	        map.put("keyword", keyword);
+	        map.put("suberNo", suberNo);
+	        return basketMapper.countAllBasketPosts(map);
+	    }
+	    
+	    @Override
+	    public List<BasketVO> getAllBasketPostsPaged(String keyword, int suberNo, int offset, int limit) {
+	        Map<String, Object> map = new HashMap<>();
+	        map.put("keyword", keyword);
+	        map.put("suberNo", suberNo);
+	        map.put("offset", offset);
+	        map.put("limit", limit);
+	        return basketMapper.selectAllBasketPostsPaged(map);
+	    }
+	    
+	    // 전체 자료실 - 일반 직원
+	    @Override
+	    public int countOwnTotalBasketPosts(String keyword, int employeeNo) {
+	        Map<String, Object> map = new HashMap<>();
+	        map.put("keyword", keyword);
+	        map.put("employeeNo", employeeNo);
+	        return basketMapper.countOwnTotalBasketPosts(map);
+	    }
+	    
+	    @Override
+	    public List<BasketVO> getOwnTotalBasketPostsPaged(String keyword, int employeeNo, int offset, int limit) {
+	        Map<String, Object> map = new HashMap<>();
+	        map.put("keyword", keyword);
+	        map.put("employeeNo", employeeNo);
+	        map.put("offset", offset);
+	        map.put("limit", limit);
+	        return basketMapper.selectOwnTotalBasketPostsPaged(map);
+	    }
+	    
+	    // 부서 자료실
+	    @Override
+	    public int countDepartmentBasketPosts(String keyword, int suberNo, int departmentNo, int employeeNo, Integer manager) {
+	        Map<String, Object> map = new HashMap<>();
+	        map.put("keyword", keyword);
+	        map.put("suberNo", suberNo);
+	        map.put("departmentNo", departmentNo);
+	        map.put("employeeNo", employeeNo);
+	        map.put("manager", manager);
+	        return basketMapper.countDepartmentBasketPosts(map);
+	    }
+	    
+	    @Override
+	    public List<BasketVO> getDepartmentBasketPostsPaged(String keyword, int suberNo, int departmentNo, int employeeNo, Integer manager, int offset, int limit) {
+	        Map<String, Object> map = new HashMap<>();
+	        map.put("keyword", keyword);
+	        map.put("suberNo", suberNo);
+	        map.put("departmentNo", departmentNo);
+	        map.put("employeeNo", employeeNo);
+	        map.put("manager", manager);
+	        map.put("offset", offset);
+	        map.put("limit", limit);
+	        return basketMapper.selectDepartmentBasketPostsPaged(map);
+	    }
+	    
+	    // 개인 자료실
+	    @Override
+	    public int countIndividualBasketPosts(String keyword, int employeeNo) {
+	        Map<String, Object> map = new HashMap<>();
+	        map.put("keyword", keyword);
+	        map.put("employeeNo", employeeNo);
+	        return basketMapper.countIndividualBasketPosts(map);
+	    }
+	    
+	    @Override
+	    public List<BasketVO> getIndividualBasketPostsPaged(String keyword, int employeeNo, int offset, int limit) {
+	        Map<String, Object> map = new HashMap<>();
+	        map.put("keyword", keyword);
+	        map.put("employeeNo", employeeNo);
+	        map.put("offset", offset);
+	        map.put("limit", limit);
+	        return basketMapper.selectIndividualBasketPostsPaged(map);
+	    }
+
 }
