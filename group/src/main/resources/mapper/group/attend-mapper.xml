@@ -102,4 +102,21 @@
         WHERE am.employee_no = #{employeeNo}
     </select>
 
+
+<select id="getDepartmentAttendanceSummary" parameterType="int" resultType="com.yedam.app.group.service.EmpVO">
+    SELECT 
+        e.employee_no,
+        e.employee_name,
+        d.department_name,
+        NVL(SUM(am.total_working_hours), 0) AS totalWorkingHours,
+        TRUNC(NVL(SUM(o.overtime_time), 0) / 60.0, 1) AS overtimeHours
+    FROM employees e
+    JOIN department d ON e.department_no = d.department_no
+    LEFT JOIN attendance_management am ON e.employee_no = am.employee_no
+    LEFT JOIN overtime o ON am.work_attitude_id = o.work_attitude_id
+    WHERE e.department_no = #{departmentNo}
+    GROUP BY e.employee_no, e.employee_name, d.department_name
+    ORDER BY e.employee_no
+</select>
+
 </mapper>

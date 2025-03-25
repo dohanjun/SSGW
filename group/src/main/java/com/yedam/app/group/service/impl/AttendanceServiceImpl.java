@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.yedam.app.group.mapper.AttendanceMapper;
 import com.yedam.app.group.service.AttendanceManagementVO;
 import com.yedam.app.group.service.AttendanceService;
+import com.yedam.app.group.service.EmpVO;
 
 @Service
 @Transactional
@@ -65,5 +66,10 @@ public class AttendanceServiceImpl implements AttendanceService {
     @Override
     public boolean hasClockedOutToday(int employeeNo) {
         return attendanceMapper.countTodayClockOut(employeeNo) > 0;
+    }
+    
+    @Override
+    public List<EmpVO> getDepartmentAttendanceSummary(Integer departmentNo) {
+        return attendanceMapper.getDepartmentAttendanceSummary(departmentNo);
     }
 }

@@ -39,5 +39,9 @@ public class EmpVO {
 	
 	private String rightsName;			// 권한명
 	private Integer rightsLevel;		// 권한 레벨
+	
+	
+	private Double totalWorkingHours;	// 전체근무시간
+	private Double overtimeHours;		// 초과근무
 
 }

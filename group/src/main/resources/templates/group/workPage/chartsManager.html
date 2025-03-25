@@ -1,81 +1,56 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="~{common/layouts/default_layout}"
-	layout:fragment="content">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/layouts/default_layout}"
+      layout:fragment="content">
 
 <head>
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>출퇴근 기록</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>관리자 근태 그래프</title>
 
-<link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-<link href="css/sb-admin-2.css" rel="stylesheet">
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link href="css/sb-admin-2.css" rel="stylesheet">
 
-<style>
-.container-flex {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-.chart-container {
-    width: 40%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.info-container {
-    width: 25%;
-    text-align: center;
-    background: #f8f9fc;
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-}
-.info-container h6 {
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-.info-container p {
-    font-size: 18px;
-    font-weight: bold;
-    color: #007bff;
-    margin: 0;
-}
-.work-info {
-    width: 100%;
-    overflow-x: auto;
-}
-.work-info table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-.work-info th, .work-info td {
-    border: 1px solid #ddd;
-    padding: 12px;
-    text-align: center;
-    white-space: nowrap;
-    vertical-align: middle;
-}
-.work-info th {
-    background-color: #f8f9fc;
-    font-weight: bold;
-}
-.work-info tbody tr:nth-child(even) {
-    background-color: #f2f2f2;
-}
-.work-info tbody tr:hover {
-    background-color: #e2e6ea;
-}
-</style>
+    <style>
+        .work-info {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .work-info table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .work-info th, .work-info td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+
+        .work-info th {
+            background-color: #f8f9fc;
+            font-weight: bold;
+        }
+
+        .work-info tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .work-info tbody tr:hover {
+            background-color: #e2e6ea;
+        }
+    </style>
 </head>
 
 <body id="page-top">
 
-<!-- ✅ 출퇴근 기록 -->
+<!-- ✅ 부서원 출퇴근 기록 테이블 -->
 <div class="row">
     <div class="col">
         <div class="card shadow mb-4">
@@ -128,13 +103,66 @@
     </div>
 </div>
 
-<!-- ✅ 추가된 부서원 출퇴근 정보 -->
-
-
-<!-- ✅ JavaScript -->
+<!-- ✅ Chart.js 및 기본 스크립트 -->
 <script src="vendor/jquery/jquery.min.js"></script>
 <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- ❗ 중복 제거: CDN 하나만 사용 -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- ✅ Thymeleaf 데이터를 JS 배열로 변환 -->
+<script th:inline="javascript">
+    const labels = /*[[${departmentAttendanceList.stream().map(d -> d.employeeName).toList()}]]*/ [] || [];
+    const workHours = /*[[${departmentAttendanceList.stream().map(d -> d.totalWorkingHours).toList()}]]*/ [] || [];
+    const overtimeHours = /*[[${departmentAttendanceList.stream().map(d -> d.overtimeHours).toList()}]]*/ [] || [];
+</script>
+
+<!-- ✅ Chart.js 막대그래프 구성 -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const ctx = document.getElementById('employeeWorkChart').getContext('2d');
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: '총 근무시간',
+                        data: workHours,
+                        backgroundColor: '#007bff'
+                    },
+                    {
+                        label: '초과 근무시간',
+                        data: overtimeHours,
+                        backgroundColor: '#ff8c00'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                return context.dataset.label + ': ' + context.parsed.y + '시간';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '시간 (단위: 시간)'
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
 
 </body>
 </html>
