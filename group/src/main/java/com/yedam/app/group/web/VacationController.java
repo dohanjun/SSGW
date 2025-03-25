@@ -1,0 +1,68 @@
+package com.yedam.app.group.web;
+
+import java.util.List;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+
+import com.yedam.app.group.service.EmpService;
+import com.yedam.app.group.service.EmpVO;
+import com.yedam.app.group.service.VacationService;
+import com.yedam.app.group.service.VacationVO;
+
+import lombok.RequiredArgsConstructor;
+
+@Controller
+@RequiredArgsConstructor // 생성자 자동 생성 (vacationService, empService 자동 주입)
+public class VacationController {
+
+    private final VacationService vacationService;
+    private final EmpService empService;
+
+    // 휴가유형 등록 폼 이동
+    @GetMapping("/vacaInsert")
+    public String vacaInsertForm(Model model) {
+        EmpVO loggedInUser = empService.getLoggedInUserInfo(); // 로그인한 사용자 정보 가져오기
+        Integer suberNo = loggedInUser.getSuberNo(); // 회사번호
+
+        VacationVO vacationVO = new VacationVO();
+        vacationVO.setSuberNo(suberNo); // VO에 회사번호 미리 설정
+
+        model.addAttribute("vacationVO", vacationVO); // form과 바인딩할 객체 설정
+        return "group/personnel/vacaInsert"; // HTML 경로
+    }
+
+    // 등록 처리
+    @PostMapping("/vacaInsert")
+    public String vacaInsert(@ModelAttribute VacationVO vacationVO) {
+        // 체크박스 미선택 시 null → "N" 처리
+        if (vacationVO.getRequiredProofDocumentFile() == null) {
+            vacationVO.setRequiredProofDocumentFile("N");
+        }
+
+        vacationService.insertVacationType(vacationVO); // DB insert 실행
+        return "redirect:/vacaList"; // 성공 시 목록 페이지로 이동
+    }
+    
+    // 휴가유형 전체 리스트
+    @GetMapping("/vacationList") // 경로 변경: 기존 /vacaList → /vacationList
+    public String showVacationTypes(VacationVO vo, Model model) {
+        EmpVO loginUser = empService.getLoggedInUserInfo();
+        vo.setSuberNo(loginUser.getSuberNo());
+
+        // 페이징 계산
+        int total = vacationService.countVacationTypes(vo);
+        int totalPages = (int) Math.ceil((double) total / vo.getSize());
+        vo.setOffset((vo.getPage() - 1) * vo.getSize());
+
+        List<VacationVO> list = vacationService.getVacationTypesByPaging(vo);
+        model.addAttribute("vacations", list);
+        model.addAttribute("currentPage", vo.getPage());
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("vacationVO", vo);
+        return "group/personnel/vacationList"; // .html 경로
+    }
+}

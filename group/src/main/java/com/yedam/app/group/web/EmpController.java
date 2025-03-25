@@ -55,9 +55,17 @@ public class EmpController {
 	// 등록 페이지
 	@GetMapping("empinsert")
 	public String empinsert(Model model) {
-		model.addAttribute("suberNo", 1); // 회사번호 자동 입력
-		model.addAttribute("employeeNo", empService.getNextEmployeeNo()); // 사원번호 자동 설정
-		return "group/personnel/empinsert";
+	    // 로그인한 사용자 정보에서 회사번호 가져오기
+	    EmpVO loggedInUser = empService.getLoggedInUserInfo();
+	    Integer suberNo = loggedInUser.getSuberNo();
+
+	    // 새로운 사원 등록용 VO 생성 후 회사번호 설정
+	    EmpVO empVO = new EmpVO();
+	    empVO.setSuberNo(suberNo); // 로그인한 사용자의 회사번호로 세팅
+	    empVO.setEmployeeNo(empService.getNextEmployeeNo()); // 사원번호 자동 채번
+
+	    model.addAttribute("empVO", empVO); // thymeleaf form과 바인딩할 객체
+	    return "group/personnel/empinsert"; // 사원 등록 페이지로 이동
 	}
 
 	// 등록 처리

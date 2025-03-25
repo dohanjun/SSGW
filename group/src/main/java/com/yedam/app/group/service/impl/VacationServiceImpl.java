@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -27,12 +28,11 @@ public class VacationServiceImpl implements VacationService {
         long months = ChronoUnit.MONTHS.between(hireLocalDate, currentDate);
         long years = ChronoUnit.YEARS.between(hireLocalDate, currentDate);
 
-        int grantDays = (years >= 1) ? (int)(15 + ((years - 1) / 2)) : (int)Math.min(months, 11);
+        int grantDays = (years >= 1) ? (15 + (int)((years - 1) / 2)) : (int) Math.min(months, 11);
 
         String yearStr = String.valueOf(currentDate.getYear());
         java.sql.Date yearDate = java.sql.Date.valueOf(currentDate.withMonth(1).withDayOfMonth(1));
 
-        // 중복 여부 확인
         int count = vacationMapper.existsLeaveHistory(employeeNo, yearStr);
 
         VacationVO vo = new VacationVO();
@@ -43,12 +43,51 @@ public class VacationServiceImpl implements VacationService {
         vo.setDraftNo(draftNo);
 
         if (count > 0) {
-            // 퇴사자면 0으로 업데이트
-            // 나중에 RESIGNATION_STATUS를 VO에도 넣는 게 좋아
-            // 임시로 VO가 없다고 치면 → 쿼리 수정하거나 조건을 밖에서 처리
             vacationMapper.updateLeaveHistory(vo);
         } else {
+            vo.setLeaveHistoryId(vacationMapper.getNextLeaveHistoryId());
             vacationMapper.insertLeaveHistory(vo);
         }
     }
+
+    @Override
+    public void setZeroVacation(int employeeNo, int draftNo) {
+        java.sql.Date yearDate = java.sql.Date.valueOf(LocalDate.now().withMonth(1).withDayOfMonth(1));
+
+        VacationVO vo = new VacationVO();
+        vo.setEmployeeNo(employeeNo);
+        vo.setDraftNo(draftNo);
+        vo.setYear(yearDate);
+        vo.setGrantedVacation(0);
+        vo.setRemainingVacation(0);
+
+        vacationMapper.updateLeaveHistory(vo);
+    }
+    
+    // 휴가유형 등록
+    @Override
+    public void insertVacationType(VacationVO vo) {
+        int nextId = vacationMapper.getNextVacationTypeId();
+        vo.setVacationTypeId(nextId);
+
+        vacationMapper.insertVacationType(vo);
+    }
+    
+    
+    // 휴가유형 전체 조회
+    @Override
+    public List<VacationVO> getAllVacationTypes(VacationVO vo) {
+        return vacationMapper.selectVacationTypeList(vo.getSuberNo());
+    }
+
+    @Override
+    public List<VacationVO> getVacationTypesByPaging(VacationVO vo) {
+        return vacationMapper.selectVacationTypePaging(vo);
+    }
+
+    @Override
+    public int countVacationTypes(VacationVO vo) {
+        return vacationMapper.countVacationType(vo);
+    }
+
 }

@@ -27,10 +27,7 @@ public class PersonnelContrtller {
 	}
 	
 	// 휴가유형 등록
-	@GetMapping("vacaInsert")
-	public String vacaInsert() {
-		return "group/personnel/vacaInsert";
-	}
+
 	
 	// 부서관리
 	@GetMapping("deptMgmt")
