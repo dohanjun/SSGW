@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{common/layouts/default_layout}"
+	layout:fragment="content">
+<head>
+	<link rel="stylesheet" type="text/css" href="/css/subscribePage.css">
+	<style>
+		.detail-container {
+			margin: 30px auto;
+			padding: 30px;
+			border: 1px solid #ddd;
+			border-radius: 10px;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+			background-color: #fff;
+			width: 80%;
+			height: 57%;
+		}
+
+		.detail-header {
+			margin-bottom: 20px;
+			border-bottom: 1px solid #eee;
+			padding-bottom: 10px;
+		}
+
+		.detail-header h2 {
+			margin: 0;
+			font-size: 24px;
+			color: #333;
+		}
+
+		.detail-meta {
+			font-size: 14px;
+			color: #888;
+			margin-top: 5px;
+		}
+
+		.detail-content {
+			font-size: 16px;
+			line-height: 1.6;
+			white-space: pre-line;
+			color: #444;
+		}
+
+		.back-btn {
+			width: 80%;
+			margin: 20px auto;
+			text-align: left;
+		}
+		.back-btn a {
+			color: #fff;
+			background-color: #007bff;
+			padding: 8px 16px;
+			border-radius: 5px;
+			text-decoration: none;
+		}
+
+		.back-btn a:hover {
+			background-color: #0056b3;
+		}
+			#child-post-container {
+		margin-top: 200px;
+	}
+	</style>
+</head>
+<body>
+		<div class="back-btn">
+			<a th:href="@{/qnaBoard}">← 목록으로</a>
+		</div>
+	<div class="detail-container">
+		<div class="detail-header">
+			<h2 th:text="${boardPost.postTitle}">제목</h2>
+			<div class="detail-meta">
+				작성자: <span th:text="${boardPost.employeeName}">작성자</span> |
+				작성일: <span th:text="${#dates.format(boardPost.postDate, 'yyyy-MM-dd HH:mm')}">날짜</span>
+			</div>
+		</div>
+
+		<div class="detail-content" th:utext="${boardPost.postContent}">
+			내용
+		</div>
+
+		<!-- ✅ 답글 표시 영역 -->
+		<div id="child-post-container"></div>
+
+
+	</div>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+
+	<!-- ✅ 자바스크립트: 답글 불러오기 -->
+	<script th:inline="javascript">
+		let postId = /*[[${boardPost.postId}]]*/[];
+
+		$.ajax({
+			type: "POST",
+			url: "/selectBoardPost",
+			data: JSON.stringify({ parentCommentId: postId }),
+			contentType: "application/json",
+			success: function (response) {
+				if (!response || !response.postDate) {
+					$('#child-post-container').html(`
+						<div class="text-center text-muted" style="padding: 30px;">
+							답글을 기다리는 중입니다...
+						</div>
+					`);
+					return;
+				}
+				
+				// ✅ 정상적인 답글 있을 때
+				let d = new Date(response.postDate);
+				let formattedDate = d.getFullYear() + "년 " + ("0" + (d.getMonth() + 1)).slice(-2) + "월 " + ("0" + d.getDate()).slice(-2) + "일";
+
+				const html = `
+					<table class="table table-bordered file-info-table mt-4">
+						<tbody>
+							<tr>
+								<th>제목</th>
+								<td>${response.postTitle}</td>
+								<th>작성자</th>
+								<td>관리자</td>
+								<th>등록일</th>
+								<td>${formattedDate}</td>
+							</tr>
+							<tr>
+								<td colspan="6">
+									<div style="white-space: pre-line;">${response.postContent}</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				`;
+				$('#child-post-container').html(html);
+			},
+			error: function () {
+				$('#child-post-container').html(`
+					<div class="text-center text-muted" style="padding: 30px;">
+						답글을 기다리는 중입니다...
+					</div>
+				`);
+			}
+		});
+	</script>
+</body>
+</html>

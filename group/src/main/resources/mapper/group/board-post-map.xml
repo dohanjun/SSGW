@@ -1,124 +1,180 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="com.yedam.app.group.mapper.BoardPostMapper">
 
-    <!-- 페이지네이션 적용된 게시글 조회 -->
-    <select id="getBoardList" resultType="com.yedam.app.group.service.BoardPostVO">
-        SELECT * FROM (
-            SELECT 
-                B.POST_ID,
-                B.PARENT_COMMENT_ID,
-                B.POST_TITLE,
-                B.POST_CONTENT,
-                B.POST_DATE,
-                B.FIXED,
-                B.FAQ,
-                B.LOCATION,
-                B.READ,
-                B.BOARD_ID,
-                B.EMPLOYEE_NO,
-                E.EMPLOYEE_NAME,
-                B.child_yn,
-                ROW_NUMBER() OVER (ORDER BY B.POST_ID DESC) AS rnum
-            FROM BOARD_POST B
-            LEFT JOIN EMPLOYEES E ON B.EMPLOYEE_NO = E.EMPLOYEE_NO
-            WHERE B.BOARD_ID = 999
-            AND B.PARENT_COMMENT_ID IS NULL
-        ) WHERE rnum BETWEEN (#{page} - 1) * 10 + 1 AND #{page} * 10
-    </select>
+  <!-- 🔄 통합 게시글 목록 조회 (전체/내글/검색) -->
+  <select id="selectBoardListWithFilter" resultType="com.yedam.app.group.service.BoardPostVO">
+    SELECT * FROM (
+      SELECT 
+        B.POST_ID,
+        B.PARENT_COMMENT_ID,
+        B.POST_TITLE,
+        B.POST_CONTENT,
+        B.POST_DATE,
+        B.FIXED,
+        B.FAQ,
+        B.LOCATION,
+        B.READ,
+        B.BOARD_ID,
+        B.EMPLOYEE_NO,
+        E.EMPLOYEE_NAME,
+        B.child_yn,
+        ROW_NUMBER() OVER (ORDER BY 
+          CASE WHEN B.FAQ = 'Y' THEN 0 ELSE 1 END, 
+          B.POST_ID DESC) AS rnum
+      FROM BOARD_POST B
+      LEFT JOIN EMPLOYEES E ON B.EMPLOYEE_NO = E.EMPLOYEE_NO
+      WHERE B.BOARD_ID = 999
+        AND B.PARENT_COMMENT_ID IS NULL
+        <if test="employeeNo != null">
+          AND B.EMPLOYEE_NO = #{employeeNo}
+        </if>
+        <if test="keyword != null and keyword != ''">
+          AND B.POST_TITLE LIKE '%' || #{keyword} || '%'
+        </if>
+    )
+    WHERE rnum BETWEEN #{offset} + 1 AND #{offset} + 10
+  </select>
 
- <select id="getPagedPostsByKeyword" resultType="com.yedam.app.group.service.BoardPostVO">
-        SELECT * FROM (
-            SELECT 
-                B.POST_ID,
-                B.PARENT_COMMENT_ID,
-                B.POST_TITLE,
-                B.POST_CONTENT,
-                B.POST_DATE,
-                B.FIXED,
-                B.FAQ,
-                B.LOCATION,
-                B.READ,
-                B.BOARD_ID,
-                B.EMPLOYEE_NO,
-                E.EMPLOYEE_NAME,
-                B.child_yn,
-                ROW_NUMBER() OVER (ORDER BY B.POST_ID DESC) AS rnum
-            FROM BOARD_POST B
-            LEFT JOIN EMPLOYEES E ON B.EMPLOYEE_NO = E.EMPLOYEE_NO
-            WHERE B.BOARD_ID = 999
-            AND B.POST_TITLE LIKE '%' || #{keyword} || '%'
-            AND B.PARENT_COMMENT_ID IS NULL
-        ) WHERE rnum BETWEEN (#{page} - 1) * 10 + 1 AND #{page} * 10
-    </select>
-
-    <!-- 전체 게시글 개수 조회 -->
-    <select id="getTotalCount" resultType="int">
-        SELECT COUNT(*) FROM BOARD_POST WHERE BOARD_ID = 999 AND PARENT_COMMENT_ID IS NULL
-    </select>
-
-    <!-- 검색된 게시글 개수 조회 -->
-    <select id="getTotalCountByKeyword" resultType="int">
-        SELECT COUNT(*) FROM BOARD_POST 
-        WHERE BOARD_ID = 999
-        AND PARENT_COMMENT_ID IS NULL
+  <!-- 🔄 통합 게시글 개수 조회 -->
+  <select id="selectBoardCountWithFilter" resultType="int">
+    SELECT COUNT(*)
+    FROM BOARD_POST
+    WHERE BOARD_ID = 999
+      AND PARENT_COMMENT_ID IS NULL
+      <if test="employeeNo != null">
+        AND EMPLOYEE_NO = #{employeeNo}
+      </if>
+      <if test="keyword != null and keyword != ''">
         AND POST_TITLE LIKE '%' || #{keyword} || '%'
-    </select>
-	    <select id="selectPostById" resultType="com.yedam.app.group.service.BoardPostVO">
-            SELECT 
-                B.POST_ID,
-                B.PARENT_COMMENT_ID,
-                B.POST_TITLE,
-                B.POST_CONTENT,
-                B.POST_DATE,
-                B.FIXED,
-                B.FAQ,
-                B.LOCATION,
-                B.READ,
-                B.BOARD_ID,
-                B.EMPLOYEE_NO,
-                E.EMPLOYEE_NAME,
-                B.child_yn
-            FROM BOARD_POST B
-            LEFT JOIN EMPLOYEES E ON B.EMPLOYEE_NO = E.EMPLOYEE_NO
-            WHERE B.POST_ID = ${postId}
-    </select>
-    
-	 <update id="modifyBoartFixed" parameterType="int">
-	    UPDATE board_post 
-	    SET faq = CASE 
-	        WHEN faq = 'Y' THEN 'N' 
-	        ELSE 'Y' 
-	    END
-	    WHERE post_id = #{postId}
-	</update>
-	
-	<delete id="deletePost" parameterType="int">
-	    DELETE FROM board_post WHERE post_id = #{postId}
-	</delete>
-	
-	<insert id="insertPost" parameterType="com.yedam.app.group.service.BoardPostVO" useGeneratedKeys="true" keyProperty="postId">
-	    <selectKey keyProperty="postId" resultType="int" order="BEFORE">
-	        SELECT NVL(MAX(post_id), 0) + 1 FROM board_post
-	    </selectKey>
-	    INSERT INTO board_post (
-	        post_id, parent_comment_id, post_title, post_content, post_date, 
-	        fixed, faq, location, read, board_id, employee_no,child_yn
-	    ) VALUES (
-	        #{postId}, #{parentCommentId}, #{postTitle}, #{postContent}, sysdate,
-	        'N', 'N', null, 'N', #{boardId}, #{employeeNo},'N'
-	    )
-	</insert>
-	
-	<update id="updatePost" parameterType="map">
-		  UPDATE BOARD_POST
-		  SET child_yn = #{childYn}
-		  WHERE post_id = #{postId}
-	</update>
-	
-	<select id="selectChildPostById" resultType="com.yedam.app.group.service.BoardPostVO">
-            SELECT *
-            FROM BOARD_POST
-            WHERE parent_comment_id = ${parentCommentId}
-    </select>
+      </if>
+  </select>
+
+  <!-- ✅ 게시글 단건 조회 -->
+  <select id="selectPostById" resultType="com.yedam.app.group.service.BoardPostVO">
+    SELECT 
+      B.POST_ID,
+      B.PARENT_COMMENT_ID,
+      B.POST_TITLE,
+      B.POST_CONTENT,
+      B.POST_DATE,
+      B.FIXED,
+      B.FAQ,
+      B.LOCATION,
+      B.READ,
+      B.BOARD_ID,
+      B.EMPLOYEE_NO,
+      E.EMPLOYEE_NAME,
+      B.child_yn
+    FROM BOARD_POST B
+    LEFT JOIN EMPLOYEES E ON B.EMPLOYEE_NO = E.EMPLOYEE_NO
+    WHERE B.POST_ID = ${postId}
+  </select>
+
+  <!-- ✅ 답글 조회 -->
+  <select id="selectChildPostById" resultType="com.yedam.app.group.service.BoardPostVO">
+    SELECT * FROM BOARD_POST WHERE parent_comment_id = ${parentCommentId}
+  </select>
+
+  <!-- ✅ 게시글 삽입 -->
+  <insert id="insertPost" parameterType="com.yedam.app.group.service.BoardPostVO" useGeneratedKeys="true" keyProperty="postId">
+    <selectKey keyProperty="postId" resultType="int" order="BEFORE">
+      SELECT NVL(MAX(post_id), 0) + 1 FROM board_post
+    </selectKey>
+    INSERT INTO board_post (
+      post_id, parent_comment_id, post_title, post_content, post_date,
+      fixed, faq, location, read, board_id, employee_no, child_yn
+    ) VALUES (
+      #{postId}, #{parentCommentId}, #{postTitle}, #{postContent}, SYSDATE,
+      'N', 'N', NULL, 'N', #{boardId}, #{employeeNo}, 'N'
+    )
+  </insert>
+
+  <!-- ✅ 게시글 수정 -->
+  <update id="updatePost" parameterType="map">
+    UPDATE BOARD_POST
+    SET child_yn = #{childYn}
+    WHERE post_id = #{postId}
+  </update>
+
+  <!-- ✅ 게시글 삭제 -->
+  <delete id="deletePost" parameterType="int">
+    DELETE FROM board_post WHERE post_id = #{postId}
+  </delete>
+
+  <!-- ✅ 고정 여부 토글 -->
+  <update id="modifyBoartFixed" parameterType="int">
+    UPDATE board_post 
+    SET faq = CASE 
+      WHEN faq = 'Y' THEN 'N' 
+      ELSE 'Y' 
+    END
+    WHERE post_id = #{postId}
+  </update>
+
+  <!-- ✅ 기존 검색/페이징 쿼리 (원하면 삭제 가능) -->
+  <select id="getBoardList" resultType="com.yedam.app.group.service.BoardPostVO">
+    SELECT * FROM (
+      SELECT 
+        B.POST_ID,
+        B.PARENT_COMMENT_ID,
+        B.POST_TITLE,
+        B.POST_CONTENT,
+        B.POST_DATE,
+        B.FIXED,
+        B.FAQ,
+        B.LOCATION,
+        B.READ,
+        B.BOARD_ID,
+        B.EMPLOYEE_NO,
+        E.EMPLOYEE_NAME,
+        B.child_yn,
+        ROW_NUMBER() OVER (ORDER BY B.POST_ID DESC) AS rnum
+      FROM BOARD_POST B
+      LEFT JOIN EMPLOYEES E ON B.EMPLOYEE_NO = E.EMPLOYEE_NO
+      WHERE B.BOARD_ID = 999
+        AND B.PARENT_COMMENT_ID IS NULL
+    )
+    WHERE rnum BETWEEN (#{page} - 1) * 10 + 1 AND #{page} * 10
+  </select>
+
+  <select id="getPagedPostsByKeyword" resultType="com.yedam.app.group.service.BoardPostVO">
+    SELECT * FROM (
+      SELECT 
+        B.POST_ID,
+        B.PARENT_COMMENT_ID,
+        B.POST_TITLE,
+        B.POST_CONTENT,
+        B.POST_DATE,
+        B.FIXED,
+        B.FAQ,
+        B.LOCATION,
+        B.READ,
+        B.BOARD_ID,
+        B.EMPLOYEE_NO,
+        E.EMPLOYEE_NAME,
+        B.child_yn,
+        ROW_NUMBER() OVER (ORDER BY B.POST_ID DESC) AS rnum
+      FROM BOARD_POST B
+      LEFT JOIN EMPLOYEES E ON B.EMPLOYEE_NO = E.EMPLOYEE_NO
+      WHERE B.BOARD_ID = 999
+        AND B.POST_TITLE LIKE '%' || #{keyword} || '%'
+        AND B.PARENT_COMMENT_ID IS NULL
+    )
+    WHERE rnum BETWEEN (#{page} - 1) * 10 + 1 AND #{page} * 10
+  </select>
+
+  <select id="getTotalCount" resultType="int">
+    SELECT COUNT(*) FROM BOARD_POST WHERE BOARD_ID = 999 AND PARENT_COMMENT_ID IS NULL
+  </select>
+
+  <select id="getTotalCountByKeyword" resultType="int">
+    SELECT COUNT(*) FROM BOARD_POST 
+    WHERE BOARD_ID = 999
+      AND PARENT_COMMENT_ID IS NULL
+      AND POST_TITLE LIKE '%' || #{keyword} || '%'
+  </select>
+
 </mapper>

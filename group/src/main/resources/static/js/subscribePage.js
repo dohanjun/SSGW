@@ -1,4 +1,5 @@
 let formattedTPrice = 0;
+let dupId = true;
 let dataList = [];
 $(document).ready(updatePrice);
 function updatePrice() {
@@ -120,8 +121,13 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	form.addEventListener("submit", function(event) {
 		event.preventDefault();
-
-
+		
+		
+		if(dupId){
+			alert("아이디 중복확인을 하세요");
+			return;
+		}
+	
 		for (let e of document.querySelectorAll('.form-control')) {
 			if (!e.value.trim()) {
 				let label = document.querySelector(`label[for="${e.id}"]`);
@@ -130,7 +136,11 @@ document.addEventListener("DOMContentLoaded", function() {
 				return;
 			}
 		}
-		console.log(dataList)
+		if(dupId){
+			alert("아이디 중복확인을 하세요");
+			return;
+		}
+
 		$('#modalPrice')[0].innerHTML = $('#endPrice')[0].innerHTML
 		paymentModal.style.display = "flex";
 	});
@@ -317,6 +327,31 @@ function payment(type) {
 }
 
 
+$('#checkDuplicateBtn').on('click', function() {
+		var subId = $('#subId').val();
+		if ($('#subId').val() == '') {
+			$('#idCheckMessage').text('아이디를 입력해주세요.');
+			return;
+		}
+
+		$.ajax({
+			url: '/checkDuplicateId',
+			type: 'GET',
+			data: { subId: subId },
+			success: function(response) {
+				if (response === true) {
+					$('#idCheckMessage').css('color', 'red').text('이미 사용 중인 아이디입니다.');
+					dupId = true;
+				} else {
+					$('#idCheckMessage').css('color', 'blue').text('사용 가능한 아이디입니다.');
+					dupId = false;
+				}
+			},
+			error: function() {
+				$('#idCheckMessage').css('color', 'red').text('오류가 발생했습니다.');
+			}
+		});
+	});
 
 
 setupDropdown('.uploadInput', '.uploadDropdown', '.uploadOption');

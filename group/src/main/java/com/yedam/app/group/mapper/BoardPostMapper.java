@@ -6,40 +6,43 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.yedam.app.group.service.BoardPostVO;
-import com.yedam.app.group.service.PaymentDetailsVO;
 
 @Mapper
 public interface BoardPostMapper {
     // 게시글 삽입
-	int insertPost(BoardPostVO post);
-   
-	// // 게시글 단건 조회
-	BoardPostVO selectPostById(int postId);
-    
-	// 전체 게시글 조회
-//    List<BoardPostVO> selectAllPosts(int boardId);
-//    
-    //게시글 수정
+    int insertPost(BoardPostVO post);
+
+    // 게시글 단건 조회
+    BoardPostVO selectPostById(int postId);
+
+    // 게시글 수정
     int updatePost(BoardPostVO post);
-    
+
     // 게시글 삭제
     int deletePost(int postId);
 
-	// qna 5개씩
+    // 게시글 고정 여부 수정
+    int modifyBoartFixed(@Param("postId") int postId);
 
-	// 일반 페이징된 게시글 목록 가져오기
-	List<BoardPostVO> getBoardList(@Param("page") int page);
+    // 자식 답글 조회
+    BoardPostVO selectChildPostById(int postId);
 
-	// 전체 게시글 개수 조회
-	int getTotalCount();
+    // 🔄 통합 필터 기반 게시글 목록 조회 (전체, 검색, 내 글 포함)
+    List<BoardPostVO> selectBoardListWithFilter(@Param("employeeNo") Integer employeeNo,
+                                                @Param("keyword") String keyword,
+                                                @Param("offset") int offset);
 
-	// 검색어가 포함된 페이징된 게시글 목록 가져오기
-	List<BoardPostVO> getPagedPostsByKeyword(@Param("keyword") String keyword, @Param("page") int page);
+    // 🔄 통합 필터 기반 게시글 개수 조회
+    int selectBoardCountWithFilter(@Param("employeeNo") Integer employeeNo,
+                                   @Param("keyword") String keyword);
 
-	// 검색어가 포함된 게시글 개수 조회
-	int getTotalCountByKeyword(@Param("keyword") String keyword);
-	
-	int modifyBoartFixed(@Param("postId") int postId);
+    // ✅ 기존 메서드들도 유지 (원하면 삭제 가능)
+    List<BoardPostVO> getBoardList(@Param("page") int page);
 
-	BoardPostVO selectChildPostById(int postId);
+    int getTotalCount();
+
+    List<BoardPostVO> getPagedPostsByKeyword(@Param("keyword") String keyword,
+                                             @Param("page") int page);
+
+    int getTotalCountByKeyword(@Param("keyword") String keyword);
 }

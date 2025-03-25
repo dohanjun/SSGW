@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org"
-    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-    layout:decorate="~{common/layouts/default_layout}"
-    layout:fragment="content">
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{common/layouts/default_layout}"
+	layout:fragment="content">
 <head>
 <link rel="stylesheet" type="text/css" href="/css/subscribePage.css">
 <style>
-.pagination-container {
-	display: flex;
-	justify-content: center;
-	margin-top: 15px;
+/* ✅ 공통 요소 */
+.form-control {
+	margin-bottom: 0;
+	box-sizing: border-box;
 }
 
+/* ✅ 검색창 컨테이너 */
 .search-container {
 	display: flex;
 	justify-content: center;
@@ -22,6 +23,7 @@
 	margin: 0 auto 15px auto;
 }
 
+/* ✅ 검색창 박스 */
 .search-box {
 	position: relative;
 	flex-grow: 1;
@@ -29,21 +31,38 @@
 
 .search-box input {
 	width: 100%;
-	padding-right: 15px;
 	height: 38px;
+	padding-right: 40px; /* 아이콘 버튼 공간 확보 */
 	border: 1px solid #ccc;
 	border-radius: 5px;
 }
 
-.search-box i {
+/* ✅ 검색 아이콘 버튼 */
+.search-icon-btn {
 	position: absolute;
+	right: 5px;
 	top: 50%;
-	left: 10px;
 	transform: translateY(-50%);
-	color: #aaa;
-	pointer-events: none;
+	background: none;
+	border: none;
+	cursor: pointer;
+	color: #555;
+	padding: 0;
+	height: 100%;
+	width: 35px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 16px;
 }
 
+/* ✅ 아이콘 (비활성화된 pointer 이벤트 제거) */
+.search-icon-btn i {
+	pointer-events: auto;
+	color: #aaa;
+}
+
+/* ✅ 별도 버튼 스타일 (만약 사용 시) */
 .search-container .btn-primary {
 	height: 38px;
 	padding: 5px 15px;
@@ -51,8 +70,20 @@
 	border-radius: 5px;
 }
 
-.form-control {
-	margin-bottom: 0;
+/* ✅ 페이지네이션 */
+.pagination-container {
+	display: flex;
+	justify-content: center;
+	margin-top: 15px;
+}
+
+/* ✅ FAQ 행 강조 */
+.faq-row {
+	background-color: #f9f1d8;
+	font-weight: bold;
+}
+.faq-row .postId {
+	color: #e67e22;
 }
 </style>
 </head>
@@ -63,16 +94,16 @@
 			<div class="table-responsive">
 
 				<!-- 검색 기능 -->
-				<form class="search-container" th:action="@{/qnaBoard}" method="get">
-					<div class="search-box">
-						<i class="fas fa-search position-absolute"
-							style="top: 50%; right: 10px; transform: translateY(-50%); color: #aaa;"></i>
-						<input type="text" class="form-control" name="keyword"
-							placeholder="검색어 입력" th:value="${keyword}">
-					</div>
-					<button type="submit" class="btn btn-primary">검색</button>
-				</form>
-
+			<form class="search-container" th:action="@{/qnaBoard}" method="get">
+				<div class="search-box">
+					<input type="text" class="form-control" name="keyword"
+						placeholder="검색어 입력" th:value="${keyword}">
+					
+					<button type="submit" class="search-icon-btn">
+						<i class="fas fa-search"></i>
+					</button>
+				</div>
+			</form>
 
 				<!-- 게시판 테이블 -->
 				<table class="table table-bordered" id="dataTable" width="100%"
@@ -86,16 +117,16 @@
 						</tr>
 					</thead>
 					<tbody>
-					    <tr th:each="board : ${boardList}" th:if="${board.parentCommentId == null}">
-					    	<td class="postId" th:text="${board}"></td>
-					        <td class="postId" th:text="${board.faq == 'Y'} ? 'FAQ' : ${board.postId}"></td>
-
-					        <td>
-					            <a th:href="@{/qnaBoard/detail(postId=${board.postId})}" th:text="${board.postTitle}"></a>
-					        </td>
-					        <td th:text="${board.employeeName}"></td>
-					        <td th:text="${#dates.format(board.postDate, 'yyyy-MM-dd')}"></td>
-					    </tr>
+						<tr th:each="board : ${boardList}"
+							th:if="${board.parentCommentId == null}"
+							th:classappend="${#strings.equals(board.faq, 'Y')} ? 'faq-row'">
+							<td class="postId"
+								th:text="${#strings.equals(board.faq, 'Y')} ? 'FAQ' : ${board.postId}"></td>
+							<td><a th:href="@{/qnaBoard/detail(postId=${board.postId})}"
+								th:text="${board.postTitle}"></a></td>
+							<td th:text="${board.employeeName}"></td>
+							<td th:text="${#dates.format(board.postDate, 'yyyy-MM-dd')}"></td>
+						</tr>
 					</tbody>
 				</table>
 				<div class="pagination-container">
@@ -113,8 +144,8 @@
 								th:each="i : ${#numbers.sequence(1, totalPages)}"
 								th:classappend="${currentPage == i} ? 'active'"><a
 								class="page-link"
-								th:href="@{/qnaBoard(page=${i}, keyword=${keyword})}" th:text="${i}"></a>
-							</li>
+								th:href="@{/qnaBoard(page=${i}, keyword=${keyword})}"
+								th:text="${i}"></a></li>
 
 							<!-- 다음 페이지 -->
 							<li class="page-item"
@@ -133,9 +164,8 @@
 
 	<script
 		src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
-<script th:inline="javascript">
-    var post = /*[[${boardList}]]*/[];
-
-</script>
+	<script th:inline="javascript">
+		var post = /*[[${boardList}]]*/[];
+	</script>
 </body>
 </html>

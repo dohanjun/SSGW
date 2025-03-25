@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{common/layouts/default_layout}"
+	layout:fragment="content">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QnA 등록</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<style>
+@charset "UTF-8";
+.file-info-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+}
+.file-info-table th {
+	background-color: #f8f9fc;
+	text-align: center;
+	width: 8%;
+	padding: 10px;
+	font-weight: bold;
+	border-right: 1px solid #ddd;
+}
+
+.file-info-table td {
+    width: 35%;
+    padding: 15px;
+    background: #ffffff;
+    border-right: 1px solid #ddd;
+}
+.file-info-table input[type="text"] {
+	height: 40px;
+	line-height: 40px;
+	padding: 8px 12px;
+	font-size: 15px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	
+}
+
+.file-info-table th,
+.file-info-table td {
+	vertical-align: middle; 
+}
+
+.editor-container {
+    height: 300px;
+    max-height: 500px;
+    min-height: 250px; 
+}
+.content-area-container {
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 15px;
+}
+.content-area-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.content-area {
+    width: 100%;
+    height: 250px;
+    resize: none;
+    border: 1px solid #ddd;
+    padding: 15px;
+    font-size: 16px;
+    line-height: 1.5;
+    background: #ffffff;
+    border-radius: 5px;
+}
+.btn-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
+}
+.btn-container .btn {
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 5px;
+}
+</style>
+</head>
+<body id="page-top">
+		<div id="content-wrapper" class="d-flex flex-column">
+			<div id="container-fluid px-0">
+					<div class="card shadow mb-4">
+						<div class="card-header py-3">
+							<h6 class="m-0 font-weight-bold text-primary">QnA 등록</h6>
+						</div>
+						<div class="card-body">
+							<table class="table file-info-table">
+								<tbody>
+									<tr>
+										<th>제목</th>
+										<td><input type="text" id="postTitle" name="postTitle" placeholder="제목을 입력하세요"></td>
+									</tr>
+								</tbody>
+							</table>
+
+							<!-- 내용 입력 영역 -->
+							<div class="content-area-container">
+								<div class="content-area-title">내용 입력</div>
+								<div id="editor" class="editor-container"></div>
+							</div>
+
+							<!-- 버튼 정렬 -->
+							<div class="btn-container">
+								<button class="btn btn-primary insert">등록</button>
+								<button class="btn btn-secondary" th:onclick="|location.href='@{/qnaBoard}'|">취소</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+	<!-- Quill.js 라이브러리 -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+	<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+	<script>
+		var quill = new Quill('#editor', {
+			theme: 'snow',
+			placeholder: '여기에 내용을 입력하세요...',
+			modules: {
+				toolbar: [
+					[{ 'font': [] }, { 'size': [] }],
+					['bold', 'italic', 'underline'],
+					[{ 'list': 'ordered' }, { 'list': 'bullet' }],
+					[{ 'align': [] }],
+					['link', 'image'],
+					['clean'] // 서식 제거 버튼
+				]
+			}
+		});
+		
+		document.querySelector('.ql-editor').style.minHeight = "250px";
+		document.querySelector('.ql-editor').style.height = "300px";
+		document.querySelector('.ql-editor').style.maxHeight = "500px";
+	</script>
+	
+	<script th:inline="javascript">
+		let employeeNo = /*[[${userNo}]]*/[];
+		console.log(employeeNo)
+		$('.insert').on('click',e=>{
+				$.ajax({
+					type: "POST",
+					url: "/insertBoardPost",
+		            data: JSON.stringify({
+		                postTitle:  $('#postTitle').val(),
+		                postContent: quill.root.innerHTML,
+		                boardId: 999,
+		                employeeNo: employeeNo,
+		            }),
+					contentType: "application/json",
+					success: function () {
+						alert("등록 완료!");
+						location.href = "/qnaBoard";
+					},
+					error: function () {
+						alert("등록 실패");
+					}
+				});
+
+		})
+	</script>
+</body>
+</html>

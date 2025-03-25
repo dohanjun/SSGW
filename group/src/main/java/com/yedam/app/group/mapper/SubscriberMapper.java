@@ -15,4 +15,6 @@ public interface SubscriberMapper {
 	List<SubscriberVO> selectinfoSuber(@Param("suberNo") int suberNo);
 	SubscriberVO selectSuber(int suberNo);
 	void updateSuber(SubscriberVO vo);
+	boolean checkedId(String subId);
+	void updateSubscriberPassword(SubscriberVO subscriber);
 }

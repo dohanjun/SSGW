@@ -16,15 +16,13 @@
 		<div class="form-floating mb-3">
 			<input class="form-control" id="companyName" name="companyName"
 				type="text" placeholder="Enter your name..."
-				data-sb-validations="required" /> 
-				<label for="companyName">회사명</label>
+				data-sb-validations="required" /> <label for="companyName">회사명</label>
 		</div>
-		
+
 		<div class="form-floating mb-3">
-		    <input class="form-control" id="phoneNo" name="phoneNo"
-		        type="text" placeholder="Enter your phone number..."
-		        data-sb-validations="required" />
-		    <label for="phoneNo">전화번호</label>
+			<input class="form-control" id="phoneNo" name="phoneNo" type="text"
+				placeholder="Enter your phone number..."
+				data-sb-validations="required" /> <label for="phoneNo">전화번호</label>
 		</div>
 
 		<div class="form-floating mb-3">
@@ -34,9 +32,18 @@
 		</div>
 
 		<div class="form-floating mb-3">
-			<input class="form-control" id="subId" name="subId" type="text"
-				placeholder="Enter your name..." data-sb-validations="required" />
-			<label for="subId">아이디</label>
+			<div class="form-floating mb-3 position-relative">
+				<input class="form-control" id="subId" name="subId" type="text"
+					placeholder="Enter your name..." data-sb-validations="required" />
+				<label for="subId">아이디</label>
+				<button type="button" id="checkDuplicateBtn"
+					class="btn btn-sm btn-secondary"
+					style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); z-index: 10;">
+					중복 확인</button>
+			</div>
+			<div id="idCheckMessage"
+				style="font-size: 13px; color: red; margin-top: -10px;"></div>
+
 		</div>
 
 		<div class="form-floating mb-3">
@@ -47,19 +54,21 @@
 		<div class="form-floating mb-3">
 			<input class="form-control" id="subBnisNo" name="subBnisNo"
 				type="text" placeholder="Enter your name..."
-				data-sb-validations="required" /> 
-				<label for="subBnisNo">사업자 번호</label>
+				data-sb-validations="required" /> <label for="subBnisNo">사업자
+				번호</label>
 		</div>
 		<div class="moduleContainer">
 			<div class="basicModule">
-				<div class="selectItem" th:each="item : ${modules}" th:if="${#strings.equals(item.basicModule, 'Y')}">
-				    <div th:for="'check-' + ${item}"  th:text="${item.moduleName}"></div>
+				<div class="selectItem" th:each="item : ${modules}"
+					th:if="${#strings.equals(item.basicModule, 'Y')}">
+					<div th:for="'check-' + ${item}" th:text="${item.moduleName}"></div>
 				</div>
 			</div>
 
 			<div class="selectModule">
-				<div class="selectItem" th:each="item : ${modules}" th:if="${#strings.equals(item.basicModule, 'N')}">
-				    <div th:for="'check-' + ${item}"  th:text="${item.moduleName}"></div>
+				<div class="selectItem" th:each="item : ${modules}"
+					th:if="${#strings.equals(item.basicModule, 'N')}">
+					<div th:for="'check-' + ${item}" th:text="${item.moduleName}"></div>
 				</div>
 			</div>
 		</div>
@@ -130,14 +139,28 @@
 		</div>
 
 		<div class="receipt">
-			<div> 모듈 구독 가격 : <span id="moculePrice"></span></div>
-			<div> 인원 당 가격 : <span id="peoplePrice"></span></div>
-			<div> 업로드 파일 제한(5MB) : <span id="fileUploadPrice"></span></div>
-			<div> 저장소 용량(1TB) : <span id="fileRepositoryPrice"></span></div>
+			<div>
+				모듈 구독 가격 : <span id="moculePrice"></span>
+			</div>
+			<div>
+				인원 당 가격 : <span id="peoplePrice"></span>
+			</div>
+			<div>
+				업로드 파일 제한(5MB) : <span id="fileUploadPrice"></span>
+			</div>
+			<div>
+				저장소 용량(1TB) : <span id="fileRepositoryPrice"></span>
+			</div>
 			<div>--------------------------------------------------</div>
-			<div> 할인전 금액 : <span id="tPrice"></span></div>
-			<div> 구독기간 할인(년) : <span id="ysale"></span></div>
-			<div> 총 금액 : <span id="endPrice"></span> </div>
+			<div>
+				할인전 금액 : <span id="tPrice"></span>
+			</div>
+			<div>
+				구독기간 할인(년) : <span id="ysale"></span>
+			</div>
+			<div>
+				총 금액 : <span id="endPrice"></span>
+			</div>
 			<button type="submit">결제</button>
 		</div>
 	</form>
@@ -146,7 +169,9 @@
 			<span class="close">&times;</span>
 			<div>
 				<h2>결제 진행</h2>
-				<div class="price">결제금액 : <span id="modalPrice"></span></div>
+				<div class="price">
+					결제금액 : <span id="modalPrice"></span>
+				</div>
 				<div class="clause">이용약관</div>
 				<textarea class="clauseText">
 			제1조 (목적)
@@ -217,13 +242,17 @@
 
 
 <script type="application/javascript">
+	
 	let first_ip;
   function getIP(json) {
 	  first_ip=json.ip;
   }
+
 </script>
-<script type="application/javascript" src="http://ipinfo.io/?format=jsonp&callback=getIP"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+<script type="application/javascript"
+	src="http://ipinfo.io/?format=jsonp&callback=getIP"></script>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
 <script type="text/javascript" src="/js/subscribePage.js"></script>
 

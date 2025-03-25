@@ -11,9 +11,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.yedam.app.group.service.BoardPostService;
 import com.yedam.app.group.service.BoardPostVO;
+import com.yedam.app.group.service.EmpService;
+import com.yedam.app.group.service.EmpVO;
 import com.yedam.app.group.service.ModuleService;
 import com.yedam.app.group.service.ModuleVO;
 import com.yedam.app.group.service.PaymentService;
@@ -70,7 +73,7 @@ public class mainController {
 	private final BoardPostService boardPostService;
 	private final SubscriberService subscriberService;
 	private final PaymentService paymentService;
-	
+	private final EmpService empService;
 	
 	
 	/**
@@ -78,17 +81,17 @@ public class mainController {
 	 * @return group/mainPage
 	 */
 	@GetMapping("main")
-	public String mainPage(HttpSession session, Model model) {
-	    Map<String, Object> userDepInfo = (Map<String, Object>) session.getAttribute("loginUserDepInfo");
-	    model.addAttribute("userDepInfo", userDepInfo);
+	public String mainPage() {
 		return "group/mainPage";
 	}
 
 	@GetMapping("/manual")
-	public String manualPage() {
+	public String manualPage(Model model) {
+		List<ModuleVO> modules = moduleService.getAllModules();
+		model.addAttribute("modules", modules);
 		return "externalPages/manualPage";
 	}
-
+	
 	@GetMapping("/login")
 	public String loginPage() {
 		return "externalPages/loginPage";
@@ -108,7 +111,7 @@ public class mainController {
 	public String page1(@RequestParam(defaultValue = "1") int page,
 	                    @RequestParam(required = false) String keyword,
 	                    Model model) {
-	    addBoardData(page, keyword, model);
+		addBoardData(page, keyword, null, model);
 	    return "externalPages/qnaPage";
 	}
 
@@ -116,23 +119,29 @@ public class mainController {
 	public String page2(@RequestParam(defaultValue = "1") int page,
 	                    @RequestParam(required = false) String keyword,
 	                    Model model) {
-	    addBoardData(page, keyword, model);
+		addBoardData(page, keyword, null, model);
 	    return "group/QnA/qnaPage";
 	}
+	
+	@GetMapping("/myQna")
+	public String myQnaPage(@RequestParam(defaultValue = "1") int page,
+	                        @RequestParam(required = false) String keyword,
+	                        HttpSession session,
+	                        Model model) {
+	    EmpVO loggedInUser = empService.getLoggedInUserInfo();
+	    int userNo = loggedInUser.getEmployeeNo();
 
-	private void addBoardData(int page, String keyword, Model model) {
+	    addBoardData(page, keyword, userNo, model);
+	    return "group/QnA/qnaPage";
+	}
+	
+	private void addBoardData(int page, String keyword, Integer employeeNo, Model model) {
 	    int pageSize = 10;
-	    int totalCount;
-	    List<BoardPostVO> boardList;
+	    int offset = (page - 1) * pageSize;
 
-	    if (keyword != null && !keyword.trim().isEmpty()) {
-	        boardList = boardPostService.getPagedPostsByKeyword(keyword, page);
-	        totalCount = boardPostService.getTotalCountByKeyword(keyword);
-	    } else {
-	        boardList = boardPostService.getBoardList(page);
-	        totalCount = boardPostService.getTotalCount();
-	    }
-
+	    // 공통 서비스 사용
+	    List<BoardPostVO> boardList = boardPostService.getBoardListWithOptionalFilter(employeeNo, keyword, offset);
+	    int totalCount = boardPostService.getBoardCountWithOptionalFilter(employeeNo, keyword);
 	    int totalPages = (int) Math.ceil((double) totalCount / pageSize);
 
 	    model.addAttribute("boardList", boardList);
@@ -141,15 +150,29 @@ public class mainController {
 	    model.addAttribute("keyword", keyword);
 	}
 
-
 	@GetMapping("/qna/detail")
 	public String getBoardDetail(@RequestParam("postId") int postId, Model model) {
 	    BoardPostVO boardPost = boardPostService.getBoardDetail(postId);
 	    model.addAttribute("boardPost", boardPost);
 	    return "externalPages/qnaDetail"; 
 	}
-
 	
+	@GetMapping("/qnaBoard/detail")
+	public String getqnaBoardDetail(@RequestParam("postId") int postId, Model model) {
+	    BoardPostVO boardPost = boardPostService.getBoardDetail(postId);
+	    model.addAttribute("boardPost", boardPost);
+	    return "group/QnA/qnaDetail"; 
+	}
+	
+	@GetMapping("/qnaInsertPage")
+	public String qnaInsertPage(Model model) {
+	    EmpVO loggedInUser = empService.getLoggedInUserInfo();
+	    int userNo = loggedInUser.getEmployeeNo();
+	    model.addAttribute("userNo", userNo);
+	    return "group/QnA/qnaInsert";
+	}
+
+
 	@GetMapping("/module")
 	public String subscribePage(Model model) {
 		List<ModuleVO> modules = moduleService.getAllModules();
@@ -287,6 +310,15 @@ public class mainController {
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 	    }
 	}
+	
+	//아이디 중복 검사
+	@GetMapping("/checkDuplicateId")
+	@ResponseBody
+	public boolean checkDuplicateId(@RequestParam String subId) {
+	    return subscriberService.isSubIdExists(subId);
+	}
+	
+
 
 
 }

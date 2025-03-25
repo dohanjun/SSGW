@@ -70,79 +70,22 @@
 </header>
 
 <div class="card-container">
-    <div class="card-wrapper">
+    <div class="card-wrapper" th:each="module : ${modules}">
         <div class="card" onclick="toggleCard(this)">
-            <div class="card-title"><i class="fa-solid fa-envelope"></i> 메일</div>
-            <div class="card-content">
-                <ul>
-                    <li>새 메일 확인</li>
-                    <li>메일 보내기</li>
-                    <li>메일함 관리</li>
-                </ul>
+            <div class="card-title">
+                <i class="fa-solid fa-cube"></i>
+                <span th:text="${module.moduleName}">모듈 이름</span>
             </div>
-        </div>
-    </div>
-    <div class="card-wrapper">
-        <div class="card" onclick="toggleCard(this)">
-            <div class="card-title"><i class="fa-solid fa-file-invoice"></i> 전자결재</div>
             <div class="card-content">
                 <ul>
-                    <li>결재대기 문서</li>
-                    <li>결재완료 문서</li>
-                    <li>반려 문서</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    <div class="card-wrapper">
-        <div class="card" onclick="toggleCard(this)">
-            <div class="card-title"><i class="fa-solid fa-chalkboard"></i> 게시판</div>
-            <div class="card-content">
-                <ul>
-                    <li>공지사항</li>
-                    <li>자유게시판</li>
-                    <li>질문게시판</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    <div class="card-wrapper">
-        <div class="card" onclick="toggleCard(this)">
-            <div class="card-title"><i class="fa-solid fa-folder-open"></i> 자료실</div>
-            <div class="card-content">
-                <ul>
-                    <li>업무 자료</li>
-                    <li>기술 문서</li>
-                    <li>가이드라인</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    <div class="card-wrapper">
-        <div class="card" onclick="toggleCard(this)">
-            <div class="card-title"><i class="fa-solid fa-address-book"></i> 주소록</div>
-            <div class="card-content">
-                <ul>
-                    <li>내부 직원 연락처</li>
-                    <li>외부 연락처</li>
-                    <li>비상 연락망</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    <div class="card-wrapper">
-        <div class="card" onclick="toggleCard(this)">
-            <div class="card-title"><i class="fa-solid fa-sitemap"></i> 조직도</div>
-            <div class="card-content">
-                <ul>
-                    <li>부서 현황</li>
-                    <li>팀 구성원</li>
-                    <li>직급별 리스트</li>
+                	<li th:each="detail : ${module}" th:text="${#numbers.formatInteger(detail.modulePrice, 0, 'COMMA')} + '원'"></li>
+                    <li th:each="detail : ${module}" th:text="${detail.explanation}"></li>
                 </ul>
             </div>
         </div>
     </div>
 </div>
+
 
 <script>
     function toggleCard(card) {

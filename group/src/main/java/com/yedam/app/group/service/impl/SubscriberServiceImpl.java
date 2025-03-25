@@ -42,4 +42,14 @@ public class SubscriberServiceImpl implements SubscriberService {
 	public void updateSuber(SubscriberVO vo) {
 		subscriberMapper.updateSuber(vo);
 	}
+
+	@Override
+	public boolean isSubIdExists(String subId) {
+		return subscriberMapper.checkedId(subId);
+	}
+
+	@Override
+	public void updateSubscriberPassword(SubscriberVO subscriber) {
+		 subscriberMapper.updateSubscriberPassword(subscriber);
+	}
 }
