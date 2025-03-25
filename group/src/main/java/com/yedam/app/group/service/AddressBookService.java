@@ -20,9 +20,6 @@ public interface AddressBookService {
 	//주소록등록
 	public int AddressBookInsert(AddressBookVO addressBookVO);
 	
-	//주소록검색기록
-	public int AddressBookRecodeInfo(AddressBookVO addressBookVO);
-	
 	//주소록수정
 	public Map<String, Object> AddressBookUpdate(AddressBookVO addressBookVO);
 

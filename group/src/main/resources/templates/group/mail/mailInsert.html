@@ -60,7 +60,7 @@
 	</div>
 
 <div class="card-body">
-  <form th:action="@{mailInsert}" method="post" class="user">
+  <form action="/upload" enctype="multipart/form-data" th:action="@{mailInsert}" method="post" class="user">
   	  <div class="btn-container">
 	     <button class="btn btn-primary">
       		보내기
@@ -82,8 +82,8 @@
 		<tr>
 			<th>제목</th>
 			<td><input type="text" class="form-control" id="title" name="title"></td>
-			<th>파일내용</th>
-			<td><input type="file" class="form-control" id="file" name="file"></td>
+			<th>파일업로드</th>
+			<td><input type="file" multiple="multiple" class="form-control" id="file" name="files"></td>
 		</tr>
 	</tbody>
    </table>

@@ -56,17 +56,15 @@
   <div class="content-wrapper">
 	<div class="employee-container">
 	  <div class="btn-container">
-	  <a lcon="back" class="btn btn-primary" th:onclick="|location.href='@{/myMailSelect(mailId=${mail.mailId})}'|">
+	  <a class="btn btn-primary" th:onclick="|location.href='@{/myMailSelect(mailId=${mail.mailId})}'|">
 	  </a>
 	  </div>
 	<h1>메일수정하기</h1>
-	  <div>
-	    <hr>
-			<a href="#">저장</a>
-			<a href="#">임시저장</a>
-		<hr>
-	  </div>
-
+  	  <div class="btn-container">
+	     <button class="btn btn-primary">
+      		저장하기
+        </button>
+      </div>
 	<!-- 메일수정 -->
 	
 	<form name="form" method="post">

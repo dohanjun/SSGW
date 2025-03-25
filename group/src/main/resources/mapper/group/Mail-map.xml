@@ -18,7 +18,7 @@
 		  		OR RECODE LIKE '%' || #{search} || '%' )
 		  	</if>	
 		  	<if test="mailType != null">
-		  	   and mail_type = #{mailType}  
+		  	    and mail_type = #{mailType}  
 		  	   <if test= "mailType == '받은'">
      			and get_user = #{getUser}	  	   
 		  	   </if>
@@ -88,9 +88,6 @@
 	        ,mail_type
 	FROM Mail
 	WHERE mail_id = #{mailId}
-	<if test= "employeeId != null and employeeId != ''">
-    and employee_id = #{employeeId}
-	</if>
 	</select>
 	
 	<!-- 나의메일단건조회 -->

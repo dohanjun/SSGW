@@ -53,17 +53,25 @@ public class MailController {
 	// 메일상세보기
 	@GetMapping("mailSelect")
 	public String mailSelect(MailVO mailVO, Model model) {
+		
+		EmpVO loggedInUser = empService.getLoggedInUserInfo();
+		mailVO.setEmployeeId(loggedInUser.getEmployeeId());
+		
 		MailVO findVO = mailService.MailSelectInfo(mailVO);
 		model.addAttribute("mail", findVO);
-		return "group/mail/mailSelect"; // mainPage.html을 반환
+		return "group/mail/mailSelect";
 	}
 
 	// 내 메일상세보기
 	@GetMapping("myMailSelect")
 	public String myMailSelect(MailVO mailVO, Model model) {
+		
+		EmpVO loggedInUser = empService.getLoggedInUserInfo();
+		mailVO.setEmployeeId(loggedInUser.getEmployeeId());
+		
 		MailVO findVO = mailService.MyMailSelectInfo(mailVO);
 		model.addAttribute("mail", findVO);
-		return "group/mail/myMailSelect"; // mainPage.html을 반환
+		return "group/mail/myMailSelect";
 	}
 
 	// 등록 - 페이지
@@ -75,13 +83,14 @@ public class MailController {
 
 	// 메일등록
 	@PostMapping("/mailInsert")
-	public String mailTest(MailVO vo) {
+	public String mailInsert(MailVO vo) {
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 		vo.setEmployeeId(loggedInUser.getEmployeeId());
-    
+
 		mailService.sendMailToUser(vo);
-		
+
 		return "redirect:mail";
+		
 	}
 
 	// 수정 - 페이지

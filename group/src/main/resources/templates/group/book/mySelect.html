@@ -5,194 +5,101 @@
 	  layout:fragment="content">
 <head>
 <meta charset="UTF-8">
-<title>MySelect</title>
+<title>Book Select</title>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
 </head>
 <style>
-
 	#flo{
-	float: right;
-	display: flex;
-	justify-content: center;
-	padding-left: 30px;
-	}
-
-	.left{
-		position: relative;
-		left: 1430px;
-		bottom: 10px;
-	}
-    .p{
-    	clear: left;
-    	padding-left: 30px;
-    	text-align: center;
-    }
-    #se{
- 	margin-right: 10px;
-    }
-	#bar{
-		position: static;
-		text-align: center;
-		padding: 20px;
-		padding-left: 600px;
-	}
-	
+		float : left;
+		display : flex;
+		justify-content : center;
+		}
+		     /* 메인 컨테이너를 가운데 정렬하고 화면에 맞게 조정 */
+        .content-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: calc(100vh - 100px); /* 상단 네비게이션 제외한 높이 */
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+         /* 사원 상세정보 박스 크기 조정 */
+        .employee-container {
+            width: 600px; /* 기존 900px → 600px로 축소 */
+            height: 600px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        
+        #center{
+        	width: 100%;
+        	height: 100%;
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            font-size: 14px;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
 </style>
+<!-- 주소록 상세화면 페이지-->
+  <body>
+  <div class="content-wrapper" id="center">
+	<div class="employee-container">
+	  <div class="btn-container">
+	  <a lcon="home" class="btn btn-primary" th:onclick="|location.href='@{/myBookList(addressBookId=${book.addressBookId})}'|">
+	  </a>
+	  </div>
+	<h1>주소록 상세화면</h1>
+	  <div>
+	    <hr>
+			<button type="button"
+			th:onclick="|location.href='@{/bookUpdate(addressBookId=${book.addressBookId})}'|">수정</button>
+			<button type="button"
+			th:onclick="|location.href='@{/bookDelete(addressBookId=${book.addressBookId},country=Kor)}'|">삭제</button>
+		<hr>
+	  </div>
 
-<body>
-<h3>개인주소록</h3>
-
-<!-- 검색기능 -->
-<button onclick ="location.href=''" value="부서주소록 이동"></button>
-
-<form role="search" name="frmSearch">
-  <div class="left" id="se">
-	  <input type="hidden" name="page" value="1">
-      <input name="search" type="search" placeholder="Search" th:value="${pageListVO.search}">
-      <button class="btn btn-outline-success" type="submit">검색</button>
-
-  </div>
-<!-- 검색기능 마침 -->
-
-<div>
-	<h5 th:text="'전체글: '+${paging.totalRecord}+'개'"></h5>
-</div>
-<div id="flo">
-<button>삭제</button>
-
-</div>
-</form>
-
-<!-- 메일목록 창 -->
-<div class="p">
-	<form name="form" method="post">
-	<table border="1" class="table">
-	<thead>
-		<tr class="text-center">
-			<td><input onchange="selectAllcheck(this)" type="checkbox" name="selectall" id="selectall"></td>
-			<td scope="col">이미지</td>
-			<td scope="col">작성자</td>
-			<td scope="col">제목</td>
-			<td scope="col">날짜</td>
-		</tr>
-	</thead>
-	<tbody>
-	<th:block th:each="info : ${mails}">
-		<tr>
-		    <td><input type="checkbox" name="checkMenu" class="checkbox" onchange="checkMenuHandler(this)"/></td>
-			<td th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[ ${info.mailId} ]]</td>
-			<td th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[ ${info.getUser} ]]</td>
-			<td th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[ ${info.title} ]]</td>
-		  	<td th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[ ${ #dates.format(info.sentDate, "yyyy년MM월dd일") } ]]</td>
-		</tr>
- 	  </th:block>
- 	  </tbody>
-	</table>
-	</form>
+	<!-- 주소록 상세기능 -->
+	<div>
+		<div>
+			<label for="Name">이름</label>
+			<input type="text" id="Name" th:value="${book.addressBookName}" readonly>
+		</div>
+		<div>
+			<label for="Number">전화번호(개인)</label>
+			<input type="text" id="Number" th:value="${book.addressBookNumber}" readonly>
+		</div>
+		<div>
+			<label for="email">이메일 주소</label>
+			<input type="text" id="email" th:value="${book.addressBookEmail}" readonly>
+		</div>
+		<div>
+			<label for="comName">회사명</label>
+			<input th:value="${book.addressBookCompanyName}" readonly>
+		</div>
+		<div>
+			<label for="comNumber">전화번호(회사)</label>
+			<input th:value="${book.addressBookCompanyName}" readonly>
+		</div>
+		<div>
+			<label for="deptType">담당부서</label>
+			<input type="text" id="deptType" th:value="${book.bookDepartmentType}" readonly>
+		</div>
+		<div>
+			<label for="date">날짜</label>
+			<input type="text" id="date" th:value="${ #dates.format(book.addressBookUpdateDate, 'yyyy년MM월dd일') }" readonly>
+		</div>
 	</div>
-<!-- 메일목록 창 마침 -->
-
-<!-- 바기능 -->
-<div id="bar">
-	<nav>
-		<ul class="pagination">
-			<li class="page-item"
-				th:classappend="${paging.startPage} == 1 ? disabled"><a
-				class="page-link"
-				th:href="|javascript:gopage(${paging.startPage}-1)|">Previous</a></li>
-	
-			<li
-				th:each="num : *{#numbers.sequence(paging.startPage, paging.endPage)}"
-				class="page-item" th:classappend="${num} == ${paging.page} ? active">
-				<a class="page-link" th:href="|javascript:gopage(${num})|"
-				th:text="${num}">2</a>
-			</li>
-	
-			<li class="page-item"
-				th:classappend="${paging.endPage} >= ${paging.lastPage} ? disabled">
-				<a class="page-link"
-				th:href="|javascript:gopage(${paging.endPage}+1)|">Next</a>
-			</li>
-		</ul>
-	</nav>
-</div>
-<!-- 바기능 마침 -->
-
-
-
-
-
-<script>
-
-	//버튼
-	const context = ''; //document.querySelector('meta[name="contextPath"]').getAttribute('value');
-	
-	function moveInfoPage(event){
-		let selectedTr = event.currentTarget;
-		let mid = selectedTr.children[1].textContent;
-		let url = context + '/mailInfo?mailId=' + mid;
-	}
-	
-	//바 기능
-	function gopage(p){
-		frmSearch.page.value = p;
-		frmSearch.submit();		
-		//location.href = '/mail?page=' + p;
-	}
-	
-	
-	//체크박스 기능
-	function checkMenuHandler(checkbox) {
-	    menu = document.getElementsByName("checkMenu")
-	    menuArr = [];
-
-	    // 전체 체크 되어 있는 상태에서 자식데이터의 체크박스 해제시 전체 체크박스 해제
-	    const selectall = document.querySelector('input[name="selectall"]');
-	    if (checkbox != null && checkbox.checked === false) {
-	        selectall.checked = false;
-	    }
-
-	    
-  // 자식노드 체크가 한개라도 false일때 부모 전체체크 해제 자식노드 체크가 모두 true가 되면 부모 전체체크도 true
-	    let childMenuAll = document.querySelectorAll('[name="checkMenu"]').length;
-	    let childMenuCheckd = document.querySelectorAll('[name="checkMenu"]:checked').length;
-	    if (childMenuAll == childMenuCheckd){
-	        selectall.checked = true;
-	    }else{
-	    	selectall.checked = false;
-	    }
-	}
-
-	/**
-	 * 체크박스 모두 선택/해제
-	 * @param selectAll
-	 */
-	function selectAllcheck(selectAll) {
-	    const checkboxes = document.getElementsByName('checkMenu');
-
-	    checkboxes.forEach((checkbox) => {
-	        checkbox.checked = selectAll.checked
-	    })
-	    menu = document.getElementsByName("checkMenu")
-	    menuArr = [];
-
-	    // 체크되어 있는 데이터
-	    for (let i = 0; i < menu.length; i++) {
-	        if (menu[i].checked == true) {
-	            menuArr.push(menu[i].id);
-	        }
-	    }
-	}
-	
-	 // 폼을 제출하는 함수
-    function submitForm() {
-    	frmSearch.submit();
-    }
-	//정렬기능 구현
-	
-
-</script>
-
-</body>  
+	<!-- 주소록세상기능 마침 -->
+	</div>
+	</div>
+  </body>
 </html>

@@ -13,15 +13,12 @@
 <sql id="bookCondition">
 		  <where>
 		  	<if test="search != null and search != ''">
-		  		( ADDRESSBOOKNAME LIKE '%' || #{search} || '%'
-		  		OR ADDRESSBOOKNUMBER LIKE '%' || #{search} || '%'
-		  		OR ADDRESSBOOKCOMPANYNAME LIKE '%' || #{search} || '%'
-		  		OR ADDRESSBOOKCOMPANYNUMBER LIKE '%' || #{search} || '%'
+		  		( ADDRESS_BOOK_NAME LIKE '%' || #{search} || '%'
+		  		OR ADDRESS_BOOK_NUMBER LIKE '%' || #{search} || '%'
+		  		OR ADDRESS_BOOK_COMPANY_NAME LIKE '%' || #{search} || '%'
+		  		OR ADDRESS_BOOK_COMPANY_NUMBER LIKE '%' || #{search} || '%'
 		  		 )
-		  	</if>	
-		  	<if test="addressBookType != null">
-     			and address_book_type = #{addressBookType}
-   			 </if>
+		  	</if>
 		  </where>
 </sql>
 
@@ -41,6 +38,8 @@
         ,ZIP_CODE
         ,STREET_ADDRESS
         ,ADDRESS_BOOK_TYPE
+        ,BOOK_RECODE
+        ,BOOK_DEPARTMENT_TYPE
 	FROM ADDRESS_BOOK
 	<include refid="bookCondition"></include>
 	) A ) B WHERE RN BETWEEN #{start} AND #{end}
@@ -60,6 +59,8 @@
         ,ZIP_CODE
         ,STREET_ADDRESS
         ,ADDRESS_BOOK_TYPE
+        ,BOOK_RECODE
+        ,BOOK_DEPARTMENT_TYPE
     FROM ADDRESS_BOOK
 	WHERE ADDRESS_BOOK_ID = #{addressBookId}
 	</select>
@@ -78,6 +79,8 @@
         ,ZIP_CODE
         ,STREET_ADDRESS
         ,ADDRESS_BOOK_TYPE
+        ,BOOK_RECODE
+        ,BOOK_DEPARTMENT_TYPE
 	FROM ADDRESS_BOOK
 	WHERE ADDRESS_BOOK_ID = #{addressBookId}
 	</select>
@@ -99,7 +102,10 @@
                  ,EMPLOYEE_ID
                  ,ZIP_CODE
                  ,STREET_ADDRESS
-                 ,ADDRESS_BOOK_TYPE)
+                 ,ADDRESS_BOOK_TYPE
+                 ,BOOK_RECODE
+                 ,BOOK_DEPARTMENT_TYPE
+                 )
     VALUES(
     			  #{addressBookId}
     			 ,#{addressBookName}
@@ -112,6 +118,8 @@
     			 ,#{zipCode}
     			 ,#{streetAddress}
     			 ,#{addressBookType}
+    			 ,#{bookRecode}
+    			 ,#{bookDepartmentType}
     			 )
 	</insert>
 	
@@ -128,7 +136,7 @@
 	       ,ADDRESS_BOOK_NUMBER = #{addressBookNumber}
 	       ,ADDRESS_BOOK_EMAIL = #{addressBookEmail}
 	       ,ADDRESS_BOOK_COMPANY_NAME = #{addressBookCompanyName}
-	<!--   ,ADDRESS_BOOK_COMPANY_ = #{attachedFileName}  --> 
+	       ,ADDRESS_BOOK_COMPANY_NUMBER = #{addressBookCompanyNumber}
 	</update>
 
 	<!-- 메일삭제 -->

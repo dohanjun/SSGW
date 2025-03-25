@@ -157,6 +157,20 @@
                 </div>
             </div>
         </li>
+        <!-- 주소록 -->
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#bookT"
+               aria-expanded="true" aria-controls="bookT">
+                <i class="fas fa-fw fa-cog"></i>
+                <span>주소록</span>
+            </a>
+            <div id="bookT" class="collapse" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <a class="collapse-item" th:href="@{bookList}">주소록</a>
+                    <a class="collapse-item" th:href="@{bookInsert}">주소록 등록</a>
+                </div>
+            </div>
+        </li>
 
         <!-- 게시판 -->
         <li class="nav-item">

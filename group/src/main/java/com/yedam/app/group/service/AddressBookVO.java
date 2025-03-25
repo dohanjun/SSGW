@@ -17,8 +17,10 @@ public class AddressBookVO {
 	private Date addressBookUpdateDate;
 	private String addressBookCompanyName;
 	private String addressBookCompanyNumber;
-	private Integer employeeId;
+	private String employeeId;
 	private String zipCode;
 	private String streetAddress;
 	private String addressBookType;
+	private String bookRecode;
+	private String bookDepartmentType;
 }

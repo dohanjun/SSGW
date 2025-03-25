@@ -1,8 +1,12 @@
  package com.yedam.app.group.service.impl;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,6 +14,7 @@ import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.yedam.app.group.mapper.MailMapper;
 import com.yedam.app.group.service.MailService;
@@ -53,15 +58,14 @@ public class MailServiceImpl implements MailService {
 	public MailVO MyMailSelectInfo(MailVO mailVO) {
 		return mailMapper.MyMailFindInfo(mailVO.getMailId());
 	}
-
+	
 	// 메일등록
 	@Override
 	public int MailInsert(MailVO mailVO) {
 		int result = mailMapper.MailCreate(mailVO);
-
 		return result == 1 ? mailVO.getMailId() : -1;
 	}
-
+	
 	// 메일검색기록
 	@Override
 	public int MailRecodeInfo(MailVO mailVO) {

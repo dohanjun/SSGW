@@ -22,10 +22,7 @@ public interface AddressBookMapper {
 	
 	//주소록등록
 	public int AddressBookCreate(AddressBookVO addressBookVO);
-	
-	//주소록검색기록
-	public int AddressBookRecode(AddressBookVO addressBookVO);
-	
+		
 	//주소록수정
 	public int AddressBookModify(AddressBookVO addressBookVO);
 
