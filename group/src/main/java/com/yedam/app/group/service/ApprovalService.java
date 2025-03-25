@@ -58,5 +58,14 @@ public interface ApprovalService {
 	
 	// 결재선 출력
 	public List<AprvRoutesVO> findRoutes(AprvRoutesVO aprvRoutesVO);
+	
+	// 결재 승인 처리 / 해당 서비스 메서드가 단순히 DB 상태만 바꾸는 작업이고, 결과 데이터를 별도로 반환할 필요가 없기 때문
+    public void processApproval(AprvRoutesVO aprvRoutesVO);
+    
+    // 결재자 순서 조회
+    public String getMaxAprvOrder(int draftNo); 
+
+    // 반려 처리
+    public void rejectApproval(AprvRoutesVO aprvRoutesVO);
   
 }

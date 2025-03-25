@@ -273,14 +273,12 @@
 		  ,APRV_ORDER
 		  ,DRAFT_NO
 		  ,APRV_ROLE
-		  ,APRV_STATUS
 		  ,EMPLOYEE_NO)
 		 VALUES
 		 (#{aprvId}
 		  ,#{aprvOrder}
 		  ,#{draftNo}
 		  ,#{aprvRole}
-		  ,#{aprvStatus}
 		  ,#{employeeNo})
 	</insert>
 	
@@ -290,7 +288,6 @@
 		       ,a.APRV_DATE
 		       ,a.DRAFT_NO
 		       ,a.APRV_ROLE
-		       ,a.APRV_STATUS
 		       ,a.EMPLOYEE_NO
 		       ,e.EMPLOYEE_NAME
 		       ,e.RANK_ID
@@ -308,7 +305,7 @@
 		  AND  e.suber_no = #{suberNo}
 	</select>
 	
-	<select id="findActiveStampId" resultType="Integer">
+	<select id="selectActiveStampId" resultType="Integer">
     	SELECT stamp_id
     	FROM stamp
     	WHERE employee_no = #{employeeNo}
@@ -322,6 +319,17 @@
       	AND employee_no = #{employeeNo}
 	</update>
 	
+	<select id="findMaxAprvOrder" resultType="String">
+    	SELECT MAX(aprv_order)
+    	FROM aprv_routes
+    	WHERE draft_no = #{draftNo}
+	</select>
+
+	<update id="updateAprvStatus" parameterType="AprvRoutesVO">
+    	UPDATE aprv_documents
+    	SET aprv_status = #{aprvStatus}
+    	WHERE draft_no = #{draftNo}
+	</update>
 	
 	
 </mapper>
