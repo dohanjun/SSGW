@@ -111,7 +111,7 @@
     			 ,#{addressBookName}
     			 ,#{addressBookNumber}
     			 ,#{addressBookEmail}
-    			 ,#{addressBookUpdateDate}
+    			 ,sysdate
     			 ,#{addressBookCompanyName}
     			 ,#{addressBookCompanyNumber}
     			 ,#{employeeId}
