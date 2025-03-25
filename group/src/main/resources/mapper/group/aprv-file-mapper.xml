@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yedam.app.group.mapper.AprvFileMapper">
+	<insert id="insertFile" parameterType="aprvFileVO">
+		<selectKey keyProperty="fileId" resultType="Integer"
+			order="BEFORE">
+			SELECT NVL(MAX(file_id), 0) + 1
+			FROM aprv_files
+		</selectKey>
+        INSERT INTO aprv_files 
+        (file_id
+         ,draft_no
+         ,file_name
+         ,file_path
+         ,file_size
+         ,file_order) 
+         VALUES 
+         (#{fileId}
+          ,#{draftNo}
+          ,#{fileName}
+          ,#{filePath}
+          ,#{fileSize}
+          ,#{fileOrder})
+    </insert>
+
+    <select id="selectFilesByDraftNo" resultType="aprvFileVO">
+        SELECT * 
+        FROM aprv_files 
+        WHERE draft_no = #{draftNo} 
+        ORDER BY file_order
+    </select>
+</mapper>

@@ -12,10 +12,12 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.yedam.app.group.service.ApprovalFormVO;
 import com.yedam.app.group.service.ApprovalService;
 import com.yedam.app.group.service.ApprovalVO;
+import com.yedam.app.group.service.AprvFileService;
 import com.yedam.app.group.service.AprvRoutesVO;
 import com.yedam.app.group.service.EmpService;
 import com.yedam.app.group.service.EmpVO;
@@ -50,6 +53,7 @@ public class ApprovalController {
 
 	private final ApprovalService approvalService;
 	private final EmpService empService;
+	private final AprvFileService aprvFileService;
 	
     @Value("${file.upload-dir}")  
     private String uploadDir;  // 현재 프로젝트 안에서 저장하는 폴더 설정
@@ -198,26 +202,32 @@ public class ApprovalController {
 	 * @return 기안문 상신 기능
 	 */
 	// 기안문 상신
-	@PostMapping("/aprv/writing")
-	public String submitApproval(@RequestBody ApprovalVO approvalVO) {
-		
+	@PostMapping(value = "/aprv/writing", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public String submitApproval(@ModelAttribute ApprovalVO approvalVO,
+	                             @RequestParam(value = "files", required = false) MultipartFile[] files) {
+
 	    EmpVO loginUser = empService.getLoggedInUserInfo();
 	    approvalVO.setEmployeeNo(loginUser.getEmployeeNo());
 	    approvalVO.setSuberNo(loginUser.getSuberNo());
-	    
-	    // 문서 저장 (임시, 대기)
+
+	    // 문서 상태 설정
 	    if ("임시".equals(approvalVO.getAprvStatus())) {
-	        approvalVO.setAprvStatus("임시"); // 상태를 임시로 설정
+	        approvalVO.setAprvStatus("임시");
 	    } else {
-	        approvalVO.setAprvStatus("대기"); // 결재 대기 상태로 설정
+	        approvalVO.setAprvStatus("대기");
 	    }
-	    
+
 	    // 문서 저장
 	    approvalService.createAprvDocu(approvalVO);
 	    int draftNo = approvalVO.getDraftNo();
 
+	    // 첨부파일 저장 추가
+	    if (files != null && files.length > 0) {
+	        aprvFileService.insertFiles(draftNo, files);
+	    }
+
 	    // 결재자 저장
-	     List<Integer> approvers = approvalVO.getApprovers();
+	    List<Integer> approvers = approvalVO.getApprovers();
 	    for (int i = 0; i < approvers.size(); i++) {
 	        AprvRoutesVO r = new AprvRoutesVO();
 	        r.setDraftNo(draftNo);
@@ -229,18 +239,18 @@ public class ApprovalController {
 	    }
 
 	    // 참조자 저장
-			
-	      List<Integer> reference = approvalVO.getReference();
-	      
-		  if (approvalVO.getReference() != null && !approvalVO.getReference().isEmpty()) {
-		  for (int i = 0; i < reference.size(); i++) { 
-		  AprvRoutesVO ref = new AprvRoutesVO(); 
-		  ref.setDraftNo(draftNo); ref.setAprvOrder("0");
-		  ref.setAprvRole("참조"); ref.setAprvStatus("대기");
-		  ref.setEmployeeNo(reference.get(i));
-		  approvalService.createAprvRout(ref); } 
-		  }
-		 
+	    List<Integer> reference = approvalVO.getReference();
+	    if (reference != null && !reference.isEmpty()) {
+	        for (Integer empNo : reference) {
+	            AprvRoutesVO ref = new AprvRoutesVO();
+	            ref.setDraftNo(draftNo);
+	            ref.setAprvOrder("0");
+	            ref.setAprvRole("참조");
+	            ref.setAprvStatus("대기");
+	            ref.setEmployeeNo(empNo);
+	            approvalService.createAprvRout(ref);
+	        }
+	    }
 
 	    return "redirect:/aprv/list";
 	}
