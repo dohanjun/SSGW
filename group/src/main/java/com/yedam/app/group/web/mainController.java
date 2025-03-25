@@ -46,6 +46,9 @@ import org.springframework.http.HttpStatus;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
+import jakarta.servlet.http.HttpSession;
+import java.util.Map;
+
 
 /** 외부페이지 컨트롤
  * @author 조성민
@@ -75,7 +78,9 @@ public class mainController {
 	 * @return group/mainPage
 	 */
 	@GetMapping("main")
-	public String mainPage() {
+	public String mainPage(HttpSession session, Model model) {
+	    Map<String, Object> userDepInfo = (Map<String, Object>) session.getAttribute("loginUserDepInfo");
+	    model.addAttribute("userDepInfo", userDepInfo);
 		return "group/mainPage";
 	}
 

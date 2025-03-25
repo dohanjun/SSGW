@@ -29,7 +29,9 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                                         Authentication authentication) throws IOException, ServletException {
         HttpSession session = request.getSession();
         String username = authentication.getName();
-
+        
+        System.out.println(username);
+        
         String query = "SELECT * FROM ( " +
                 "SELECT MANAGER_ID AS username, MANAGER_PW AS password,'ROLE_MANAGER' AS role FROM MANAGER_LOGIN " +
                 "UNION ALL " +
@@ -37,15 +39,22 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 "UNION ALL " +
                 "SELECT EMPLOYEE_ID AS username, EMPLOYEE_PW AS password, 'ROLE_USER' AS role FROM EMPLOYEES WHERE RESIGNATION_STATUS ='N'" +
                 ") WHERE username = ?";
+        
+        String query2 = "select s.* "
+        		+ "from suber s join employees e on s.suber_no = e.suber_no "
+        		+ "where e.EMPLOYEE_ID = ?";
+        
 
         try {
             Map<String, Object> userInfo = jdbcTemplate.queryForMap(query, username);
             session.setAttribute("loginUser", userInfo);
             
-         // EMPLOYEES 테이블에서 RIGHTS_LEVEL 가져오기
+            Map<String, Object> userDepInfo = jdbcTemplate.queryForMap(query2, username);
+            session.setAttribute("loginUserDepInfo", userDepInfo);
+            
             String rightsQuery = "SELECT RIGHTS_LEVEL FROM EMPLOYEES E JOIN RIGHTS R ON E.RIGHTS_ID = R.RIGHTS_ID WHERE E.EMPLOYEE_ID = ?";
             Integer rightsLevel = jdbcTemplate.queryForObject(rightsQuery, Integer.class, username);
-            session.setAttribute("rightsLevel", rightsLevel); // 세션에 저장
+            session.setAttribute("rightsLevel", rightsLevel);
             
         } catch (Exception e) {
             System.out.println("사용자 정보를 가져오는 중 오류 발생: " + e.getMessage());
