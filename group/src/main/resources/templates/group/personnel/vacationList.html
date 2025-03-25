@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/layouts/default_layout}"
+      layout:fragment="content">
+
+<head>
+    <meta charset="UTF-8">
+    <title>휴가유형 관리</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.6.2/css/bootstrap.min.css">
+</head>
+
+<body>
+<div class="container mt-4">
+    <h2 class="text-center mb-4">휴가유형 관리</h2>
+
+    <!-- 📋 휴가유형 목록 -->
+    <div class="card mb-4">
+        <div class="card-header font-weight-bold">휴가유형 목록</div>
+        <div class="card-body">
+            <table class="table table-hover text-center">
+                <thead class="thead-light">
+                    <tr>
+                        <th>휴가유형 ID</th>
+                        <th>휴가 이름</th>
+                        <th>휴가 일수</th>
+                        <th>증빙서류 여부</th>
+                        <th>회사번호</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="v : ${vacations}">
+                        <td th:text="${v.vacationTypeId}"></td>
+                        <td th:text="${v.vacationTypeName}"></td>
+                        <td th:text="${v.vacationDate} + ' 일'"></td>
+                        <td th:text="${v.requiredProofDocumentFile == 'Y' ? '필요' : '불필요'}"></td>
+                        <td th:text="${v.suberNo}"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- 📌 페이징 -->
+            <nav>
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:if="${currentPage > 1}">
+                        <a class="page-link" href="javascript:gopage([[${currentPage - 1}]])">이전</a>
+                    </li>
+                    <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}"
+                        th:classappend="${i == currentPage} ? 'active'">
+                        <a class="page-link" href="javascript:gopage([[${i}]])" th:text="${i}"></a>
+                    </li>
+                    <li class="page-item" th:if="${currentPage < totalPages}">
+                        <a class="page-link" href="javascript:gopage([[${currentPage + 1}]])">다음</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- ➕ 휴가유형 등록 -->
+    <div class="card">
+        <div class="card-header font-weight-bold">휴가유형 등록</div>
+        <div class="card-body">
+            <form th:action="@{/vacaInsert}" th:object="${vacationVO}" method="post">
+                <input type="hidden" th:field="*{vacationTypeId}" />
+
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">회사번호</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" th:field="*{suberNo}" readonly>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">휴가 이름</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" th:field="*{vacationTypeName}" required>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">휴가 일수</label>
+                    <div class="col-sm-10">
+                        <input type="number" class="form-control" th:field="*{vacationDate}" min="1" required>
+                    </div>
+                </div>
+
+                <div class="form-group form-check ml-2">
+                    <input type="checkbox" class="form-check-input" th:field="*{requiredProofDocumentFile}" value="Y">
+                    <label class="form-check-label">증빙 서류 필요</label>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-success mr-2">등록</button>
+                    <button type="button" class="btn btn-danger" onclick="window.history.back()">뒤로</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    function gopage(p) {
+        location.href = `/vacationList?page=${p}`;
+    }
+</script>
+</body>
+</html>

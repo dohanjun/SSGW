@@ -12,7 +12,10 @@ public interface VacationMapper {
 	
 
     // 전체 사원 조회 (회사 기준)
-    public List<VacationVO> getAllEmployeesWithHireDate(@Param("suberNo") int suberNo);
+    public List<VacationVO> getAllEmployeesWithHireDateAndStatus(@Param("suberNo") int suberNo);
+    
+    // 전체 회사조회
+    public List<Integer> getAllSuberNos();
 
     // 연차 유형 조회 (회사 번호 기준)
     public VacationVO getAnnualVacationType(@Param("suberNo") int suberNo);
@@ -31,5 +34,21 @@ public interface VacationMapper {
     
     // 기안문서번호 가져오기 시퀸스용
     public int getNextDraftNo();
+    
+    
+    // 휴가유형 등록
+    public int insertVacationType(VacationVO vo);
+
+    // 휴가유형 ID 생성
+    public int getNextVacationTypeId();
+    
+    //
+    public List<VacationVO> selectVacationTypeList(Integer suberNo);
+    
+    //
+    public List<VacationVO> selectVacationTypePaging(VacationVO vo);
+    
+    //
+    public int countVacationType(VacationVO vo);
     
 }

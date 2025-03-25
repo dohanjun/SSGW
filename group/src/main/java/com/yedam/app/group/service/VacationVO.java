@@ -27,6 +27,10 @@ public class VacationVO {
 	private Date exitDate;			  // 퇴사일
 	private String resignationStatus; // 퇴사여부
 	
+	private int page =1;
+	private int size =12;
+	private int offset;
+	
 	
 	
 

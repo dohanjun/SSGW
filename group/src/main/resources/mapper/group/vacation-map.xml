@@ -15,13 +15,6 @@
           AND SUBER_NO = #{suberNo}
     </select>
 
-    <!-- 연차 존재 여부 
-    <select id="existsLeaveHistory" resultType="int">
-        SELECT COUNT(*) FROM LEAVE_HISTORY
-        WHERE EMPLOYEE_NO = #{employeeNo}
-        AND TO_CHAR(YEAR, 'YYYY') = #{year}
-    </select>-->
-    
         <!-- 연차 존재 여부 확인 -->
     <select id="existsLeaveHistory" resultType="int">
         SELECT COUNT(*)
@@ -51,15 +44,19 @@
             
         )
     </insert>
-
-    <!-- 전체 사원 목록 (입사일 포함) -->
-    <select id="getAllEmployeesWithHireDate" resultType="VacationVO">
-        SELECT EMPLOYEE_NO, SUBER_NO, HIRE_DATE
-        FROM EMPLOYEES
-        WHERE RESIGNATION_STATUS = 'N'
-        AND HIRE_DATE IS NOT NULL
-        AND SUBER_NO = #{suberNo}
-    </select>
+    
+    <!-- 전체 회사 번호 조회 -->
+	<select id="getAllSuberNos" resultType="int">
+	    	SELECT DISTINCT SUBER_NO FROM EMPLOYEES
+	</select>
+	
+	<!-- 전체 사원 목록 조회 (입사일 + 퇴사 여부 포함) -->
+	<select id="getAllEmployeesWithHireDateAndStatus" resultType="VacationVO">
+		    SELECT EMPLOYEE_NO, SUBER_NO, HIRE_DATE, RESIGNATION_STATUS
+		    FROM EMPLOYEES
+		    WHERE HIRE_DATE IS NOT NULL
+		      AND SUBER_NO = #{suberNo}
+	</select>
     
     <!-- 시퀀스 (임시) -->
     <select id="getNextLeaveHistoryId" resultType="int">
@@ -72,29 +69,74 @@
    		FROM APRV_DOCUMENTS
 	</select>
 	
-	<!-- 기안문서번호 가져오기 (시퀀스 사용) 
-	<select id="getNextDraftNo" resultType="int">
-	    SELECT APRV_DOCUMENTS_SEQ.NEXTVAL FROM DUAL
-	</select>-->
 	
-	<!--  
-	<update id="updateLeaveHistory" parameterType="VacationVO">
-	    UPDATE LEAVE_HISTORY
-	    SET GRANTED_VACATION = #{grantedVacation},
-	        REMAINING_VACATION = #{remainingVacation},
-	        DRAFT_NO = #{draftNo}
-	    WHERE EMPLOYEE_NO = #{employeeNo}
-	      AND YEAR = #{year}
-	</update>-->
+	<!-- 연차 내역 업데이트 -->
+    <update id="updateLeaveHistory" parameterType="VacationVO">
+        UPDATE LEAVE_HISTORY
+        SET GRANTED_VACATION = #{grantedVacation},
+            REMAINING_VACATION = #{remainingVacation},
+            DRAFT_NO = #{draftNo}
+        WHERE EMPLOYEE_NO = #{employeeNo}
+          AND YEAR = #{year}
+    </update>
+    
+    <!-- 휴가유형 등록 -->
+	<insert id="insertVacationType" parameterType="VacationVO">
+	    INSERT INTO VACATION_TYPE (
+	        VACATION_TYPE_ID,
+	        VACATION_TYPE_NAME,
+	        VACATION_DATE,
+	        REQUIRED_PROOF_DOCUMENT_FILE,
+	        SUBER_NO
+	    ) VALUES (
+	        #{vacationTypeId},
+	        #{vacationTypeName},
+	        #{vacationDate},
+	        #{requiredProofDocumentFile},
+	        #{suberNo}
+	    )
+	</insert>
+
+	<!-- 휴가유형 ID 생성 (시퀀스 또는 MAX + 1 방식) -->
+		<select id="getNextVacationTypeId" resultType="int">
+		    SELECT NVL(MAX(VACATION_TYPE_ID), 0) + 1 
+		    FROM VACATION_TYPE
+		</select>
+		
+		
+		<!-- 전체 휴가유형 리스트 -->
+		<select id="selectVacationTypeList" resultType="VacationVO">
+		  SELECT VACATION_TYPE_ID,
+		         VACATION_TYPE_NAME,
+		         VACATION_DATE,
+		         REQUIRED_PROOF_DOCUMENT_FILE,
+		         SUBER_NO
+		  FROM VACATION_TYPE
+		  WHERE SUBER_NO = #{suberNo}
+		  ORDER BY VACATION_TYPE_ID
+		</select>
+		
+		<!-- 페이징용 조건절 -->
+		<sql id="vacaCriteria">
+		  WHERE SUBER_NO = #{suberNo}
+		</sql>
+		
+		<!-- 페이징 적용된 휴가유형 리스트 -->
+		<select id="selectVacationTypePaging" resultType="VacationVO">
+		  SELECT *
+		  FROM (
+		    SELECT v.*, ROW_NUMBER() OVER (ORDER BY VACATION_TYPE_ID) AS rn
+		    FROM VACATION_TYPE v
+		    <include refid="vacaCriteria"/>
+		  )
+		  WHERE rn BETWEEN #{offset} + 1 AND #{offset} + #{size}
+		</select>
+		
+		<!-- 전체 휴가유형 개수 -->
+		<select id="countVacationType" resultType="int">
+		  SELECT COUNT(*) FROM VACATION_TYPE
+		  <include refid="vacaCriteria"/>
+		</select>
+		
 	
-	<update id="updateLeaveHistory" parameterType="VacationVO">
-		    UPDATE LEAVE_HISTORY
-		    SET GRANTED_VACATION = 0,
-		        REMAINING_VACATION = 0,
-		        DRAFT_NO = #{draftNo}
-		    WHERE EMPLOYEE_NO = #{employeeNo}
-		      AND YEAR = #{year}
-	</update>
-
-
 </mapper>
