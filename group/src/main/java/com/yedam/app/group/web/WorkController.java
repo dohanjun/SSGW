@@ -1,98 +1,79 @@
 package com.yedam.app.group.web;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.yedam.app.group.service.AttendanceManagementVO;
 import com.yedam.app.group.service.AttendanceService;
+import com.yedam.app.group.service.AttendanceSummaryDTO;
 import com.yedam.app.group.service.EmpService;
 import com.yedam.app.group.service.EmpVO;
 
 import jakarta.servlet.http.HttpSession;
-import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
-/**
- * 사원의 근태관리
- * 
- * @author
- * @since
- * 
- *        <pre>
- * <pre>
- * 수정일자   수정자   수정내용
- * -------------------------
- * 
- * 
- * 
- * 
- * 
- *        </pre>
- */
-
-@Data
 @Controller
+@RequiredArgsConstructor
 public class WorkController {
 
-	/**
-	 * 사원의 근태관리 페이지로 이동
-	 * 
-	 * @param VO :
-	 * @return
-	 */
-	private final AttendanceService attendanceService;
-	private final EmpService empService;
+    private final AttendanceService attendanceService;
+    private final EmpService empService;
 
-	@GetMapping("/blank")
-	public String attendanceRecords(HttpSession session, Model model) {
-		EmpVO loggedInUser = empService.getLoggedInUserInfo();
+    // ✅ 개인 출결 조회 페이지
+    @GetMapping("/blank")
+    public String attendanceRecords(HttpSession session, Model model) {
+        EmpVO loggedInUser = empService.getLoggedInUserInfo();
 
-		if (loggedInUser != null) {
-			Integer employeeNo = loggedInUser.getEmployeeNo();
-			List<AttendanceManagementVO> attendanceList = attendanceService.selectInfo(employeeNo);
+        if (loggedInUser != null) {
+            Integer employeeNo = loggedInUser.getEmployeeNo();
+            List<AttendanceManagementVO> attendanceList = attendanceService.selectInfo(employeeNo);
 
-			// 점심시간 제외한 총 근무시간 계산
-			int totalWorkedHours = attendanceList.stream().mapToInt(att -> Math.max(0, att.getTotalWorkingHours() - 1)) // 점심시간
-																														// 1시간
-																														// 제외
-					.sum();
+            int totalWorkedHours = attendanceList.stream()
+                    .mapToInt(att -> Math.max(0, att.getTotalWorkingHours() - 1)) // 점심 제외
+                    .sum();
 
-			int normalWorkHoursPerDay = 9;
-			int workingDaysPerMonth = 22;
-			int monthlyTotalWorkHours = workingDaysPerMonth * normalWorkHoursPerDay;
-//            int overtimeHours = Math.max(0, totalWorkedHours - monthlyTotalWorkHours);
+            int normalWorkHoursPerDay = 9;
+            int workingDaysPerMonth = 22;
+            int monthlyTotalWorkHours = workingDaysPerMonth * normalWorkHoursPerDay;
 
-			// 🔽 초과근무시간 계산 (분 단위까지 포함)
-			int totalOvertimeMinutes = attendanceService.getTotalOvertimeMinutes(employeeNo);
-			// double overtimeHoursCalculated = Math.round(totalOvertimeMinutes / 60.0); //
+            int totalOvertimeMinutes = attendanceService.getTotalOvertimeMinutes(employeeNo);
 
-			model.addAttribute("attendanceList", attendanceList);
-			model.addAttribute("monthlyTotalWorkHours", monthlyTotalWorkHours);
-			model.addAttribute("totalWorkedHours", totalWorkedHours);
-//            model.addAttribute("overtimeHours", overtimeHours);
-			model.addAttribute("overtimeHoursCalculated", totalOvertimeMinutes);
+            model.addAttribute("attendanceList", attendanceList);
+            model.addAttribute("monthlyTotalWorkHours", monthlyTotalWorkHours);
+            model.addAttribute("totalWorkedHours", totalWorkedHours);
+            model.addAttribute("overtimeHoursCalculated", totalOvertimeMinutes);
+        }
 
-		}
-		return "group/workPage/blank";
-	}
+        return "group/workPage/blank";
+    }
 
-//	@GetMapping("/chartsManager")
-//	public String chartsManager(Model model) {
-//	    EmpVO loginUser = empService.getLoggedInUserInfo();
-//	    Integer departmentNo = loginUser.getDepartmentNo();
-//
-//	    List<EmpVO> departmentAttendanceList = attendanceService.getDepartmentAttendanceSummary(departmentNo);
-//
-//	    // ✅ Null 방지
-//	    if (departmentAttendanceList == null) {
-//	        departmentAttendanceList = new ArrayList<>();
-//	    }
-//
-//	    model.addAttribute("departmentAttendanceList", departmentAttendanceList);
-//	    return "group/workPage/chartsManager";
-//	}
+    // ✅ 차트 + 테이블 페이지
+    @GetMapping("/chartsManagerPage")
+    public String showChartsManagerPage() {
+        return "group/workPage/chartsManager";
+    }
 
+    // ✅ 차트용 JSON
+    @GetMapping("/chartsManager")
+    @ResponseBody
+    public List<AttendanceSummaryDTO> getChartData() {
+        EmpVO emp = empService.getLoggedInUserInfo();
+        if (emp == null || emp.getDepartmentNo() == null) {
+            return Collections.emptyList();
+        }
+        return attendanceService.getDepartmentAttendanceSummary(emp.getDepartmentNo());
+    }
+
+    // ✅ 특정 사원의 출퇴근 기록 조회 (그래프 클릭용)
+    @GetMapping("/employeeRecord/{empNo}")
+    @ResponseBody
+    public List<AttendanceManagementVO> getEmployeeRecords(@PathVariable int empNo) {
+        return attendanceService.selectInfo(empNo);
+    }
 }
