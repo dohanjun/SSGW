@@ -6,34 +6,36 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.yedam.app.group.service.AttendanceManagementVO;
-import com.yedam.app.group.service.EmpVO;
+import com.yedam.app.group.service.AttendanceSummaryDTO;
+import com.yedam.app.group.service.OvertimeVO;
 
 @Mapper
 public interface AttendanceMapper {
-    
-    // ✅ 모든 출결 데이터 조회
+
+    // ✅ 전체 출결
     List<AttendanceManagementVO> selectAll();
 
-    // ✅ 특정 사원의 출결 데이터 조회
-    List<AttendanceManagementVO> selectInfo(Integer employeeNo);
+    // ✅ 사원별 출결 조회
+    List<AttendanceManagementVO> selectInfo(@Param("employeeNo") int employeeNo);
 
-    // ✅ 초과 근무 시간 계산
-    Integer calculateTotalOvertime(@Param("employeeNo") Integer employeeNo);
+    // ✅ 출근/퇴근
+    int insertClockIn(AttendanceManagementVO vo);
+    int updateClockOut(AttendanceManagementVO vo);
 
-    // ✅ 총 근무시간 및 초과근무시간 조회
-    AttendanceManagementVO getAttendanceSummary(@Param("employeeNo") Integer employeeNo);
+    // ✅ 출근/퇴근 여부 체크
+    int countTodayClockIn(@Param("employeeNo") int employeeNo);
+    int countTodayClockOut(@Param("employeeNo") int employeeNo);
 
-    // ✅ 출근 등록
-    Integer insertClockIn(AttendanceManagementVO vo);
+    // ✅ 근무요약 (총 근무시간/초과근무)
+    AttendanceManagementVO getAttendanceSummary(@Param("employeeNo") int employeeNo);
+    int calculateTotalOvertime(@Param("employeeNo") int employeeNo);
 
-    // ✅ 퇴근 등록 (update)
-    Integer updateClockOut(AttendanceManagementVO vo);
+    // ✅ 초과근무 상세
+    OvertimeVO getOvertimeByWorkAttitudeId(@Param("workAttitudeId") int workAttitudeId);
 
-    // ✅ 오늘 출근 여부 확인
-    Integer countTodayClockIn(@Param("employeeNo") int employeeNo);
+    // ✅ 부서 전체 출퇴근 기록 (테이블용)
+    List<AttendanceManagementVO> selectDeptAttendance(@Param("deptNo") int deptNo);
 
-    // ✅ 오늘 퇴근 여부 확인
-    Integer countTodayClockOut(@Param("employeeNo") int employeeNo);
-    
-    List<EmpVO> getDepartmentAttendanceSummary(@Param("departmentNo") Integer departmentNo);
+    // ✅ 부서 요약 (차트용)
+    List<AttendanceSummaryDTO> getDepartmentAttendanceSummary(@Param("deptNo") int deptNo);
 }
