@@ -116,7 +116,11 @@
 .vacationtable {
 	width: 800px;
 	border-collapse: collapse;
-	margin-top: 10px;
+	margin: 5px auto;
+}
+
+.vacationdd {
+	text-align:center;	
 }
 
 .vacationtable th, td {
@@ -128,13 +132,13 @@
 .vacationtable th {
 	background-color: #ddd;
 	text-align: center;
+	width: 150px;
 }
 
 .vacationtitle {
 	font-size: 24px;
 	font-weight: bold;
 	text-align: center;
-	padding: 15px 0;
 }
 
 .vacationend {

@@ -5,24 +5,29 @@
 	layout:fragment="content">
 <head>
 <meta charset="UTF-8">
-<title>결재 상세 페이지</title>
+<title>결재 페이지</title>
 <link th:href="@{/css/approval.css}" rel="stylesheet">
 </head>
 <body>
 	<p>결재선</p>
-	<p th:text="'결재선 사이즈: ' + ${#lists.size(aprvroutes)}"></p>
-	<ul>
-		<li th:each="r : ${aprvroutes}"
-			th:text="'order:' + ${r.aprvOrder} + ', name:' + ${r.employeeName} + ', 직책:' + ${r.jobTitleName}">테스트</li>
-	</ul>
+	<input type="hidden" id="draftNo" th:value="${aprv.draftNo}">
+	<input type="hidden" id="employeeNo" th:value="${loggedInEmpNo}">
+	<input type="hidden" id="aprvOrder">
 	<table class="routes">
 		<tr>
 			<th><span th:each="r : ${aprvroutes}"
-				th:if="${r.aprvOrder eq '1'}" th:text="${r.jobTitleName}"></span></th>
+				th:if="${r.aprvOrder eq '1'}" th:data-aprvorder="${r.aprvOrder}"
+				th:data-empno="${r.employeeNo}" th:text="${r.jobTitleName}"></span>
+
+			</th>
 			<th><span th:each="r : ${aprvroutes}"
-				th:if="${r.aprvOrder eq '2'}" th:text="${r.jobTitleName}"></span></th>
+				th:if="${r.aprvOrder eq '2'}" th:data-aprvorder="${r.aprvOrder}"
+				th:data-empno="${r.employeeNo}" th:text="${r.jobTitleName}"></span>
+			</th>
 			<th><span th:each="r : ${aprvroutes}"
-				th:if="${r.aprvOrder eq '3'}" th:text="${r.jobTitleName}"></span></th>
+				th:if="${r.aprvOrder eq '3'}" th:data-aprvorder="${r.aprvOrder}"
+				th:data-empno="${r.employeeNo}" th:text="${r.jobTitleName}"></span>
+			</th>
 		</tr>
 		<tr>
 			<td>
@@ -66,12 +71,17 @@
 		</tr>
 	</table>
 
+
 	<h4>문서 제목 : [[${aprv.title}]]</h4>
 
 	<table border="1">
 		<tr>
 			<th>내용</th>
-			<td th:utext="${aprv.content}" style="padding: 10px;"></td>
+			<td style="padding: 10px;">
+				<div
+					style="pointer-events: none; user-select: text; background-color: #f9f9f9;"
+					th:utext="${aprv.content}"></div>
+			</td>
 		</tr>
 		<tr>
 			<th>상신일</th>
@@ -79,10 +89,14 @@
 				style="padding: 10px;"></td>
 		</tr>
 	</table>
-
+	<div th:if="${aprv.aprvStatus != '완료'}">
+		<button id="approvebtn">승인</button>
+		<button id="backbtn">반려</button>
+	</div>
 </body>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
+    // 도장등록 버튼
     document.querySelectorAll(".insert-stamp-btn").forEach(btn => {
         btn.addEventListener("click", function () {
             const draftNo = this.getAttribute("data-draftno");
@@ -105,7 +119,78 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch(err => console.error("에러 발생:", err));
         });
     });
+
+    // 승인 버튼
+    document.getElementById("approvebtn").addEventListener("click", function () {
+        const draftNo = document.getElementById("draftNo").value;
+        const employeeNo = document.getElementById("employeeNo").value;
+        const aprvOrder = document.getElementById("aprvOrder").value;
+
+        fetch('/aprv/approve', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ draftNo, employeeNo, aprvOrder })
+        })
+        .then(res => res.json())
+        .then(result => {
+            if (result.success) {
+                alert("승인 처리되었습니다!");
+                location.reload();
+            } else {
+                alert("승인 실패: " + result.message);
+            }
+        })
+        .catch(err => {
+            console.error("승인 중 오류 발생:", err);
+            alert("승인 처리 중 오류가 발생했습니다.");
+        });
+    });
+
+    // 반려 버튼
+    document.getElementById("backbtn").addEventListener("click", function () {
+        const draftNo = document.getElementById("draftNo").value;
+        const employeeNo = document.getElementById("employeeNo").value;
+
+        fetch('/aprv/reject', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ draftNo, employeeNo })
+        })
+        .then(res => res.json())
+        .then(result => {
+            if (result.success) {
+                alert("반려 처리되었습니다.");
+                location.reload();
+            } else {
+                alert("반려 실패: " + result.message);
+            }
+        })
+        .catch(err => {
+            console.error("반려 중 오류 발생:", err);
+            alert("반려 처리 중 오류가 발생했습니다.");
+        });
+    });
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    // 'data-aprvorder' 속성이 있는 모든 <span> 요소 선택
+    const aprvOrderElements = Array.from(document.querySelectorAll('[data-aprvorder]'));
+
+    // 로그인한 사용자의 employeeNo를 가져옵니다.
+    const loggedInEmpNo = document.getElementById("employeeNo").value;
+
+    // aprvOrderElements에서 로그인한 사용자의 employeeNo와 일치하는 요소 찾기
+    const aprvOrder = aprvOrderElements
+        .find(r => r.getAttribute('data-empno') === loggedInEmpNo);  // 데이터 속성에서 employeeNo를 찾아 해당 order 찾기
+
+    // 찾은 aprvOrder가 있으면 그 값을 가져와서 입력 필드에 넣기
+    if (aprvOrder) {
+        document.getElementById('aprvOrder').value = aprvOrder.getAttribute('data-aprvorder');
+    }
+});
+
+
+
 </script>
 
 </html>

@@ -65,5 +65,10 @@ public interface ApprovalMapper {
 	// 결재선 등록
 	public int insertAprvRoutes(AprvRoutesVO aprvRoutesVO);
 	
+	// aprv_order가 마지막인지 확인, 마지막이라면 status가 '진행'이 아닌 '완료'로 변경
+	public String findMaxAprvOrder(Integer draftNo);
+	
+	// 결재 staus 변경
+	public int updateAprvStatus(AprvRoutesVO aprvRoutesVO);
 
 }

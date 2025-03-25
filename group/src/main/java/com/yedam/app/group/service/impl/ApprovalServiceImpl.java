@@ -220,6 +220,36 @@ public class ApprovalServiceImpl implements ApprovalService {
 	    return result;
 	}
 
-	
+	@Override
+	public void processApproval(AprvRoutesVO routVO) {
+	    // aprv_order가 숫자로 처리되도록 변경
+	    String maxOrderStr = approvalMapper.findMaxAprvOrder(routVO.getDraftNo());
+	    
+	    // maxOrder 값이 빈 문자열인 경우에는 0으로 설정
+	    int maxOrder = (maxOrderStr == null || maxOrderStr.isEmpty()) ? 0 : Integer.parseInt(maxOrderStr);
+	    
+	    // currentOrder도 빈 문자열 체크 후 처리
+	    String currentOrderStr = routVO.getAprvOrder();
+	    int currentOrder = (currentOrderStr == null || currentOrderStr.isEmpty()) ? 0 : Integer.parseInt(currentOrderStr);
+	    
+	    // 상태 결정: currentOrder와 maxOrder 비교
+	    String status = (currentOrder == maxOrder) ? "완료" : "진행";
+	    routVO.setAprvStatus(status);
+
+	    // 상태 업데이트
+	    approvalMapper.updateAprvStatus(routVO);
+	}
+
+
+    @Override
+    public void rejectApproval(AprvRoutesVO routVO) {
+    	routVO.setAprvStatus("반려");
+        approvalMapper.updateAprvStatus(routVO);
+    }
+
+	@Override
+	public String getMaxAprvOrder(int draftNo) {
+	    return approvalMapper.findMaxAprvOrder(draftNo);
+	}
 	
 }
