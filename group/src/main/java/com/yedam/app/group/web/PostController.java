@@ -102,9 +102,10 @@ public class PostController {
 
         // 자료실 종류에 따라 리다이렉트
         return switch (repositoryType) {
-            case "전체" -> "redirect:/totalRepository";
-            case "부서" -> "redirect:/departmentRepository";
-            default -> "redirect:/individualRepository";
+            case "전체" -> "redirect:/totalRepository?page=1";
+            case "부서" -> "redirect:/departmentRepository?page=1";
+            case "개인" -> "redirect:/individualRepository?page=1";
+            default -> throw new IllegalArgumentException("올바르지 않은 repositoryType입니다: " + repositoryType);
         };
     }
     

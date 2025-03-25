@@ -17,7 +17,8 @@
 		<div id="content-wrapper" class="d-flex flex-column">
 			<div id="content">
 				<div class="container-fluid px-0">
-					<div class="card shadow mb-4" style="width: 100%; margin-top: 20px; margin-bottom: auto;">
+					<div class="card shadow mb-4"
+						style="width: 100%; margin-top: 20px; margin-bottom: auto;">
 						<div class="card-header py-3">
 							<h6 class="m-0 font-weight-bold text-primary">자료 정보</h6>
 						</div>
@@ -26,27 +27,37 @@
 								<tbody>
 									<tr>
 										<th>제목</th>
-										<td></td>
+										<td th:text="${post.title}">제목</td>
 										<th>작성자</th>
-										<td></td>
+										<td th:text="${post.writer}">작성자</td>
 									</tr>
 									<tr>
 										<th>등록일</th>
-										<td></td>
+										<td
+											th:text="${#dates.format(post.creationDate, 'yyyy-MM-dd')}">등록일</td>
 										<th>파일명</th>
-										<td></td>
+										<td
+											th:text="${post.fileCount > 1 ? post.fileName + ' 외 ' + (post.fileCount - 1) + '건' : post.fileName}">파일명</td>
 									</tr>
 									<tr>
-										<td colspan="4"><textarea class="content-area" readonly></textarea>
-										</td>
+										<td colspan="4"><textarea class="content-area" readonly
+												th:text="${post.content}"></textarea></td>
 									</tr>
 								</tbody>
 							</table>
-							<div class="mt-3 text-center">
-								<button class="btn btn-success">복원</button>
-								<button class="btn btn-danger">삭제</button>
-								<a href="/basket" class="btn btn-secondary">목록</a>
-							</div>
+							<form method="post">
+								<input type="hidden" name="writingIds"
+									th:value="${post.writingId}"> <input type="hidden"
+									name="repositoryType" th:value="${post.repositoryType}">
+
+								<div class="mt-3 text-center">
+									<button type="submit" class="btn btn-success"
+										formaction="/basket/restore">복원</button>
+									<button type="submit" class="btn btn-danger"
+										formaction="/basket/delete">삭제</button>
+									<a href="/basket" class="btn btn-secondary">목록</a>
+								</div>
+							</form>
 						</div>
 					</div>
 				</div>

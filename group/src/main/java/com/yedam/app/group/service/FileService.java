@@ -18,4 +18,8 @@ public interface FileService {
     void deleteFilesByWritingId(Long writingId);
     
     void deleteDownloadLogByWritingId(Long writingId);
+    
+    void backupFilesByWritingId(Long writingId);
+    
+    void restoreFilesByWritingId(Long writingId);
 }

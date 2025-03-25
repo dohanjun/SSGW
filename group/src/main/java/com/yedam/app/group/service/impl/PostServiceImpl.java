@@ -33,35 +33,9 @@ public class PostServiceImpl implements PostService {
         return postVO.getWritingId();
     }
     
-    // 전체 자료실 게시글 조회
-    @Override
-    public List<RepositoryPostVO> getTotalRepositoryPosts(int suberNo) {
-        Map<String, Integer> params = new HashMap<>();
-        params.put("suberNo", suberNo);
-        return postMapper.getTotalRepositoryPosts(params);
-    }
-
-    // 부서 자료실 게시글 조회
-    @Override
-    public List<RepositoryPostVO> getDepartmentRepositoryPosts(int suberNo, int departmentNo) {
-        Map<String, Integer> params = new HashMap<>();
-        params.put("suberNo", suberNo);
-        params.put("departmentNo", departmentNo);
-        return postMapper.getDepartmentRepositoryPosts(params);
-    }
-    
     @Override
     public RepositoryPostVO getPostDetail(Long writingId) {
         return postMapper.getPostDetail(writingId);
-    }
-
-    // 개인 자료실 게시글 조회
-    @Override
-    public List<RepositoryPostVO> getIndividualRepositoryPosts(int suberNo, int employeeNo) {
-        Map<String, Integer> params = new HashMap<>();
-        params.put("suberNo", suberNo);
-        params.put("employeeNo", employeeNo);
-        return postMapper.getIndividualRepositoryPosts(params);
     }
     
     @Override
@@ -101,6 +75,23 @@ public class PostServiceImpl implements PostService {
     }
     
     @Override
+    public List<RepositoryPostVO> getFixedPosts(int suberNo, String keyword) {
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("suberNo", suberNo);
+        paramMap.put("keyword", keyword);
+        return postMapper.selectFixedPosts(paramMap);
+    }
+    
+    @Override
+    public List<RepositoryPostVO> getDepartmentFixedPosts(int suberNo, int departmentNo, String keyword) {
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("suberNo", suberNo);
+        paramMap.put("departmentNo", departmentNo);
+        paramMap.put("keyword", keyword);
+        return postMapper.selectDepartmentFixedPosts(paramMap);
+    }
+    
+    @Override
     public void updatePost(RepositoryPostVO postVO) {
         postMapper.updatePost(postVO);
     }
@@ -108,5 +99,35 @@ public class PostServiceImpl implements PostService {
     @Override
     public void updateFixStatus(Long writingId, char fix) {
         postMapper.updateFixStatus(writingId, fix);
+    }
+    
+    @Override
+    public List<RepositoryPostVO> getTotalRepositoryPostsPaged(int suberNo, String keyword, int start, int end) {
+        return postMapper.selectTotalRepositoryPostsPaged(suberNo, keyword, start, end);
+    }
+
+    @Override
+    public int getTotalRepositoryPostCount(int suberNo, String keyword) {
+        return postMapper.countTotalRepositoryPosts(suberNo, keyword);
+    }
+    
+    @Override
+    public int getDepartmentRepositoryPostCount(int suberNo, int departmentNo, String keyword) {
+        return postMapper.getDepartmentRepositoryPostCount(suberNo, departmentNo, keyword);
+    }
+
+    @Override
+    public List<RepositoryPostVO> getDepartmentRepositoryPostsPaged(int suberNo, int departmentNo, String keyword, int offset, int limit) {
+        return postMapper.getDepartmentRepositoryPostsPaged(suberNo, departmentNo, keyword, offset, limit);
+    }
+
+    @Override
+    public int getIndividualRepositoryPostCount(int suberNo, int employeeNo, String keyword) {
+        return postMapper.getIndividualRepositoryPostCount(suberNo, employeeNo, keyword);
+    }
+
+    @Override
+    public List<RepositoryPostVO> getIndividualRepositoryPostsPaged(int suberNo, int employeeNo, String keyword, int offset, int limit) {
+        return postMapper.getIndividualRepositoryPostsPaged(suberNo, employeeNo, keyword, offset, limit);
     }
 }

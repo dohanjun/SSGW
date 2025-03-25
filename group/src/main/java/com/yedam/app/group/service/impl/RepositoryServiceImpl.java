@@ -1,5 +1,7 @@
 package com.yedam.app.group.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,4 +43,5 @@ public class RepositoryServiceImpl implements RepositoryService {
     public RepositoryPostVO getPostDetail(Long writingId) {
         return postMapper.getPostDetail(writingId);
     }
+    
 }
