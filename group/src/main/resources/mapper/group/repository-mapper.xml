@@ -2,10 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yedam.app.group.mapper.RepositoryMapper">
 
-	<select id="findTotalRepository" parameterType="int" resultType="com.yedam.app.group.service.RepositoryVO">
+	<select id="findTotalRepository" parameterType="int" resultType="RepositoryVO">
     	SELECT file_repository_id, suber_no, file_repository_type
-    	FROM repository
-    	WHERE suber_no = #{suberNo} AND file_repository_type = '전체'
+    	  FROM repository
+    	 WHERE suber_no = #{suberNo} 
+    	   AND file_repository_type = '전체'
 	</select>
 
 	<!-- 부서 자료실 (회사 번호 + 부서 번호로 조회) -->

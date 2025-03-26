@@ -12,116 +12,81 @@
 <title>부서 게시판</title>
 </head>
 <body>
-		<div class="card shadow mb-4" style="width: 100%; margin-top: 20px; margin-bottom: auto;">
-			<div class="card-header py-3">
-				<h6 class="m-0 font-weight-bold text-primary">부서 게시판</h6>
+	<!-- 부서 게시판 -->
+	<div class="card shadow mb-4">
+		<div class="card-header py-3">
+			<h6 class="m-0 font-weight-bold text-primary">부서 게시판</h6>
+		</div>
+		<div class="card-body">
+
+			<!-- 검색 폼 -->
+			<div class="position-relative" style="width: 350px; margin: 0 auto;">
+				<form th:action="@{/departmentBoard}" method="get"
+					class="position-relative mb-3" style="width: 300px;">
+					<input type="text" name="keyword" class="form-control pl-4"
+						placeholder="검색어 입력" th:value="${keyword}">
+					<button type="submit"
+						style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%); background: none; border: none;">
+						<i class="fas fa-search" style="color: #aaa;"></i>
+					</button>
+				</form>
 			</div>
-			<div class="card-body">
-				<div class="table-responsive">
-					<div class="position-relative" style="width: 350px; margin: 0 auto;">
-						<input type="text" class="form-control pl-4" placeholder="검색어 입력">
-						<i class="fas fa-search position-absolute"
-							style="top: 50%; left: 10px; transform: translateY(-50%); color: #aaa;"></i>
-					</div>
-					<div class="text-right mb-3">
-						<button class="btn btn-primary">동륵</button>
-					</div>
-					<table class="table table-bordered" id="dataTable" width="100%"
-						cellspacing="0">
-						<thead>
-							<tr>
-								<th>번호</th>
-								<th>제목</th>
-								<th>작성자</th>
-								<th>작성일</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>10</td>
-								<td>예제 프로젝트</td>
-								<td>윤지원</td>
-								<td>2025-03-11</td>
-							</tr>
-							<tr>
-								<td>9</td>
-								<td>예제 프로젝트</td>
-								<td>윤지원</td>
-								<td>2025-03-11</td>
-							</tr>
-							<tr>
-								<td>8</td>
-								<td>예제 프로젝트</td>
-								<td>윤지원</td>
-								<td>2025-03-11</td>
-							</tr>
-							<tr>
-								<td>7</td>
-								<td>예제 프로젝트</td>
-								<td>윤지원</td>
-								<td>2025-03-11</td>
-							</tr>
-							<tr>
-								<td>6</td>
-								<td>예제 프로젝트</td>
-								<td>윤지원</td>
-								<td>2025-03-11</td>
-							</tr>
-							<tr>
-								<td>5</td>
-								<td>예제 프로젝트</td>
-								<td>윤지원</td>
-								<td>2025-03-11</td>
-							</tr>
-							<tr>
-								<td>4</td>
-								<td>예제 프로젝트</td>
-								<td>윤지원</td>
-								<td>2025-03-11</td>
-							</tr>
-							<tr>
-								<td>3</td>
-								<td>예제 프로젝트</td>
-								<td>윤지원</td>
-								<td>2025-03-11</td>
-							</tr>
-							<tr>
-								<td>2</td>
-								<td>예제 프로젝트</td>
-								<td>윤지원</td>
-								<td>2025-03-11</td>
-							</tr>
-							<tr>
-								<td>1</td>
-								<td>예제 프로젝트</td>
-								<td>윤지원</td>
-								<td>2025-03-11</td>
-							</tr>
-						</tbody>
-					</table>
-					<div class="d-flex align-items-center justify-content-between mt-3">
-						<div class="flex-grow-1 d-flex justify-content-center">
-							<nav aria-label="페이지네이션">
-								<ul class="pagination mb-0">
-									<li class="page-item disabled">
-										<a class="page-link" href="#" tabindex="-1">
-											&laquo;
-										</a>
-									</li>
-									<li class="page-item active"><a class="page-link" href="#">1</a></li>
-									<li class="page-item"><a class="page-link" href="#">2</a></li>
-									<li class="page-item"><a class="page-link" href="#">3</a></li>
-									<li class="page-item">
-										<a class="page-link" href="#">
-											&raquo;
-										</a>
-									</li>
-								</ul>
-							</nav>
-						</div>
-					</div>
+
+			<!-- 등록 버튼 -->
+			<div class="text-right mb-3">
+				<a class="btn btn-primary" th:href="@{/insertBoard}">동륵</a>
+			</div>
+
+			<!-- 게시글 리스트 -->
+			<table class="table table-bordered" id="dataTable" width="100%"
+				cellspacing="0">
+				<thead>
+					<tr>
+						<th>번호</th>
+						<th>제목</th>
+						<th>작성자</th>
+						<th>작성일</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="post : ${postList}"
+						th:data-url="@{'/detailBoard/' + ${post.postId}}"
+						onclick="location.href=this.dataset.url" style="cursor: pointer;">
+						<td th:text="${post.postId}"></td>
+						<td th:text="${post.postTitle}"></td>
+						<td th:text="${post.writer}"></td>
+						<td th:text="${#dates.format(post.postDate, 'yyyy-MM-dd')}"></td>
+					</tr>
+				</tbody>
+			</table>
+
+			<!-- 페이징 -->
+			<div class="d-flex align-items-center justify-content-between mt-3">
+				<div class="flex-grow-1 d-flex justify-content-center">
+					<nav aria-label="페이지네이션">
+						<ul class="pagination mb-0">
+							<li class="page-item" th:classappend="${page == 1} ? 'disabled'">
+								<a class="page-link"
+								th:href="@{/departmentBoard(page=${page - 1}, keyword=${keyword})}">&laquo;</a>
+							</li>
+							<li class="page-item"
+								th:each="i : ${#numbers.sequence(1, totalPages)}"
+								th:classappend="${i == page} ? 'active'"><a
+								class="page-link"
+								th:href="@{/departmentBoard(page=${i}, keyword=${keyword})}"
+								th:text="${i}"></a></li>
+							<li class="page-item"
+								th:classappend="${page == totalPages} ? 'disabled'"><a
+								class="page-link"
+								th:href="@{/departmentBoard(page=${page + 1}, keyword=${keyword})}">&raquo;</a>
+							</li>
+						</ul>
+					</nav>
 				</div>
 			</div>
+
 		</div>
+	</div>
+
 </body>
 </html>

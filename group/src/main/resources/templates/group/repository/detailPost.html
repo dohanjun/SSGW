@@ -53,6 +53,14 @@
                 								</li>
                 								<li th:if="${#lists.isEmpty(fileList)}">첨부파일 없음</li>
             								</ul>
+            								<div th:if="${not #lists.isEmpty(fileList)}" class="mt-2">
+            									<form th:action="@{/download/all}" method="post">
+                									<input type="hidden" name="writingId" th:value="${post.writingId}" />
+                									<button type="submit" class="btn btn-info btn-sm">
+                    									<i class="fas fa-file-archive"></i> 전체 다운로드
+                									</button>
+            									</form>
+        									</div>
                                         </td>
                                     </tr>
                                     <tr>
@@ -64,7 +72,7 @@
                             </table>
                             <div class="text-center mb-3">
     							<div class="d-inline-flex gap-2">
-    							<a th:href="@{/totalRepository}" class="btn btn-secondary">
+    							<a href="javascript:history.back()" class="btn btn-secondary">
         							<i class="fas fa-arrow-left"></i>
     							</a>
     

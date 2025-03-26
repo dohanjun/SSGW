@@ -66,6 +66,7 @@ public class BasketController {
 
         int pageSize = 10;
         int pageGroup = 10;
+        page = Math.max(page, 1);
         int offset = (page - 1) * pageSize;
         int limit = pageSize;
 
@@ -108,7 +109,7 @@ public class BasketController {
             basketList = basketService.getOwnTotalBasketPostsPaged(keyword, loggedInUser.getEmployeeNo(), offset, limit);
         }
 
-        int totalPages = (int) Math.ceil((double) totalCount / pageSize);
+        int totalPages = Math.max(1, (int) Math.ceil((double) totalCount / pageSize));
 
         model.addAttribute("basketList", basketList);
         model.addAttribute("repositoryType", repositoryType);

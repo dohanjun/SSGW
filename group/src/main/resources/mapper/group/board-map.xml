@@ -1,8 +1,169 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="mapper.group.board-map">
+<mapper namespace="com.yedam.app.group.mapper.BoardMapper">
 
+	<select id="selectBoardsByType"
+		resultType="com.yedam.app.group.service.BoardVO">
+		SELECT *
+		FROM board
+		WHERE board_type = #{boardType}
+		AND suber_no =
+		#{suberNo}
+		<if test="departmentNo != null">
+			AND department_no = #{departmentNo}
+		</if>
+		<if test="employeeNo != null">
+			AND employee_no = #{employeeNo}
+		</if>
+	</select>
 
+	<select id="countNoticeBoardPosts" resultType="int">
+		SELECT COUNT(*)
+		FROM board_post p
+		JOIN board b ON p.board_id =
+		b.board_id
+		JOIN employees e ON p.employee_no = e.employee_no
+		WHERE
+		b.suber_no = #{suberNo}
+		AND b.board_type = '공지'
+		<if test="keyword != null and keyword != ''">
+			AND (
+			LOWER(p.post_title) LIKE '%' || LOWER(#{keyword}) ||
+			'%' OR
+			LOWER(p.post_content) LIKE '%' || LOWER(#{keyword}) || '%' OR
+			LOWER(e.employee_name) LIKE '%' || LOWER(#{keyword}) || '%'
+			)
+		</if>
+	</select>
 
+	<select id="selectNoticeBoardPostsPaged"
+		resultType="com.yedam.app.group.service.BoardVO">
+		SELECT * FROM (
+		SELECT
+		p.*,
+		e.employee_name AS writer,
+		ROW_NUMBER() OVER
+		(ORDER BY p.post_date DESC) AS rn
+		FROM board_post p
+		JOIN board b ON
+		p.board_id = b.board_id
+		JOIN employees e ON p.employee_no =
+		e.employee_no
+		WHERE b.suber_no = #{suberNo}
+		AND b.board_type = '공지'
+		<if test="keyword != null and keyword != ''">
+			AND (
+			LOWER(p.post_title) LIKE '%' || LOWER(#{keyword}) ||
+			'%' OR
+			LOWER(p.post_content) LIKE '%' || LOWER(#{keyword}) || '%' OR
+			LOWER(e.employee_name) LIKE '%' || LOWER(#{keyword}) || '%'
+			)
+		</if>
+		)
+		WHERE rn BETWEEN #{offset} + 1 AND #{offset} + #{limit}
+	</select>
 
+	<select id="countDepartmentBoardPosts" resultType="int">
+		SELECT COUNT(*)
+		FROM board_post p
+		JOIN board b ON p.board_id =
+		b.board_id
+		JOIN employees e ON p.employee_no = e.employee_no
+		WHERE
+		b.suber_no = #{suberNo}
+		AND b.board_type = '부서'
+		AND b.department_no =
+		#{departmentNo}
+		<if test="keyword != null and keyword != ''">
+			AND (
+			LOWER(p.post_title) LIKE '%' || LOWER(#{keyword}) ||
+			'%' OR
+			LOWER(p.post_content) LIKE '%' || LOWER(#{keyword}) || '%' OR
+			LOWER(e.employee_name) LIKE '%' || LOWER(#{keyword}) || '%'
+			)
+		</if>
+	</select>
+
+	<select id="selectDepartmentBoardPostsPaged"
+		resultType="com.yedam.app.group.service.BoardVO">
+		SELECT * FROM (
+		SELECT
+		p.*,
+		e.employee_name AS writer,
+		ROW_NUMBER() OVER
+		(ORDER BY p.post_date DESC) AS rn
+		FROM board_post p
+		JOIN board b ON
+		p.board_id = b.board_id
+		JOIN employees e ON p.employee_no =
+		e.employee_no
+		WHERE b.suber_no = #{suberNo}
+		AND b.board_type = '부서'
+		AND
+		b.department_no = #{departmentNo}
+		<if test="keyword != null and keyword != ''">
+			AND (
+			LOWER(p.post_title) LIKE '%' || LOWER(#{keyword}) ||
+			'%' OR
+			LOWER(p.post_content) LIKE '%' || LOWER(#{keyword}) || '%' OR
+			LOWER(e.employee_name) LIKE '%' || LOWER(#{keyword}) || '%'
+			)
+		</if>
+		)
+		WHERE rn BETWEEN #{offset} + 1 AND #{offset} + #{limit}
+	</select>
+
+	<!-- 자유게시판 전체 글 수 -->
+	<select id="countFreeBoardPosts" resultType="int">
+		SELECT COUNT(*)
+		FROM board_post p
+		JOIN board b ON p.board_id = b.board_id
+		JOIN employees e ON p.employee_no = e.employee_no
+		WHERE b.suber_no = #{suberNo}
+		AND b.board_type = '자유'
+		<if test="keyword != null and keyword != ''">
+			AND (
+			LOWER(p.post_title) LIKE '%' || LOWER(#{keyword}) || '%'
+			OR LOWER(p.post_content) LIKE '%' || LOWER(#{keyword}) || '%'
+			OR LOWER(e.employee_name) LIKE '%' || LOWER(#{keyword}) || '%'
+			)
+		</if>
+	</select>
+
+	<!-- 자유게시판 페이징 글 목록 -->
+	<select id="selectFreeBoardPostsPaged"
+		resultType="com.yedam.app.group.service.BoardVO">
+		SELECT * FROM (
+		SELECT
+		p.*,
+		e.employee_name AS writer,
+		ROW_NUMBER() OVER (ORDER BY p.post_date DESC) AS rn
+		FROM board_post p
+		JOIN board b ON p.board_id = b.board_id
+		JOIN employees e ON p.employee_no = e.employee_no
+		WHERE b.suber_no = #{suberNo}
+		AND b.board_type = '자유'
+		<if test="keyword != null and keyword != ''">
+			AND (
+			LOWER(p.post_title) LIKE '%' || LOWER(#{keyword}) || '%'
+			OR LOWER(p.post_content) LIKE '%' || LOWER(#{keyword}) || '%'
+			OR LOWER(e.employee_name) LIKE '%' || LOWER(#{keyword}) || '%'
+			)
+		</if>
+		)
+		WHERE rn BETWEEN #{offset} + 1 AND #{offset} + #{limit}
+	</select>
+
+	<insert id="insertBoardPost" parameterType="com.yedam.app.group.service.BoardPostVO">
+    <selectKey keyProperty="postId" resultType="int" order="BEFORE">
+        SELECT board_post_seq.NEXTVAL FROM dual
+    </selectKey>
+    INSERT INTO board_post (
+        post_id, board_id, employee_no, post_title, post_content, post_date,
+        fixed, faq, location, read
+    ) VALUES (
+        #{postId}, #{boardId}, #{employeeNo}, #{postTitle}, #{postContent}, #{postDate},
+        #{fixed}, #{faq}, #{location}, #{read}
+    )
+	</insert>
 </mapper>

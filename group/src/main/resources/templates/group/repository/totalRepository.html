@@ -33,12 +33,12 @@
 				</form>
 			</div>
 
-			<!-- ✅ 게시글 리스트 + 휴지통 form (POST) -->
+			<!-- 게시글 리스트 + 휴지통 form (POST) -->
 			<form id="moveForm" th:action="@{/basket/moveToBasket}" method="post">
 				<input type="hidden" name="repositoryType" value="전체" />
 
 				<div class="text-right mb-3">
-					<a class="btn btn-primary" th:href='@{/repositoryInsert}'>동륵</a>
+					<a class="btn btn-primary" href='/repositoryInsert?repositoryType=전체'>동륵</a>
 				</div>
 
 				<table class="table table-bordered" id="dataTable" width="100%"

@@ -176,5 +176,14 @@
       AND PARENT_COMMENT_ID IS NULL
       AND POST_TITLE LIKE '%' || #{keyword} || '%'
   </select>
-
+	
+  <select id="getBoardIdByType" resultType="int">
+    SELECT board_id
+    FROM board
+    WHERE board_type = #{type}
+      AND suber_no = #{suberNo}
+      <if test="departmentNo != null">
+        AND department_no = #{departmentNo}
+      </if>
+  </select>
 </mapper>

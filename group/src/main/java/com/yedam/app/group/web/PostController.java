@@ -2,7 +2,6 @@ package com.yedam.app.group.web;
 
 import java.util.Date;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,13 +17,14 @@ import com.yedam.app.group.service.PostService;
 import com.yedam.app.group.service.RepositoryPostVO;
 import com.yedam.app.group.service.RepositoryVO;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @Controller
 public class PostController {
 	private final PostService postService;
     private final FileService fileService;
     private final EmpService empService;
 
-    @Autowired
     public PostController(PostService postService, FileService fileService, EmpService empService) {
         this.postService = postService;
         this.fileService = fileService;
@@ -33,16 +33,12 @@ public class PostController {
 
     // 자료글 등록 폼 (GET)
     @GetMapping("/repositoryInsert")
-    public String repositoryInsert(Model model) {
+    public String repositoryInsert(@RequestParam("repositoryType") String repositoryType, Model model) {
         EmpVO loggedInUser = empService.getLoggedInUserInfo();
-
-        if (loggedInUser == null) {
-            throw new IllegalStateException("로그인한 사용자 정보를 찾을 수 없습니다.");
-        }
 
         model.addAttribute("writer", loggedInUser.getEmployeeName()); // 로그인한 사용자 이름
         model.addAttribute("employeeNo", loggedInUser.getEmployeeNo()); // 로그인한 사용자 사원번호
-
+        model.addAttribute("repositoryType", repositoryType);
         return "group/repository/repositoryInsert";
     }
 
@@ -50,20 +46,13 @@ public class PostController {
     @PostMapping("/insertPost")
     public String insertPost(@ModelAttribute RepositoryPostVO postVO,
     						 @RequestParam("repositoryType") String repositoryType,
-                             @RequestParam(value = "files", required = false) MultipartFile[] files) {
+                             @RequestParam(value = "files", required = false) MultipartFile[] files,
+                             HttpServletRequest request) {
     	EmpVO loggedInUser = empService.getLoggedInUserInfo();
-
-        if (loggedInUser == null) {
-            throw new IllegalStateException("로그인한 사용자 정보를 찾을 수 없습니다.");
-        }
 
         // 작성일자 기본값 설정
         if (postVO.getCreationDate() == null) {
             postVO.setCreationDate(new Date());
-        }
-
-        if (postVO.getContent() == null || postVO.getContent().trim().isEmpty()) {
-            throw new IllegalArgumentException("content 값이 비어 있습니다.");
         }
 
         if (files != null && files.length > 0) {
@@ -83,10 +72,6 @@ public class PostController {
             default -> throw new IllegalArgumentException("올바르지 않은 repositoryType입니다: " + repositoryType);
         };
 
-        if (repository == null) {
-            throw new IllegalStateException("해당 사용자의 자료실을 찾을 수 없습니다.");
-        }
-
         postVO.setEmployeeNo(loggedInUser.getEmployeeNo());
         postVO.setFileRepositoryId(repository.getFileRepositoryId());
 
@@ -100,6 +85,8 @@ public class PostController {
             }
         }
 
+       // String ref = request.getHeader("referer");
+       // System.out.println("ref==========="+ref);
         // 자료실 종류에 따라 리다이렉트
         return switch (repositoryType) {
             case "전체" -> "redirect:/totalRepository?page=1";
@@ -126,11 +113,12 @@ public class PostController {
         // 기존 파일 삭제 전 다운로드 로그 먼저 삭제!
         fileService.deleteDownloadLogByWritingId(postVO.getWritingId());
 
-        // 기존 파일 삭제
-        fileService.deleteFilesByWritingId(postVO.getWritingId());
-
         // 새 파일 저장
         if (files != null && files.length > 0) {
+        	
+        	// 기존 파일 삭제
+            fileService.deleteFilesByWritingId(postVO.getWritingId());
+            
             for (MultipartFile file : files) {
                 if (!file.isEmpty()) {
                     fileService.insertFile(postVO.getWritingId(), file);
