@@ -2,6 +2,7 @@ package com.yedam.app.group.service.impl;
 
 import java.io.File;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -53,5 +54,15 @@ public class AprvFileServiceImpl implements AprvFileService {
             }
         }
     }
+
+	@Override
+	public List<AprvFileVO> findFilesByDraftNo(int draftNo) {
+		return aprvFileMapper.selectFilesByDraftNo(draftNo);
+	}
+	
+	@Override
+	public AprvFileVO findFileById(int fileId) {
+	    return aprvFileMapper.selectFileById(fileId);
+	}
 
 }

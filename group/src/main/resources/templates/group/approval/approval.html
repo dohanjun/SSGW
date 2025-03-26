@@ -9,90 +9,116 @@
 <link th:href="@{/css/approval.css}" rel="stylesheet">
 </head>
 <body>
-	<p>결재선</p>
-	<input type="hidden" id="draftNo" th:value="${aprv.draftNo}">
-	<input type="hidden" id="employeeNo" th:value="${loggedInEmpNo}">
-	<input type="hidden" id="aprvOrder">
-	<table class="routes">
-		<tr>
-			<th><span th:each="r : ${aprvroutes}"
-				th:if="${r.aprvOrder eq '1'}" th:data-aprvorder="${r.aprvOrder}"
-				th:data-empno="${r.employeeNo}" th:text="${r.jobTitleName}"></span>
+	<div class="container mt-5">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">결재 상세</h6>
+        </div>
 
-			</th>
-			<th><span th:each="r : ${aprvroutes}"
-				th:if="${r.aprvOrder eq '2'}" th:data-aprvorder="${r.aprvOrder}"
-				th:data-empno="${r.employeeNo}" th:text="${r.jobTitleName}"></span>
-			</th>
-			<th><span th:each="r : ${aprvroutes}"
-				th:if="${r.aprvOrder eq '3'}" th:data-aprvorder="${r.aprvOrder}"
-				th:data-empno="${r.employeeNo}" th:text="${r.jobTitleName}"></span>
-			</th>
-		</tr>
-		<tr>
-			<td>
-				<div th:each="r : ${aprvroutes}" th:if="${r.aprvOrder eq '1'}">
-					<button
-						th:if="${r.employeeNo.toString() eq loggedInEmpNo.toString() and r.stampId == null}"
-						th:data-draftno="${r.draftNo}" th:data-empno="${r.employeeNo}"
-						class="btn btn-sm btn-primary insert-stamp-btn">도장등록</button>
-					<img th:if="${r.stampImgPath != null and r.stampId != null}"
-						th:src="@{${r.stampImgPath}}" width="50">
-				</div>
-			</td>
-			<td>
-				<div th:each="r : ${aprvroutes}" th:if="${r.aprvOrder eq '2'}">
-					<button
-						th:if="${r.employeeNo.toString() eq loggedInEmpNo.toString() and r.stampId == null}"
-						th:data-draftno="${r.draftNo}" th:data-empno="${r.employeeNo}"
-						class="btn btn-sm btn-primary insert-stamp-btn">도장등록</button>
-					<img th:if="${r.stampImgPath != null and r.stampId != null}"
-						th:src="@{${r.stampImgPath}}" width="50">
-				</div>
-			</td>
-			<td>
-				<div th:each="r : ${aprvroutes}" th:if="${r.aprvOrder eq '3'}">
-					<button
-						th:if="${r.employeeNo.toString() eq loggedInEmpNo.toString() and r.stampId == null}"
-						th:data-draftno="${r.draftNo}" th:data-empno="${r.employeeNo}"
-						class="btn btn-sm btn-primary insert-stamp-btn">도장등록</button>
-					<img th:if="${r.stampImgPath != null and r.stampId != null}"
-						th:src="@{${r.stampImgPath}}" width="50">
-				</div>
-			</td>
-		</tr>
-		<tr>
-			<td><span th:each="r : ${aprvroutes}"
-				th:if="${r.aprvOrder eq '1'}" th:text="${r.employeeName}"></span></td>
-			<td><span th:each="r : ${aprvroutes}"
-				th:if="${r.aprvOrder eq '2'}" th:text="${r.employeeName}"></span></td>
-			<td><span th:each="r : ${aprvroutes}"
-				th:if="${r.aprvOrder eq '3'}" th:text="${r.employeeName}"></span></td>
-		</tr>
-	</table>
+        <div class="card-body">
 
+            <!-- 결재선 -->
+            <h5 class="mb-3">결재선</h5>
 
-	<h4>문서 제목 : [[${aprv.title}]]</h4>
+<!-- Hidden 값 유지 -->
+<input type="hidden" id="draftNo" th:value="${aprv.draftNo}">
+<input type="hidden" id="employeeNo" th:value="${loggedInEmpNo}">
+<input type="hidden" id="aprvOrder">
 
-	<table border="1">
-		<tr>
-			<th>내용</th>
-			<td style="padding: 10px;">
-				<div
-					style="pointer-events: none; user-select: text; background-color: #f9f9f9;"
-					th:utext="${aprv.content}"></div>
-			</td>
-		</tr>
-		<tr>
-			<th>상신일</th>
-			<td th:text="${#dates.format(aprv.draftDate, 'yyyy-MM-dd')}"
-				style="padding: 10px;"></td>
-		</tr>
-	</table>
-	<div th:if="${aprv.aprvStatus != '완료'}">
-		<button id="approvebtn">승인</button>
-		<button id="backbtn">반려</button>
-	</div>
+<!-- 결재선 테이블 -->
+<table class="table table-bordered text-center" style="table-layout: fixed; width: 100%;">
+    <thead class="thead-light">
+        <tr>
+            <th th:each="r : ${aprvroutes}" th:if="${r.aprvOrder eq '1'}" th:data-aprvorder="${r.aprvOrder}"
+                th:data-empno="${r.employeeNo}" th:text="${r.jobTitleName}">1차</th>
+            <th th:each="r : ${aprvroutes}" th:if="${r.aprvOrder eq '2'}" th:data-aprvorder="${r.aprvOrder}"
+                th:data-empno="${r.employeeNo}" th:text="${r.jobTitleName}">2차</th>
+            <th th:each="r : ${aprvroutes}" th:if="${r.aprvOrder eq '3'}" th:data-aprvorder="${r.aprvOrder}"
+                th:data-empno="${r.employeeNo}" th:text="${r.jobTitleName}">3차</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td style="height: 150px;">
+                <div th:each="r : ${aprvroutes}" th:if="${r.aprvOrder eq '1'}">
+                    <button th:if="${r.employeeNo.toString() eq loggedInEmpNo.toString() and r.stampId == null}"
+                            th:data-draftno="${r.draftNo}" th:data-empno="${r.employeeNo}"
+                            class="btn btn-sm btn-outline-primary insert-stamp-btn">도장등록</button>
+                    <img th:if="${r.stampImgPath != null and r.stampId != null}"
+                         th:src="@{${r.stampImgPath}}" width="150" height="150" class="d-block mx-auto">
+                </div>
+            </td>
+            <td style="height: 150px;">
+                <div th:each="r : ${aprvroutes}" th:if="${r.aprvOrder eq '2'}">
+                    <button th:if="${r.employeeNo.toString() eq loggedInEmpNo.toString() and r.stampId == null}"
+                            th:data-draftno="${r.draftNo}" th:data-empno="${r.employeeNo}"
+                            class="btn btn-sm btn-outline-primary insert-stamp-btn">도장등록</button>
+                    <img th:if="${r.stampImgPath != null and r.stampId != null}"
+                         th:src="@{${r.stampImgPath}}" width="150" height="150" class="d-block mx-auto">
+                </div>
+            </td>
+            <td style="height: 150px;">
+                <div th:each="r : ${aprvroutes}" th:if="${r.aprvOrder eq '3'}">
+                    <button th:if="${r.employeeNo.toString() eq loggedInEmpNo.toString() and r.stampId == null}"
+                            th:data-draftno="${r.draftNo}" th:data-empno="${r.employeeNo}"
+                            class="btn btn-sm btn-outline-primary insert-stamp-btn">도장등록</button>
+                    <img th:if="${r.stampImgPath != null and r.stampId != null}"
+                         th:src="@{${r.stampImgPath}}" width="150" height="150" class="d-block mx-auto">
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span th:each="r : ${aprvroutes}" th:if="${r.aprvOrder eq '1'}" th:text="${r.employeeName}"></span>
+            </td>
+            <td>
+                <span th:each="r : ${aprvroutes}" th:if="${r.aprvOrder eq '2'}" th:text="${r.employeeName}"></span>
+            </td>
+            <td>
+                <span th:each="r : ${aprvroutes}" th:if="${r.aprvOrder eq '3'}" th:text="${r.employeeName}"></span>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+            <!-- 문서 정보 -->
+            <h5 class="mt-4">기안문 정보</h5>
+            <table class="table table-bordered">
+                <tr>
+                    <th style="width: 150px;">제목</th>
+                    <td th:text="${aprv.title}"></td>
+                </tr>
+                <tr>
+                    <th>내용</th>
+                    <td>
+                        <div class="p-3" style="background-color: #f8f9fc;"
+                             th:utext="${aprv.content}"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <th>상신일</th>
+                    <td th:text="${#dates.format(aprv.draftDate, 'yyyy-MM-dd')}"></td>
+                </tr>
+            </table>
+
+            <!-- 첨부파일 -->
+            <h5 class="mt-4">첨부파일</h5>
+            <ul class="list-group mb-4">
+                <li class="list-group-item" th:each="f : ${files}">
+                    <a th:href="@{/aprv/file/download/{id}(id=${f.fileId})}" th:text="${f.fileName}"></a>
+                </li>
+            </ul>
+
+            <!-- 승인/반려 버튼 -->
+            <div class="text-right" th:if="${aprv.aprvStatus != '완료'}">
+                <button id="approvebtn" class="btn btn-success">승인</button>
+                <button id="backbtn" class="btn btn-danger">반려</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 </body>
 <script>
 document.addEventListener("DOMContentLoaded", function () {

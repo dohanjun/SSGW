@@ -18,7 +18,7 @@
 			<div class="card-header py-3">
 				<!-- 검색부분 -->
 				<form th:action="@{/aprv/list}" method="GET">
-					<input type="hidden" name="aprvStatus" th:value="${aprvStatus}">
+					<input type="hidden" name="aprvStatus" value="완료">
 					<p>
 						기안자 <input type="text" name="employeeName"> 문서제목 <input
 							type="text" name="title"> 상신일 <input type="date"

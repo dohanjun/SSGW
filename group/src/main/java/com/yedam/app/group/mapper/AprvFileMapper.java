@@ -13,5 +13,6 @@ public interface AprvFileMapper {
 	public List<AprvFileVO> selectFilesByDraftNo(int draftNo);
 	
 	//
-	public void deleteFilesByDraftNo(int draftNo);
+	public AprvFileVO selectFileById(int fileId);
+	
 }
