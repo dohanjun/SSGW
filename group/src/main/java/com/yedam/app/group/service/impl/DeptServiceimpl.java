@@ -57,5 +57,10 @@ public class DeptServiceimpl implements DeptService{
 	    return deptList;
     }
 
+    @Override
+    public int insertDepartment(DeptVO deptVO) {
+        return deptMapper.insertDepartment(deptVO);
+    }
+
 
 }

@@ -176,5 +176,8 @@
       AND PARENT_COMMENT_ID IS NULL
       AND POST_TITLE LIKE '%' || #{keyword} || '%'
   </select>
-
+  
+  <delete id="deleteAllPost" parameterType="int">
+    DELETE FROM board_post WHERE post_id = #{postId} or PARENT_COMMENT_ID = #{postId}
+  </delete>
 </mapper>

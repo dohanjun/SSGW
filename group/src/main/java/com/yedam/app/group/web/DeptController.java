@@ -2,11 +2,13 @@ package com.yedam.app.group.web;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.yedam.app.group.mapper.DeptMapper;
+import com.yedam.app.group.service.DeptService;
 import com.yedam.app.group.service.DeptVO;
 import com.yedam.app.group.service.EmpService;
 import com.yedam.app.group.service.EmpVO;
@@ -14,6 +16,9 @@ import com.yedam.app.group.service.RankVO;
 import com.yedam.app.group.service.RightsVO;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 
 /** 
@@ -34,7 +39,7 @@ public class DeptController {
 	
     private final DeptMapper deptMapper;
     private final EmpService empService;
-    
+    private final DeptService deptService;
     
 
     // 부서 목록 조회 API
@@ -74,5 +79,13 @@ public class DeptController {
     	
         return deptMapper.getOrgChart(deptVO);
     }
-
+    
+    @PostMapping("/saveDepartMent")
+    public ResponseEntity<Integer> saveDept(@RequestBody DeptVO deptVO) {
+    	System.out.println("Controller 진입");
+    	System.out.println(deptVO);
+        deptService.insertDepartment(deptVO);
+        System.out.println("삽입 후 부서번호: " + deptVO.getDepartmentNo());
+        return ResponseEntity.ok(deptVO.getDepartmentNo());
+    }
 }

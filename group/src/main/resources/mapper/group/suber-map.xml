@@ -8,7 +8,10 @@
 			SELECT NVL(MAX(suber_no), 0) + 1 FROM SUBER
 		</selectKey>
 		INSERT INTO SUBER(
-		suber_no, sub_uid, sub_id, sub_pw, sub_name, sub_email, sub_bnis_no,
+		suber_no, 
+		sub_uid, 
+		sub_id, 
+		sub_pw, sub_name, sub_email, sub_bnis_no,
 		max_count, max_size, company_name, first_ip, domain,max_up_size
 		) VALUES (
 		#{suberNo}, #{subUid}, #{subId}, #{subPw}, #{subName}, #{subEmail}, #{subBnisNo},
@@ -17,8 +20,7 @@
 		)
 	</insert>
 
-	<select id="selectAllSubers"
-		resultType="com.yedam.app.group.service.SubscriptionSummaryVO">
+	<select id="selectAllSubers"	resultType="SubscriptionSummaryVO">
 	  <![CDATA[
 	    SELECT 
 	      s.suber_no AS suberNo,
@@ -102,5 +104,9 @@ ORDER BY module_name
     SET sub_pw = #{subPw}
     WHERE suber_no = #{suberNo}
 </update>
-	
+<insert id="insertTempIp">
+    UPDATE employees
+    SET temp_ip = #{tempIp}
+    WHERE employee_id = #{employeeId}
+</insert>
 </mapper>
