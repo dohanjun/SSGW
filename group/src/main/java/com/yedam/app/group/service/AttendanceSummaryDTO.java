@@ -6,11 +6,12 @@ import lombok.Data;
 
 @Data
 public class AttendanceSummaryDTO {
-    private Integer employeeNo;         // 사원번호
-    private String employeeName;    // 사원이름
-    private String departmentName;  // 부서명
-    private double totalWorkingHours;  // 총 근무시간
-    private double overtimeHours; 
+	private Integer employeeNo;
+	private String employeeName;
+	private String departmentName;
+	private double totalWorkingHours;
+	private double overtimeHours;
+	private Integer workDayCount;
     // 🔸 Getters & Setters
     public String getDepartmentName() {
         return departmentName;

@@ -1,3 +1,4 @@
+// ✅ AttendanceServiceImpl.java
 package com.yedam.app.group.service.impl;
 
 import java.util.List;
@@ -81,12 +82,18 @@ public class AttendanceServiceImpl implements AttendanceService {
     // ✅ 부서 출퇴근 상세 리스트 조회 (테이블용)
     @Override
     public List<AttendanceManagementVO> selectDeptAttendance(int departmentNo) {
-        return attendanceMapper.selectDeptAttendance(departmentNo); // 🔄 수정됨
+        return attendanceMapper.selectDeptAttendance(departmentNo);
     }
 
     // ✅ 특정 출결의 초과근무 상세 데이터 조회
     @Override
     public OvertimeVO getOvertimeByWorkAttitudeId(int workAttitudeId) {
         return attendanceMapper.getOvertimeByWorkAttitudeId(workAttitudeId);
+    }
+
+    // ✅ 오늘 부서 출근 리스트
+    @Override
+    public List<AttendanceManagementVO> getTodayAttendanceByDept(int deptNo) {
+        return attendanceMapper.selectTodayAttendanceByDept(deptNo);
     }
 }

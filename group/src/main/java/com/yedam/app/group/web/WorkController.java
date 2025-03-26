@@ -1,3 +1,4 @@
+// ✅ WorkController.java
 package com.yedam.app.group.web;
 
 import java.util.Collections;
@@ -53,13 +54,24 @@ public class WorkController {
         return "group/workPage/blank";
     }
 
-    // ✅ 차트 + 테이블 페이지
+    // ✅ 관리자 차트 페이지 (HTML)
     @GetMapping("/chartsManagerPage")
     public String showChartsManagerPage() {
         return "group/workPage/chartsManager";
     }
 
-    // ✅ 차트용 JSON
+    // ✅ 오늘 부서원 출퇴근 현황 (테이블용)
+    @GetMapping("/todayAttendance")
+    @ResponseBody
+    public List<AttendanceManagementVO> getTodayDeptAttendance() {
+        EmpVO emp = empService.getLoggedInUserInfo();
+        if (emp == null || emp.getDepartmentNo() == null) {
+            return Collections.emptyList();
+        }
+        return attendanceService.getTodayAttendanceByDept(emp.getDepartmentNo());
+    }
+
+    // ✅ 부서 출결 요약 차트 데이터
     @GetMapping("/chartsManager")
     @ResponseBody
     public List<AttendanceSummaryDTO> getChartData() {
@@ -70,10 +82,10 @@ public class WorkController {
         return attendanceService.getDepartmentAttendanceSummary(emp.getDepartmentNo());
     }
 
-    // ✅ 특정 사원의 출퇴근 기록 조회 (그래프 클릭용)
-    @GetMapping("/employeeRecord/{empNo}")
+    // ✅ 차트에서 클릭한 사원의 출결 리스트 조회
+    @GetMapping("/employeeRecord/{employeeNo}")
     @ResponseBody
-    public List<AttendanceManagementVO> getEmployeeRecords(@PathVariable int empNo) {
-        return attendanceService.selectInfo(empNo);
+    public List<AttendanceManagementVO> getEmployeeRecord(@PathVariable("employeeNo") int employeeNo) {
+        return attendanceService.selectInfo(employeeNo);
     }
-}
+} 

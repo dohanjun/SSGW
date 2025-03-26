@@ -4,7 +4,7 @@
 
 <mapper namespace="com.yedam.app.group.mapper.AttendanceMapper">
 
-  <!-- ✅ 공통 ResultMap 정의 -->
+  <!-- ✅ 공통 ResultMap -->
   <resultMap id="AttendanceResultMap" type="com.yedam.app.group.service.AttendanceManagementVO">
     <id property="workAttitudeId" column="work_attitude_id"/>
     <result property="attendanceDate" column="attendance_date"/>
@@ -15,7 +15,7 @@
     <result property="totalWorkingHours" column="total_working_hours"/>
     <result property="departmentName" column="department_name"/>
     <result property="employeeNo" column="employee_no"/>
-    <result property="employeeName" column="employee_name"/> <!-- ✅ 추가 -->
+    <result property="employeeName" column="employee_name"/>
     <result property="totalOvertimeTime" column="overtime_time"/>
   </resultMap>
 
@@ -40,7 +40,7 @@
     AND clock_out_time IS NULL
   </update>
 
-  <!-- ✅ 출근 여부 -->
+  <!-- ✅ 오늘 출근/퇴근 여부 -->
   <select id="countTodayClockIn" parameterType="int" resultType="int">
     SELECT COUNT(*) FROM attendance_management
     WHERE employee_no = #{employeeNo}
@@ -48,33 +48,11 @@
     AND clock_in_time IS NOT NULL
   </select>
 
-  <!-- ✅ 퇴근 여부 -->
   <select id="countTodayClockOut" parameterType="int" resultType="int">
     SELECT COUNT(*) FROM attendance_management
     WHERE employee_no = #{employeeNo}
     AND TRUNC(attendance_date) = TRUNC(SYSDATE)
     AND clock_out_time IS NOT NULL
-  </select>
-
-  <!-- ✅ 전체 출결 조회 -->
-  <select id="selectAll" resultMap="AttendanceResultMap">
-    SELECT
-      am.work_attitude_id,
-      am.attendance_date,
-      am.clock_in_time,
-      am.clock_out_time,
-      am.work_attitude_type,
-      am.reason,
-      am.total_working_hours,
-      d.department_name,
-      e.employee_no,
-      e.employee_name,
-      o.overtime_time
-    FROM attendance_management am
-    JOIN employees e ON am.employee_no = e.employee_no
-    JOIN department d ON e.department_no = d.department_no
-    LEFT JOIN overtime o ON am.work_attitude_id = o.work_attitude_id
-    ORDER BY am.attendance_date DESC
   </select>
 
   <!-- ✅ 사원 출결 조회 -->
@@ -99,7 +77,7 @@
     ORDER BY am.attendance_date DESC
   </select>
 
-  <!-- ✅ 특정 출결의 초과근무 -->
+  <!-- ✅ 초과근무 상세 & 총합 -->
   <select id="getOvertimeByWorkAttitudeId" parameterType="int"
           resultType="com.yedam.app.group.service.OvertimeVO">
     SELECT overtime_time, overtime_date, overtime_type,
@@ -109,42 +87,34 @@
     ORDER BY overtime_date DESC
   </select>
 
-  <!-- ✅ 사원의 근무 요약 -->
-  <select id="getAttendanceSummary" parameterType="int" resultMap="AttendanceResultMap">
-    SELECT am.employee_no, am.total_working_hours,
-           COALESCE(SUM(o.overtime_time), 0) AS overtime_time
-    FROM attendance_management am
-    LEFT JOIN overtime o ON am.work_attitude_id = o.work_attitude_id
-    WHERE am.employee_no = #{employeeNo}
-    GROUP BY am.employee_no, am.total_working_hours
-  </select>
-
-  <!-- ✅ 초과근무 총합 -->
   <select id="calculateTotalOvertime" parameterType="int" resultType="int">
-    SELECT COALESCE(SUM(o.overtime_time), 0)
+    SELECT COALESCE(SUM(overtime_time), 0)
     FROM overtime o
     INNER JOIN attendance_management am ON am.work_attitude_id = o.work_attitude_id
     WHERE am.employee_no = #{employeeNo}
   </select>
 
-  <!-- ✅ 부서원 차트용 요약 -->
+  <!-- ✅ 부서 차트용 요약 (최종 수정 쿼리) -->
   <select id="getDepartmentAttendanceSummary" resultType="com.yedam.app.group.service.AttendanceSummaryDTO">
-    SELECT
+    SELECT 
       e.employee_no,
       e.employee_name,
       d.department_name,
-      ROUND(NVL(SUM(a.total_working_hours), 0), 1) AS totalWorkingHours,
-      ROUND(NVL(SUM(o.overtime_time), 0) / 60, 1) AS overtimeHours
+      ROUND(SUM((a.clock_out_time - a.clock_in_time) * 24), 2) AS totalWorkingHours,
+      ROUND(NVL(SUM(o.overtime_time), 0) / 60, 2) AS overtimeHours
     FROM employees e
-    LEFT JOIN department d ON e.department_no = d.department_no
+    JOIN department d ON e.department_no = d.department_no
     LEFT JOIN attendance_management a ON e.employee_no = a.employee_no
     LEFT JOIN overtime o ON a.work_attitude_id = o.work_attitude_id
-    WHERE e.department_no = #{deptNo}
+    WHERE e.department_no = #{departmentNo}
+      AND a.clock_in_time IS NOT NULL
+      AND a.clock_out_time IS NOT NULL
     GROUP BY e.employee_no, e.employee_name, d.department_name
+    ORDER BY e.employee_no
   </select>
 
-  <!-- ✅ 부서원 출퇴근 상세 (테이블용) -->
-  <select id="selectDeptAttendance" parameterType="int" resultMap="AttendanceResultMap">
+  <!-- ✅ 부서 오늘 출근 상세 테이블용 -->
+  <select id="selectTodayAttendanceByDept" parameterType="int" resultMap="AttendanceResultMap">
     SELECT
       am.work_attitude_id,
       am.attendance_date,
@@ -156,13 +126,14 @@
       d.department_name,
       e.employee_no,
       e.employee_name,
-      o.overtime_time
+      o.overtime_time AS totalOvertimeTime
     FROM attendance_management am
     JOIN employees e ON am.employee_no = e.employee_no
     JOIN department d ON e.department_no = d.department_no
     LEFT JOIN overtime o ON am.work_attitude_id = o.work_attitude_id
-    WHERE d.department_no = #{deptNo}
-    ORDER BY am.attendance_date DESC
+    WHERE d.department_no = #{departmentNo}
+      AND TRUNC(am.attendance_date) = TRUNC(SYSDATE)
+    ORDER BY am.clock_in_time
   </select>
 
 </mapper>

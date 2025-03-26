@@ -1,3 +1,4 @@
+// ✅ AttendanceMapper.java
 package com.yedam.app.group.mapper;
 
 import java.util.List;
@@ -34,8 +35,11 @@ public interface AttendanceMapper {
     OvertimeVO getOvertimeByWorkAttitudeId(@Param("workAttitudeId") int workAttitudeId);
 
     // ✅ 부서 전체 출퇴근 기록 (테이블용)
-    List<AttendanceManagementVO> selectDeptAttendance(@Param("deptNo") int deptNo);
+    List<AttendanceManagementVO> selectDeptAttendance(@Param("departmentNo") int deptNo);
 
     // ✅ 부서 요약 (차트용)
-    List<AttendanceSummaryDTO> getDepartmentAttendanceSummary(@Param("deptNo") int deptNo);
+    List<AttendanceSummaryDTO> getDepartmentAttendanceSummary(@Param("departmentNo") int deptNo);
+
+    // ✅ 오늘 부서 출근 현황
+    List<AttendanceManagementVO> selectTodayAttendanceByDept(@Param("departmentNo") int deptNo);
 }
