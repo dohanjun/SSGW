@@ -25,20 +25,20 @@ public class AttendanceManagementVO {
     private String reason;
     private int totalWorkingHours;
 
-    // ✅ 차트 및 리스트에 필요한 부서/사원 정보 추가
+    // ✅ 부서/사원 정보
     private String departmentName;
-    private String employeeName; // ← 요게 없어서 오류 났던 것!
+    private String employeeName;
 
-    // ✅ 초과근무 관련
+    // ✅ 초과근무 정보
     private Integer totalOvertimeTime;
     private OvertimeVO overtimeList;
-
-    public double getOvertimeHours() {
-        if (overtimeList == null) {
-            return 0.0;
-        }
-        return overtimeList.getOvertimeHours();
+    private Double overtimeHours;
+    // ✅ getter 변환 (optional)
+    public Double getOvertimeHours() {
+        return overtimeHours;
     }
 
-    // 불필요한 중복 Getter/Setter는 lombok @Data가 해결해줌
+    public void setOvertimeHours(Double overtimeHours) {
+        this.overtimeHours = overtimeHours;
+    }
 }

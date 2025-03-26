@@ -1,4 +1,3 @@
-// ✅ AttendanceServiceImpl.java
 package com.yedam.app.group.service.impl;
 
 import java.util.List;
@@ -30,10 +29,20 @@ public class AttendanceServiceImpl implements AttendanceService {
         return attendanceMapper.selectAll();
     }
 
-    // ✅ 사원 출결 조회
+    // ✅ 사원 출결 조회 + 각 VO에 overtimeHours 계산 세팅 추가
     @Override
     public List<AttendanceManagementVO> selectInfo(Integer employeeNo) {
-        return attendanceMapper.selectInfo(employeeNo);
+        List<AttendanceManagementVO> list = attendanceMapper.selectInfo(employeeNo);
+
+        for (AttendanceManagementVO vo : list) {
+            if (vo.getTotalOvertimeTime() != null) {
+                vo.setOvertimeHours(vo.getTotalOvertimeTime() / 60.0);
+            } else {
+                vo.setOvertimeHours(0.0);
+            }
+        }
+
+        return list;
     }
 
     // ✅ 초과 근무 총합 계산
@@ -55,10 +64,26 @@ public class AttendanceServiceImpl implements AttendanceService {
         return attendanceMapper.insertClockIn(vo);
     }
 
-    // ✅ 퇴근 처리
+    // ✅ 퇴근 처리 + 초과근무 자동 삽입
     @Override
     public Integer modifyClockOut(AttendanceManagementVO vo) {
-        return attendanceMapper.updateClockOut(vo);
+        Integer result = attendanceMapper.updateClockOut(vo);
+
+        // 총 근무시간을 다시 불러옴
+        AttendanceManagementVO latest = attendanceMapper.getAttendanceSummary(vo.getEmployeeNo());
+
+        if (latest != null && latest.getTotalWorkingHours() > 9) {
+            OvertimeVO overtime = new OvertimeVO();
+            overtime.setWorkAttitudeId(latest.getWorkAttitudeId());
+            overtime.setOvertimeTime((int) ((latest.getTotalWorkingHours() - 9) * 60)); // 시간 → 분
+            overtime.setOvertimeDate(latest.getAttendanceDate());
+            overtime.setOvertimeType("연장근무");
+            overtime.setDraftDocumentNumber(null);
+
+            attendanceMapper.insertOvertime(overtime);
+        }
+
+        return result;
     }
 
     // ✅ 오늘 출근 여부 체크
