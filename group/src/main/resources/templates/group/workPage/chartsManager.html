@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="https://www.thymeleaf.org"
+<html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{common/layouts/default_layout}"
       layout:fragment="content">
@@ -7,55 +7,48 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>관리자 근태 그래프</title>
 
-    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
-    <link href="css/sb-admin-2.css" rel="stylesheet">
+    <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link href="/css/sb-admin-2.css" rel="stylesheet">
 
     <style>
         .work-info {
             width: 100%;
             overflow-x: auto;
         }
-
         .work-info table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
-
         .work-info th, .work-info td {
             border: 1px solid #ddd;
             padding: 12px;
             text-align: center;
             white-space: nowrap;
-            vertical-align: middle;
         }
-
         .work-info th {
             background-color: #f8f9fc;
             font-weight: bold;
         }
-
         .work-info tbody tr:nth-child(even) {
             background-color: #f2f2f2;
         }
-
         .work-info tbody tr:hover {
             background-color: #e2e6ea;
         }
     </style>
 </head>
 
-<body id="page-top">
+<body>
 
-<!-- ✅ 부서원 출퇴근 기록 테이블 -->
+<!-- ✅ 출퇴근 기록 테이블 -->
 <div class="row">
     <div class="col">
         <div class="card shadow mb-4">
             <div class="card-header py-3">
-                <h5 class="m-0 font-weight-bold">부서원 출퇴근 기록</h5>
+                <h5 class="m-0 font-weight-bold">부서원 출퇴근 기록 (오늘)</h5>
             </div>
             <div class="card-body">
                 <div class="work-info">
@@ -71,16 +64,8 @@
                                 <th>초과 근무시간</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr th:each="deptAttendance : ${departmentAttendanceList}">
-                                <td th:text="${deptAttendance.departmentName}"></td>
-                                <td th:text="${deptAttendance.employeeNo}"></td>
-                                <td th:text="${deptAttendance.employeeName}"></td>
-                                <td th:text="${#dates.format(deptAttendance.clockInTime, 'HH:mm')}"></td>
-                                <td th:text="${#dates.format(deptAttendance.clockOutTime, 'HH:mm')}"></td>
-                                <td th:text="${deptAttendance.totalWorkingHours}"></td>
-                                <td th:text="${deptAttendance.overtimeHours}"></td>
-                            </tr>
+                        <tbody id="employeeTableBody">
+                            <!-- JS로 오늘자 출결 동적 삽입 -->
                         </tbody>
                     </table>
                 </div>
@@ -89,7 +74,7 @@
     </div>
 </div>
 
-<!-- ✅ 부서원 근태 그래프 -->
+<!-- ✅ 차트 영역 -->
 <div class="row">
     <div class="col-xl-8 col-lg-7">
         <div class="card shadow mb-4">
@@ -97,71 +82,157 @@
                 <h6 class="m-0 font-weight-bold text-primary">부서원 근태 현황</h6>
             </div>
             <div class="card-body">
-                <canvas id="employeeWorkChart"></canvas>
+                <canvas id="attendanceChart"></canvas>
             </div>
         </div>
     </div>
 </div>
 
-<!-- ✅ Chart.js 및 기본 스크립트 -->
-<script src="vendor/jquery/jquery.min.js"></script>
-<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-<!-- ❗ 중복 제거: CDN 하나만 사용 -->
+<!-- ✅ JS -->
+<script src="/vendor/jquery/jquery.min.js"></script>
+<script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- ✅ Thymeleaf 데이터를 JS 배열로 변환 -->
-<script th:inline="javascript">
-    const labels = /*[[${departmentAttendanceList.stream().map(d -> d.employeeName).toList()}]]*/ [] || [];
-    const workHours = /*[[${departmentAttendanceList.stream().map(d -> d.totalWorkingHours).toList()}]]*/ [] || [];
-    const overtimeHours = /*[[${departmentAttendanceList.stream().map(d -> d.overtimeHours).toList()}]]*/ [] || [];
-</script>
-
-<!-- ✅ Chart.js 막대그래프 구성 -->
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const ctx = document.getElementById('employeeWorkChart').getContext('2d');
+    let chartData = [];
+    let chart = null;
 
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: '총 근무시간',
-                        data: workHours,
-                        backgroundColor: '#007bff'
+    document.addEventListener("DOMContentLoaded", function () {
+        loadChartData();
+        loadTodayAttendance();
+    });
+
+    function loadChartData() {
+        fetch("/chartsManager")
+            .then(response => {
+                if (!response.ok) throw new Error("네트워크 응답 오류");
+                return response.json();
+            })
+            .then(data => {
+                chartData = data;
+                console.log("✅ 차트 데이터:", data);
+
+                const labels = data.map(item => item.employeeName);
+                const totalWorkingHours = data.map(item => typeof item.totalWorkingHours === 'number' ? item.totalWorkingHours : 0);
+                const overtimeHours = data.map(item => typeof item.overtimeHours === 'number' ? item.overtimeHours : 0);
+
+                const ctx = document.getElementById('attendanceChart').getContext('2d');
+
+                if (chart) {
+                    chart.destroy();
+                }
+
+                chart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: '총 근무 시간',
+                                data: totalWorkingHours,
+                                backgroundColor: '#f1c40f'
+                            },
+                            {
+                                label: '초과 근무 시간',
+                                data: overtimeHours,
+                                backgroundColor: '#e74c3c'
+                            }
+                        ]
                     },
-                    {
-                        label: '초과 근무시간',
-                        data: overtimeHours,
-                        backgroundColor: '#ff8c00'
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { position: 'bottom' },
-                    tooltip: {
-                        callbacks: {
-                            label: function (context) {
-                                return context.dataset.label + ': ' + context.parsed.y + '시간';
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'top' },
+                            title: {
+                                display: true,
+                                text: '이달의 부서원 근무시간 비교'
+                            }
+                        },
+                        onClick: (evt, activeEls) => {
+                            if (activeEls.length > 0) {
+                                const index = activeEls[0].index;
+                                const empNo = chartData[index].employeeNo;
+                                console.log("✅ 그래프 클릭 - 사원번호:", empNo);
+                                loadEmployeeTable(empNo);
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: '시간 (Hours)'
+                                }
+                            },
+                            x: {
+                                stacked: false
                             }
                         }
                     }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: '시간 (단위: 시간)'
-                        }
-                    }
-                }
-            }
-        });
-    });
+                });
+            })
+            .catch(error => {
+                console.error('❌ 차트 데이터 로딩 오류:', error);
+            });
+    }
+
+    function loadTodayAttendance() {
+        fetch("/todayAttendance")
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.getElementById("employeeTableBody");
+                tbody.innerHTML = '';
+
+                data.forEach(emp => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${emp.departmentName || '-'}</td>
+                        <td>${emp.employeeNo}</td>
+                        <td>${emp.employeeName}</td>
+                        <td>${formatTime(emp.clockInTime)}</td>
+                        <td>${formatTime(emp.clockOutTime)}</td>
+                        <td>${emp.totalWorkingHours ?? '-'}</td>
+                        <td>${emp.totalOvertimeTime ?? 0}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            })
+            .catch(err => {
+                console.error("❌ 오늘 출결 로딩 실패:", err);
+            });
+    }
+
+    function loadEmployeeTable(empNo) {
+        fetch(`/employeeRecord/${empNo}`)
+            .then(res => res.json())
+            .then(records => {
+                const tbody = document.getElementById("employeeTableBody");
+                tbody.innerHTML = '';
+
+                records.forEach(emp => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${emp.departmentName || '-'}</td>
+                        <td>${emp.employeeNo}</td>
+                        <td>${emp.employeeName}</td>
+                        <td>${formatTime(emp.clockInTime)}</td>
+                        <td>${formatTime(emp.clockOutTime)}</td>
+                        <td>${emp.totalWorkingHours ?? '-'}</td>
+                        <td>${emp.totalOvertimeTime ?? 0}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            })
+            .catch(err => {
+                console.error('❌ 사원 기록 로딩 오류:', err);
+            });
+    }
+
+    function formatTime(datetimeStr) {
+        if (!datetimeStr) return '-';
+        const date = new Date(datetimeStr);
+        return date.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+    }
 </script>
 
 </body>

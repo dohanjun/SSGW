@@ -27,6 +27,9 @@ public class FileServiceImpl implements FileService {
 
     @Value("${file.upload-dir}")  
     private String uploadDir;  // 현재 프로젝트 안에서 저장하는 폴더 설정
+    
+    @Value("${file.backup-dir}")
+    private String backupDir;
 
     @PostConstruct
     public void init() {
@@ -42,6 +45,19 @@ public class FileServiceImpl implements FileService {
                 System.out.println("파일 저장 기본 폴더 생성됨: " + directory.getAbsolutePath());
             } else {
                 System.out.println("파일 저장 기본 폴더 생성 실패: " + directory.getAbsolutePath());
+            }
+        }
+    }
+    
+    @PostConstruct
+    public void initBackupFolder() {
+        File backupDirectory = new File(backupDir);
+        if (!backupDirectory.exists()) {
+            boolean created = backupDirectory.mkdirs();
+            if (created) {
+                System.out.println("백업 폴더 생성됨: " + backupDirectory.getAbsolutePath());
+            } else {
+                System.out.println("백업 폴더 생성 실패: " + backupDirectory.getAbsolutePath());
             }
         }
     }
@@ -137,6 +153,12 @@ public class FileServiceImpl implements FileService {
             // AES 복호화 수행
             String decryptedPath = AESUtil.decrypt(fileVO.getFilePath());
             String decryptedName = AESUtil.decrypt(fileVO.getSaveFileName());
+            
+            // 실제 파일 존재 여부 체크 ✅
+            File realFile = new File(decryptedPath);
+            if (!realFile.exists()) {
+                throw new RuntimeException("파일이 존재하지 않습니다: " + decryptedPath);
+            }
 
             // 복호화된 값으로 덮어쓰기
             fileVO.setFilePath(decryptedPath);
@@ -148,7 +170,56 @@ public class FileServiceImpl implements FileService {
 
         return fileVO;
     }
+    
+    public void backupFilesByWritingId(Long writingId) {
+        List<RepositoryFileVO> files = fileMapper.selectFilesByWritingId(writingId);
+        for (RepositoryFileVO file : files) {
+            try {
+                String decryptedPath = AESUtil.decrypt(file.getFilePath());
+                File originalFile = new File(decryptedPath);
+                if (!originalFile.exists()) continue;
 
+                // 백업 경로 생성
+                File backupFolder = new File(backupDir, String.valueOf(writingId));
+                if (!backupFolder.exists()) backupFolder.mkdirs();
+
+                File backupTarget = new File(backupFolder, originalFile.getName());
+                boolean moved = originalFile.renameTo(backupTarget);
+                if (moved) {
+                    System.out.println("파일 백업 완료: " + backupTarget.getAbsolutePath());
+                } else {
+                    System.out.println("백업 실패: " + originalFile.getAbsolutePath());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("파일 백업 중 오류", e);
+            }
+        }
+    }
+    
+    public void restoreFilesByWritingId(Long writingId) {
+        File backupFolder = new File(backupDir, String.valueOf(writingId));
+        if (!backupFolder.exists()) {
+            System.out.println("백업 폴더 없음, 파일 복원 생략: " + backupFolder.getAbsolutePath());
+            return;
+        }
+
+        File[] files = backupFolder.listFiles();
+        if (files == null) return;
+
+        File restoreFolder = new File(uploadDir, String.valueOf(writingId));
+        if (!restoreFolder.exists()) restoreFolder.mkdirs();
+
+        for (File file : files) {
+            File target = new File(restoreFolder, file.getName());
+            boolean moved = file.renameTo(target);
+            if (moved) {
+                System.out.println("파일 복원 완료: " + target.getAbsolutePath());
+            } else {
+                System.out.println("복원 실패: " + file.getAbsolutePath());
+            }
+        }
+    }
+    
     @Override
     public void insertDownloadLog(DownloadVO downloadVO) {
         downloadVO.setDownloadDate(new Timestamp(System.currentTimeMillis())); // 현재 시간 기록

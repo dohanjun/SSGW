@@ -18,7 +18,7 @@
 			<div class="card-header py-3">
 				<!-- 검색부분 -->
 				<form th:action="@{/aprv/list}" method="GET">
-					<input type="hidden" name="aprvStatus" th:value="${aprvStatus}">
+					<input type="hidden" name="aprvStatus" value="진행">
 					<p>
 						기안자 <input type="text" name="employeeName"> 문서제목 <input
 							type="text" name="title"> 상신일 <input type="date" th:value="${#dates.format(approvalVO.draftDate,'yyyy-MM-dd')}"
@@ -34,20 +34,20 @@
 						<thead>
 							<tr>
 								<th>문서번호</th>
-								<th>기안부서</th>
 								<th>기안자</th>
 								<th>문서제목</th>
 								<th>상신일</th>
+								<th>결재상태</th>
 							</tr>
 						</thead>
 						<tbody>
 							<tr th:each="aprv : ${aprvs}"
 								th:onclick="|location.href='@{/aprv/info(draftNo=${aprv.draftNo})}'|">
 								<td>[[${aprv.draftNo}]]</td>
-								<td>[[${aprv.aprvStatus}]]</td>
 								<td>[[${aprv.employeeName}]]</td>
 								<td>[[${aprv.title}]]</td>
 								<td>[[${#dates.format(aprv.draftDate, "yyyy년 MM월 dd일")}]]</td>
+								<td>[[${aprv.aprvStatus}]]</td>
 							</tr>
 						</tbody>
 					</table>

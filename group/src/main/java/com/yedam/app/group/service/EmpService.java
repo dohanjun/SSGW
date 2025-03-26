@@ -39,7 +39,8 @@ public interface EmpService {
     
     // 두번째 ip
     String getSecondIpByEmployeeNo(Integer employeeNo);
-
+    
+    //
 	public void updateEmployeePasswordBySuberNo(EmpVO employee);
 
 }

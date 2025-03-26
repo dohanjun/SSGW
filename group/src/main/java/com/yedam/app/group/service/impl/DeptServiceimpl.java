@@ -1,6 +1,5 @@
 package com.yedam.app.group.service.impl;
 
-import java.util.Base64;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,18 +37,27 @@ public class DeptServiceimpl implements DeptService{
 	}
 	
 	// 조직도 목록
+//	public List<DeptVO> getOrgChart(DeptVO deptVO) {
+//	    return deptMapper.getOrgChart(deptVO);
+//	}
+	
+	// 부서전체 조회
 	@Override
-    public List<DeptVO> getOrgChart(DeptVO deptVO) {
+	public List<DeptVO> getAllDepartments(int suberNo) {
+		return deptMapper.selectAllDepartments(suberNo);
+	}
+	
+	@Override
+	public List<DeptVO> getOrgChart(DeptVO deptVO) {
 	    List<DeptVO> deptList = deptMapper.getOrgChart(deptVO);
 
 	    for (DeptVO dept : deptList) {
-	        List<EmpVO> empList = dept.getEmployees(); // 각 부서에 사원 리스트가 있다고 가정
+	        System.out.println("부서: " + dept.getDepartmentName() + " / 사원 수: " + (dept.getEmployees() != null ? dept.getEmployees().size() : 0));
+
+	        List<EmpVO> empList = dept.getEmployees();
 	        if (empList != null) {
 	            for (EmpVO emp : empList) {
-	                if (emp.getProfileImageBLOB() != null) {
-	                    String base64 = Base64.getEncoder().encodeToString(emp.getProfileImageBLOB());
-	                    emp.setProfileImageBase64(base64);
-	                }
+	                System.out.println("   - 사원: " + emp.getEmployeeName() + ", 부서번호: " + emp.getDepartmentNo() + ", 직급: " + emp.getJobTitleName());
 	            }
 	        }
 	    }

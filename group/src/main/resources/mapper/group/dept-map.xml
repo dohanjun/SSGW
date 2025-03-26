@@ -2,85 +2,99 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yedam.app.group.mapper.DeptMapper">
 
-	<!-- 부서 조회 <select id="selectDeptList" resultType="DeptVO"> SELECT DEPARTMENT_NO 
-		,UPPER_DEP_NO ,DEPARTMENT_NAME ,DEPARTMENT_LEVEL ,MANAGER ,SUBER_NO FROM 
-		DEPARTMENT ORDER BY DEPARTMENT_NO </select> -->
 
-	<!-- 부서 목록 조회 -->
-	<select id="getAllDepartments"
-		resultType="com.yedam.app.group.service.DeptVO"
-		parameterType="com.yedam.app.group.service.DeptVO">
-		SELECT DEPARTMENT_NO, DEPARTMENT_NAME
-		FROM DEPARTMENT
-		WHERE SUBER_NO = #{suberNo}
-		ORDER BY DEPARTMENT_NO ASC
+
+
+    <!-- 부서전체 조회-->
+	<select id="selectAllDepartments" resultType="DeptVO">
+		SELECT 
+			D.DEPARTMENT_NO,
+			D.DEPARTMENT_NAME,
+			D.MANAGER,
+			E.EMPLOYEE_NAME AS employeeName,
+			(
+				SELECT COUNT(*) 
+				FROM EMPLOYEES 
+				WHERE DEPARTMENT_NO = D.DEPARTMENT_NO 
+				  AND RESIGNATION_STATUS = 'N'
+			) AS employeeCount
+		FROM DEPARTMENT D
+		LEFT JOIN EMPLOYEES E 
+			ON D.MANAGER = E.EMPLOYEE_NO
+			AND E.RESIGNATION_STATUS = 'N'
+		WHERE D.SUBER_NO = #{suberNo}
+		ORDER BY D.DEPARTMENT_NO
 	</select>
+     
+    <!-- 부서 목록 조회 -->
+    <select id="getAllDepartments" resultType="com.yedam.app.group.service.DeptVO"
+            parameterType="com.yedam.app.group.service.DeptVO">
+        SELECT DEPARTMENT_NO, DEPARTMENT_NAME 
+        FROM DEPARTMENT 
+        WHERE SUBER_NO = #{suberNo}
+        ORDER BY DEPARTMENT_NO ASC
+    </select>
 
-	<!-- 직급 목록 조회 -->
-	<select id="getAllRanks"
-		resultType="com.yedam.app.group.service.RankVO"
-		parameterType="com.yedam.app.group.service.RankVO">
-		SELECT RANK_ID, JOB_TITLE_NAME
-		FROM RANK
-		WHERE SUBER_NO = #{suberNo}
-		ORDER BY RANK_ID ASC
-	</select>
+    <!-- 직급 목록 조회 -->
+    <select id="getAllRanks" resultType="com.yedam.app.group.service.RankVO" 
+            parameterType="com.yedam.app.group.service.RankVO">
+        SELECT RANK_ID, JOB_TITLE_NAME 
+        FROM RANK 
+        ORDER BY RANK_ID ASC
+    </select>
 
-	<!-- 권한 목록 조회 -->
-	<select id="getAllRights" resultType="RightsVO"
-		parameterType="RightsVO">
-		SELECT RIGHTS_ID, RIGHTS_NAME
-		FROM RIGHTS
-		WHERE SUBER_NO = #{suberNo}
-		ORDER BY RIGHTS_ID ASC
-	</select>
-
+    <!-- 권한 목록 조회 -->
+    <select id="getAllRights" resultType="RightsVO" parameterType="RightsVO">
+        SELECT RIGHTS_ID, RIGHTS_NAME 
+        FROM RIGHTS 
+        ORDER BY RIGHTS_ID ASC
+    </select>
+    
 	<!-- 조직도 직원 조회 -->
-	<select id="getOrgChart" resultMap="DeptMap"
-		parameterType="DeptVO">
-		SELECT
-		s.COMPANY_NAME,
-		d.DEPARTMENT_NO, d.DEPARTMENT_NAME, d.UPPER_DEP_NO, d.DEPARTMENT_LEVEL, d.SUBER_NO,
-		e.EMPLOYEE_NO, e.EMPLOYEE_NAME, e.RANK_ID, r.JOB_TITLE_NAME,
-		r.JOB_TITLE_LEVEL,
-		e.PHONE_NUMBER, e.PROFILE_IMAGE_BLOB
-		FROM SUBER s
-		JOIN DEPARTMENT d ON s.SUBER_NO = d.SUBER_NO
-		LEFT JOIN EMPLOYEES e ON d.DEPARTMENT_NO = e.DEPARTMENT_NO
-		LEFT JOIN RANK r ON e.RANK_ID = r.RANK_ID
-		WHERE d.SUBER_NO = #{suberNo}
-		ORDER BY s.COMPANY_NAME, d.DEPARTMENT_LEVEL, d.UPPER_DEP_NO,
-		d.DEPARTMENT_NO, r.JOB_TITLE_LEVEL DESC
+	<select id="getOrgChart" resultMap="DeptMap" parameterType="DeptVO">
+	    SELECT 
+	        s.COMPANY_NAME, 
+	        d.DEPARTMENT_NO, d.DEPARTMENT_NAME, d.UPPER_DEP_NO, d.DEPARTMENT_LEVEL, d.SUBER_NO,
+	        e.EMPLOYEE_NO, e.EMPLOYEE_NAME, e.RANK_ID, r.JOB_TITLE_NAME, r.JOB_TITLE_LEVEL, 
+	        e.PHONE_NUMBER, e.PROFILE_IMAGE_BLOB
+	    FROM SUBER s
+	    JOIN DEPARTMENT d ON s.SUBER_NO = d.SUBER_NO
+	    LEFT JOIN EMPLOYEES e
+	        ON d.DEPARTMENT_NO = e.DEPARTMENT_NO
+	        AND e.SUBER_NO = d.SUBER_NO
+	        AND e.RESIGNATION_STATUS = 'N'
+	    LEFT JOIN RANK r ON e.RANK_ID = r.RANK_ID
+	    WHERE d.SUBER_NO = #{suberNo}
+	    ORDER BY s.COMPANY_NAME, d.DEPARTMENT_LEVEL, d.UPPER_DEP_NO, d.DEPARTMENT_NO, r.JOB_TITLE_LEVEL DESC
 	</select>
-
+	
 	<!-- 부서 및 직원 정보 매핑 -->
-	<resultMap id="DeptMap" type="DeptVO">
-		<!-- 1 부서 ID (필수) -->
-		<id property="departmentNo" column="DEPARTMENT_NO" />
-
-		<!-- 2 회사 정보 -->
-		<result property="companyName" column="COMPANY_NAME" />
-		<result property="suberNo" column="SUBER_NO" />
-
-		<!-- 3 부서 정보 -->
-		<result property="departmentName" column="DEPARTMENT_NAME" />
-		<result property="upperDepNo" column="UPPER_DEP_NO" />
-		<result property="departmentLevel" column="DEPARTMENT_LEVEL" />
-
-		<!-- 4 직원 리스트 (DeptVO의 employees 리스트와 매핑) -->
-		<collection property="employees" ofType="EmpVO">
-			<id property="employeeNo" column="EMPLOYEE_NO" />
-			<result property="employeeName" column="EMPLOYEE_NAME" />
-			<result property="rankId" column="RANK_ID" />
-			<result property="jobTitleName" column="JOB_TITLE_NAME" />
-			<result property="jobTitleLevel" column="JOB_TITLE_LEVEL" />
-			<result property="phoneNumber" column="PHONE_NUMBER" />
-			<result property="profileImageBLOB"
-				column="PROFILE_IMAGE_BLOB" />
-		</collection>
+	<resultMap id="DeptMap" type="DeptVO">    
+	    <!-- 1 부서 ID (필수) -->
+	    <id property="departmentNo" column="DEPARTMENT_NO"/>
+	       
+	    <!-- 2 회사 정보 -->
+	    <result property="companyName" column="COMPANY_NAME"/>
+	    <result property="suberNo" column="SUBER_NO"/>
+	
+	    <!-- 3 부서 정보 -->
+	    <result property="departmentName" column="DEPARTMENT_NAME"/>
+	    <result property="upperDepNo" column="UPPER_DEP_NO"/>
+	    <result property="departmentLevel" column="DEPARTMENT_LEVEL"/>
+	    
+	    <!-- 4 직원 리스트 (DeptVO의 employees 리스트와 매핑) -->
+	    <collection property="employees" ofType="EmpVO">
+	        <id property="employeeNo" column="EMPLOYEE_NO"/>
+	        <result property="employeeName" column="EMPLOYEE_NAME"/>
+	        <result property="rankId" column="RANK_ID"/>
+	        <result property="jobTitleName" column="JOB_TITLE_NAME"/>
+	        <result property="jobTitleLevel" column="JOB_TITLE_LEVEL"/>
+	        <result property="phoneNumber" column="PHONE_NUMBER"/>
+	        <result property="profileImageBLOB" column="PROFILE_IMAGE_BLOB"/>
+	    </collection>
 	</resultMap>
-
-	<insert id="insertDepartment" parameterType="com.yedam.app.group.service.DeptVO">
+	
+  	<insert id="insertDepartment" parameterType="com.yedam.app.group.service.DeptVO">
 	    <selectKey keyProperty="departmentNo" resultType="int" order="BEFORE">
 	        SELECT NVL(MAX(DEPARTMENT_NO), 0) + 1 FROM DEPARTMENT
 	    </selectKey>
@@ -101,8 +115,6 @@
 	        #{suberNo}
 	    )
 	</insert>
-
-
 
 
 </mapper>

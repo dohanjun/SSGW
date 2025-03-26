@@ -27,15 +27,6 @@ public interface PostMapper {
     // 사원 정보 기반 자료실 자동 조회 (추가됨)
     RepositoryVO getRepositoryByUserInfo(Map<String, Object> params);
     
-    // 전체 자료실 게시글 조회
-    List<RepositoryPostVO> getTotalRepositoryPosts(Map<String, Integer> params);
-
-    // 부서 자료실 게시글 조회
-    List<RepositoryPostVO> getDepartmentRepositoryPosts(Map<String, Integer> params);
-
-    // 개인 자료실 게시글 조회
-    List<RepositoryPostVO> getIndividualRepositoryPosts(Map<String, Integer> params);
-    
     // 자료글 상세 보기
     RepositoryPostVO getPostDetail(Long writingId);
     
@@ -43,4 +34,41 @@ public interface PostMapper {
     
     void updateFixStatus(@Param("writingId") Long writingId, @Param("fix") char fix);
     
+    // 전체 자료실 - 페이징 + 검색된 게시글 리스트 조회
+    List<RepositoryPostVO> selectTotalRepositoryPostsPaged(
+        @Param("suberNo") int suberNo,
+        @Param("keyword") String keyword,
+        @Param("offset") int offset,
+        @Param("limit") int limit
+    );
+
+    // 전체 자료실 - 검색된 게시글 총 개수 조회
+    
+    int countTotalRepositoryPosts(@Param("suberNo") int suberNo, @Param("keyword") String keyword);
+    
+    int getDepartmentRepositoryPostCount(@Param("suberNo") int suberNo,
+            @Param("departmentNo") int departmentNo,
+            @Param("keyword") String keyword);
+
+    List<RepositoryPostVO> getDepartmentRepositoryPostsPaged(@Param("suberNo") int suberNo,
+                                	@Param("departmentNo") int departmentNo,
+                                	@Param("keyword") String keyword,
+                                	@Param("offset") int offset,
+                                	@Param("limit") int limit);
+
+    int getIndividualRepositoryPostCount(@Param("suberNo") int suberNo,
+            	@Param("employeeNo") int employeeNo,
+            	@Param("keyword") String keyword);
+
+    List<RepositoryPostVO> getIndividualRepositoryPostsPaged(@Param("suberNo") int suberNo,
+                                	@Param("employeeNo") int employeeNo,
+                                	@Param("keyword") String keyword,
+                                	@Param("offset") int offset,
+                                	@Param("limit") int limit);
+    
+    List<RepositoryPostVO> selectFixedPosts(Map<String, Object> paramMap);
+    
+    List<RepositoryPostVO> selectDepartmentFixedPosts(Map<String, Object> paramMap);
+    
+    List<RepositoryPostVO> selectIndividualFixedPosts(Map<String, Object> paramMap);
 }

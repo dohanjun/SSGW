@@ -14,28 +14,39 @@
          <h3>사원 관리</h3>
          
          
-        <!--  검색 기능 -->
-        <form name="frmSearch" action="/empMgmt">
-        <input type="hidden" name="page" value="1">
-        <select name="size">
-        <option value="12" th:selected="${empserchVO.size == 12}">12
-        <option value="15" th:selected="${empserchVO.size == 15}">15
-        <option value="20" th:selected="${empserchVO.size == 20}">20
-        <option value="25" th:selected="${empserchVO.size == 25}">25
-        </select>
-		<div class="search-box mt-3">
-		 <select id="depa" name="departmentNo">
-                   <option value="">부서를 선택하세요</option>
-                   </select>
-                   <select id="rankId" name="rankId">
-                   <option value="">직급을 선택하세요</option>
-                   </select>
-		 
-		    <input type="text" id="keyemp" placeholder="검색어 입력" th:value="${empserchVO.employeeName}" name="employeeName">
-		    <button onclick="gopage(1)" class="btn btn-primary">검색</button>
-		    <button type="button" onclick="init()">초기화</button>
-		</div>
-       </form>
+	<!-- 검색 기능 -->
+	<form name="frmSearch" action="/empMgmt">
+	    <input type="hidden" name="page" value="1">
+	
+	    <!-- 페이지 사이즈 선택 -->
+	    <select name="size" onchange="frmSearch.submit()">
+	        <option value="12" th:selected="${empserchVO.size == 10}">10</option>
+	        <option value="15" th:selected="${empserchVO.size == 15}">15</option>
+	        <option value="20" th:selected="${empserchVO.size == 20}">20</option>
+	        <option value="25" th:selected="${empserchVO.size == 25}">25</option>
+	    </select>
+	
+	    <!-- 검색 영역: 휴가현황처럼 -->
+	    <div class="search-box mt-3">
+	        <select id="depa" name="departmentNo">
+	            <option value="">부서를 선택하세요</option>
+	        </select>
+	
+	        <select id="rankId" name="rankId">
+	            <option value="">직급을 선택하세요</option>
+	        </select>
+	
+	        <input type="text" id="keyemp" placeholder="검색어 입력" th:value="${empserchVO.employeeName}" name="employeeName">
+	
+	        <button type="submit" class="btn btn-primary">검색</button>
+	        <button type="button" class="btn btn-secondary" onclick="init()">초기화</button>
+	        <button type="button" class="btn btn-outline-primary" onclick="filterStatus('N')">재직자</button>
+	        <button type="button" class="btn btn-outline-danger" onclick="filterStatus('Y')">퇴사자</button>
+	    </div>
+	
+	    <!-- 퇴직여부 히든 전송 -->
+	    <input type="hidden" name="resignationStatus" id="resignationStatus" th:value="${empserchVO.resignationStatus}">
+	</form>
          <table class="table table-bordered">
             <thead>
                 <tr>
@@ -88,12 +99,18 @@
     	 depa.value=""
     	 rankId.value=""
          keyemp.value=""
+         resignationStatus.value = "";
      }
      
      function gopage(p){
  		frmSearch.page.value = p;
  		frmSearch.submit();		
  	}
+     
+     function filterStatus(status) {
+    	    document.getElementById("resignationStatus").value = status;
+    	    gopage(1);
+    	}
      
 
  	// 페이지 로드 시 데이터 가져오기

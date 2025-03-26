@@ -1,6 +1,9 @@
 package com.yedam.app.group.web;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -11,11 +14,16 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,6 +34,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.yedam.app.group.service.ApprovalFormVO;
 import com.yedam.app.group.service.ApprovalService;
 import com.yedam.app.group.service.ApprovalVO;
+import com.yedam.app.group.service.AprvFileService;
+import com.yedam.app.group.service.AprvFileVO;
 import com.yedam.app.group.service.AprvRoutesVO;
 import com.yedam.app.group.service.EmpService;
 import com.yedam.app.group.service.EmpVO;
@@ -50,6 +60,7 @@ public class ApprovalController {
 
 	private final ApprovalService approvalService;
 	private final EmpService empService;
+	private final AprvFileService aprvFileService;
 	
     @Value("${file.upload-dir}")  
     private String uploadDir;  // 현재 프로젝트 안에서 저장하는 폴더 설정
@@ -156,6 +167,7 @@ public class ApprovalController {
         // 임시저장 문서일 경우
         if ("임시".equals(aprvVO.getAprvStatus())) {
             List<ApprovalVO> list = approvalService.findAllList(aprvVO);  // 임시저장 문서 조회
+            System.out.println("검색 결과 리스트 크기: " + list.size());
             model.addAttribute("aprvs", list);
             return "group/approval/approval_save";  // 임시저장함 페이지로 리디렉션
         } else {
@@ -198,26 +210,32 @@ public class ApprovalController {
 	 * @return 기안문 상신 기능
 	 */
 	// 기안문 상신
-	@PostMapping("/aprv/writing")
-	public String submitApproval(@RequestBody ApprovalVO approvalVO) {
-		
+	@PostMapping(value = "/aprv/writing", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public String submitApproval(@ModelAttribute ApprovalVO approvalVO,
+	                             @RequestParam(value = "files", required = false) MultipartFile[] files) {
+
 	    EmpVO loginUser = empService.getLoggedInUserInfo();
 	    approvalVO.setEmployeeNo(loginUser.getEmployeeNo());
 	    approvalVO.setSuberNo(loginUser.getSuberNo());
-	    
-	    // 문서 저장 (임시, 대기)
+
+	    // 문서 상태 설정
 	    if ("임시".equals(approvalVO.getAprvStatus())) {
-	        approvalVO.setAprvStatus("임시"); // 상태를 임시로 설정
+	        approvalVO.setAprvStatus("임시");
 	    } else {
-	        approvalVO.setAprvStatus("대기"); // 결재 대기 상태로 설정
+	        approvalVO.setAprvStatus("대기");
 	    }
-	    
+
 	    // 문서 저장
 	    approvalService.createAprvDocu(approvalVO);
 	    int draftNo = approvalVO.getDraftNo();
 
+	    // 첨부파일 저장 추가
+	    if (files != null && files.length > 0) {
+	        aprvFileService.insertFiles(draftNo, files);
+	    }
+
 	    // 결재자 저장
-	     List<Integer> approvers = approvalVO.getApprovers();
+	    List<Integer> approvers = approvalVO.getApprovers();
 	    for (int i = 0; i < approvers.size(); i++) {
 	        AprvRoutesVO r = new AprvRoutesVO();
 	        r.setDraftNo(draftNo);
@@ -229,18 +247,18 @@ public class ApprovalController {
 	    }
 
 	    // 참조자 저장
-			
-	      List<Integer> reference = approvalVO.getReference();
-	      
-		  if (approvalVO.getReference() != null && !approvalVO.getReference().isEmpty()) {
-		  for (int i = 0; i < reference.size(); i++) { 
-		  AprvRoutesVO ref = new AprvRoutesVO(); 
-		  ref.setDraftNo(draftNo); ref.setAprvOrder("0");
-		  ref.setAprvRole("참조"); ref.setAprvStatus("대기");
-		  ref.setEmployeeNo(reference.get(i));
-		  approvalService.createAprvRout(ref); } 
-		  }
-		 
+	    List<Integer> reference = approvalVO.getReference();
+	    if (reference != null && !reference.isEmpty()) {
+	        for (Integer empNo : reference) {
+	            AprvRoutesVO ref = new AprvRoutesVO();
+	            ref.setDraftNo(draftNo);
+	            ref.setAprvOrder("0");
+	            ref.setAprvRole("참조");
+	            ref.setAprvStatus("대기");
+	            ref.setEmployeeNo(empNo);
+	            approvalService.createAprvRout(ref);
+	        }
+	    }
 
 	    return "redirect:/aprv/list";
 	}
@@ -486,8 +504,13 @@ public class ApprovalController {
 		ApprovalVO aprvVO = approvalService.findAprvInfo(infoVO);
 		
 		routVO.setSuberNo(loggedInUser.getSuberNo());
-
+		int draftNo = routVO.getDraftNo();
+		
+		
 		List<AprvRoutesVO> routList = approvalService.findRoutes(routVO);
+		List<AprvFileVO> fileList = aprvFileService.findFilesByDraftNo(draftNo);
+		
+		model.addAttribute("files", fileList);
 		
 		// 로그인한 사용자의 aprvOrder 찾기
 	    String aprvOrder = routList.stream()
@@ -499,6 +522,7 @@ public class ApprovalController {
 		model.addAttribute("aprv", aprvVO);
 		model.addAttribute("aprvroutes", routList);
 		model.addAttribute("aprvOrder", aprvOrder);
+		model.addAttribute("files", fileList);
 
 		return "group/approval/approval";
 	}
@@ -580,10 +604,6 @@ public class ApprovalController {
 	    return result;
 	}
 
-
-
-
-	
 	// 결재페이지 반려처리
 	@PostMapping("/aprv/reject")
 	@ResponseBody
@@ -598,10 +618,30 @@ public class ApprovalController {
 	    }
 	    return result;
 	}
+	
+	@GetMapping("/aprv/file/download/{fileId}")
+	public ResponseEntity<Resource> downloadFile(@PathVariable int fileId) {
+	    AprvFileVO fileVO = aprvFileService.findFileById(fileId);
+	    if (fileVO == null) {
+	        return ResponseEntity.notFound().build();
+	    }
 
-	
-	
-	
+	    File file = new File(fileVO.getFilePath());
+	    if (!file.exists()) {
+	        return ResponseEntity.notFound().build();
+	    }
+
+	    Resource resource = new FileSystemResource(file);
+	    String originalName = fileVO.getFileName();
+
+	    return ResponseEntity.ok()
+	            .header(HttpHeaders.CONTENT_DISPOSITION, 
+	                    "attachment; filename=\"" + URLEncoder.encode(originalName, StandardCharsets.UTF_8) + "\"")
+	            .contentLength(file.length())
+	            .contentType(MediaType.APPLICATION_OCTET_STREAM)
+	            .body(resource);
+	}
+
 	@GetMapping("schedulePage")
 	public String scheduleList() {
 		return "group/schedule/schedule";

@@ -51,16 +51,17 @@
         }
 </style>
 <!-- 메일수정하기 페이지-->
-  <body>
-  <h3>메일수정화면</h3>
-  <div class="content-wrapper">
-	<div class="employee-container">
-	  <div class="btn-container">
-	  <a lcon="back" class="btn btn-primary" th:onclick="|location.href='@{/myMailSelect(mailId=${mail.mailId})}'|">
-	  </a>
-	  </div>
-	<h1>메일수정하기</h1>
-	  <form th:action="@{mailUpdate}" method="post" class="user">
+<body>
+<div id="content-wrapper" class="d-flex flex-column">
+  <div id="container-fluid px-0">
+	<div class="card shadow mb-4">
+	<!-- "자료 등록" 왼쪽 정렬 유지 -->
+	<div class="card-header py-3">
+	  <h6 class="m-0 font-weight-bold text-primary">메일수정하기</h6>
+	</div>
+
+<div class="card-body">
+  <form th:action="@{mailUpdate}" method="post" class="user">
   	  <div class="btn-container">
 	     <button class="btn btn-primary">
       		저장
@@ -69,9 +70,8 @@
       		임시저장
         </button>
       </div>
-
-	<!-- 메일수정 -->
-	<table class="table">
+   <table class="table file-info-table">
+   <tbody>
 		<tr>
 			<td>받는사람</td>
 			<td><input name="giveName" th:value="${mail.employeeId}"></td>
@@ -90,12 +90,14 @@
 		</tr>
 		<tr>
 			<td>내용</td>
-			<td><input name="content" th:value="${mail.content}"></td>
+			<td><textarea id="content" name="content" rows="4" cols="50" th:text="${mail.content}"></textarea>
 		</tr>
-	</table>
-	</form>
-	<!-- 메일수정 마침 -->
-		</div>
+	</tbody>
+   </table>
+  </form>		
 	</div>
-  </body>	    
+  </div>
+ </div>
+</div>
+  </body>
 </html>

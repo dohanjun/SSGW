@@ -29,7 +29,7 @@
             </div>
         </div>
         <div class="card-body">
-            <form action="/aprv/writing" method="POST">
+            <form action="/aprv/writing" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="formId" id="formIdInput">
                 <input type="hidden" name="basicsFormId" id="basicsFormIdInput">
                 <input type="hidden" name="status" id="statusInput">
@@ -42,6 +42,10 @@
                     <label>내용</label>
                     <div id="Content" class="p-3 border rounded" style="min-height: 200px; background-color: #f8f9fc;"></div>
                 </div>
+                <div class="form-group">
+    				<label>첨부파일</label>
+    				<input type="file" name="files" id="fileInput" class="form-control" multiple>
+				</div>
                 <div class="form-group">
                     <label>결재자</label>
                     <ul id="selectedApproverList" class="list-group mb-2"></ul>
@@ -340,26 +344,50 @@ document.addEventListener("DOMContentLoaded", function () {
 // 전송
 $('#ajaxSubmitBtn').on('click', function () {
     const finalContent = prepareFinalContent();
-	// let obj = [];
+
+    // FormData 객체 생성
+    const form = document.querySelector("form");
+    const formData = new FormData(form);
+
+    // HTML 콘텐츠는 직접 넣어줘야 함
+    formData.append("title", $('input[name="title"]').val());
+    formData.append("content", finalContent);
+    formData.append("status", "대기");
 	
-    const formData = {
-        formId: $('#formIdInput').val(),
-        basicsFormId: $('#basicsFormIdInput').val(),
-        title: $('input[name="title"]').val(),
-        content: finalContent, //document.getElementById("Content").innerHTML,
-        status: '대기', // 또는 '상신' 등 원하는 상태값
-        approvers: $('#approversInput').val().split(',').map(Number),
-        references: $('#referencesInput').val()
-    };
+    const fileInput = document.getElementById("fileInput");
+    const files = fileInput.files;
+    for (let i = 0; i < files.length; i++) {
+        formData.append("files", files[i]);
+    }
+    
+    for (let pair of formData.entries()) {
+    	  console.log(pair[0], pair[1]);
+    	}
+    
+    // approvers와 references는 hidden input이 아니라 직접 append 해도 됨
+    const approvers = $('#approversInput').val();
+    if (approvers) {
+        approvers.split(',').forEach(a => {
+            formData.append("approvers", a);
+        });
+    }
+
+    const references = $('#referencesInput').val();
+    if (references) {
+        references.split(',').forEach(r => {
+            formData.append("references", r);
+        });
+    }
 
     $.ajax({
         url: '/aprv/writing',
         type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(formData),
+        data: formData,
+        processData: false, // FormData는 자동 처리
+        contentType: false, // content-type 헤더 설정 안 함 (브라우저가 자동 설정)
         success: function (res) {
             alert('기안문이 성공적으로 등록되었습니다!');
-            location.href = '/aprv/list'; // 목록 페이지 등으로 이동
+            location.href = '/aprv/list';
         },
         error: function (xhr) {
             alert('등록 중 오류 발생: ' + xhr.responseText);
