@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yedam.app.group.mapper.DeptMapper">
-     
+
+
+
+
     <!-- 부서전체 조회-->
 	<select id="selectAllDepartments" resultType="DeptVO">
 		SELECT 
@@ -91,7 +94,27 @@
 	    </collection>
 	</resultMap>
 	
-	
+  	<insert id="insertDepartment" parameterType="com.yedam.app.group.service.DeptVO">
+	    <selectKey keyProperty="departmentNo" resultType="int" order="BEFORE">
+	        SELECT NVL(MAX(DEPARTMENT_NO), 0) + 1 FROM DEPARTMENT
+	    </selectKey>
+	    INSERT INTO DEPARTMENT (
+	        DEPARTMENT_NO,
+	        UPPER_DEP_NO,
+	        DEPARTMENT_NAME,
+	        DEPARTMENT_LEVEL,
+	        MANAGER,
+	        SUBER_NO
+	    ) 
+	    VALUES (
+	        #{departmentNo},
+	        #{upperDepNo},
+	        #{departmentName},
+	        #{departmentLevel},
+	        #{manager},
+	        #{suberNo}
+	    )
+	</insert>
 
 
 </mapper>

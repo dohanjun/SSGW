@@ -12,6 +12,7 @@ public interface BoardPostService {
 	int modifyBoartFixed(int postId);
 	
 	int removeBoradPost(int postId);
+	int removeAllBoradPost(int postId);
 	
 	int modifyBoard(BoardPostVO boardPost);
 	

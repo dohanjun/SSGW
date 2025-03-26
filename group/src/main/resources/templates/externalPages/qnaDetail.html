@@ -21,6 +21,14 @@
 	border: 1px solid #ddd;
 	border-radius: 5px;
 }
+
+.fix {
+	color: gray;
+}
+
+.fixed {
+	color: green;
+}
 </style>
 </head>
 <body>
@@ -34,6 +42,7 @@
 							class="card-header py-3 d-flex align-items-center position-relative">
 							<h6 class="m-0 font-weight-bold text-primary">게시글 정보</h6>
 							<i class="fa-solid fa-thumbtack position-absolute fix"
+								th:classappend="${boardPost.faq} == 'Y'? 'fixed'"
 								style="right: 20px; top: 50%; transform: translateY(-50%);"></i>
 						</div>
 						<div class="card-body">
@@ -106,20 +115,25 @@
 									</tr>
 								</tbody>
 							</table>
+							<button class="btn btn-danger answerdel">
+								<i class="fas fa-trash"></i>
+							</button>
 						</div>
+
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-	<script
-		src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 	<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
 	<script th:inline="javascript">
 		var post = /*[[${boardPost}]]*/[];
 		var postId = post.postId;
 		var postPId = post.parentCommentId;
-		
+		var commentQuill;
+		var answerId;
+		const token = document.querySelector('meta[name="_csrf"]').getAttribute("content");
+		const header = document.querySelector('meta[name="_csrf_header"]').getAttribute("content");
 		var postQuill = new Quill('#postEditor-container', {
 			theme : 'snow',
 			readOnly : true,
@@ -129,7 +143,7 @@
 		});
 		if(postPId == null){
 			postQuill.root.innerHTML = `[[${boardPost.postContent}]]`;
-			var commentQuill = new Quill('#commentEditor-container', {
+			commentQuill = new Quill('#commentEditor-container', {
 				theme : 'snow',
 				placeholder : '여기에 내용을 입력하세요...',
 				modules : {
@@ -148,63 +162,60 @@
 			});
 		}
 		
+		//답글 등록 및 답변여부 업데이트
 		if (document.getElementById('commentSubmitBtn')) {
-		    document.getElementById('commentSubmitBtn').addEventListener('click', function() {
-		        var commentContent = commentQuill.root.innerHTML;
-		        $.ajax({
-		            type: "POST",
-		            url: "/insertBoardPost",
-		            data: JSON.stringify({
-		                parentCommentId: postId,
-		                postTitle: post.postTitle + "에 대한 답글 입니다",
-		                postContent: commentContent,
-		                boardId: 999,
-		                employeeNo: 0,
-		            }),
-		            contentType: "application/json",
-		            success: function(response) {
-
-		                $.ajax({
-		                    type: "POST",
-		                    url: "/updateBoardPost",
-		                    data: JSON.stringify({
-		                        postId: postId,
-		                        childYn: "Y"
-		                    }),
-		                    contentType: "application/json",
-		                    success: function(response) {
-		                        alert("등록 완료.");
-		                    },
-		                    error: function(xhr, status, error) {
-		                        alert("등록 실패");
-		                        console.error(xhr.responseText);
-		                    }
-		                });
-		            },
-		            error: function(xhr, status, error) {
-		                alert("등록 실패");
-		                console.error(xhr.responseText);
-		            }
-		        });
-		    });
-		}
-
+    document.getElementById('commentSubmitBtn').addEventListener('click', function () {
+        var commentContent = commentQuill.root.innerHTML;
 		
-		$(document).ready(function() {
-			if (post.faq === 'Y') {
-				$(".fix").css("color", "green");
-			} else {
-				$(".fix").css("color", "gray");
-			}
-		});
+        $.ajax({
+            type: "POST",
+            url: "/insertBoardPost",
+            data: JSON.stringify({
+                parentCommentId: postId,
+                postTitle: post.postTitle + "에 대한 답글 입니다",
+                postContent: commentContent,
+                boardId: 999,
+                employeeNo: 0,
+            }),
+            contentType: "application/json",
+            success: function () {
+                $.ajax({
+                    type: "POST",
+                    url: "/updateBoardPost",
+                    data: JSON.stringify({
+                        postId: post.postId,
+                        childYn: 'Y'
+                    }),
+                    contentType: "application/json",
+                    success: function () {
+                        // 🔄 최종 성공 후 새로고침
+                        location.reload();
+                    },
+                    error: function (xhr, status, error) {
+                        alert("답글 상태 업데이트 실패");
+                        console.error(xhr.responseText);
+                    }
+                });
+            },
+            error: function (xhr, status, error) {
+                alert("답글 등록 실패");
+                console.error(xhr.responseText);
+            }
+        });
+    });
+}
 
+
+		// qna 고정
 		$(document).on("click", ".fix", function() {
+			
 			$.ajax({
 				type : "POST",
 				url : "/fixed",
 				contentType : "application/x-www-form-urlencoded",
 				data : "postId=" + postId,
-				success : function(response) {
+				success : function(response) {	
+					$('.fix').toggleClass('fixed')
 				},
 				error : function(xhr, status, error) {
 					console.error("❌ 요청 실패:", error);
@@ -212,51 +223,78 @@
 			});
 		});
 
-		$(document).on('click', '.fix', function() {
-			let color = window.getComputedStyle(this).color;
-
-			if (color === 'rgb(128, 128, 128)') {
-				$(this).css('color', 'rgb(0, 128, 0)');
-			} else {
-				$(this).css('color', 'rgb(128, 128, 128)');
-			}
-		});
 		
-		$('.delete-btn').on('click',e=>{
+		//qna 삭제
+		$('.delete-btn').on('click', e=>{
 			$.ajax({
 				type : "DELETE",
-				url : "/deletePost",
-				contentType : "application/x-www-form-urlencoded",
-				data : "postId=" + postId,
+				url : "/deletePostAll/"+ postId,
+				  beforeSend: function(xhr) {
+					    xhr.setRequestHeader(header, token);
+					  },
 				success : function(response) {
 					window.location.href = "/qna"; 
 				},
 				error : function(xhr, status, error) {
-					console.error("❌ 요청 실패:", error);
+					alert("❌ 요청 실패:");
 				}
 			});
 		})
 		
-		$.ajax({
-		    type: "POST",
-		    url: "/selectBoardPost",
-		    data: JSON.stringify({
-		        parentCommentId: postId
-		    }),
-		    contentType: "application/json",
-		    success: function(response) {
-		         console.log(response);
-		         $('#childPostTitle').text(response.postTitle);
-		         $('#childPostWriter').text('관리자');
-		         var d = new Date(response.postDate);
-			      var formattedDate = d.getFullYear() + "년 " + ("0" + (d.getMonth() + 1)).slice(-2) + "월 " + ("0" + d.getDate()).slice(-2) + "일";
-			      $('#childPostDate').text(formattedDate);
-			      $('#childPostEditor-container').html(response.postContent);
-		    },
-		    error: function(xhr, status, error) {
-		         console.log("자식없음");
-		    }
-		});
+		if(post.childYn=="Y"){
+			//답글출력
+			$.ajax({
+			    type: "POST",
+			    url: "/selectBoardPost",
+			    data: JSON.stringify({
+			        parentCommentId: postId
+			    }),
+			    contentType: "application/json",
+			    success: function(response) {
+			    	answerId = response.postId
+			         $('#childPostTitle').text(response.postTitle);
+			         $('#childPostWriter').text('관리자');
+			         var d = new Date(response.postDate);
+				      $('#childPostDate').text(formattedDate(d));
+				      $('#childPostEditor-container').html(response.postContent);
+			    },
+			    error: function(xhr, status, error) {
+			         console.log("자식없음");
+			    }
+			});
+		}
+		
+		$('.answerdel').on('click',e =>{
+			$.ajax({
+				type : "DELETE",
+				url : "/deletePost/"+ answerId,
+				  beforeSend: function(xhr) {
+					    xhr.setRequestHeader(header, token);
+					  },
+				success : function(response) {
+					$.ajax({
+	                    type: "POST",
+	                    url: "/updateBoardPost",
+	                    data: JSON.stringify({
+	                        postId: post.postId,
+	                        childYn: 'N'
+	                    }),
+	                    contentType: "application/json",
+	                    success: function () {
+	                        location.reload();
+	                    },
+	                    error: function (xhr, status, error) {
+	                        alert("답글 상태 업데이트 실패");
+	                        console.error(xhr.responseText);
+	                    }
+	                });
+				},
+				error : function(xhr, status, error) {
+					alert("❌ 요청 실패:");
+				}
+			});
+		})
+		
 	</script>
 </body>
 </html>

@@ -21,6 +21,8 @@ public interface BoardPostMapper {
     // 게시글 삭제
     int deletePost(int postId);
 
+    int deleteAllPost(int postId);
+    
     // 게시글 고정 여부 수정
     int modifyBoartFixed(@Param("postId") int postId);
 
