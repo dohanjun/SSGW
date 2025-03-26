@@ -7,7 +7,7 @@ import com.yedam.app.group.service.MailVO;
 import com.yedam.app.group.service.PageListVO;
 
 public interface MailMapper {
-
+  
 	
 	//메일검색기능
 	public PageListVO getPageList(PageListVO vo);
