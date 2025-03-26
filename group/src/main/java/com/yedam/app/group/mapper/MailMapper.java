@@ -7,7 +7,7 @@ import com.yedam.app.group.service.MailVO;
 import com.yedam.app.group.service.PageListVO;
 
 public interface MailMapper {
-
+  
 	
 	//메일검색기능
 	public PageListVO getPageList(PageListVO vo);
@@ -65,5 +65,8 @@ public interface MailMapper {
 	public List<MailVO> searchMails(MailVO mailVO);
 	
 	//임시메일함 자동삭제 기능
-	void selectTemList(LocalDateTime  currentDateTime);
+	void deleteExpiredMails(LocalDateTime  currentDateTime);
+	
+	//휴지통 자동삭제 기능
+	void deleteCurrentMails(LocalDateTime  currentDateTime);
 }

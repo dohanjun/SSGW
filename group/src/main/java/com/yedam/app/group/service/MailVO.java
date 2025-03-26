@@ -25,6 +25,7 @@ public class MailVO {
 	private String HttpSession;
 	
     private Long id;
+    
     private boolean isTemporary;
     private LocalDateTime expiryDate;
 }

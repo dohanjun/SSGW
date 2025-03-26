@@ -154,30 +154,13 @@ public class MailServiceImpl implements MailService {
 
 	// 임시메일함
 	@Override
-	@Scheduled(cron = "0 0 0 * * ?")
 	public List<MailVO> selectTemList(PageListVO vo) {
-		LocalDateTime currentDateTime = LocalDateTime.now();  // 현재 시간
-        LocalDateTime expiryDate = currentDateTime.plusDays(7);
-        
-		System.out.println(expiryDate);
-
-		mailMapper.selectTemList(expiryDate);
-		
 		return mailMapper.selectTemList(vo);
 	}
 
 	// 휴지통
 	@Override
-	@Scheduled(cron = "0 0 0 * * ?")
 	public List<MailVO> selectDelList(PageListVO vo) {
-		
-		LocalDateTime currentDateTime = LocalDateTime.now();  // 현재 시간
-        LocalDateTime expiryDate = currentDateTime.plusDays(30);
-        
-		System.out.println(expiryDate);
-
-		mailMapper.selectTemList(expiryDate);
-		
 		return mailMapper.selectDelList(vo);
 	}
 
@@ -204,15 +187,31 @@ public class MailServiceImpl implements MailService {
 		return "전송성공";
 	}
 
+//기타
+	
+	//검색기능
 	@Override
 	public List<MailVO> searchMails(MailVO mailVO) {
 		return mailMapper.searchMails(mailVO);
 	}
 
-	@Override
-	public void selectTemList(LocalDateTime currentDateTime) {
-		// TODO Auto-generated method stub
-		
+	//임시메일 자동삭제 기능
+	public void deleteExpiredMails() {
+        LocalDateTime currentDateTime = LocalDateTime.now();  // 현재 시간
+        LocalDateTime expiryDate = currentDateTime.plusDays(7);
+        mailMapper.deleteExpiredMails(expiryDate);  // 만료된 메일 삭제
+    }
+	
+	//휴지통 자동삭제 기능
+	public void deleteCurrentMails() {
+		LocalDateTime currentDateTime = LocalDateTime.now();  // 현재 시간
+		LocalDateTime expiryDate = currentDateTime.plusDays(30);
+		mailMapper.deleteExpiredMails(expiryDate);  // 만료된 메일 삭제
 	}
 
+	@Scheduled(cron = "0 0/1 0 * * ?")
+	public void scheduledDeleteExpiredMails() {
+        deleteExpiredMails();
+	}
+	
 }

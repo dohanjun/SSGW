@@ -1,6 +1,5 @@
 package com.yedam.app.group.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -58,7 +57,10 @@ public interface MailService {
 	public List<MailVO> searchMails(MailVO mailVO);
 	
 	//임시메일함
-	void selectTemList(LocalDateTime  currentDateTime);
+	void deleteExpiredMails();
+	
+	//휴지통 자동삭제 기능
+	void deleteCurrentMails();
 
 }
 
