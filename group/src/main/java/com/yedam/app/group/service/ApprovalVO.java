@@ -37,5 +37,9 @@ public class ApprovalVO {
 	private String aprvRole;
 	
 	private List<Integer> approvers; // 결재자
-	private List<Integer> reference; // 참조자
+	private List<Integer> references; // 참조자
+	
+	private int page = 1;
+	private int size = 10;
+	private int offset;
 }

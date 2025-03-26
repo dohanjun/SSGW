@@ -19,8 +19,19 @@ public class ScheduleServiceImpl implements ScheduleService {
 	private final ScheduleMapper scheduleMapper;
 	
 	@Override
-	public int createSchedule(ScheduleVO scheduleVO) {
-		return scheduleMapper.insertSchedule(scheduleVO);
+	public int createSchedule(ScheduleVO vo) {
+	    int result = scheduleMapper.insertSchedule(vo);
+
+	    if ("개인".equals(vo.getScheduleDivision()) && vo.getSharedEmployees() != null) {
+	        for (Integer empNo : vo.getSharedEmployees()) {
+	            ScheduleVO shareVO = new ScheduleVO();
+	            shareVO.setScheduleId(vo.getScheduleId());
+	            shareVO.setEmployeeNo(empNo);
+	            scheduleMapper.insertScheduleSharing(shareVO);
+	        }
+	    }
+
+	    return result;
 	}
 
 	@Override

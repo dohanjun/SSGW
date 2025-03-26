@@ -54,6 +54,21 @@
 			</div>
 		</div>
 	</div>
+	<!-- 페이징 영역 -->
+<div class="text-center mt-4">
+    <ul class="pagination justify-content-center">
+        <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+            <a class="page-link" th:href="@{/aprv/list(page=${currentPage - 1}, aprvStatus=${aprvStatus})}">이전</a>
+        </li>
+        <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}"
+            th:classappend="${i == currentPage} ? 'active'">
+            <a class="page-link" th:href="@{/aprv/list(page=${i}, aprvStatus=${aprvStatus})}" th:text="${i}">1</a>
+        </li>
+        <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+            <a class="page-link" th:href="@{/aprv/list(page=${currentPage + 1}, aprvStatus=${aprvStatus})}">다음</a>
+        </li>
+    </ul>
+</div>
 	<div class="modal fade" id="stampModal" tabindex="-1" role="dialog"
 		aria-labelledby="stampModalLabel" aria-hidden="true">
 		<div class="modal-dialog" role="document">

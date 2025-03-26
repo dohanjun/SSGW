@@ -17,4 +17,6 @@ public interface ScheduleMapper {
 	// 일정 삭제
 	public int deleteSchedule(ScheduleVO scheduleVO);
 	
+	// 일정 고융
+	public void insertScheduleSharing(ScheduleVO scheduleVO);
 }

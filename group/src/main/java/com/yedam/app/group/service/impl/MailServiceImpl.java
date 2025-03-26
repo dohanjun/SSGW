@@ -152,34 +152,34 @@ public class MailServiceImpl implements MailService {
 		return mailMapper.selectPutList(vo);
 	}
 
-	// 임시메일함
-	@Override
-	@Scheduled(cron = "0 0 0 * * ?")
-	public List<MailVO> selectTemList(PageListVO vo) {
-		LocalDateTime currentDateTime = LocalDateTime.now();  // 현재 시간
-        LocalDateTime expiryDate = currentDateTime.plusDays(7);
-        
-		System.out.println(expiryDate);
-
-		mailMapper.selectTemList(expiryDate);
-		
-		return mailMapper.selectTemList(vo);
-	}
-
-	// 휴지통
-	@Override
-	@Scheduled(cron = "0 0 0 * * ?")
-	public List<MailVO> selectDelList(PageListVO vo) {
-		
-		LocalDateTime currentDateTime = LocalDateTime.now();  // 현재 시간
-        LocalDateTime expiryDate = currentDateTime.plusDays(30);
-        
-		System.out.println(expiryDate);
-
-		mailMapper.selectTemList(expiryDate);
-		
-		return mailMapper.selectDelList(vo);
-	}
+//	// 임시메일함
+//	@Override
+//	@Scheduled(cron = "0 0 0 * * ?")
+//	public List<MailVO> selectTemList(PageListVO vo) {
+//		LocalDateTime currentDateTime = LocalDateTime.now();  // 현재 시간
+//        LocalDateTime expiryDate = currentDateTime.plusDays(7);
+//        
+//		System.out.println(expiryDate);
+//
+//		mailMapper.selectTemList(expiryDate);
+//		
+//		return mailMapper.selectTemList(vo);
+//	}
+//
+//	// 휴지통
+//	@Override
+//	@Scheduled(cron = "0 0 0 * * ?")
+//	public List<MailVO> selectDelList(PageListVO vo) {
+//		
+//		LocalDateTime currentDateTime = LocalDateTime.now();  // 현재 시간
+//        LocalDateTime expiryDate = currentDateTime.plusDays(30);
+//        
+//		System.out.println(expiryDate);
+//
+//		mailMapper.selectTemList(expiryDate);
+//		
+//		return mailMapper.selectDelList(vo);
+//	}
 
 	// 메일전송
 

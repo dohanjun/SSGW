@@ -32,15 +32,23 @@
             <form action="/aprv/writing" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="formId" id="formIdInput">
                 <input type="hidden" name="basicsFormId" id="basicsFormIdInput">
-                <input type="hidden" name="status" id="statusInput">
+                <input type="hidden" name="aprvStatus" id="statusInput">
+                <input type="hidden" name="content" id="contentHidden">
                 <div class="form-group">
                     <label>제목</label>
                     <input type="text" class="form-control" name="title"
                            th:value="${aprvVO != null} ? ${aprvVO.title} : ''">
                 </div>
+                <!-- 휴가유형 셀렉트박스 -->
+				<div class="form-group" id="vacationTypeSelector" style="display: none;">
+				    <label>휴가 유형 선택</label>
+				    <select id="vacationTypeSelect" class="form-control">
+				        <option disabled selected>휴가유형을 선택하세요</option>
+				    </select>
+				</div>
                 <div class="form-group">
                     <label>내용</label>
-                    <div id="Content" class="p-3 border rounded" style="min-height: 200px; background-color: #f8f9fc;"></div>
+                    <div id="Content" class="p-3 border rounded"  style="min-height: 200px; background-color: #f8f9fc;"></div>
                 </div>
                 <div class="form-group">
     				<label>첨부파일</label>
@@ -161,7 +169,7 @@ function createDeptNodeRecursive(dept, childDeptMap) {
     dept.employees.forEach(emp => {
         const empLi = document.createElement("li");
         empLi.innerHTML = `
-          <input type="checkbox" class="emp-check" value="${emp.employeeNo}" data-name="${emp.employeeName}">
+          <input type="checkbox" class="emp-check" value="${emp.employeeNo}" data-name="${emp.employeeName}" data-job="${emp.jobTitleName}">
           🙍‍♂️ ${emp.employeeName} (${emp.jobTitleName})
         `;
         subTree.appendChild(empLi);
@@ -207,33 +215,22 @@ $('#referenceModal').on('show.bs.modal', function () {
         .then(data => buildTree(data, 'orgTreeReference'));
 });
 
-$('#addApproversBtn').click(function () {
-    const checked = $('#orgTreeApprover input.emp-check:checked');
-    if (checked.length > 3) return alert('결재자는 최대 3명까지 선택 가능합니다.');
-
-    const names = [], nos = [];
-    checked.each(function () {
-        names.push($(this).data('name'));
-        nos.push($(this).val());
-    });
-    $('#selectedApproverList').html(names.map(n => `<li class="list-group-item">${n}</li>`).join(''));
-    $('#approversInput').val(nos.join(','));
-    forceCloseModal('#approverModal');
-});
-
 // 결재자 순서 변경 이벤트
 // 결재자 추가 버튼 클릭 시 실행되는 함수
 $('#addApproversBtn').click(function () {
     const checked = $('#orgTreeApprover input.emp-check:checked');
     if (checked.length > 3) return alert('결재자는 최대 3명까지 선택 가능합니다.');
 
-    const names = [], nos = [];
+    const names = [], nos = [], jobTitles = [];
     checked.each(function () {
-        names.push($(this).data('name'));
-        nos.push($(this).val());
+        const name = $(this).data('name');
+        const job = $(this).data('job');
+        const no = $(this).val();
+
+        names.push(`${name} (${job})`);
+        nos.push(no);
     });
 
-    // 결재자 목록에 항목 추가
     $('#selectedApproverList').html(names.map((n, i) => `
         <li class="list-group-item d-flex justify-content-between align-items-center" data-no="${nos[i]}">
             ${n}
@@ -308,24 +305,65 @@ $('#formModal').on('show.bs.modal', function () {
     });
 });
 
+//양식 불러오기 버튼 클릭 시 처리
 $('#loadFormBtn').click(function () {
     const selected = $('input[name="form"]:checked');
     if (!selected.length) return alert('양식을 선택해주세요.');
-    const formId = selected.val(), type = selected.data('type');
+
+    const formId = selected.val();
+    const type = selected.data('type');
+
     $.get(`/aprvWriting/content/${formId}?type=${type}`, function (response) {
+        const formType = response.formType;
         $('#Content').html(response.content);
         $('#contentHidden').val(response.content);
+		
+        if (type === 'company') {
+            $('#formIdInput').val(formId);
+            $('#basicsFormIdInput').val('');
+        } else {
+            $('#basicsFormIdInput').val(formId);
+            $('#formIdInput').val('');
+        }
+        
         forceCloseModal('#formModal');
+
+        // 👉 휴가원 양식일 경우 휴가유형 셀렉트 표시 + 데이터 불러오기
+        if (formType === '휴가원') {
+            $('#vacationTypeSelector').show();
+            $('#vacationTypeSelect').empty().append(`<option disabled selected>휴가유형을 선택하세요</option>`);
+
+            // 회사별 휴가유형 목록 불러오기
+            $.get('/aprv/vacation', function (types) {
+                const uniqueTypes = [...new Map(types.map(t => [t.vacationTypeName, t])).values()];
+                uniqueTypes.forEach(type => {
+                    $('#vacationTypeSelect').append(`<option value="${type.vacationTypeName}">${type.vacationTypeName}</option>`);
+                });
+            });
+
+        } else {
+            // 휴가원이 아니면 셀렉트박스 숨기기
+            $('#vacationTypeSelector').hide();
+        }
     });
 });
 
-/* // 임시저장 버튼 클릭 시 status를 '임시'로 설정하고 폼 제출
-document.getElementById("tempSaveButton").addEventListener("click", function() {
-    document.getElementById("statusInput").value = "임시";
-  
-    document.querySelector("form").submit();
-}); */
+// 휴가유형 선택 시 휴가원 양식 내부 input에 반영
+$('#vacationTypeSelect').on('change', function () {
+    const selectedType = $(this).val();
 
+    // 휴가종류 input 찾기 → value 설정
+    $('#Content').find('table.vacationtable input[type="text"]').each(function () {
+        const thText = $(this).closest('tr').find('th').text().trim();
+        if (thText.includes('휴가종류')) {
+            $(this).val(selectedType);
+        }
+    });
+
+    // contentHidden에도 반영
+    const finalContent = prepareFinalContent();
+    $('#contentHidden').val(finalContent);
+});
 
 document.addEventListener("DOMContentLoaded", function () {
     const contentHidden = document.getElementById("contentHidden");
@@ -353,6 +391,8 @@ $('#ajaxSubmitBtn').on('click', function () {
     formData.append("title", $('input[name="title"]').val());
     formData.append("content", finalContent);
     formData.append("status", "대기");
+    formData.append("formId", $('#formIdInput').val());
+    formData.append("basicsFormId", $('#basicsFormIdInput').val());
 	
     const fileInput = document.getElementById("fileInput");
     const files = fileInput.files;
@@ -366,6 +406,11 @@ $('#ajaxSubmitBtn').on('click', function () {
     
     // approvers와 references는 hidden input이 아니라 직접 append 해도 됨
     const approvers = $('#approversInput').val();
+    if (!approvers) {
+        alert("결재자를 한 명 이상 선택해주세요.");
+        return;
+    }
+    
     if (approvers) {
         approvers.split(',').forEach(a => {
             formData.append("approvers", a);
@@ -429,9 +474,60 @@ function prepareFinalContent() {
     return clonedContent.innerHTML;
 }
 
+// 임시저장 버튼 클릭 시 status를 '임시'로 설정하고 폼 제출
+document.getElementById("tempSaveButton").addEventListener("click", function () {
+    const finalContent = prepareFinalContent();
+    
+    const form = document.querySelector("form");
+    const formData = new FormData(form);
 
+    formData.append("title", $('input[name="title"]').val());
+    formData.append("content", finalContent);
+    formData.append("aprvStatus", "임시");
 
+    const fileInput = document.getElementById("fileInput");
+    const files = fileInput.files;
+    for (let i = 0; i < files.length; i++) {
+        formData.append("files", files[i]);
+    }
 
+    const approvers = $('#approversInput').val();
+    if (approvers) {
+        approvers.split(',').forEach(a => {
+            formData.append("approvers", a);
+        });
+    }
+
+    const references = $('#referencesInput').val();
+    if (references) {
+        references.split(',').forEach(r => {
+            formData.append("references", r);
+        });
+    }
+
+    $.ajax({
+        url: '/aprv/writing',
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function () {
+            alert('임시저장 되었습니다!');
+            location.href = '/aprv/request?aprvStatus=임시';
+        },
+        error: function (xhr) {
+            alert('임시저장 중 오류 발생: ' + xhr.responseText);
+        }
+    });
+});
+
+// 휴가목록 불러오기
+$.get('/aprv/vacation', function (types) {
+    const uniqueTypes = [...new Map(types.map(t => [t.vacationTypeName, t])).values()];
+    uniqueTypes.forEach(type => {
+        $('#vacationTypeSelect').append(`<option value="${type.vacationTypeName}">${type.vacationTypeName}</option>`);
+    });
+});
 </script>
 
 </body>
