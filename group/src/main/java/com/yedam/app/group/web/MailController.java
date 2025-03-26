@@ -19,6 +19,8 @@ import com.yedam.app.group.service.MailVO;
 import com.yedam.app.group.service.PageListVO;
 import com.yedam.app.group.service.Paging;
 
+import jakarta.servlet.http.HttpSession;
+
 @Controller
 public class MailController {
 
@@ -46,7 +48,7 @@ public class MailController {
 		List<MailVO> list = mailService.MailSelectAll(vo);
 		model.addAttribute("mails", list);
 
-		return "group/mail/mail"; // mainPage.html을 반환
+		return "group/mail/mail";
 	}
 
 	// 메일상세보기
@@ -75,14 +77,14 @@ public class MailController {
 
 	// 등록 - 페이지
 	@GetMapping("/mailInsert")
-	public String mailInsertForm() {
+	public String InsertMailForm() {
 		return "group/mail/mailInsert";
 	}
 
 
 	// 메일등록
 	@PostMapping("/mailInsert")
-	public String mailInsert(MailVO vo) {
+	public String InsertMail(MailVO vo) {
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 		vo.setEmployeeId(loggedInUser.getEmployeeId());
 
@@ -169,7 +171,7 @@ public class MailController {
 
 		List<MailVO> list = mailService.MailSelectAll(vo);
 		model.addAttribute("mails", list);
-		return "group/mail/getMail"; // mainPage.html을 반환
+		return "group/mail/getMail";
 	}
 
 	// 보낸메일함
@@ -203,7 +205,7 @@ public class MailController {
 
 		List<MailVO> list = mailService.MailSelectAll(vo);
 		model.addAttribute("mails", list);
-		return "group/mail/temporaryMail"; // mainPage.html을 반환
+		return "group/mail/temporaryMail";
 	}
 
 	// 휴지통 -> 30일 뒤 삭제
@@ -220,6 +222,35 @@ public class MailController {
 
 		List<MailVO> list = mailService.MailSelectAll(vo);
 		model.addAttribute("mails", list);
-		return "group/mail/deleteMail"; // mainPage.html을 반환
+		return "group/mail/deleteMail";
 	}
+	
+	 // 메일 검색 폼
+    @GetMapping("/searchMailForm")
+    public String showSearchForm(HttpSession session, Model model) {
+        // 세션에서 기존 검색 조건을 가져옵니다.
+        MailVO searchCriteria = (MailVO) session.getAttribute("searchCriteria");
+
+        // 검색 조건이 있으면 모델에 추가
+        if (searchCriteria != null) {
+            model.addAttribute("searchCriteria", searchCriteria);
+        }
+
+        return "group/mail/mailSearch";
+    }
+
+    // 검색 처리
+    @GetMapping("/searchMail")
+    public String searchMail(MailVO mailVO, HttpSession session, Model model) {
+        // 검색 조건을 세션에 저장
+        session.setAttribute("searchCriteria", mailVO);
+
+        // 메일 목록 조회
+        List<MailVO> mailList = mailService.searchMails(mailVO);
+
+        // 검색 결과를 모델에 추가
+        model.addAttribute("mailList", mailList);
+
+        return "group/mail/mailSearchResults";
+    }
 }
