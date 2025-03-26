@@ -8,6 +8,7 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -56,11 +57,12 @@ import java.util.Map;
 /** 외부페이지 컨트롤
  * @author 조성민
  * @since 2025-03-20
- * <pre>
+
  * <pre>
  * 수정일자      수정자    수정내용
  * --------------------------------
  * 2025-03-24  조성민
+ * 2025-03-26  조성민   
  * </pre>
  * */
 
@@ -96,7 +98,6 @@ public class mainController {
 	public String loginPage() {
 		return "externalPages/loginPage";
 	}
-
 	@GetMapping("/logout")
 	public String logout(HttpServletRequest request, HttpServletResponse response) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -186,8 +187,14 @@ public class mainController {
 	    return ResponseEntity.ok("내역 저장 성공");
 	}
 	
-	@DeleteMapping("/deletePost")
-	public ResponseEntity<String> removeBoradPost(@RequestParam("postId") int postId) {
+	@DeleteMapping("/deletePostAll/{postId}")
+	public ResponseEntity<String> removeAllBoradPost(@PathVariable("postId") int postId) {
+		boardPostService.removeBoradPost(postId);
+	    return ResponseEntity.ok("삭제 성공");
+	}
+	
+	@DeleteMapping("/deletePost/{postId}")
+	public ResponseEntity<String> removeBoradPost(@PathVariable("postId") int postId) {
 		boardPostService.removeBoradPost(postId);
 	    return ResponseEntity.ok("삭제 성공");
 	}
@@ -200,8 +207,7 @@ public class mainController {
 	
 	@PostMapping("/updateBoardPost")
 	public ResponseEntity<String> updateBoardPost(@RequestBody BoardPostVO boardPost) {
-	    System.out.println("받은 데이터: " + boardPost);
-	    boardPostService.modifyBoard(boardPost);
+		boardPostService.modifyBoard(boardPost);
 	    return ResponseEntity.ok("게시글이 성공적으로 등록되었습니다.");
 	}
 
@@ -318,7 +324,20 @@ public class mainController {
 	    return subscriberService.isSubIdExists(subId);
 	}
 	
-
+	//개인 ip 등록
+	@PostMapping("/registerTempIp")
+	@ResponseBody
+	public ResponseEntity<String> registerTempIp(@RequestBody Map<String, String> map) {
+	    String tempIp = map.get("tempIp");
+	    String employeeId = map.get("employeeId");
+	    int result = subscriberService.insertTempIp(tempIp,employeeId);
+	    
+	    if (result > 0) {
+	        return ResponseEntity.ok("등록 완료");
+	    } else {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("등록 실패");
+	    }
+	}
 
 
 }

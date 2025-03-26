@@ -3,6 +3,7 @@ package com.yedam.app.group.mapper;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Select;
+import org.springframework.data.repository.query.Param;
 
 import com.yedam.app.group.service.DeptVO;
 import com.yedam.app.group.service.RankVO;
@@ -10,8 +11,8 @@ import com.yedam.app.group.service.RightsVO;
 
 public interface DeptMapper {
 	
-	// 부서 조회
-	//public List<DeptVO> selectDeptList();
+	// 전체 부서 조회
+	public List<DeptVO> selectAllDepartments(@Param("suberNo") int suberNo);
 	
 	
 	// 부서 등록
@@ -28,6 +29,8 @@ public interface DeptMapper {
     
     // 직원 조직도
     public List<DeptVO> getOrgChart(DeptVO deptVO);
+
+	public int insertDepartment(DeptVO deptVO);
 	
 	
 

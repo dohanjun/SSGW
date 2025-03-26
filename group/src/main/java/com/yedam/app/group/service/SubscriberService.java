@@ -10,4 +10,5 @@ public interface SubscriberService {
 	void updateSuber(SubscriberVO vo);
 	boolean isSubIdExists(String subId);
 	void updateSubscriberPassword(SubscriberVO subscriber);
+	int insertTempIp(String tempIp, String employeeId);
 }

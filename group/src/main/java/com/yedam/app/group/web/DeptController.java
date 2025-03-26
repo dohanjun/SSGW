@@ -2,11 +2,13 @@ package com.yedam.app.group.web;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.yedam.app.group.mapper.DeptMapper;
+import com.yedam.app.group.service.DeptService;
 import com.yedam.app.group.service.DeptVO;
 import com.yedam.app.group.service.EmpService;
 import com.yedam.app.group.service.EmpVO;
@@ -14,6 +16,9 @@ import com.yedam.app.group.service.RankVO;
 import com.yedam.app.group.service.RightsVO;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 
 /** 
@@ -34,7 +39,7 @@ public class DeptController {
 	
     private final DeptMapper deptMapper;
     private final EmpService empService;
-    
+    private final DeptService deptService;
     
 
     // 부서 목록 조회 API
@@ -65,14 +70,30 @@ public class DeptController {
         return deptMapper.getAllRights(rightsVO);
     }
     
-    // 조직도 컨트롤러
+    // 조직도 데이터 제공 (JSON 응답)
     @GetMapping("/orgchart")
     public List<DeptVO> getOrgChart(DeptVO deptVO) {
     	// 로그인한 사용자 정보 가져오기
 	    EmpVO loggedInUser = empService.getLoggedInUserInfo();
 	    deptVO.setSuberNo(loggedInUser.getSuberNo());
     	
-        return deptMapper.getOrgChart(deptVO);
-    }
+       List<DeptVO> result = deptMapper.getOrgChart(deptVO);
 
+        //  디버깅 로그 찍기
+        System.out.println("[조직도 호출] 회사번호: " + deptVO.getSuberNo());
+        for (DeptVO d : result) {
+            System.out.println("부서: " + d.getDepartmentName() + ", 사원 수: " + (d.getEmployees() != null ? d.getEmployees().size() : 0));
+        }
+
+        return result;
+    }
+    
+    @PostMapping("/saveDepartMent")
+    public ResponseEntity<Integer> saveDept(@RequestBody DeptVO deptVO) {
+    	System.out.println("Controller 진입");
+    	System.out.println(deptVO);
+        deptService.insertDepartment(deptVO);
+        System.out.println("삽입 후 부서번호: " + deptVO.getDepartmentNo());
+        return ResponseEntity.ok(deptVO.getDepartmentNo());
+    }
 }

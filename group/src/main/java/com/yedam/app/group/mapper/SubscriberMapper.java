@@ -17,4 +17,5 @@ public interface SubscriberMapper {
 	void updateSuber(SubscriberVO vo);
 	boolean checkedId(String subId);
 	void updateSubscriberPassword(SubscriberVO subscriber);
+	int insertTempIp(String tempIp, String employeeId);
 }

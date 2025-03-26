@@ -22,17 +22,23 @@
 							<h6 class="m-0 font-weight-bold text-primary">게시글 등록</h6>
 						</div>
 						<div class="card-body">
+						  <form th:action="@{/insertBoard}" method="post" enctype="multipart/form-data">
 							<table class="table file-info-table">
 								<tbody>
+								<select name="boardType" class="form-control" required>
+    								<option th:if="${isAdmin}" value="공지">공지</option>
+    								<option th:if="${isDepartmentMember}" value="부서">부서</option>
+    								<option value="자유">자유</option>
+								</select>
 									<tr>
 										<th>제목</th>
-										<td><input type="text" class="form-control" placeholder="제목을 입력하세요"></td>
+										<td><input type="text" class="form-control" name="postTitle" placeholder="제목을 입력하세요" required></td>
 										<th>작성자</th>
-										<td><input type="text" class="form-control" placeholder="작성자 이름"></td>
+										<td><input type="text" class="form-control" name="writer" th:value="${loginUser.employeeName}" readonly></td>
 									</tr>
 									<tr>
 										<th>등록일</th>
-										<td><input type="date" class="form-control"></td>
+										<td><input type="date" class="form-control" name="postDate" th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" required></td>
 										<th>파일명</th>
 										<td><input type="file" class="form-control" name="files" multiple></td>
 									</tr>
@@ -43,13 +49,15 @@
 							<div class="content-area-container">
 								<div class="content-area-title">내용 입력</div>
 								<div id="editor" class="editor-container"></div>
+								<input type="hidden" name="postContent" id="postContent">
 							</div>
 
 							<!-- 버튼 정렬 -->
 							<div class="btn-container">
-								<button class="btn btn-primary">등록</button>
-								<button class="btn btn-secondary">취소</button>
+								<button class="btn btn-primary" type="submit">등록</button>
+								<button class="btn btn-secondary" type="button" onclick="window.history.back();">취소</button>
 							</div>
+						  </form>
 						</div>
 					</div>
 				</div>
@@ -76,6 +84,16 @@
 		document.querySelector('.ql-editor').style.minHeight = "250px";
 		document.querySelector('.ql-editor').style.height = "300px";
 		document.querySelector('.ql-editor').style.maxHeight = "500px";
+		
+		document.querySelector("form").addEventListener("submit", function (event) {
+	        let html = quill.root.innerHTML.trim();
+	        document.getElementById("postContent").value = html;
+
+	        if (!html || html === "<p><br></p>") {
+	            alert("내용이 입력되지 않았습니다.");
+	            event.preventDefault();
+	        }
+	    })
 	</script>
 </body>
 </html>

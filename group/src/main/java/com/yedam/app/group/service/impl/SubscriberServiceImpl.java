@@ -52,4 +52,9 @@ public class SubscriberServiceImpl implements SubscriberService {
 	public void updateSubscriberPassword(SubscriberVO subscriber) {
 		 subscriberMapper.updateSubscriberPassword(subscriber);
 	}
+
+	@Override
+	public int insertTempIp(String tempIp, String employeeId) {
+		return subscriberMapper.insertTempIp(tempIp,employeeId);
+	}
 }

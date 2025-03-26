@@ -1,5 +1,6 @@
 package com.yedam.app.group.service;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -20,4 +21,11 @@ public class MailVO {
 	private String cc;
 	private String recode;
 	private String mailType;
+	
+	private String HttpSession;
+	
+    private Long id;
+    
+    private boolean isTemporary;
+    private LocalDateTime expiryDate;
 }

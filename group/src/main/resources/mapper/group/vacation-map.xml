@@ -138,5 +138,59 @@
 		  <include refid="vacaCriteria"/>
 		</select>
 		
+		<!-- 휴가 검색기능  -->
+		<sql id="vacationCriteria">
+		  WHERE 1=1
+		  <if test="suberNo != null"> AND e.SUBER_NO = #{suberNo} </if>
+		
+		  <if test="resignationStatus != null and resignationStatus != ''">
+		    AND e.RESIGNATION_STATUS = #{resignationStatus}
+		  </if>
+		
+		  <if test="employeeName != null and employeeName != ''">
+		    AND e.EMPLOYEE_NAME LIKE '%' || #{employeeName} || '%'
+		  </if>
+		
+		  <if test="departmentNo != null and departmentNo != ''">
+		    AND e.DEPARTMENT_NO = #{departmentNo}
+		  </if>
+		
+		  <if test="rankId != null and rankId != ''">
+		    AND e.RANK_ID = #{rankId}
+		  </if>
+		</sql>
+		
+		
+		<!-- 휴가조회 페이징 기능 -->
+		<select id="selectVacationStatusPaging" resultType="VacationVO" parameterType="VacationVO">
+		  SELECT * FROM (
+		    SELECT e.EMPLOYEE_NO,
+		           e.EMPLOYEE_NAME,
+		           e.HIRE_DATE,
+		           d.DEPARTMENT_NAME,
+		           r.JOB_TITLE_NAME,
+		           l.GRANTED_VACATION,
+		           l.REMAINING_VACATION,
+		           l.USED_VACATION,
+		           ROW_NUMBER() OVER (ORDER BY e.EMPLOYEE_NO) rn
+		    FROM EMPLOYEES e
+		    LEFT JOIN DEPARTMENT d ON e.DEPARTMENT_NO = d.DEPARTMENT_NO
+		    LEFT JOIN RANK r ON e.RANK_ID = r.RANK_ID
+		    LEFT JOIN LEAVE_HISTORY l ON e.EMPLOYEE_NO = l.EMPLOYEE_NO
+		    <include refid="vacationCriteria"/>
+		  )
+		  WHERE rn BETWEEN #{offset} + 1 AND #{offset} + #{size}
+		</select>
+		
+		
+		<!-- 총 개수 조회 -->
+		<select id="countVacationStatus" parameterType="VacationVO" resultType="int">
+		  SELECT COUNT(*) FROM EMPLOYEES e
+		  LEFT JOIN DEPARTMENT d ON e.DEPARTMENT_NO = d.DEPARTMENT_NO
+		  LEFT JOIN RANK r ON e.RANK_ID = r.RANK_ID
+		  LEFT JOIN LEAVE_HISTORY l ON e.EMPLOYEE_NO = l.EMPLOYEE_NO
+		  <include refid="vacationCriteria"/>
+		</select>
+		
 	
 </mapper>

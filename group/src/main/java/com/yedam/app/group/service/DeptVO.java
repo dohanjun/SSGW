@@ -12,7 +12,7 @@ public class DeptVO {
 	private Integer departmentNo; 			// 부서번호
 	private Integer upperDepNo; 			// 상위 부서번호
 	private String departmentName;			// 부서이름
-	private String departmentLevel;			// 부서레벨
+	private Integer departmentLevel;			// 부서레벨
 	private Integer manager;				// 매니저 ID
 	private Integer suberNo;				// 회사번호
 	
@@ -30,6 +30,9 @@ public class DeptVO {
 	private String jobTitleName;			// 직급명  
 	private Integer jobTitleLevel;			// 직급레벨
 	private Integer rankId;					// 직급Id
+	
+	//
+	private Integer employeeCount; 			// 부서 총원 (계산용, DB에는 없음)
 	
 
 }

@@ -1,12 +1,13 @@
 package com.yedam.app.group.mapper;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.yedam.app.group.service.MailVO;
 import com.yedam.app.group.service.PageListVO;
 
 public interface MailMapper {
-
+  
 	
 	//메일검색기능
 	public PageListVO getPageList(PageListVO vo);
@@ -22,6 +23,12 @@ public interface MailMapper {
 	
 	//메일등록
 	public int MailCreate(MailVO mailVO);
+	
+	//메일보내기
+	public void insertMail(MailVO vo);
+	
+	//메일받기
+	public void receiveEmails(MailVO vo);
 	
 	//메일검색기록
 	public int MailRecode(MailVO mailVO);
@@ -52,11 +59,14 @@ public interface MailMapper {
 	//휴지통
 	public List<MailVO> selectDelList(PageListVO vo);
 
+//기타
+
+	//주소검색 기능
+	public List<MailVO> searchMails(MailVO mailVO);
 	
+	//임시메일함 자동삭제 기능
+	void deleteExpiredMails(LocalDateTime  currentDateTime);
 	
-	//메일보내기
-	public void insertMail(MailVO vo);
-	
-	//메일받기
-	public void receiveEmails(MailVO vo);
+	//휴지통 자동삭제 기능
+	void deleteCurrentMails(LocalDateTime  currentDateTime);
 }

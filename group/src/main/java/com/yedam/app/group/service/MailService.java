@@ -18,7 +18,10 @@ public interface MailService {
 	public MailVO MyMailSelectInfo(MailVO mailVO);
 	
 	//메일등록
-	public int MailInsert(MailVO mailVO);
+	public int InsertMail(MailVO mailVO);
+	
+	//메일보내기
+	public String sendMailToUser(MailVO vo);
 	
 	//메일검색기록
 	public int MailRecodeInfo(MailVO mailVO);
@@ -48,9 +51,16 @@ public interface MailService {
 	public List<MailVO> selectTemList(PageListVO vo);
 	//휴지통
 	public List<MailVO> selectDelList(PageListVO vo);
-
-	//메일
 	
-	 public String sendMailToUser(MailVO vo);
+//기타
+	//주소검색기능
+	public List<MailVO> searchMails(MailVO mailVO);
+	
+	//임시메일함
+	void deleteExpiredMails();
+	
+	//휴지통 자동삭제 기능
+	void deleteCurrentMails();
+
 }
 

@@ -30,7 +30,6 @@ import com.yedam.app.group.service.SubscriberVO;
 import com.yedam.app.group.service.SubscriptionDetailVO;
 
 import lombok.RequiredArgsConstructor;
-import retrofit2.http.Path;
 
 @Controller
 @RequiredArgsConstructor
@@ -79,15 +78,15 @@ public class ModuleController {
 	@PostMapping("/savePayment")
 	public ResponseEntity<PaymentVO> savePayment(@RequestBody PaymentVO payment) {
 	    paymentService.savePayment(payment);
+	    List<PaymentDetailsVO> savedDetails = paymentDetailsService.createPaymentDetails(payment.getPaymentDetailsList());
 	    return ResponseEntity.ok(payment);
 	}
 	
-	 @PostMapping("/savePaymentDetails")
-	    public ResponseEntity<List<PaymentDetailsVO>> savePaymentDetails(@RequestBody List<PaymentDetailsVO> request) {
-	        List<PaymentDetailsVO> savedDetails = paymentDetailsService.createPaymentDetails(request);
-	        System.out.println(request);
-	        return ResponseEntity.ok(savedDetails);
-	    }
+//	 @PostMapping("/savePaymentDetails")
+//	    public ResponseEntity<List<PaymentDetailsVO>> savePaymentDetails(@RequestBody List<PaymentDetailsVO> request) {
+//	        System.out.println(request);
+//	        return ResponseEntity.ok(savedDetails);
+//	    }
 
 	
 	

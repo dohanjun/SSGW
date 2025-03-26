@@ -93,7 +93,9 @@
 </select>
     
     <!-- 전체 자료실 게시글 목록 조회 -->
-    <select id="selectTotalRepositoryPostsPaged" parameterType="map" resultType="com.yedam.app.group.service.RepositoryPostVO">
+    <select id="selectTotalRepositoryPostsPaged" 
+            parameterType="map" 
+            resultType="com.yedam.app.group.service.RepositoryPostVO">
     SELECT * FROM (
         SELECT 
             p.writing_id,
@@ -106,25 +108,31 @@
             COUNT(f.file_id) AS fileCount,
             r.file_repository_type AS repositoryType,
             ROW_NUMBER() OVER (ORDER BY p.fix DESC, p.creation_date DESC, p.writing_id DESC) AS rn
+            
         FROM repository_post p
         JOIN employees e ON p.employee_no = e.employee_no
         JOIN repository r ON p.file_repository_id = r.file_repository_id
         LEFT JOIN repository_file f ON p.writing_id = f.writing_id
-        WHERE r.suber_no = #{suberNo}
+        <include refid="cri"></include>
+      
+        GROUP BY p.writing_id, p.title, p.fix, p.employee_no, e.employee_name, p.creation_date, r.file_repository_type
+    ) 
+    WHERE rn BETWEEN #{offset} + 1 AND #{offset} + #{limit}
+</select>
+
+<sql id="cri">
+  		WHERE r.suber_no = #{suberNo}
           AND r.file_repository_type = '전체'
           AND p.writing_id NOT IN (SELECT writing_id FROM basket)
           <if test="keyword != null and keyword != ''">
-            AND (
+          AND (
               LOWER(p.title) LIKE '%' || LOWER(#{keyword}) || '%' OR
               LOWER(p.content) LIKE '%' || LOWER(#{keyword}) || '%' OR
               LOWER(e.employee_name) LIKE '%' || LOWER(#{keyword}) || '%' OR
               LOWER(f.file_name) LIKE '%' || LOWER(#{keyword}) || '%'
             )
           </if>
-        GROUP BY p.writing_id, p.title, p.fix, p.employee_no, e.employee_name, p.creation_date, r.file_repository_type
-    ) 
-    WHERE rn BETWEEN #{offset} + 1 AND #{offset} + #{limit}
-</select>
+</sql>
 
 <select id="countTotalRepositoryPosts" resultType="int">
     SELECT COUNT(DISTINCT p.writing_id)
@@ -132,17 +140,7 @@
     JOIN employees e ON p.employee_no = e.employee_no
     JOIN repository r ON p.file_repository_id = r.file_repository_id
     LEFT JOIN repository_file f ON p.writing_id = f.writing_id
-    WHERE r.suber_no = #{suberNo}
-      AND r.file_repository_type = '전체'
-      AND p.writing_id NOT IN (SELECT writing_id FROM basket)
-      <if test="keyword != null and keyword != ''">
-        AND (
-          LOWER(p.title) LIKE '%' || LOWER(#{keyword}) || '%' OR
-          LOWER(p.content) LIKE '%' || LOWER(#{keyword}) || '%' OR
-          LOWER(e.employee_name) LIKE '%' || LOWER(#{keyword}) || '%' OR
-          LOWER(f.file_name) LIKE '%' || LOWER(#{keyword}) || '%'
-        )
-      </if>
+	<include refid="cri"></include>
 </select>
 
     <!-- 부서 자료실 게시글 수 -->

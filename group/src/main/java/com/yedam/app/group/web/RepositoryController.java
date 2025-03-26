@@ -19,6 +19,15 @@ import com.yedam.app.group.service.RepositoryPostVO;
 import com.yedam.app.group.service.RepositoryService;
 import com.yedam.app.group.service.RepositoryVO;
 
+/** 자료실 컨트롤
+ * @author 윤지원
+ * @since 2025-03-17
+ * <pre>
+ * 수정일자    수정자   수정내용
+ * ---------------------
+ * 
+ * </pre>
+*/
 @Controller
 public class RepositoryController {
 
@@ -47,9 +56,6 @@ public class RepositoryController {
 	                              Model model) {
 
 	    EmpVO loggedInUser = empService.getLoggedInUserInfo();
-	    if (loggedInUser == null) {
-	        throw new IllegalStateException("로그인한 사용자 정보를 찾을 수 없습니다.");
-	    }
 	    
 	    // 고정글 조회 (fix = 'Y')
 	    List<RepositoryPostVO> fixedList = postService.getFixedPosts(loggedInUser.getSuberNo(), keyword);
@@ -66,7 +72,7 @@ public class RepositoryController {
 	    int offset = (page - 1) * pageSize;
 	    int limit = pageSize;
 
-	    // 3. 게시글 목록
+	    // 3. 자료글 목록
 	    List<RepositoryPostVO> totalRepositoryList = postService.getTotalRepositoryPostsPaged(
 	            loggedInUser.getSuberNo(), keyword, offset, limit
 	    );
@@ -150,11 +156,7 @@ public class RepositoryController {
             Model model) {
 
 	    EmpVO loggedInUser = empService.getLoggedInUserInfo();
-
-	    if (loggedInUser == null) {
-	        throw new IllegalStateException("로그인한 사용자 정보를 찾을 수 없습니다.");
-	    }
-
+	    
 	    // 1. 전체 게시글 수
 	    int totalCount = postService.getIndividualRepositoryPostCount(loggedInUser.getSuberNo(), loggedInUser.getEmployeeNo(), keyword);
 
@@ -184,6 +186,7 @@ public class RepositoryController {
 	    return "group/repository/individualRepository";
 	}
 
+	
 	@GetMapping("/detailPost/{writingId}")
 	public String detailPost(@PathVariable Long writingId, Model model) {
 	    EmpVO loggedInUser = empService.getLoggedInUserInfo();

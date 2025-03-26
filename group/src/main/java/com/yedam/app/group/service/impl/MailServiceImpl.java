@@ -1,20 +1,17 @@
  package com.yedam.app.group.service.impl;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.yedam.app.group.mapper.MailMapper;
 import com.yedam.app.group.service.MailService;
@@ -61,7 +58,7 @@ public class MailServiceImpl implements MailService {
 	
 	// 메일등록
 	@Override
-	public int MailInsert(MailVO mailVO) {
+	public int InsertMail(MailVO mailVO) {
 		int result = mailMapper.MailCreate(mailVO);
 		return result == 1 ? mailVO.getMailId() : -1;
 	}
@@ -189,4 +186,32 @@ public class MailServiceImpl implements MailService {
 		}
 		return "전송성공";
 	}
+
+//기타
+	
+	//검색기능
+	@Override
+	public List<MailVO> searchMails(MailVO mailVO) {
+		return mailMapper.searchMails(mailVO);
+	}
+
+	//임시메일 자동삭제 기능
+	public void deleteExpiredMails() {
+        LocalDateTime currentDateTime = LocalDateTime.now();  // 현재 시간
+        LocalDateTime expiryDate = currentDateTime.plusDays(7);
+        mailMapper.deleteExpiredMails(expiryDate);  // 만료된 메일 삭제
+    }
+	
+	//휴지통 자동삭제 기능
+	public void deleteCurrentMails() {
+		LocalDateTime currentDateTime = LocalDateTime.now();  // 현재 시간
+		LocalDateTime expiryDate = currentDateTime.plusDays(30);
+		mailMapper.deleteExpiredMails(expiryDate);  // 만료된 메일 삭제
+	}
+
+	@Scheduled(cron = "0 0/1 0 * * ?")
+	public void scheduledDeleteExpiredMails() {
+        deleteExpiredMails();
+	}
+	
 }

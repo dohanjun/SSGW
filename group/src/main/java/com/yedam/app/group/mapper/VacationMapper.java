@@ -42,13 +42,19 @@ public interface VacationMapper {
     // 휴가유형 ID 생성
     public int getNextVacationTypeId();
     
-    //
+    // 전체 휴가유형 리스트
     public List<VacationVO> selectVacationTypeList(Integer suberNo);
     
-    //
+    // 페이징 적용된 휴가유형 리스트
     public List<VacationVO> selectVacationTypePaging(VacationVO vo);
     
-    //
+    // 전체 휴가유형 개수
     public int countVacationType(VacationVO vo);
+    
+    //  페이징된 휴가현황 목록 조회
+    public List<VacationVO> selectVacationStatusPaging(VacationVO vo);
+
+    //  전체 휴가현황 개수 조회 (페이징용)
+    public int countVacationStatus(VacationVO vo);
     
 }

@@ -18,5 +18,11 @@ public interface DeptService {
     
     // 조직도 목록
     List<DeptVO> getOrgChart(DeptVO deptVO);
+    
+    // 부서전체 조회
+    List<DeptVO> getAllDepartments(int suberNo);
+
+    //부서등록
+    int insertDepartment(DeptVO deptVO); 
 
 }

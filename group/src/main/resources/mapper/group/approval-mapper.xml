@@ -86,9 +86,7 @@
 		, s.STAMP_IMG_PATH
 		FROM aprv_documents d
 		LEFT JOIN stamp s
-		ON
-		d.EMPLOYEE_NO
-		= s.EMPLOYEE_NO
+		ON d.EMPLOYEE_NO = s.EMPLOYEE_NO
 		AND s.ACTIVE = '1'
 		WHERE d.DRAFT_NO = #{draftNo}
 	</select>
@@ -231,6 +229,15 @@
     <!-- 결재요청함은 임시를 제외한 모든 상태를 조회 -->
     <if test="aprvStatus != '임시'">
         AND d.APRV_STATUS != '임시'  
+    </if>
+    <if test="aprvStatus != null and aprvStatus != ''">
+    	AND d.APRV_STATUS LIKE '%' || #{aprvStatus} || '%' 
+    </if>
+    <if test="title != null and title != ''">
+        AND d.TITLE LIKE '%' || #{title} || '%'
+    </if>
+    <if test="draftDate != null">
+        AND d.DRAFT_DATE >= #{draftDate} AND d.DRAFT_DATE <![CDATA[ < ]]> #{draftDate} +1
     </if>
     ORDER BY d.draft_no
 </select>

@@ -31,7 +31,7 @@
     	WHERE writing_id = #{writingId}
 	</select>
     
-    <!-- 파일 목록 조회 -->
+    <!-- 파일 단건 조회 -->
     <select id="selectFileById" parameterType="long" 
         resultType="com.yedam.app.group.service.RepositoryFileVO">
     	SELECT 

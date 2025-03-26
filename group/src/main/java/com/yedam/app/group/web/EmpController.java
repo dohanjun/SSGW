@@ -216,10 +216,9 @@ public class EmpController {
 		return "비밀번호가 초기화되었습니다.";
 	}
 
-	// 조직도
-	@GetMapping("orgChart")
-	public String orgChart() {
-		return "group/personnel/orgChart";
-	}
-
+    // 조직도 화면 이동
+    @GetMapping("/orgChart")
+    public String orgChartPage() {
+        return "group/personnel/orgChart";
+    }
 }

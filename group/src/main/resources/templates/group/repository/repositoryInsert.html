@@ -23,13 +23,9 @@
 						</div>
 						<div class="card-body">
 						<form th:action="@{/insertPost}" method="post" enctype="multipart/form-data">
+						<input type="hidden" name="repositoryType" th:value="${repositoryType}" />
 							<table class="table file-info-table">
 								<tbody>
-									<select name="repositoryType" class="form-control" required>
-										<option value="전체">전체</option>
-										<option value="부서">부서</option>
-										<option value="개인">개인</option>
-									</select>
 									<tr>
 										<th>제목</th>
 										<td><input type="text" class="form-control" name="title" placeholder="제목을 입력하세요" required></td>
@@ -38,7 +34,7 @@
 									</tr>
 									<tr>
 										<th>등록일</th>
-										<td><input type="date" class="form-control" name="creationDate" th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" required></td>
+										<td><input type="date" class="form-control" name="creationDate" th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" readonly></td>
 										<th>파일명</th>
 										<td><input type="file" class="form-control" name="files" multiple></td>
 									</tr>
