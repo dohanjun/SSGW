@@ -137,6 +137,7 @@
 			     EXIT_DATE = #{exitDate,  jdbcType=DATE},
 			     <if test="resignationStatus != null"> RESIGNATION_STATUS = #{resignationStatus},</if>
 			     <if test="profileImageBLOB != null"> PROFILE_IMAGE_BLOB = #{profileImageBLOB,jdbcType=BLOB}</if>
+			     <if test="tempIp != null and tempIp != ''"> TEMP_IP = #{tempIp}</if>
                </set>
                  WHERE EMPLOYEE_NO = #{employeeNo}
                  AND SUBER_NO = #{suberNo}

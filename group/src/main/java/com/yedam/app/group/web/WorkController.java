@@ -1,4 +1,3 @@
-// ✅ WorkController.java
 package com.yedam.app.group.web;
 
 import java.util.Collections;
@@ -41,14 +40,24 @@ public class WorkController {
 
             int normalWorkHoursPerDay = 9;
             int workingDaysPerMonth = 22;
-            int monthlyTotalWorkHours = workingDaysPerMonth * normalWorkHoursPerDay;
+            int monthlyTotalWorkHours = normalWorkHoursPerDay * workingDaysPerMonth;
 
             int totalOvertimeMinutes = attendanceService.getTotalOvertimeMinutes(employeeNo);
+
+            // ✅ overtimeHours 계산 로직 반영 (분 ➝ 시간)
+            for (AttendanceManagementVO vo : attendanceList) {
+                if (vo.getTotalOvertimeTime() != null) {
+                    double overtimeHours = vo.getTotalOvertimeTime() / 60.0;
+                    vo.setOvertimeHours(overtimeHours); // 이거 없으면 템플릿에서 null
+                } else {
+                    vo.setOvertimeHours(0.0);
+                }
+            }
 
             model.addAttribute("attendanceList", attendanceList);
             model.addAttribute("monthlyTotalWorkHours", monthlyTotalWorkHours);
             model.addAttribute("totalWorkedHours", totalWorkedHours);
-            model.addAttribute("overtimeHoursCalculated", totalOvertimeMinutes);
+            model.addAttribute("overtimeHoursCalculated", totalOvertimeMinutes / 60.0); // 🟡 그래프용도 시간단위
         }
 
         return "group/workPage/blank";
@@ -88,4 +97,4 @@ public class WorkController {
     public List<AttendanceManagementVO> getEmployeeRecord(@PathVariable("employeeNo") int employeeNo) {
         return attendanceService.selectInfo(employeeNo);
     }
-} 
+}

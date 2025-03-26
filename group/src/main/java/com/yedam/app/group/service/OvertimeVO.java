@@ -8,19 +8,15 @@ import lombok.Data;
 
 @Data
 public class OvertimeVO {
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date overtimeDate;
-    
-    private int overtimeTime; // ✅ "분 단위"로 저장되는 숫자 타입
-    private String overtimeType;
     private Integer overtimeId;
+    private Integer overtimeTime; // 분 단위 저장됨
+    private Date overtimeDate;
+    private String overtimeType;
     private Integer workAttitudeId;
-    private int draftDocumentNumber;
+    private Integer draftDocumentNumber;
 
-    // ✅ 초과 근무 시간을 "시간"으로 변환
+    // ✅ 화면에서 시간단위로 보여줄 때 사용
     public double getOvertimeHours() {
-        return Math.round(overtimeTime / 60.0); // 분을 시간 단위로 변환
+        return (overtimeTime != null) ? overtimeTime / 60.0 : 0.0;
     }
-
-
 }
