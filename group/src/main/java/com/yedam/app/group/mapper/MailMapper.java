@@ -65,5 +65,8 @@ public interface MailMapper {
 	public List<MailVO> searchMails(MailVO mailVO);
 	
 	//임시메일함 자동삭제 기능
-	void selectTemList(LocalDateTime  currentDateTime);
+	void deleteExpiredMails(LocalDateTime  currentDateTime);
+	
+	//휴지통 자동삭제 기능
+	void deleteCurrentMails(LocalDateTime  currentDateTime);
 }
