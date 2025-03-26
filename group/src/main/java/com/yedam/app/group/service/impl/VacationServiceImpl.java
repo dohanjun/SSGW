@@ -89,5 +89,20 @@ public class VacationServiceImpl implements VacationService {
     public int countVacationTypes(VacationVO vo) {
         return vacationMapper.countVacationType(vo);
     }
+    
+    
+    // 페이징된 휴가현황 목록 조회
+    @Override
+    public List<VacationVO> getVacationStatusPaging(VacationVO vo) {
+        int offset = (vo.getPage() - 1) * vo.getSize();
+        vo.setOffset(offset);
+        return vacationMapper.selectVacationStatusPaging(vo);
+    }
+
+    // 전체 휴가현황 개수 조회 (페이징용)
+    @Override
+    public int countVacationStatus(VacationVO vo) {
+        return vacationMapper.countVacationStatus(vo);
+    }
 
 }

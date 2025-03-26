@@ -21,19 +21,13 @@ public class PersonnelContrtller {
 	
 	
 	// 휴가조회
-	@GetMapping("vacaList")
-	public String leaveStatus() {
-		return "group/personnel/vacaList";
-	}
+
 	
 	// 휴가유형 등록
 
 	
 	// 부서관리
-	@GetMapping("deptMgmt")
-	public String deptMgmt() {
-		return "group/personnel/deptMgmt";
-	}
+
 	
 	// 부서추가
 	@GetMapping("deptInsert")

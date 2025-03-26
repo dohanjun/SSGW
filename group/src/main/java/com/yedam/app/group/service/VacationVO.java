@@ -28,8 +28,17 @@ public class VacationVO {
 	private String resignationStatus; // 퇴사여부
 	
 	private int page =1;
-	private int size =12;
+	private int size =10;
 	private int offset;
+	
+    private String employeeName;    // 이름 검색
+    private Integer departmentNo;    // 부서 검색
+    private Integer rankId;          // 직급 검색
+    
+    private String departmentName;
+    private String jobTitleName;
+    
+    
 	
 	
 	

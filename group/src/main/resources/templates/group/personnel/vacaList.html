@@ -1,120 +1,122 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org"
-	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	  layout:decorate="~{common/layouts/default_layout}"
-	  layout:fragment="content">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/layouts/default_layout}"
+      layout:fragment="content">
 <head>
-<meta charset="UTF-8">
-<title>휴가조회</title>
+    <meta charset="UTF-8">
+    <title>휴가현황</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.6.2/css/bootstrap.min.css">
 </head>
 <body>
-     <div class="container text-center">
-         <h3>휴가조회</h3>
-         <table class="table">
-            <thead>
-                <tr>
-                   <th>사원번호</th>
-                   <th>부서</th>
-                   <th>직급</th>
-                   <th>이름</th>
-                   <th>입사일</th>
-                   <th>부여일</th>
-                   <th>잔여일</th>
-                   <th>사용일</th>
-                </tr>
-            </thead>
-            <tbody>                                   
-                <tr><!-- 샘플 -->
-                   <td>01</td>
-                   <td>경영기획부</td>
-                   <td>이사</td>
-                   <td>김상연</td>
-                   <td>2020-03-01</td>
-                   <td>20</td>
-                   <td>10</td>
-                   <td>10</td>
-                </tr>
-                <tr>
-                   <td>02</td>
-                   <td>마케팅부</td>
-                   <td>이사</td>
-                   <td>이신영</td>
-                   <td>2021-03-01</td>
-                   <td>19</td>
-                   <td>10</td>
-                   <td>9</td>
-                </tr>
-                <tr>
-                   <td>03</td>
-                   <td>인사팀</td>
-                   <td>부장</td>
-                   <td>윤지원</td>
-                   <td>2020-03-01</td>
-                   <td>20</td>
-                   <td>10</td>
-                   <td>10</td>
-                </tr>
-                <tr>
-                   <td>04</td>
-                   <td>회계팀</td>
-                   <td>부장</td>
-                   <td>도한준</td>
-                   <td>2020-03-01</td>
-                   <td>20</td>
-                   <td>10</td>
-                   <td>10</td>
-                </tr>
-                <tr>
-                   <td>05</td>
-                   <td>프로젝트팀</td>
-                   <td>부장</td>
-                   <td>김예찬</td>
-                   <td>2020-03-01</td>
-                   <td>20</td>
-                   <td>10</td>
-                   <td>10</td>
-                </tr>
+<div class="container text-center">
+    <h3>휴가현황</h3>
 
-              <th:block th:each=" post : ${boards} ">
-                   <!--/* post(BoardVO) => <tr/> 로 바꿔야함 */-->
-                   <!--/* boardInfo?bno=1 여기로 온클릭 /*-->
-                <tr th:id="${post.bno}"
-                    th:onclick="|='@{/(=${})}'|">       <!--/* text는 [[]] 이중괄호에 ${}변수 가져올거 */-->
-                   <!--<td>[[${}]]</td>                   
-                   <td>[[${}]]</td>
-                   <td>[[${}]]</td>
-                   <td>[[${}]]</td>
-                   <td>[[${}]]</td>-->
-                </tr>    
-              </th:block>
-            </tbody>
-         </table>
-        <div class="search-box">
-            <select id="catemp">
-                <option value="all">전체</option>
-                <option value="department">부서</option>
-                <option value="position">직급</option>
-                <option value="name">이름</option>
-            </select>
-            <input type="text" id="keyemp" placeholder="검색어 입력">
-            <button onclick="employees()" class="btn btn-primary">검색</button>
-        </div>
-     </div>
-     
-     <script>
-     // 사원 검색 기능
-     function employees() {
-         let category = document.getElementById("catemp").value;
-         let keyword = document.getElementById("keyemp").value.trim();
+    <!-- 검색 영역 -->
+    <form name="frmSearch" action="/vacaList" method="get">
+        <input type="hidden" name="page" value="1">
+        <input type="hidden" name="resignationStatus" id="resignationStatus" th:value="${vacationVO.resignationStatus}">
+        <select name="size" onchange="gopage(1)">
+            <option value="10" th:selected="${vacationVO.size == 10}">10</option>
+            <option value="15" th:selected="${vacationVO.size == 15}">15</option>
+            <option value="20" th:selected="${vacationVO.size == 20}">20</option>
+        </select>
 
-         if (keyword === "") {
-             alert("검색어를 입력하세요.");
-             return;
-         }
+		<div class="search-box mt-3">
+		    <select id="depa" name="departmentNo">
+		        <option value="">부서를 선택하세요</option>
+		    </select>
+		
+		    <select id="rankId" name="rankId">
+		        <option value="">직급을 선택하세요</option>
+		    </select>
+		
+		    <input type="text" id="keyemp" placeholder="이름 검색" th:value="${vacationVO.employeeName}" name="employeeName">
+		
+		    <!-- 버튼 묶음 -->
+		    <div style="display: inline-block;">
+		        <button type="submit" class="btn btn-primary">검색</button>
+		        <button type="button" class="btn btn-secondary" onclick="init()">초기화</button>
+		        <button type="button" class="btn btn-outline-primary" onclick="filterStatus('N')">재직자</button>
+		        <button type="button" class="btn btn-outline-danger" onclick="filterStatus('Y')">퇴사자</button>
+		    </div>
+		</div>
+    </form>
 
-         console.log(`검색 카테고리: ${category}, 검색어: ${keyword}`);
-         // Ajax 요청 추가 가능
-     }
-     </script>
+    <!-- 테이블 -->
+    <table class="table table-bordered mt-3">
+        <thead>
+        <tr>
+            <th>사원번호</th>
+            <th>부서</th>
+            <th>직급</th>
+            <th>이름</th>
+            <th>입사일</th>
+            <th>연차 부여일</th>
+            <th>잔여일</th>
+            <th>사용일</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="v : ${vacations}">
+            <td th:text="${v.employeeNo}"></td>
+            <td th:text="${v.departmentName}"></td>
+            <td th:text="${v.jobTitleName}"></td>
+            <td th:text="${v.employeeName}"></td>
+            <td th:text="${#dates.format(v.hireDate, 'yyyy-MM-dd')}"></td>
+            <!--  <td th:text="${#dates.format(v.year, 'yyyy-MM-dd')}"></td>-->
+            <td th:text="${v.grantedVacation}"></td>
+            <td th:text="${v.remainingVacation}"></td>
+            <td th:text="${v.userVacation}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- 페이징 -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:if="${currentPage > 1}">
+                <a class="page-link" th:href="|javascript:gopage(${currentPage - 1})|">이전</a>
+            </li>
+            <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}"
+                th:classappend="${i == currentPage} ? 'active'">
+                <a class="page-link" th:href="|javascript:gopage(${i})|" th:text="${i}"></a>
+            </li>
+            <li class="page-item" th:if="${currentPage < totalPages}">
+                <a class="page-link" th:href="|javascript:gopage(${currentPage + 1})|">다음</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+<!-- 부트스트랩 + 공통 스크립트 -->
+<script src="/js/emp.js"></script>
+<script th:inline="javascript">
+    const dept = [[${vacationVO.departmentNo}]];
+    const rank = [[${vacationVO.rankId}]];
+
+    function init(){
+        depa.value = "";
+        rankId.value = "";
+        keyemp.value = "";
+        resignationStatus.value = "";
+    }
+
+    function gopage(p){
+        frmSearch.page.value = p;
+        frmSearch.submit();		
+    }
+    
+    function filterStatus(status){
+        document.getElementById("resignationStatus").value = status;
+        gopage(1);
+    }
+
+    // 부서, 직급 불러오기
+    document.addEventListener("DOMContentLoaded", function() {
+        loadData("/api/departments", "depa", dept);
+        loadData("/api/ranks", "rankId", rank);
+    });
+</script>
 </body>
 </html>

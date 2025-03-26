@@ -7,59 +7,48 @@
     <meta charset="UTF-8">
     <title>조직도</title>
     <style>
-		/* 리스트 스타일 제거 */
-		#orgTree, #orgTree ul {
-		    list-style: none;
-		    padding-left: 10px;
-		}
-		
-		#orgTree li {
-		    cursor: pointer;
-		    padding: 5px;
-		    font-size: 16px;
-		    position: relative;
-		}
-		
-		/* 접기/펼치기 버튼 */
-		.toggle-icon {
-		    cursor: pointer;
-		    margin-right: 5px;
-		}
-		
-		/* 직원 프로필 스타일 */
-		.profile-img {
-		    width: 100px;
-		    height: 100px;
-		    border-radius: 50%;
-		    object-fit: cover;
-		}
-		
-		/* 검색 입력창 */
-		#searchInput {
-		    font-size: 14px;
-		    padding: 8px;
-		}
-		
-		/* 최상위 회사명 스타일 */
-		.company-name {
-		    font-weight: bold;
-		    font-size: 20px;
-		    color: #007bff;
-		    margin-bottom: 10px;
-		}
-		
-		/* 화면 따라오는 스타일 */
-		.fixed-sidebar {
-		    position: fixed;
-		    width: 500px;
-		    z-index: 999;
-		}
-		
-		
+        /* 기본 리스트 스타일 제거 */
+        #orgTree, #orgTree ul {
+            list-style: none;
+            padding-left: 10px;
+        }
 
+        #orgTree li {
+            cursor: pointer;
+            padding: 5px;
+            font-size: 16px;
+            position: relative;
+        }
+
+        /* 펼치기/접기 아이콘 스타일 */
+        .toggle-icon {
+            cursor: pointer;
+            margin-right: 5px;
+        }
+
+        /* 검색창 */
+        #searchInput {
+            font-size: 14px;
+            padding: 8px;
+        }
+
+        /* 회사명 강조 */
+        .company-name {
+            font-weight: bold;
+            font-size: 20px;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        /* 오른쪽 직원 정보 카드 */
+        .fixed-sidebar {
+            position: fixed;
+            width: 500px;
+            z-index: 999;
+        }
     </style>
+
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.6.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/css/orgChart.css">
 </head>
 <body>
 
@@ -67,7 +56,7 @@
     <h2 class="text-center">조직도</h2>
 
     <div class="row">
-        <!-- 조직도 트리 -->
+        <!-- 조직도 트리 영역 -->
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header">
@@ -79,15 +68,11 @@
             </div>
         </div>
 
-        <!-- 직원 상세 정보 -->
-		<div class="col-md-6">
-		    <div class="card fixed-sidebar">
-		        <div class="card-body text-center">
-		            <h5>직원 정보</h5>
-		            <img id="empImage" class="profile-img"
-		                 th:if="${profileImageBase64}"
-		                 th:src="'data:image/png;base64,' + ${profileImageBase64}"
-		                 alt="프로필 이미지">
+        <!-- 오른쪽 직원 상세 정보 -->
+        <div class="col-md-6">
+            <div class="card fixed-sidebar">
+                <div class="card-body text-center">
+                    <h5>직원 정보</h5>
                     <hr>
                     <p><strong>이름:</strong> <span id="empName">-</span></p>
                     <p><strong>부서:</strong> <span id="empDept">-</span></p>
@@ -100,149 +85,137 @@
 </div>
 
 <script>
+    // 페이지 로딩 시 API 호출
+    document.addEventListener("DOMContentLoaded", function () {
+        fetch("/api/orgchart")
+            .then(response => response.json())
+            .then(data => {
+                console.log("[조직도 데이터]", data);  // ← 문제 디버깅용 로그
+                buildTree(data);
+            })
+            .catch(error => console.error("조직도 불러오기 오류:", error));
+    });
 
-		// 조직도 데이터 불러오기
-		document.addEventListener("DOMContentLoaded", function () {
-		    fetch("/api/orgchart")
-		        .then(response => response.json())
-		        .then(data => buildTree(data))
-		        .catch(error => console.error("조직도 불러오기 오류:", error));
-		});
-		
-		function buildTree(data) {
-		    let tree = document.getElementById("orgTree");
-		    tree.innerHTML = "";
-		
-		    let companyMap = {}; // 회사별로 그룹화
-		    let deptMap = {}; // 부서별로 그룹화
-		
-		    // 회사별 데이터 분류
-		    data.forEach(item => {
-		        if (!companyMap[item.suberNo]) {
-		            companyMap[item.suberNo] = {
-		                companyName: item.companyName,
-		                departments: []
-		            };
-		        }
-		        companyMap[item.suberNo].departments.push(item);
-		    });
-		
-		    // 회사별 최상위 노드 생성
-		    Object.values(companyMap).forEach(company => {
-		        let companyLi = document.createElement("li");
-		        companyLi.innerHTML = `<span class="toggle-icon">▶</span> 📁 <strong class="company-name">${company.companyName}</strong>`;
-		
-		        let deptTree = document.createElement("ul");
-		        deptTree.style.display = "none";
-		
-		        // 부서별로 그룹화
-		        let topLevelDepts = [];
-		        company.departments.forEach(dept => {
-		            if (!dept.upperDepNo) {
-		                topLevelDepts.push(dept);
-		            } else {
-		                deptMap[dept.departmentNo] = dept;
-		            }
-		        });
-		
-		        // 대표 부서 먼저 출력
-		        topLevelDepts.forEach(dept => {
-		            let deptLi = createDeptNode(dept, deptMap);
-		            deptTree.appendChild(deptLi);
-		        });
-		
-		        companyLi.appendChild(deptTree);
-		        tree.appendChild(companyLi);
-		
-		        // 회사명 클릭 시 펼치기/접기
-		        companyLi.querySelector(".toggle-icon").addEventListener("click", function () {
-		            if (deptTree.style.display === "none") {
-		                deptTree.style.display = "block";
-		                this.textContent = "▼";
-		            } else {
-		                deptTree.style.display = "none";
-		                this.textContent = "▶";
-		            }
-		        });
-		    });
-		}
-		
-		// 부서 노드 생성 함수
-		function createDeptNode(dept, deptMap) {
-		    let deptLi = document.createElement("li");
-		    deptLi.innerHTML = `<span class="toggle-icon">▶</span> 📁 <strong>${dept.departmentName} (${dept.employees.length}명)</strong>`;
-		
-		    let subTree = document.createElement("ul");
-		    subTree.style.display = "none"; // 처음엔 접기
-		
-		    // 직원 목록 추가
-		    dept.employees.forEach(emp => {
-		        let empLi = document.createElement("li");
-		        empLi.innerHTML = `🙍‍♂️ <a href="#" onclick="showEmpInfo('${emp.employeeName}', '${dept.departmentName}', '${emp.jobTitleName}', '${emp.phoneNumber}', '${emp.profileImage}')">${emp.employeeName} (${emp.jobTitleName})</a>`;
-		        subTree.appendChild(empLi);
-		    });
-		
-		    // 하위 부서 추가
-		    Object.values(deptMap).forEach(subDept => {
-		        if (subDept.upperDepNo === dept.departmentNo) {
-		            let subDeptLi = createDeptNode(subDept, deptMap);
-		            subTree.appendChild(subDeptLi);
-		        }
-		    });
-		
-		    // 클릭하면 펼치기/접기
-		    deptLi.querySelector(".toggle-icon").addEventListener("click", function () {
-		        if (subTree.style.display === "none") {
-		            subTree.style.display = "block";
-		            this.textContent = "▼";
-		        } else {
-		            subTree.style.display = "none";
-		            this.textContent = "▶";
-		        }
-		    });
-		
-		    deptLi.appendChild(subTree);
-		    return deptLi;
-		}
-		
-		// 직원 정보 표시 함수
-		function showEmpInfo(name, dept, title, phone, image) {
-		    document.getElementById("empName").textContent = name;
-		    document.getElementById("empDept").textContent = dept;
-		    document.getElementById("empTitle").textContent = title;
-		    document.getElementById("empPhone").textContent = phone;
-		    document.getElementById("empImage").src = image ? image : "/img/default-profile.png";
-		}
-		
-		// 검색 기능 - 부모 트리 자동 펼침
-	    document.getElementById("searchInput").addEventListener("input", function () {
-	        let searchText = this.value.toLowerCase();
-	        let allItems = document.querySelectorAll("#orgTree li");
-	
-	        allItems.forEach(item => {
-	            let text = item.textContent.toLowerCase();
-	            if (text.includes(searchText)) {
-	                item.style.display = "";
-	
-	                // 부모 ul/li 트리 모두 펼치기
-	                let parent = item.parentElement;
-	                while (parent && parent.id !== "orgTree") {
-	                    if (parent.tagName === "UL") {
-	                        parent.style.display = "block";
-	                    }
-	                    if (parent.tagName === "LI") {
-	                        let toggle = parent.querySelector(".toggle-icon");
-	                        if (toggle) toggle.textContent = "▼";
-	                    }
-	                    parent = parent.parentElement;
-	                }
-	
-	            } else {
-	                item.style.display = "none";
-	            }
-	        });
-	    });
+    // 조직도 트리 생성 함수
+    function buildTree(data) {
+        const tree = document.getElementById("orgTree");
+        tree.innerHTML = "";
 
+        const companyMap = {}; // 회사별로 묶기
+        const deptMap = {};    // 부서번호 기준으로 묶기
+
+        // 회사별 그룹화
+        data.forEach(item => {
+            if (!companyMap[item.suberNo]) {
+                companyMap[item.suberNo] = {
+                    companyName: item.companyName,
+                    departments: []
+                };
+            }
+            companyMap[item.suberNo].departments.push(item);
+        });
+
+        // 회사 기준 트리 생성
+        Object.values(companyMap).forEach(company => {
+            const companyLi = document.createElement("li");
+            companyLi.innerHTML = `<span class="toggle-icon">▶</span> 📁 <strong class="company-name">${company.companyName}</strong>`;
+
+            const deptTree = document.createElement("ul");
+            deptTree.style.display = "none";
+
+            // 부서 정리 (상위 부서 null이면 최상위)
+            const topLevelDepts = [];
+            company.departments.forEach(dept => {
+                if (!dept.upperDepNo) {
+                    topLevelDepts.push(dept);
+                }
+                deptMap[dept.departmentNo] = dept;
+            });
+
+            // 최상위 부서 트리 생성
+            topLevelDepts.forEach(dept => {
+                const deptLi = createDeptNode(dept, deptMap);
+                deptTree.appendChild(deptLi);
+            });
+
+            companyLi.appendChild(deptTree);
+            tree.appendChild(companyLi);
+
+            // 클릭 시 트리 열기/닫기
+            companyLi.querySelector(".toggle-icon").addEventListener("click", function () {
+                deptTree.style.display = (deptTree.style.display === "none") ? "block" : "none";
+                this.textContent = (deptTree.style.display === "none") ? "▶" : "▼";
+            });
+        });
+    }
+
+    // 부서 노드 생성 (재귀)
+    function createDeptNode(dept, deptMap) {
+        const deptLi = document.createElement("li");
+        const empCount = (dept.employees && dept.employees.length) || 0;
+        deptLi.innerHTML = `<span class="toggle-icon">▶</span> 📁 <strong>${dept.departmentName} (${empCount}명)</strong>`;
+
+        const subTree = document.createElement("ul");
+        subTree.style.display = "none";
+
+        // 직원 목록 출력
+        if (dept.employees) {
+            dept.employees.forEach(emp => {
+                const empLi = document.createElement("li");
+                empLi.innerHTML = `🙍‍♂️ <a href="#" onclick="showEmpInfo('${emp.employeeName}', '${dept.departmentName}', '${emp.jobTitleName}', '${emp.phoneNumber}')">${emp.employeeName} (${emp.jobTitleName})</a>`;
+                subTree.appendChild(empLi);
+            });
+        }
+
+        // 하위 부서 재귀 호출
+        Object.values(deptMap).forEach(subDept => {
+            if (subDept.upperDepNo === dept.departmentNo) {
+                const subDeptLi = createDeptNode(subDept, deptMap);
+                subTree.appendChild(subDeptLi);
+            }
+        });
+
+        // 펼치기 기능
+        deptLi.querySelector(".toggle-icon").addEventListener("click", function () {
+            subTree.style.display = (subTree.style.display === "none") ? "block" : "none";
+            this.textContent = (subTree.style.display === "none") ? "▶" : "▼";
+        });
+
+        deptLi.appendChild(subTree);
+        return deptLi;
+    }
+
+    // 오른쪽 직원 정보 표시
+    function showEmpInfo(name, dept, title, phone) {
+        document.getElementById("empName").textContent = name;
+        document.getElementById("empDept").textContent = dept;
+        document.getElementById("empTitle").textContent = title;
+        document.getElementById("empPhone").textContent = phone;
+    }
+
+    // 검색 기능 (트리 자동 펼침)
+    document.getElementById("searchInput").addEventListener("input", function () {
+        const searchText = this.value.toLowerCase();
+        const allItems = document.querySelectorAll("#orgTree li");
+
+        allItems.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            if (text.includes(searchText)) {
+                item.style.display = "";
+                let parent = item.parentElement;
+                while (parent && parent.id !== "orgTree") {
+                    if (parent.tagName === "UL") parent.style.display = "block";
+                    if (parent.tagName === "LI") {
+                        const toggle = parent.querySelector(".toggle-icon");
+                        if (toggle) toggle.textContent = "▼";
+                    }
+                    parent = parent.parentElement;
+                }
+            } else {
+                item.style.display = "none";
+            }
+        });
+    });
 </script>
 
 </body>

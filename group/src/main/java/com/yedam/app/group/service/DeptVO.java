@@ -31,5 +31,8 @@ public class DeptVO {
 	private Integer jobTitleLevel;			// 직급레벨
 	private Integer rankId;					// 직급Id
 	
+	//
+	private Integer employeeCount; 			// 부서 총원 (계산용, DB에는 없음)
+	
 
 }
