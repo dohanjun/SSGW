@@ -17,7 +17,7 @@
 		  		OR GET_USER LIKE '%' || #{search} || '%'
 		  		OR RECODE LIKE '%' || #{search} || '%' )
 		  	</if>	
-		  	<if test="mailType != null">
+		  	   <if test="mailType != null">
 		  	    and mail_type = #{mailType}  
 		  	   <if test= "mailType == '받은'">
      			and get_user = #{getUser}	  	   
@@ -123,6 +123,7 @@
                  ,attached_file_name
                  ,get_user
                  ,cc
+                 ,recode
                  ,mail_type)
     VALUES(
     			 #{mailId}
@@ -134,6 +135,7 @@
     			 ,#{attachedFileName}
     			 ,#{getUser}
     			 ,#{cc}
+    			 ,#{recode}
     			 ,#{mailType})
 	</insert>
 	
@@ -151,16 +153,22 @@
 	       ,title = #{title}
 	       ,attached_file_name = #{attachedFileName}
 	       ,content = #{content}
-    WHERE   Mail_id = #{mailId}
+    WHERE   mail_id = #{mailId}
 	</update>
 	
 	<!-- 메일답장 -->
 	<update id="MailPutDate" parameterType="MailVO">
-	UPDATE  Mail
-	   SET  get_user = #{getUser}
-	       ,cc = #{cc}
-	       ,content = #{content}
-    WHERE   Mail_id = #{mailId}
+	<selectKey keyProperty="mailId" resultType="Integer" order="BEFORE">
+	SELECT  ,employee_id
+			,get_user
+			,title
+			,content
+			,attached_file_name	   
+	FROM Mail
+	</selectKey>
+	UPDATE Mail
+	SET  content = #{content}
+	WHERE mail_id = #{mailId}
 	</update>
 	
 	<!-- 메일전달 -->
@@ -200,4 +208,13 @@
 	FROM Mail
 	<include refid="mailCondition"></include>
 	</select>
+	
+	
+	<!-- 임시메일 자동삭제 -->
+	<delete id="deleteTemporaryMails">
+        DELETE FROM mail
+        WHERE is_temporary = 1
+        AND expiry_date &lt;= #{currentDateTime}
+    </delete>
+    
 </mapper>

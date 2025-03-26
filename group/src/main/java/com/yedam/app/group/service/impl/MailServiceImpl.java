@@ -1,20 +1,17 @@
  package com.yedam.app.group.service.impl;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.yedam.app.group.mapper.MailMapper;
 import com.yedam.app.group.service.MailService;
@@ -61,7 +58,7 @@ public class MailServiceImpl implements MailService {
 	
 	// 메일등록
 	@Override
-	public int MailInsert(MailVO mailVO) {
+	public int InsertMail(MailVO mailVO) {
 		int result = mailMapper.MailCreate(mailVO);
 		return result == 1 ? mailVO.getMailId() : -1;
 	}
@@ -157,13 +154,30 @@ public class MailServiceImpl implements MailService {
 
 	// 임시메일함
 	@Override
+	@Scheduled(cron = "0 0 0 * * ?")
 	public List<MailVO> selectTemList(PageListVO vo) {
+		LocalDateTime currentDateTime = LocalDateTime.now();  // 현재 시간
+        LocalDateTime expiryDate = currentDateTime.plusDays(7);
+        
+		System.out.println(expiryDate);
+
+		mailMapper.selectTemList(expiryDate);
+		
 		return mailMapper.selectTemList(vo);
 	}
 
 	// 휴지통
 	@Override
+	@Scheduled(cron = "0 0 0 * * ?")
 	public List<MailVO> selectDelList(PageListVO vo) {
+		
+		LocalDateTime currentDateTime = LocalDateTime.now();  // 현재 시간
+        LocalDateTime expiryDate = currentDateTime.plusDays(30);
+        
+		System.out.println(expiryDate);
+
+		mailMapper.selectTemList(expiryDate);
+		
 		return mailMapper.selectDelList(vo);
 	}
 
@@ -189,4 +203,16 @@ public class MailServiceImpl implements MailService {
 		}
 		return "전송성공";
 	}
+
+	@Override
+	public List<MailVO> searchMails(MailVO mailVO) {
+		return mailMapper.searchMails(mailVO);
+	}
+
+	@Override
+	public void selectTemList(LocalDateTime currentDateTime) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
