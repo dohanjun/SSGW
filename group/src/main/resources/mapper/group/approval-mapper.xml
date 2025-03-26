@@ -338,5 +338,17 @@
     	WHERE draft_no = #{draftNo}
 	</update>
 	
+	<update id="updateRejectReason" parameterType="AprvRoutesVO">
+		UPDATE aprv_documents
+	    SET reject_reason = #{rejectReason}
+	    WHERE draft_no = #{draftNo}
+	</update>
 	
+	<select id="countAprvListByStatus" parameterType="ApprovalVO" resultType="int">
+	    SELECT COUNT(*)
+	    FROM aprv_documents d
+	    WHERE d.aprv_status = #{aprvStatus}
+	      AND d.employee_no = #{employeeNo}
+	      AND d.suber_no = #{suberNo}
+	</select>
 </mapper>

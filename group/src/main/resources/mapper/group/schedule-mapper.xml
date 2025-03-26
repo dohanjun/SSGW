@@ -22,32 +22,36 @@
 	</insert>
 
 	<!-- 일정조회 -->
-	<select id="SelectAllScheduleList" resultType="ScheduleVO"
-		parameterType="ScheduleVO">
-		SELECT  s.SCHEDULE_ID
-				,s.SCHEDULE_TITLE
-				,s.SCHEDULE_CONTENT
-				,s.SCHEDULE_START
-				,s.SCHEDULE_END
-				,s.EMPLOYEE_NO
-				,s.DEPARTMENT_NO
-				,s.SCHEDULE_DIVISION
-				,s.REPEAT_CYCLE
-				,s.SUBER_NO
-				,d.department_name
-				,e.employee_name
-		FROM schedule s
-		JOIN department d 
-		  ON s.department_no = d.department_no
-		JOIN employees e 
-		  ON s.employee_no = e.employee_no
-		WHERE s.SUBER_NO = #{suberNo}
-		AND (
+	<select id="SelectAllScheduleList" resultType="ScheduleVO" parameterType="ScheduleVO">
+	SELECT 
+		s.SCHEDULE_ID,
+		s.SCHEDULE_TITLE,
+		s.SCHEDULE_CONTENT,
+		s.SCHEDULE_START,
+		s.SCHEDULE_END,
+		s.EMPLOYEE_NO,
+		s.DEPARTMENT_NO,
+		s.SCHEDULE_DIVISION,
+		s.REPEAT_CYCLE,
+		s.SUBER_NO,
+		d.DEPARTMENT_NAME,
+		e.EMPLOYEE_NAME
+	FROM schedule s
+	JOIN department d ON s.DEPARTMENT_NO = d.DEPARTMENT_NO
+	JOIN employees e ON s.EMPLOYEE_NO = e.EMPLOYEE_NO
+	WHERE s.SUBER_NO = #{suberNo}
+	AND (
 		(s.SCHEDULE_DIVISION = '개인' AND s.EMPLOYEE_NO = #{employeeNo})
-		OR (s.SCHEDULE_DIVISION = '부서' AND s.DEPARTMENT_NO = #{departmentNo})
-		OR (s.SCHEDULE_DIVISION = '회사')
+		OR s.SCHEDULE_ID IN (
+			SELECT schedule_id 
+			FROM schedule_sharing 
+			WHERE employee_no = #{employeeNo}
 		)
-	</select>
+		OR (s.SCHEDULE_DIVISION = '부서' AND s.DEPARTMENT_NO = #{departmentNo})
+		OR s.SCHEDULE_DIVISION = '회사'
+	)
+</select>
+
 
 	<!-- 일정수정 -->
 	<update id="updateSchedule" parameterType="ScheduleVO">
@@ -64,4 +68,21 @@
 		DELETE schedule
 		WHERE schedule_id = #{scheduleId}
 	</delete>
+	
+	<!-- 일정공유 -->
+	<insert id="insertScheduleSharing" parameterType="ScheduleVO">
+	<selectKey keyProperty="scheduleSharingNo" resultType="int"
+			order="BEFORE">
+			SELECT NVL(MAX(schedule_sharing_no), 1) + 1
+			FROM schedule_sharing
+		</selectKey>
+	  INSERT INTO schedule_sharing 
+	  (schedule_id,
+	    employee_no,
+	    schedule_sharing_no ) 
+	   VALUES 
+	   (#{scheduleId},
+	    #{employeeNo},
+	    #{scheduleSharingNo})
+</insert>
 </mapper>

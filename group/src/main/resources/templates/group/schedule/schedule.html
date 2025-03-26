@@ -96,7 +96,13 @@
             <label for="company" class="form-check-label">회사</label>
         </div>
     </div>
-    
+    <!-- 공유 대상자 선택 영역 (개인일정일 때만 보임) -->
+	<div class="form-group" id="shareTargetGroup" style="display: none;">
+	  	<label>공유 대상자</label>
+		<button type="button" class="btn btn-sm btn-outline-primary" data-toggle="modal" data-target="#shareModal">공유자 선택</button>
+		<ul id="selectedShareList" class="list-group mt-2"></ul>
+		<input type="hidden" id="sharedEmployeeNos">
+	</div>
     <div class="d-flex align-items-center mb-2">
         <label class="col-sm-2">제목:</label>
         <input type="text" id="scheduleTitle" class="form-control w-100">
@@ -146,7 +152,24 @@
   </div>
 </div>
 
-    <script>
+<!-- 공유 대상자 선택 모달 -->
+<div class="modal fade" id="shareModal" tabindex="-1">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header"><h5>공유 대상자 선택</h5></div>
+      <div class="modal-body">
+        <input type="text" id="searchShare" class="form-control mb-2" placeholder="🔍 검색">
+        <ul id="orgTreeShare" class="list-unstyled"></ul>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="addSharesBtn">추가</button>
+        <button class="btn btn-secondary" data-dismiss="modal">닫기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
     const url = '/schedule';
     document.addEventListener('DOMContentLoaded', function () {
         const calendarEl = document.getElementById('calendar');
@@ -301,6 +324,12 @@ eventClick: function (info) {
         // 일정 추가 버튼 클릭 시 일정 추가 모달 표시
         document.getElementById('addScheduleBtn').addEventListener('click', function () {
             document.getElementById('scheduleModal').style.display = 'block';
+            const selectedType = document.querySelector('input[name="scheduleType"]:checked').value;
+            if (selectedType === '개인') {
+              $('#shareTargetGroup').show();
+            } else {
+              $('#shareTargetGroup').hide();
+            }
         });
 
         // 일정 등록 모달 닫기 버튼
@@ -327,14 +356,16 @@ eventClick: function (info) {
     // 일정 저장 
     function saveSchedule() {
     	let selectedType = document.querySelector('input[name="scheduleType"]:checked').value;
-    	
+    	let sharedNos = document.getElementById("sharedEmployeeNos").value.trim();
+    	let sharedList = sharedNos ? sharedNos.split(',').map(n => parseInt(n.trim())) : [];
     	
         let scheduleData = {
             scheduleTitle: document.getElementById("scheduleTitle").value,
             scheduleContent: document.getElementById("scheduleContent").value,
             scheduleStart: document.getElementById("scheduleStart").value,
             scheduleEnd: document.getElementById("scheduleEnd").value,
-            scheduleDivision: selectedType
+            scheduleDivision: selectedType,
+            sharedEmployees: sharedList
         };
 
         fetch(url, {
@@ -422,8 +453,139 @@ eventClick: function (info) {
             alert("일정 삭제에 실패했습니다.");
         });
     }
-    
-    </script>
+ 
+// 일정 유형 변경 시 공유자 선택 영역 토글
+document.querySelectorAll('input[name="scheduleType"]').forEach(input => {
+  input.addEventListener('change', function () {
+    const shareTargetGroup = document.getElementById('shareTargetGroup');
+    const selectedShareList = document.getElementById('selectedShareList');
+    const sharedEmployeeNos = document.getElementById('sharedEmployeeNos');
+
+    if (this.value === '개인') {
+      shareTargetGroup.style.display = 'block';
+    } else {
+      shareTargetGroup.style.display = 'none';
+      selectedShareList.innerHTML = '';
+      sharedEmployeeNos.value = '';
+    }
+  });
+});
+
+// 공유자 선택 버튼 클릭 시 모달 열기 + 조직도 fetch
+document.querySelector('[data-target="#shareModal"]').addEventListener('click', function () {
+  fetch('/api/orgchart')
+    .then(res => res.json())
+    .then(data => buildTree(data, 'orgTreeShare'));
+
+  const modal = document.getElementById('shareModal');
+  modal.classList.add('show');
+  modal.style.display = 'block';
+  document.body.classList.add('modal-open');
+
+  const backdrop = document.createElement('div');
+  backdrop.className = 'modal-backdrop fade show';
+  backdrop.setAttribute('id', 'shareBackdrop');
+  document.body.appendChild(backdrop);
+});
+
+// 공유자 모달 닫기
+document.querySelector('#shareModal .btn-secondary').addEventListener('click', function () {
+  const modal = document.getElementById('shareModal');
+  modal.classList.remove('show');
+  modal.style.display = 'none';
+  document.body.classList.remove('modal-open');
+
+  const backdrop = document.getElementById('shareBackdrop');
+  if (backdrop) backdrop.remove();
+});
+
+// ✅ 공유자 추가
+document.getElementById('addSharesBtn').addEventListener('click', function () {
+  const checked = document.querySelectorAll('#orgTreeShare input.emp-check:checked');
+  const names = [];
+  const nos = [];
+
+  checked.forEach(item => {
+    names.push(item.dataset.name);
+    nos.push(item.value);
+  });
+
+  // 리스트 출력
+  const listEl = document.getElementById('selectedShareList');
+  listEl.innerHTML = '';
+  names.forEach(name => {
+    const li = document.createElement('li');
+    li.classList.add('list-group-item');
+    li.textContent = name;
+    listEl.appendChild(li);
+  });
+
+  // hidden 값 설정
+  document.getElementById('sharedEmployeeNos').value = nos.join(',');
+
+  // 모달 닫기
+  const modal = document.getElementById('shareModal');
+  modal.classList.remove('show');
+  modal.style.display = 'none';
+  document.body.classList.remove('modal-open');
+
+  const backdrop = document.getElementById('shareBackdrop');
+  if (backdrop) backdrop.remove();
+});
+
+// ✅ 조직도 트리 빌드 함수
+function buildTree(data, treeId) {
+  const tree = document.getElementById(treeId);
+  tree.innerHTML = '';
+
+  const deptMap = {}, childDeptMap = {};
+  data.forEach(dept => {
+    if (!deptMap[dept.departmentNo]) deptMap[dept.departmentNo] = dept;
+    if (!childDeptMap[dept.upperDepNo]) childDeptMap[dept.upperDepNo] = [];
+    childDeptMap[dept.upperDepNo].push(dept);
+  });
+
+  const topDepts = childDeptMap[null] || childDeptMap[0] || [];
+  topDepts.forEach(dept => {
+    const deptLi = createDeptNodeRecursive(dept, childDeptMap);
+    tree.appendChild(deptLi);
+  });
+}
+
+function createDeptNodeRecursive(dept, childDeptMap) {
+  const deptLi = document.createElement('li');
+  deptLi.innerHTML = `
+    <span class="toggle-icon">▶</span> 📁 <strong>${dept.departmentName} (${dept.employees.length}명)</strong>
+  `;
+  const subTree = document.createElement('ul');
+  subTree.style.display = 'none';
+
+  dept.employees.forEach(emp => {
+    const empLi = document.createElement('li');
+    empLi.innerHTML = `
+      <input type="checkbox" class="emp-check" value="${emp.employeeNo}" data-name="${emp.employeeName}" data-job="${emp.jobTitleName}">
+      🙍‍♂️ ${emp.employeeName} (${emp.jobTitleName})
+    `;
+    subTree.appendChild(empLi);
+  });
+
+  const children = childDeptMap[dept.departmentNo] || [];
+  children.forEach(child => {
+    const subDeptLi = createDeptNodeRecursive(child, childDeptMap);
+    subTree.appendChild(subDeptLi);
+  });
+
+  deptLi.querySelector('.toggle-icon').addEventListener('click', function () {
+    subTree.style.display = subTree.style.display === 'none' ? 'block' : 'none';
+    this.textContent = subTree.style.display === 'none' ? '▶' : '▼';
+  });
+
+  deptLi.appendChild(subTree);
+  return deptLi;
+}
+
+
+</script>
 
 </body>
 </html>

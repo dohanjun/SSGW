@@ -1,6 +1,7 @@
 package com.yedam.app.group.service;
 
 import java.util.Date;
+import java.util.List;
 
 import lombok.Data;
 
@@ -20,4 +21,6 @@ public class ScheduleVO {
 	private int scheduleSharingNo;    // 일정공유번호
 	private String departmentName;    // 부서명
 	private String employeeName;      // 사원명
+	
+	private List<Integer> sharedEmployees; // 공유 사원번호 리스트
 }

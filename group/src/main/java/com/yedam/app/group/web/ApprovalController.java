@@ -39,6 +39,8 @@ import com.yedam.app.group.service.AprvFileVO;
 import com.yedam.app.group.service.AprvRoutesVO;
 import com.yedam.app.group.service.EmpService;
 import com.yedam.app.group.service.EmpVO;
+import com.yedam.app.group.service.VacationService;
+import com.yedam.app.group.service.VacationVO;
 
 import lombok.Data;
 
@@ -61,6 +63,7 @@ public class ApprovalController {
 	private final ApprovalService approvalService;
 	private final EmpService empService;
 	private final AprvFileService aprvFileService;
+	private final VacationService vacationService;
 	
     @Value("${file.upload-dir}")  
     private String uploadDir;  // 현재 프로젝트 안에서 저장하는 폴더 설정
@@ -71,50 +74,57 @@ public class ApprovalController {
 	 * @param model
 	 * @return 문서조회페이지명
 	 */
-	@GetMapping("aprv/list")
-	public String aprvList(ApprovalVO aprvVO, Model model) {
+    @GetMapping("aprv/list")
+    public String aprvList(@RequestParam(defaultValue = "1") int page,
+                           ApprovalVO aprvVO, Model model) {
 
-	    if (aprvVO.getAprvStatus() == null || aprvVO.getAprvStatus().trim().isEmpty()) {
-	        aprvVO.setAprvStatus("대기");
-	    }
-	    
-	    // 로그인한 사용자 정보 가져오기
-	    EmpVO loggedInUser = empService.getLoggedInUserInfo();
+        if (aprvVO.getAprvStatus() == null || aprvVO.getAprvStatus().trim().isEmpty()) {
+            aprvVO.setAprvStatus("대기");
+        }
 
-	    if (loggedInUser != null) {
-	        aprvVO.setEmployeeNo(loggedInUser.getEmployeeNo());  // 로그인한 사용자 정보 설정
-	        aprvVO.setSuberNo(loggedInUser.getSuberNo()); // 로그인한 사용자 회사번호
-	        
-	        // 결재 상태별 문서 조회
-	        List<ApprovalVO> list = approvalService.findAprvListByStatus(aprvVO);
-	        model.addAttribute("aprvs", list);
-	        
-	        // 참조면 제외
-	        list = list.stream()
-	                   .filter(aprv -> !"참조".equals(aprv.getAprvRole())) // '참조'는 필터링
-	                   .collect(Collectors.toList());
+        EmpVO loggedInUser = empService.getLoggedInUserInfo();
+        if (loggedInUser != null) {
+            aprvVO.setEmployeeNo(loggedInUser.getEmployeeNo());
+            aprvVO.setSuberNo(loggedInUser.getSuberNo());
 
-	        // 활성화된 도장 정보 가져오기
-	        ApprovalVO stamp = approvalService.getActiveStamp(aprvVO);
-	        model.addAttribute("stampImgPath", (stamp != null) ? stamp.getStampImgPath() : "");
-	    }
+            // 페이징 정보 설정
+            aprvVO.setPage(page);
+            aprvVO.setSize(10);
+            aprvVO.setOffset((page - 1) * aprvVO.getSize());
 
-	    // 만약 aprv_role이 '참조'이면 참조열람함으로 리디렉션
-	    if ("참조".equals(aprvVO.getAprvRole())) {
-	        return "group/approval/approval_reference";  // 참조열람함 페이지로 리디렉션
-	    }
+            int totalCount = approvalService.countAprvListByStatus(aprvVO);
+            int totalPages = (int) Math.ceil((double) totalCount / aprvVO.getSize());
 
-	    // 상태별 페이지 반환
-	    if ("완료".equals(aprvVO.getAprvStatus())) {
-	        return "group/approval/approval_complete";
-	    } else if ("진행".equals(aprvVO.getAprvStatus())) {
-	        return "group/approval/approval_progress";
-	    } else if ("반려".equals(aprvVO.getAprvStatus())) {
-	        return "group/approval/approval_return";
-	    } else {
-	        return "group/approval/pending_document"; // 기본값 설정
-	    }
-	}
+            List<ApprovalVO> list = approvalService.findAprvListByStatus(aprvVO);
+
+            // 참조 제외
+            list = list.stream()
+                       .filter(a -> !"참조".equals(a.getAprvRole()))
+                       .collect(Collectors.toList());
+
+            model.addAttribute("aprvs", list);
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", totalPages);
+
+            ApprovalVO stamp = approvalService.getActiveStamp(aprvVO);
+            model.addAttribute("stampImgPath", (stamp != null) ? stamp.getStampImgPath() : "");
+        }
+
+        if ("참조".equals(aprvVO.getAprvRole())) {
+            return "group/approval/approval_reference";
+        }
+
+        // 상태별 페이지 반환
+        if ("완료".equals(aprvVO.getAprvStatus())) {
+            return "group/approval/approval_complete";
+        } else if ("진행".equals(aprvVO.getAprvStatus())) {
+            return "group/approval/approval_progress";
+        } else if ("반려".equals(aprvVO.getAprvStatus())) {
+            return "group/approval/approval_return";
+        } else {
+            return "group/approval/pending_document";
+        }
+    }
 	
 	/**
 	 * aprv_routes테이블에서 aprv_role이 '참조'인 사원만 볼 수 있는 페이지
@@ -194,8 +204,6 @@ public class ApprovalController {
 	        ApprovalVO savedDocument = approvalService.findAprvInfo(aprvVO);
 	        
 	        if (savedDocument != null) {
-	        	//String rawHtml = StringEscapeUtils.unescapeHtml4(savedDocument.getContent());
-	            //savedDocument.setContent(rawHtml);
 	            model.addAttribute("aprvVO", savedDocument); // 문서 정보를 모델에 추가
 	        }
 	    }
@@ -213,7 +221,7 @@ public class ApprovalController {
 	@PostMapping(value = "/aprv/writing", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public String submitApproval(@ModelAttribute ApprovalVO approvalVO,
 	                             @RequestParam(value = "files", required = false) MultipartFile[] files) {
-
+		System.out.println("받은 상태: " + approvalVO.getAprvStatus());
 	    EmpVO loginUser = empService.getLoggedInUserInfo();
 	    approvalVO.setEmployeeNo(loginUser.getEmployeeNo());
 	    approvalVO.setSuberNo(loginUser.getSuberNo());
@@ -236,18 +244,20 @@ public class ApprovalController {
 
 	    // 결재자 저장
 	    List<Integer> approvers = approvalVO.getApprovers();
-	    for (int i = 0; i < approvers.size(); i++) {
-	        AprvRoutesVO r = new AprvRoutesVO();
-	        r.setDraftNo(draftNo);
-	        r.setAprvOrder(String.valueOf(i + 1));
-	        r.setAprvRole("결재");
-	        r.setAprvStatus("대기");
-	        r.setEmployeeNo(approvers.get(i));
-	        approvalService.createAprvRout(r);
+	    if (!"임시".equals(approvalVO.getAprvStatus()) && approvers != null && !approvers.isEmpty()) {
+	    	for (int i = 0; i < approvers.size(); i++) {
+	    		AprvRoutesVO r = new AprvRoutesVO();
+	    		r.setDraftNo(draftNo);
+	    		r.setAprvOrder(String.valueOf(i + 1));
+	    		r.setAprvRole("결재");
+	    		r.setAprvStatus("대기");
+	    		r.setEmployeeNo(approvers.get(i));
+	    		approvalService.createAprvRout(r);
+	    	}	    	
 	    }
 
 	    // 참조자 저장
-	    List<Integer> reference = approvalVO.getReference();
+	    List<Integer> reference = approvalVO.getReferences();
 	    if (reference != null && !reference.isEmpty()) {
 	        for (Integer empNo : reference) {
 	            AprvRoutesVO ref = new AprvRoutesVO();
@@ -260,7 +270,12 @@ public class ApprovalController {
 	        }
 	    }
 
-	    return "redirect:/aprv/list";
+	    if ("임시".equals(approvalVO.getAprvStatus())) {
+	    	String encodedStatus = URLEncoder.encode("임시", StandardCharsets.UTF_8);
+	        return "redirect:/aprv/request?aprvStatus=" + encodedStatus;
+	    } else {
+	        return "redirect:/aprv/list";
+	    }
 	}
 
 
@@ -641,6 +656,17 @@ public class ApprovalController {
 	            .contentType(MediaType.APPLICATION_OCTET_STREAM)
 	            .body(resource);
 	}
+	
+	@GetMapping("/aprv/vacation")
+	@ResponseBody
+	public List<VacationVO> getVacationTypes() {
+	    EmpVO loginUser = empService.getLoggedInUserInfo();  // 로그인된 사용자 정보
+	    VacationVO vctVO = new VacationVO();
+	    vctVO.setSuberNo(loginUser.getSuberNo());  // 회사번호 기준으로 조회
+
+	    return vacationService.getAllVacationTypes(vctVO);
+	}
+	
 
 	@GetMapping("schedulePage")
 	public String scheduleList() {

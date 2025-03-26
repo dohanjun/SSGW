@@ -70,5 +70,10 @@ public interface ApprovalMapper {
 	
 	// 결재 staus 변경
 	public int updateAprvStatus(AprvRoutesVO aprvRoutesVO);
-
+	
+	// 반려
+	public int updateRejectReason(AprvRoutesVO aprvRoutesVO);
+	
+	//
+	public int countAprvListByStatus(ApprovalVO vo);
 }
