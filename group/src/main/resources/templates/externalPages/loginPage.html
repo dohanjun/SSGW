@@ -60,6 +60,7 @@
     <div class="card">
       <div class="login-label">LOGIN</div>
       <form class="login-form" th:action="@{/login}" method="post">
+      	<input type="hidden" name="clientIp" id="clientIp">
         <input type="text" name="username" placeholder="아이디" required>
         <input type="password" name="password" placeholder="비밀번호" required>
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
@@ -67,5 +68,49 @@
       </form>
     </div>
   </div>
+
+<script type="application/javascript">
+//현재 ip 받아오기
+function getIP(json) {
+	document.getElementById("clientIp").value = json.ip;
+}
+</script>
+<script type="application/javascript" src="http://ipinfo.io/?format=jsonp&callback=getIP"></script>
+<script>
+
+
+	
+    const params = new URLSearchParams(window.location.search);
+    const token = document.querySelector('meta[name="_csrf"]').getAttribute("content");
+    const header = document.querySelector('meta[name="_csrf_header"]').getAttribute("content");
+    
+    if (params.get("ipAlert") === "1") {
+        if (confirm("등록되지 않은 IP입니다.\n현재 IP를 사원의 임시 IP로 등록하시겠습니까?")) {
+            const ip = params.get("ip");
+            const employeeId = params.get("employeeId");
+			console.log(ip,employeeId)
+            $.ajax({
+                type: "POST",
+                url: "/registerTempIp",
+                data: JSON.stringify({ employeeId: employeeId, tempIp: ip }),
+	      	      beforeSend: function(xhr) {
+	      	        xhr.setRequestHeader(header, token);
+	      	      },
+                contentType: "application/json",
+                success: function(res) {
+                    alert("IP가 임시로 등록되었습니다. 다시 로그인해주세요.");
+                    window.location.href = "/login";
+                },
+                error: function(xhr) {
+                    alert("IP 등록에 실패했습니다.");
+                    window.location.href = "/login";
+                }
+            });
+        }
+        else{
+        	window.location.href = "/login";
+        }
+    }
+</script>
 </body>
 </html>

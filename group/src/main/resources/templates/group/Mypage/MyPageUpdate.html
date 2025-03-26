@@ -6,13 +6,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<!-- Context Path 추가
-    <meta name="contextPath" value="/myapp">-->
-
 <title>내정보 수정</title>
 <style>
-/* 메인 컨테이너*/
+/* 스타일 생략 부분 유지 */
 .content-wrapper {
 	display: flex;
 	justify-content: center;
@@ -22,8 +18,6 @@
 	padding: 20px;
 	box-sizing: border-box;
 }
-
-/* 사원 상세정보 박스 크기 조정 */
 .employee-container {
 	width: 700px;
 	background: white;
@@ -32,49 +26,35 @@
 	box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 	text-align: center;
 }
-
 .emph2 {
 	margin-bottom: 15px;
 	font-size: 18px;
 }
-
 .profile-img {
 	width: 100px;
 	height: 100px;
-	object-fit: cover; /* 원본 비율을 유지하면서 박스 크기에 맞춤 */
-	border: 1px solid #ddd; /* 테두리 추가 */
+	object-fit: cover;
+	border: 1px solid #ddd;
 	display: block;
 	margin: 0 auto;
 }
-
-.profile-img img {
-	width: 100px;
-	height: 100px;
-	object-fit: cover; /* 비율을 유지하면서 크기에 맞게 자름 */
-	display: block;
-	margin: 0 auto;
-}
-
 .form-container {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: space-between;
 	gap: 10px;
 }
-
 .form-group {
 	flex: 1 1 calc(50% - 10px);
 	min-width: 250px;
 	text-align: left;
 }
-
 .form-group label {
 	font-weight: bold;
 	display: block;
 	margin-bottom: 5px;
 	font-size: 14px;
 }
-
 .form-group input, .form-group select {
 	width: 100%;
 	padding: 6px;
@@ -83,13 +63,11 @@
 	background-color: #f8f9fa;
 	font-size: 14px;
 }
-
 .btn-group {
 	display: flex;
 	justify-content: space-between;
 	margin-top: 15px;
 }
-
 .btn {
 	padding: 8px 12px;
 	border: none;
@@ -98,12 +76,10 @@
 	font-size: 14px;
 	width: 48%;
 }
-
 .btn-update {
 	background: #007bff;
 	color: white;
 }
-
 .btn-cancel {
 	background: #dc3545;
 	color: white;
@@ -112,120 +88,128 @@
 </head>
 <body>
 
-	<form name="updateForm" th:action="@{/MyPageUpdate}" th:object="${emp}"
-		method="post" enctype="multipart/form-data">
+<form name="updateForm" th:action="@{/MyPageUpdate}" th:object="${emp}" method="post" enctype="multipart/form-data">
+	<div class="content-wrapper">
+		<div class="employee-container">
+			<h2 class="emph2">내정보 수정</h2>
 
-		<div class="content-wrapper">
-			<div class="employee-container">
-				<h2 class="emph2">내정보 수정</h2>
+			<!-- 프로필 이미지 -->
+			<div class="profile-container">
+				<img id="imagePreview" class="profile-img"
+					th:src="'data:image/png;base64,' + ${profileImageBase64}"
+					alt="프로필 이미지"
+					onclick="document.getElementById('photo').click();">
+				<input type="file" id="photo" name="profileImageFile"
+					accept="image/*" style="display: none;" onchange="previewImage(event)">
+			</div>
 
-				<!-- 프로필 이미지 -->
-				<div class="profile-container">
-					<img id="imagePreview" class="profile-img"
-						th:src="'data:image/png;base64,' + ${profileImageBase64}"
-						alt="프로필 이미지" onclick="document.getElementById('photo').click();">
-					<input type="file" id="photo" name="profileImageFile"
-						accept="image/*" style="display: none;"
-						onchange="previewImage(event)">
+			<div class="form-container">
+				<!-- ID -->
+				<div class="form-group">
+					<label>ID</label>
+					<input type="text" th:value="${emp.employeeId}" readonly>
 				</div>
 
-				<div class="form-container">
-					<!-- 사원 ID (readonly) -->
-					<div class="form-group">
-						<label>ID</label> <input type="text" th:value="${emp.employeeId}"
-							readonly>
-					</div>
-
-					<!-- 비밀번호 -->
-					<div class="form-group">
-						<label>비밀번호</label> <input type="password"
-							th:field="*{employeePw}">
-						<button type="button" onclick="resetPassword()">비밀번호 초기화</button>
-					</div>
-
-					<!-- 사원 번호 (readonly) -->
-					<div class="form-group">
-						<label>사원번호</label> <input type="hidden" name="employeeNo"
-							th:value="${emp.employeeNo}" readonly>
-					</div>
-
-					<!-- 이름 (readonly) -->
-					<div class="form-group">
-						<label>이름</label> <input type="text" name="employeeName"
-							th:value="${emp.employeeName}" readonly required>
-					</div>
-
-					<!-- 부서명 (readonly) -->
-					<div class="form-group">
-						<label>부서</label> <input type="text"
-							th:value="${emp.departmentName}" readonly>
-					</div>
-
-					<!-- 직급 (readonly) -->
-					<div class="form-group">
-						<label>직급</label> <input type="text"
-							th:value="${emp.jobTitleName}" readonly> <input
-							type="hidden" name="rankId" th:value="${emp.rankId}">
-						<!-- ✅ 서버 전송용 -->
-					</div>
-
-					<!-- 권한 (readonly) -->
-					<div class="form-group">
-						<label>권한</label> <input type="text" th:value="${emp.rightsName}"
-							readonly> <input type="hidden" name="rightsId"
-							th:value="${emp.rightsId}">
-					</div>
-
-					<!-- 연락처 -->
-					<div class="form-group">
-						<label>연락처</label> <input type="text" th:field="*{phoneNumber}">
-					</div>
-
-					<!-- 주소 (readonly, 상세주소는 별도 입력) -->
-					<div class="form-group">
-						<label>주소</label> <input type="text" id="address"
-							th:field="*{address}" readonly>
-						<button type="button" onclick="searchAddress()">주소 검색</button>
-					</div>
-
-					<!-- 상세주소 -->
-					<div class="form-group">
-						<label>상세주소</label> <input type="text" id="detailAddress"
-							placeholder="상세주소 입력">
-					</div>
-
-					<!-- 입사일 (readonly) -->
-					<div class="form-group">
-						<label>입사일</label> <input type="text"
-							th:value="${#dates.format(emp.hireDate, 'yyyy-MM-dd')}" readonly>
-					</div>
-
-					<!-- 임시 IP -->
-					<div class="form-group">
-						<label>접속 IP</label> <input type="text" th:field="*{tempIp}">
-					</div>
+				<!-- 비밀번호 -->
+				<div class="form-group">
+					<label>비밀번호</label>
+					<input type="password" th:field="*{employeePw}">
+					<button type="button" onclick="resetPassword()">비밀번호 초기화</button>
 				</div>
 
-				<!-- 버튼 -->
-				<div class="btn-group">
-					<button type="submit" class="btn btn-update">수정</button>
-					<button type="button" class="btn btn-cancel"
-						th:onclick="|location.href='@{/MyPageInfo}'|">취소</button>
+				<!-- 사원번호 -->
+				<div class="form-group">
+					<label>사원번호</label>
+					<input type="text" th:value="${emp.employeeNo}" readonly id="employeeNo">
+				</div>
+
+				<!-- 이름 -->
+				<div class="form-group">
+					<label>이름</label>
+					<input type="text" name="employeeName" th:value="${emp.employeeName}" readonly required>
+				</div>
+
+				<!-- 부서 -->
+				<div class="form-group">
+					<label>부서</label>
+					<input type="text" th:value="${emp.departmentName}" readonly>
+				</div>
+
+				<!-- 직급 -->
+				<div class="form-group">
+					<label>직급</label>
+					<input type="text" th:value="${emp.jobTitleName}" readonly>
+					<input type="hidden" name="rankId" th:value="${emp.rankId}">
+				</div>
+
+				<!-- 권한 -->
+				<div class="form-group">
+					<label>권한</label>
+					<input type="text" th:value="${emp.rightsName}" readonly>
+					<input type="hidden" name="rightsId" th:value="${emp.rightsId}">
+				</div>
+
+				<!-- 연락처 -->
+				<div class="form-group">
+					<label>연락처</label>
+					<input type="text" th:field="*{phoneNumber}">
+				</div>
+
+				<!-- 주소 -->
+				<div class="form-group">
+					<label>주소</label>
+					<input type="text" id="address" th:field="*{address}" readonly>
+					<button type="button" onclick="searchAddress()">주소 검색</button>
+				</div>
+
+				<!-- 상세주소 -->
+				<div class="form-group">
+					<label>상세주소</label>
+					<input type="text" id="detailAddress" placeholder="상세주소 입력">
+				</div>
+
+				<!-- 입사일 -->
+				<div class="form-group">
+					<label>입사일</label>
+					<input type="text" th:value="${#dates.format(emp.hireDate, 'yyyy-MM-dd')}" readonly>
+				</div>
+
+				<!-- ✅ 접속 IP + 버튼 -->
+				<div class="form-group">
+					<label>접속 IP</label>
+					<div style="display: flex; gap: 5px;">
+						<input type="text" th:field="*{tempIp}" id="clientIp">
+						<button type="button" onclick="loadClientIp()">IP 자동입력</button>
+					</div>
 				</div>
 			</div>
+
+			<!-- 버튼 -->
+			<div class="btn-group">
+				<button type="submit" class="btn btn-update">수정</button>
+				<button type="button" class="btn btn-cancel" th:onclick="|location.href='@{/MyPageInfo}'|">취소</button>
+			</div>
 		</div>
-	</form>
+	</div>
+</form>
 
+<!-- 📦 외부 스크립트 -->
+<script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=843f623b54841d7e48c15c0667f81957&libraries=services"></script>
+<script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 
+<!-- ✅ IP 자동입력용 JSONP -->
+<script>
+	function getIP(json) {
+		document.getElementById("clientIp").value = json.ip;
+	}
+	function loadClientIp() {
+		const script = document.createElement("script");
+		script.src = "https://ipinfo.io?format=jsonp&callback=getIP";
+		document.body.appendChild(script);
+	}
+</script>
 
-	<!--  카카오 주소 API -->
-	<script
-		src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=843f623b54841d7e48c15c0667f81957&libraries=services"></script>
-	<script
-		src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-
-	<script>
-	// 📌 이미지 미리보기
+<script>
 	function previewImage(event) {
 		const file = event.target.files[0];
 		if (file) {
@@ -237,39 +221,30 @@
 		}
 	}
 
-	// 🔐 비밀번호 초기화
 	function resetPassword() {
 		const employeeNo = document.getElementById("employeeNo").value;
-
-		fetch(`/api/resetPassword?employeeNo=${employeeNo}`, {
-			method: "POST"
-		})
+		fetch(`/api/resetPassword?employeeNo=${employeeNo}`, { method: "POST" })
 			.then(res => res.text())
 			.then(msg => alert(msg))
 			.catch(err => console.error("비밀번호 초기화 실패:", err));
 	}
 
-	// 📤 FormData 방식 AJAX 전송
 	document.forms.updateForm.addEventListener("submit", function (event) {
-		event.preventDefault(); // 기본 제출 막기
-
-		// 📦 주소 병합
+		event.preventDefault();
 		const addressField = document.getElementById("address");
 		const detailField = document.getElementById("detailAddress");
 		if (addressField && detailField) {
 			addressField.value = addressField.value + " " + detailField.value;
 		}
 
-		// 📤 FormData 생성 (파일 포함)
 		const formData = new FormData(this);
-		
 		const employeeNoInput = document.getElementById("employeeNo");
 		if (employeeNoInput) {
 			formData.append("employeeNo", employeeNoInput.value);
 		}
 		fetch("/MyPageUpdate", {
 			method: "POST",
-			body: formData // ✅ 헤더 생략, 자동 설정됨
+			body: formData
 		})
 			.then(response => {
 				if (response.redirected) {
@@ -289,7 +264,6 @@
 			});
 	});
 
-	// 🏠 카카오 주소 검색
 	function searchAddress() {
 		new daum.Postcode({
 			oncomplete: function (data) {
@@ -299,11 +273,9 @@
 		}).open();
 	}
 
-	// 🔧 상세주소 분리
 	function splitAddressOnLoad() {
 		const addressField = document.getElementById("address");
 		const detailField = document.getElementById("detailAddress");
-
 		if (addressField && detailField && addressField.value.includes("]")) {
 			const parts = addressField.value.split("] ");
 			addressField.value = parts[0] + "]";
@@ -311,7 +283,6 @@
 		}
 	}
 
-	// 📥 셀렉트박스 데이터 비동기 로드
 	function loadSelectData(url, selectId, valueField, textField, selectedValue = null) {
 		fetch(url)
 			.then(res => res.json())
@@ -319,7 +290,6 @@
 				const select = document.getElementById(selectId);
 				if (!select) return;
 				select.innerHTML = '<option value="">선택하세요</option>';
-
 				data.forEach(item => {
 					const option = document.createElement("option");
 					option.value = item[valueField];
@@ -335,7 +305,6 @@
 			});
 	}
 
-	// 📦 페이지 로드시 자동 실행
 	document.addEventListener("DOMContentLoaded", function () {
 		const selectedDepartment = "[[${emp.departmentNo}]]";
 		const selectedRank = "[[${emp.rankId}]]";
@@ -348,7 +317,6 @@
 		splitAddressOnLoad();
 	});
 </script>
-
 
 </body>
 </html>

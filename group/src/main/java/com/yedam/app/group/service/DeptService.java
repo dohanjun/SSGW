@@ -22,4 +22,7 @@ public interface DeptService {
     // 부서전체 조회
     List<DeptVO> getAllDepartments(int suberNo);
 
+    //부서등록
+    int insertDepartment(DeptVO deptVO); 
+
 }

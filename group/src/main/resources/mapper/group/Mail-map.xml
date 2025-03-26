@@ -211,10 +211,17 @@
 	
 	
 	<!-- 임시메일 자동삭제 -->
-	<delete id="deleteTemporaryMails">
+	<delete id="deleteExpiredMails">
         DELETE FROM mail
         WHERE is_temporary = 1
-        AND expiry_date &lt;= #{currentDateTime}
+        AND expiry_date &lt;= sysdate
+    </delete>
+    
+    	<!-- 휴지통 자동삭제 -->
+	<delete id="deleteCurrentMails">
+        DELETE FROM mail
+        WHERE is_temporary = 1
+        AND expiry_date &lt;= sysdate
     </delete>
     
 </mapper>

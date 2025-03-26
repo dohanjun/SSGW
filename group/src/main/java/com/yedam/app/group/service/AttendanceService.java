@@ -36,8 +36,8 @@ public interface AttendanceService {
     List<AttendanceManagementVO> selectDeptAttendance(int departmentNo);
 
     // ✅ 오늘 부서 출근 리스트
-    List<AttendanceManagementVO> getTodayAttendanceByDept(int departmentNo);
-
+    
+    List<AttendanceManagementVO> getTodayAttendanceByDept(int deptNo);
     // ✅ 특정 출결의 초과근무 상세
     OvertimeVO getOvertimeByWorkAttitudeId(int workAttitudeId);
 

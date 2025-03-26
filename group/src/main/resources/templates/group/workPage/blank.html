@@ -91,7 +91,7 @@
     </div>
 
     <!-- 오른쪽: 연간 근태 현황 -->
-
+    <!-- (혹시 여기에 들어갈 추가 내용이 있다면 추가 가능) -->
 </div>
 
 <!-- ✅ 출퇴근 기록 (하단) -->
@@ -120,21 +120,20 @@
                         <tbody>
                             <tr th:each="attendance : ${attendanceList}">
                                 <td th:text="${attendance.employeeNo}"></td>
-                                <td th:text="${#dates.format(attendance.attendanceDate, 'yyyy-MM-dd ')}"></td>
+                                <td th:text="${#dates.format(attendance.attendanceDate, 'yyyy-MM-dd')}"></td>
                                 <td th:text="${#dates.format(attendance.clockInTime, 'HH:mm')}"></td>
                                 <td th:text="${#dates.format(attendance.clockOutTime, 'HH:mm')}"></td>
                                 <td th:text="${attendance.workAttitudeType}"></td>
                                 <td th:text="${attendance.reason} ?: '-'"></td>
                                 <td></td>
-                                <td th:text="${attendance.totalWorkingHours}"></td>
-                                <td th:text="${attendance.overtimeList} ? ${attendance.overtimeList.overtimeTime} + '시간'"></td> <!-- ✅ 초과 근무시간 표시 -->
+                                <td th:text="${attendance.totalWorkingHours} + ' 시간'"></td>
+                                <td th:text="${attendance.overtimeHours != null ? attendance.overtimeHours + ' 시간' : '0 시간'}"></td> <!-- ✅ 초과근무시간 시간단위 -->
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
-       
     </div>
 </div>
 
@@ -155,13 +154,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let monthlyTotalWorkHours = parseFloat(workHoursDataElement.dataset.monthlyTotalWorkHours) || 0;
     let totalWorkedHours = parseFloat(workHoursDataElement.dataset.totalWorkedHours) || 0;
-  //  let overtimeMinutes = parseFloat(workHoursDataElement.dataset.overtimeHours) || 0;
+    let overtimeHours = parseFloat(workHoursDataElement.dataset.overtimeHours) || 0;
 
-    let overtimeHours = workHoursDataElement.dataset.overtimeHours
-
-    let overtimeDisplayText = (overtimeHours > 0 ) 
-        ? `${overtimeHours}시간`
-        : "없음";
+    let overtimeDisplayText = (overtimeHours > 0) ? `${overtimeHours} 시간` : "없음";
 
     document.getElementById('totalWorkDisplay').innerText = totalWorkedHours + " 시간";
     document.getElementById('overtimeWorkDisplay').innerText = overtimeDisplayText;
@@ -175,9 +170,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 backgroundColor: ['#CCCCCC', '#007bff', '#FF5733'],
             }]
         },
-        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
     });
-    console.log([Math.max(0, monthlyTotalWorkHours - totalWorkedHours), totalWorkedHours])
 });
 </script>
 

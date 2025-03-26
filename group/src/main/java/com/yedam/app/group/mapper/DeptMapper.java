@@ -29,6 +29,8 @@ public interface DeptMapper {
     
     // 직원 조직도
     public List<DeptVO> getOrgChart(DeptVO deptVO);
+
+	public int insertDepartment(DeptVO deptVO);
 	
 	
 
