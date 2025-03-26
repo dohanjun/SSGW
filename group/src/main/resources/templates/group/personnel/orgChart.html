@@ -7,7 +7,6 @@
     <meta charset="UTF-8">
     <title>조직도</title>
     <style>
-        /* 기본 리스트 스타일 제거 */
         #orgTree, #orgTree ul {
             list-style: none;
             padding-left: 10px;
@@ -20,19 +19,16 @@
             position: relative;
         }
 
-        /* 펼치기/접기 아이콘 스타일 */
         .toggle-icon {
             cursor: pointer;
             margin-right: 5px;
         }
 
-        /* 검색창 */
         #searchInput {
             font-size: 14px;
             padding: 8px;
         }
 
-        /* 회사명 강조 */
         .company-name {
             font-weight: bold;
             font-size: 20px;
@@ -40,7 +36,6 @@
             margin-bottom: 10px;
         }
 
-        /* 오른쪽 직원 정보 카드 */
         .fixed-sidebar {
             position: fixed;
             width: 500px;
@@ -56,7 +51,7 @@
     <h2 class="text-center">조직도</h2>
 
     <div class="row">
-        <!-- 조직도 트리 영역 -->
+        <!-- 조직도 트리 -->
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header">
@@ -68,7 +63,7 @@
             </div>
         </div>
 
-        <!-- 오른쪽 직원 상세 정보 -->
+        <!-- 직원 상세 정보 -->
         <div class="col-md-6">
             <div class="card fixed-sidebar">
                 <div class="card-body text-center">
@@ -85,26 +80,24 @@
 </div>
 
 <script>
-    // 페이지 로딩 시 API 호출
     document.addEventListener("DOMContentLoaded", function () {
         fetch("/api/orgchart")
             .then(response => response.json())
             .then(data => {
-                console.log("[조직도 데이터]", data);  // ← 문제 디버깅용 로그
+                console.log("[조직도 데이터]", data);
                 buildTree(data);
             })
             .catch(error => console.error("조직도 불러오기 오류:", error));
     });
 
-    // 조직도 트리 생성 함수
     function buildTree(data) {
         const tree = document.getElementById("orgTree");
         tree.innerHTML = "";
 
-        const companyMap = {}; // 회사별로 묶기
-        const deptMap = {};    // 부서번호 기준으로 묶기
+        const companyMap = {};
+        const deptMap = {};
 
-        // 회사별 그룹화
+        // 회사별로 부서 나누기 + 부서 Map 저장
         data.forEach(item => {
             if (!companyMap[item.suberNo]) {
                 companyMap[item.suberNo] = {
@@ -113,9 +106,10 @@
                 };
             }
             companyMap[item.suberNo].departments.push(item);
+            deptMap[item.departmentNo] = item;
         });
 
-        // 회사 기준 트리 생성
+        // 회사별 트리 생성
         Object.values(companyMap).forEach(company => {
             const companyLi = document.createElement("li");
             companyLi.innerHTML = `<span class="toggle-icon">▶</span> 📁 <strong class="company-name">${company.companyName}</strong>`;
@@ -123,16 +117,12 @@
             const deptTree = document.createElement("ul");
             deptTree.style.display = "none";
 
-            // 부서 정리 (상위 부서 null이면 최상위)
-            const topLevelDepts = [];
-            company.departments.forEach(dept => {
-                if (!dept.upperDepNo) {
-                    topLevelDepts.push(dept);
-                }
-                deptMap[dept.departmentNo] = dept;
+            //  최상위 부서 찾기 (upperDepNo가 현재 회사의 부서 목록에 존재하지 않는 경우)
+            const topLevelDepts = company.departments.filter(dept => {
+                return !company.departments.some(d => d.departmentNo === dept.upperDepNo);
             });
 
-            // 최상위 부서 트리 생성
+            // 최상위 부서부터 트리 생성
             topLevelDepts.forEach(dept => {
                 const deptLi = createDeptNode(dept, deptMap);
                 deptTree.appendChild(deptLi);
@@ -141,7 +131,7 @@
             companyLi.appendChild(deptTree);
             tree.appendChild(companyLi);
 
-            // 클릭 시 트리 열기/닫기
+            // 트리 펼치기/접기
             companyLi.querySelector(".toggle-icon").addEventListener("click", function () {
                 deptTree.style.display = (deptTree.style.display === "none") ? "block" : "none";
                 this.textContent = (deptTree.style.display === "none") ? "▶" : "▼";
@@ -149,7 +139,6 @@
         });
     }
 
-    // 부서 노드 생성 (재귀)
     function createDeptNode(dept, deptMap) {
         const deptLi = document.createElement("li");
         const empCount = (dept.employees && dept.employees.length) || 0;
@@ -158,7 +147,6 @@
         const subTree = document.createElement("ul");
         subTree.style.display = "none";
 
-        // 직원 목록 출력
         if (dept.employees) {
             dept.employees.forEach(emp => {
                 const empLi = document.createElement("li");
@@ -167,15 +155,14 @@
             });
         }
 
-        // 하위 부서 재귀 호출
+        // 하위 부서 탐색 (upperDepNo → departmentNo)
         Object.values(deptMap).forEach(subDept => {
-            if (subDept.upperDepNo === dept.departmentNo) {
+            if (Number(subDept.upperDepNo) === Number(dept.departmentNo)) {
                 const subDeptLi = createDeptNode(subDept, deptMap);
                 subTree.appendChild(subDeptLi);
             }
         });
 
-        // 펼치기 기능
         deptLi.querySelector(".toggle-icon").addEventListener("click", function () {
             subTree.style.display = (subTree.style.display === "none") ? "block" : "none";
             this.textContent = (subTree.style.display === "none") ? "▶" : "▼";
@@ -185,7 +172,6 @@
         return deptLi;
     }
 
-    // 오른쪽 직원 정보 표시
     function showEmpInfo(name, dept, title, phone) {
         document.getElementById("empName").textContent = name;
         document.getElementById("empDept").textContent = dept;
@@ -193,7 +179,7 @@
         document.getElementById("empPhone").textContent = phone;
     }
 
-    // 검색 기능 (트리 자동 펼침)
+    // 검색 기능
     document.getElementById("searchInput").addEventListener("input", function () {
         const searchText = this.value.toLowerCase();
         const allItems = document.querySelectorAll("#orgTree li");
