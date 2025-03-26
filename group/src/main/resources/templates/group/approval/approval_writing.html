@@ -387,7 +387,7 @@ $('#ajaxSubmitBtn').on('click', function () {
         contentType: false, // content-type 헤더 설정 안 함 (브라우저가 자동 설정)
         success: function (res) {
             alert('기안문이 성공적으로 등록되었습니다!');
-            //location.href = '/aprv/list';
+            location.href = '/aprv/list';
         },
         error: function (xhr) {
             alert('등록 중 오류 발생: ' + xhr.responseText);

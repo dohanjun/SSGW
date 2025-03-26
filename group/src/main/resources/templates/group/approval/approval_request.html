@@ -17,12 +17,8 @@
 		<div class="card shadow mb-4">
 			<div class="card-header py-3">
 				<!-- 검색부분 -->
-				<form th:action="@{/aprv/list}" method="GET">
-					<input type="hidden" name="aprvStatus" th:value="${aprvStatus}">
-					<p>
-						기안자 <input type="text" name="employeeName"> 문서제목 <input
-							type="text" name="title"> 상신일 <input type="date"
-							name="draftDate">
+				<form th:action="@{/aprv/request}" method="GET">
+					<p>문서제목<input type="text" name="title">상신일 <input type="date" name="draftDate" th:value="${#dates.format(approvalVO.draftDate,'yyyy-MM-dd')}">결재상태 <input type="text" name="aprvStatus">
 						<button type="submit" class="float-right">검색</button>
 					</p>
 				</form>
