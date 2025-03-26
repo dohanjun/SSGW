@@ -21,5 +21,11 @@ public interface VacationService {
     
     
     int countVacationTypes(VacationVO vo);
+    
+    // 페이징된 휴가현황 목록 조회
+    List<VacationVO> getVacationStatusPaging(VacationVO vo);
+    
+    // 전체 휴가현황 개수 조회 (페이징용)
+    int countVacationStatus(VacationVO vo);
 
 }

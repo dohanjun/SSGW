@@ -1,75 +1,36 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org"
-	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	  layout:decorate="~{common/layouts/default_layout}"
-	  layout:fragment="content">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/layouts/default_layout}"
+      layout:fragment="content">
 <head>
-<meta charset="UTF-8">
-<title>부서관리</title>
+    <meta charset="UTF-8">
+    <title>부서 관리</title>
+    <!-- Bootstrap 4.6 CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.6.2/css/bootstrap.min.css">
 </head>
 <body>
-     <div class="container text-center">
-         <h3>부서관리</h3>
-         <table class="table">
-            <thead>
-                <tr>
-                   <th>부서번호</th>
-                   <th>부서이름</th>
-                   <th>부서장</th>
-                   <th>부서총원</th>
-                </tr>
-            </thead>
-            <tbody>                                   
-                <tr><!-- 샘플 -->
-                   <td>1</td>
-                   <td>경영기획부</td>
-                   <td>김상연</td>
-                   <td>2</td>
-                </tr>
-                <tr>
-                   <td>2</td>
-                   <td>마케팅부</td>
-                   <td>이신영</td>
-                   <td>2</td>
-                </tr>
-                <tr>
-                   <td>3</td>
-                   <td>인사팀</td>
-                   <td>윤지원</td>
-                   <td>2</td>
-                </tr>
-                <tr>
-                   <td>4</td>
-                   <td>회계팀</td>
-                   <td>도한준</td>
-                   <td>2</td>
-                </tr>
-                <tr>
-                   <td>5</td>
-                   <td>프로젝트팀</td>
-                   <td>김예찬</td>
-                   <td>2</td>
-                </tr>
+<div class="container mt-5">
+    <h3 class="text-center mb-4">부서 목록</h3>
 
-              <th:block th:each=" post : ${boards} ">
-                   <!--/* post(BoardVO) => <tr/> 로 바꿔야함 */-->
-                   <!--/* boardInfo?bno=1 여기로 온클릭 /*-->
-                <tr th:id="${post.bno}"
-                    th:onclick="|='@{/(=${})}'|">       <!--/* text는 [[]] 이중괄호에 ${}변수 가져올거 */-->
-                   <!--<td>[[${}]]</td>                   
-                   <td>[[${}]]</td>
-                   <td>[[${}]]</td>
-                   <td>[[${}]]</td>
-                   <td>[[${}]]</td>-->
-                </tr>    
-              </th:block>
-            </tbody>
-         </table>
-        </div>
-     
-     <script>
-     // 사원 검색 기능
-
-     </script>
+    <table class="table table-bordered table-hover text-center">
+        <thead class="thead-light">
+            <tr>
+                <th>부서번호</th>
+                <th>부서이름</th>
+                <th>부서장</th>
+                <th>부서 총원</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="dept : ${deptList}">
+                <td th:text="${dept.departmentNo}">부서번호</td>
+                <td th:text="${dept.departmentName}">부서이름</td>
+                <td th:text="${dept.employeeName}">부서장</td>
+                <td th:text="${dept.employeeCount}">총원</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 </body>
 </html>

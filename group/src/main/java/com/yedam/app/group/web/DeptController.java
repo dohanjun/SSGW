@@ -65,14 +65,20 @@ public class DeptController {
         return deptMapper.getAllRights(rightsVO);
     }
     
-    // 조직도 컨트롤러
+    // 조직도 데이터 제공 (JSON 응답)
     @GetMapping("/orgchart")
     public List<DeptVO> getOrgChart(DeptVO deptVO) {
-    	// 로그인한 사용자 정보 가져오기
-	    EmpVO loggedInUser = empService.getLoggedInUserInfo();
-	    deptVO.setSuberNo(loggedInUser.getSuberNo());
-    	
-        return deptMapper.getOrgChart(deptVO);
-    }
+        EmpVO loggedInUser = empService.getLoggedInUserInfo();
+        deptVO.setSuberNo(loggedInUser.getSuberNo());
 
+        List<DeptVO> result = deptMapper.getOrgChart(deptVO);
+
+        //  디버깅 로그 찍기
+        System.out.println("[조직도 호출] 회사번호: " + deptVO.getSuberNo());
+        for (DeptVO d : result) {
+            System.out.println("부서: " + d.getDepartmentName() + ", 사원 수: " + (d.getEmployees() != null ? d.getEmployees().size() : 0));
+        }
+
+        return result;
+    }
 }
