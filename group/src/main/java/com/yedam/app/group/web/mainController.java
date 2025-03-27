@@ -83,7 +83,9 @@ public class mainController {
 	 * @return group/mainPage
 	 */
 	@GetMapping("main")
-	public String mainPage() {
+	public String mainPage(Model model) {
+		EmpVO loggedInUser = empService.getLoggedInUserInfo();
+		model.addAttribute("userInfo", loggedInUser); 
 		return "group/mainPage";
 	}
 

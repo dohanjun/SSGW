@@ -8,25 +8,10 @@
 			class="btn btn-link d-md-none rounded-circle mr-3">
 			<i class="fa fa-bars"></i>
 		</button>
+		<p style="font-size: 1.2rem; font-weight: bold; margin: 20px 0;" th:text="${userInfo.employeeName} + '님,'"></p>
+		<p id="greeting" style="font-size: 1.2rem; font-weight: bold; margin: 20px 0;"></p>
 
-		<!-- Topbar Search -->
-		<form
-			class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
-			<div class="input-group">
-				<input type="text" class="form-control bg-light border-0 small"
-					placeholder="Search for..." aria-label="Search"
-					aria-describedby="basic-addon2">
-				<div class="input-group-append">
-					<button class="btn btn-primary" type="button">
-						<i class="fas fa-search fa-sm"></i>
-					</button>
-				</div>
-			</div>
-		</form>
-
-		<!-- Topbar Navbar -->
 		<ul class="navbar-nav ml-auto">
-
 			<!-- Nav Item - Search Dropdown (Visible Only XS) -->
 			<li class="nav-item dropdown no-arrow d-sm-none"><a
 				class="nav-link dropdown-toggle" href="#" id="searchDropdown"
@@ -249,6 +234,37 @@
 	    }
 	});
 
+</script>
+<script>
+  const messages = [
+    "오늘도 힘내세요 💪",
+    "멋지게 하루를 시작해볼까요? 🌟",
+    "당신의 노력을 응원합니다 🙌",
+    "작은 성취도 큰 걸음이에요 👣",
+    "지치지 마세요, 곧 좋은 일이 생길 거예요 😊",
+    "오늘도 파이팅! 🔥",
+    "스스로를 믿으세요 💖",
+    ": 아 집가고 싶다 🏠",
+    "월급은 안오르고 물가는 오르고 에휴! 💸",
+    "이게 맞나 싶지만 일단 해봅시다 😶‍",
+    "언젠가는 빛날 날이 올 거예요 ✨",
+    "커피 한 잔으로 버텨봅시다 ☕",
+    "오늘도 출근하신 거, 정말 대단해요 👏",
+    "점심시간만 기다려져요 🍱",
+    "퇴근이 기다려지네요 🏃‍♂️",
+    "내일은 더 나을 거예요 🙏",
+    "지금 잘하고 계십니다 😊",
+    "이 또한 지나갈 거예요 🍃",
+    "다들 힘든 시기지만, 함께 이겨냅시다 💪",
+    "하루하루가 쌓여서 내일을 만듭니다 🧱"
+    
+  ];
+
+  // 랜덤으로 메시지 하나 선택
+  const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+
+  // 화면에 출력
+  document.getElementById("greeting").innerText = randomMessage;
 </script>
 
 </div>
