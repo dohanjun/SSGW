@@ -245,7 +245,7 @@ public class ApprovalController {
 	        VacationRequestVO vacationVO = new VacationRequestVO();
 	        vacationVO.setDraftNo(draftNo);
 	        vacationVO.setEmployeeNo(loginUser.getEmployeeNo());
-
+	        vacationVO.setVacationTypeId(approvalVO.getVacationTypeId());
 	        // 날짜 변환
 	        try {
 	            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");

@@ -358,12 +358,14 @@
 		,USED_VACATION
 		,START_VACATION_DATE
 		,END_VACATION_DATE
-		,EMPLOYEE_NO)
+		,EMPLOYEE_NO
+		,VACATION_TYPE_ID)
 		VALUES
 		(#{draftNo}
 		 ,#{usedVacation}
 		 ,#{startVacationDate}
 		 ,#{endVacationDate}
-		 ,#{employeeNo})
+		 ,#{employeeNo}
+		 ,#{vacationTypeId})
 	</insert>
 </mapper>
