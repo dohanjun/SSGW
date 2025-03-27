@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.yedam.app.group.service.VacationRequestVO;
 import com.yedam.app.group.service.VacationVO;
 
 @Mapper
@@ -59,5 +60,12 @@ public interface VacationMapper {
     
     // 연차 사용일/잔여일 업데이트
     public int updateVacationUsage(VacationVO vo);
+    
+    //
+    public VacationRequestVO selectVacationRequest(VacationRequestVO vrVO);
+    
+    //
+    public void updateLeaveHistoryRequest(VacationVO vacaVO);
+    
     
 }

@@ -30,5 +30,7 @@ public interface VacationService {
     
     // 연차 사용일/잔여일 업데이트 (사번, 회사번호, 연도 기준)
 	void updateVacationUsage(int employeeNo, int suberNo, String year);
-
+	
+	//
+	void findUsedVacation(VacationRequestVO vrVO);
 }

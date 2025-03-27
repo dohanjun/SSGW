@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.yedam.app.group.mapper.VacationMapper;
 import com.yedam.app.group.service.EmpService;
 import com.yedam.app.group.service.EmpVO;
+import com.yedam.app.group.service.VacationRequestVO;
 import com.yedam.app.group.service.VacationService;
 import com.yedam.app.group.service.VacationVO;
 
@@ -134,5 +135,18 @@ public class VacationServiceImpl implements VacationService {
         // XML Mapper 호출
         vacationMapper.updateVacationUsage(vo);
     }
+
+	@Override
+	public void findUsedVacation(VacationRequestVO vrVO) {
+		VacationRequestVO request = vacationMapper.selectVacationRequest(vrVO);
+
+        if (request != null) {
+            VacationVO vacationVO = new VacationVO();
+            vacationVO.setEmployeeNo(request.getEmployeeNo());
+            vacationVO.setUsedVacation(request.getUsedVacation());
+
+            vacationMapper.updateLeaveHistoryRequest(vacationVO);
+        }
+	}
 
 }

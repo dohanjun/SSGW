@@ -73,4 +73,7 @@ public interface ApprovalService {
     
     //
     public int createVacation(VacationRequestVO vacaVO);
+    
+    //
+    public ApprovalVO findTitleEmpNo(int draftNo);
 }
