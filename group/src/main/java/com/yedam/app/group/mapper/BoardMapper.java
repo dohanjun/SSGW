@@ -12,31 +12,27 @@ import com.yedam.app.group.service.BoardVO;
 @Mapper
 public interface BoardMapper {
 	
-	List<BoardVO> selectBoardsByType(@Param("boardType") String boardType, @Param("suberNo") int suberNo, @Param("departmentNo") Integer departmentNo,
-		    @Param("employeeNo") Integer employeeNo
-		);
-	
-	int countNoticeBoardPosts(@Param("suberNo") int suberNo, @Param("keyword") String keyword);
-	
-	List<BoardVO> selectNoticeBoardPostsPaged(@Param("suberNo") int suberNo, @Param("keyword") String keyword,
-	                                          @Param("offset") int offset, @Param("limit") int limit);
-	
-	int countDepartmentBoardPosts(@Param("suberNo") int suberNo, @Param("departmentNo") Integer departmentNo, @Param("keyword") String keyword);
-	
-	List<BoardVO> selectDepartmentBoardPostsPaged(@Param("suberNo") int suberNo, @Param("departmentNo") Integer departmentNo,
-	                                              @Param("keyword") String keyword, @Param("offset") int offset, @Param("limit") int limit);
+	// 게시판 ID 가져오기 (공지/부서/자유)
+    Integer getBoardIdByType(String boardType, int suberNo, Integer departmentNo);
 
-	int countFreeBoardPosts(@Param("suberNo") int suberNo, @Param("keyword") String keyword);
-	
-	List<BoardVO> selectFreeBoardPostsPaged(@Param("suberNo") int suberNo, @Param("keyword") String keyword,
-											@Param("offset") int offset, @Param("limit") int limit);
-	
-	Integer getBoardIdByType(@Param("type") String type,
-            @Param("suberNo") int suberNo,
-            @Param("departmentNo") Integer departmentNo);
+    // 게시글 등록
+    void insertPost(BoardPostVO postVO);
 
-	void insertPost(BoardPostVO postVO);
+    // 첨부파일 등록
+    void insertAttachment(BoardAttachmentVO attach);
 
-	void insertAttachment(BoardAttachmentVO attach);
+    // 게시판 종류별 목록 조회
+    List<BoardVO> selectBoardsByType(String boardType, int suberNo, Integer departmentNo, Integer employeeNo);
 
+    // 공지 게시판
+    int countNoticeBoardPosts(int suberNo, String keyword);
+    List<BoardVO> selectNoticeBoardPostsPaged(int suberNo, String keyword, int offset, int limit);
+
+    // 부서 게시판
+    int countDepartmentBoardPosts(Integer suberNo, Integer departmentNo, String keyword);
+    List<BoardVO> selectDepartmentBoardPostsPaged(Integer suberNo, Integer departmentNo, String keyword, int offset, int limit);
+
+    // 자유 게시판
+    int countFreeBoardPosts(int suberNo, String keyword);
+    List<BoardVO> selectFreeBoardPostsPaged(int suberNo, String keyword, int offset, int limit);
 }

@@ -1,16 +1,28 @@
 package com.yedam.app.group.web;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.yedam.app.group.service.EmpService;
 import com.yedam.app.group.service.EmpVO;
@@ -19,24 +31,50 @@ import com.yedam.app.group.service.MailVO;
 import com.yedam.app.group.service.PageListVO;
 import com.yedam.app.group.service.Paging;
 
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class MailController {
 
-	private MailService mailService;
-	private EmpService empService;
+    private static final String UPLOAD_DIR = "uploads/"; // 업로드 디렉토리
+    private final MailService mailService;
+    private final EmpService empService;
 
-	@Value("${file.upload-dir}")  
-    private String uploadDir;
-	
-	public MailController(MailService mailService, EmpService empService) {
-		this.mailService = mailService;
-		this.empService = empService;
-	}
+    // 생성자 주입 방식
+    public MailController(MailService mailService, EmpService empService) {
+        this.mailService = mailService;
+        this.empService = empService;
+    }
+
+
+    // 파일 다운로드 처리
+    @GetMapping("/download/{filename}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable String filename) {
+        try {
+            // 다운로드할 파일의 경로 설정
+            Path filePath = Paths.get(UPLOAD_DIR).resolve(filename).normalize();
+            File file = filePath.toFile();
+
+            // 파일이 존재하지 않으면 404 반환
+            if (!file.exists()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+
+            // 파일을 Resource로 변환
+            Resource resource = (Resource) new FileSystemResource(file);
+
+            // 파일을 다운로드하도록 헤더 설정
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                    .body(resource);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
 
 	// 메일목록
-	@GetMapping("mail")
+	@GetMapping("/mail")
 	public String mail(Model model, PageListVO vo, Paging paging) {
 
 		// 페이징처리
@@ -52,7 +90,7 @@ public class MailController {
 	}
 
 	// 메일상세보기
-	@GetMapping("mailSelect")
+	@GetMapping("/mailSelect")
 	public String mailSelect(MailVO mailVO, Model model) {
 		
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
@@ -64,7 +102,7 @@ public class MailController {
 	}
 
 	// 내 메일상세보기
-	@GetMapping("myMailSelect")
+	@GetMapping("/myMailSelect")
 	public String myMailSelect(MailVO mailVO, Model model) {
 		
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
@@ -84,15 +122,40 @@ public class MailController {
 
 	// 메일등록
 	@PostMapping("/mailInsert")
-	public String InsertMail(MailVO vo) {
-		EmpVO loggedInUser = empService.getLoggedInUserInfo();
-		vo.setEmployeeId(loggedInUser.getEmployeeId());
+	public String insertMail(MailVO vo, @RequestParam("file") MultipartFile file) {
+	    try {
+	        // 파일 업로드 처리
+	        String filename = StringUtils.cleanPath(file.getOriginalFilename()); // 파일 이름 정리
+	        Path targetLocation = Paths.get(UPLOAD_DIR + filename); // 저장할 경로
 
-		mailService.sendMailToUser(vo);
+	        // 디렉토리가 없으면 생성
+	        File dir = new File(UPLOAD_DIR);
+	        if (!dir.exists()) {
+	            dir.mkdirs();
+	        }
 
-		return "redirect:mail";
-		
+	        // 파일을 지정된 경로에 복사
+	        Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+	        
+	        // 업로드된 파일 경로를 MailVO에 포함 (필요한 경우)
+	        vo.setAttachedFileName(filename); // 메일 VO에 파일 이름을 설정
+
+	    } catch (IOException e) {
+	        // 파일 업로드 실패 시 처리
+	        return "redirect:/error"; // 오류 페이지로 리다이렉트 (필요 시)
+	    }
+
+	    // 로그인한 사용자 정보 가져오기
+	    EmpVO loggedInUser = empService.getLoggedInUserInfo();
+	    vo.setEmployeeId(loggedInUser.getEmployeeId());
+
+	    // 메일 발송
+	    mailService.sendMailToUser(vo);
+
+	    // 메일 발송 후 mail 목록 페이지로 리다이렉트
+	    return "redirect:mail"; // 메일 목록 페이지로 리다이렉트 (올바른 경로)
 	}
+
 
 	// 수정 - 페이지
 	@GetMapping("/mailUpdate")
@@ -162,7 +225,7 @@ public class MailController {
 	public String getMail(Model model, PageListVO vo, Paging paging) {
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 		vo.setMailType("받은");
-		vo.setGetUser(loggedInUser.getEmployeeId() +"@test3.com");
+		vo.setGetUser(loggedInUser.getEmployeeId());
 		// 페이징처리
 		vo.setStart(paging.getFirst());
 		vo.setEnd(paging.getLast());
@@ -179,7 +242,7 @@ public class MailController {
 	public String putMail(Model model, PageListVO vo, Paging paging) {
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 		vo.setMailType("보낸");
-		vo.setEmployeeId(loggedInUser.getEmployeeId() +"@test3.com");
+		vo.setEmployeeId(loggedInUser.getEmployeeId());
 		// 페이징처리loggedInUser
 		vo.setStart(paging.getFirst());
 		vo.setEnd(paging.getLast());
@@ -196,7 +259,7 @@ public class MailController {
 	public String temporaryMail(Model model, PageListVO vo, Paging paging) {
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 		vo.setMailType("임시");
-		vo.setEmployeeId(loggedInUser.getEmployeeId() +"@test3.com");
+		vo.setEmployeeId(loggedInUser.getEmployeeId());
 		// 페이징처리
 		vo.setStart(paging.getFirst());
 		vo.setEnd(paging.getLast());
@@ -213,7 +276,7 @@ public class MailController {
 	public String deleteMail(Model model, PageListVO vo, Paging paging) {
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 		vo.setMailType("휴지통");
-		vo.setEmployeeId(loggedInUser.getEmployeeId() +"@test3.com");
+		vo.setEmployeeId(loggedInUser.getEmployeeId());
 		// 페이징처리
 		vo.setStart(paging.getFirst());
 		vo.setEnd(paging.getLast());
@@ -253,4 +316,5 @@ public class MailController {
 
         return "group/mail/mailSearchResults";
     }
+    
 }

@@ -117,15 +117,19 @@
 	<select id="countFreeBoardPosts" resultType="int">
 		SELECT COUNT(*)
 		FROM board_post p
-		JOIN board b ON p.board_id = b.board_id
+		JOIN board b ON p.board_id =
+		b.board_id
 		JOIN employees e ON p.employee_no = e.employee_no
-		WHERE b.suber_no = #{suberNo}
+		WHERE
+		b.suber_no = #{suberNo}
 		AND b.board_type = '자유'
 		<if test="keyword != null and keyword != ''">
 			AND (
-			LOWER(p.post_title) LIKE '%' || LOWER(#{keyword}) || '%'
+			LOWER(p.post_title) LIKE '%' || LOWER(#{keyword}) ||
+			'%'
 			OR LOWER(p.post_content) LIKE '%' || LOWER(#{keyword}) || '%'
-			OR LOWER(e.employee_name) LIKE '%' || LOWER(#{keyword}) || '%'
+			OR
+			LOWER(e.employee_name) LIKE '%' || LOWER(#{keyword}) || '%'
 			)
 		</if>
 	</select>
@@ -137,33 +141,73 @@
 		SELECT
 		p.*,
 		e.employee_name AS writer,
-		ROW_NUMBER() OVER (ORDER BY p.post_date DESC) AS rn
+		ROW_NUMBER() OVER
+		(ORDER BY p.post_date DESC) AS rn
 		FROM board_post p
-		JOIN board b ON p.board_id = b.board_id
-		JOIN employees e ON p.employee_no = e.employee_no
+		JOIN board b ON
+		p.board_id = b.board_id
+		JOIN employees e ON p.employee_no =
+		e.employee_no
 		WHERE b.suber_no = #{suberNo}
 		AND b.board_type = '자유'
 		<if test="keyword != null and keyword != ''">
 			AND (
-			LOWER(p.post_title) LIKE '%' || LOWER(#{keyword}) || '%'
+			LOWER(p.post_title) LIKE '%' || LOWER(#{keyword}) ||
+			'%'
 			OR LOWER(p.post_content) LIKE '%' || LOWER(#{keyword}) || '%'
-			OR LOWER(e.employee_name) LIKE '%' || LOWER(#{keyword}) || '%'
+			OR
+			LOWER(e.employee_name) LIKE '%' || LOWER(#{keyword}) || '%'
 			)
 		</if>
 		)
 		WHERE rn BETWEEN #{offset} + 1 AND #{offset} + #{limit}
 	</select>
 
-	<insert id="insertBoardPost" parameterType="com.yedam.app.group.service.BoardPostVO">
-    <selectKey keyProperty="postId" resultType="int" order="BEFORE">
-        SELECT board_post_seq.NEXTVAL FROM dual
-    </selectKey>
-    INSERT INTO board_post (
-        post_id, board_id, employee_no, post_title, post_content, post_date,
-        fixed, faq, location, read
-    ) VALUES (
-        #{postId}, #{boardId}, #{employeeNo}, #{postTitle}, #{postContent}, #{postDate},
-        #{fixed}, #{faq}, #{location}, #{read}
-    )
+	<insert id="insertPost" parameterType="BoardPostVO">
+		<selectKey keyProperty="postId" resultType="int" order="BEFORE">
+			SELECT board_post_seq.NEXTVAL FROM dual
+		</selectKey>
+		INSERT INTO board_post (
+			post_id, 
+			post_title, 
+			post_content, 
+			post_date,
+			fixed, 
+			faq, 
+			location, 
+			read, 
+			board_id, 
+			employee_no
+		) VALUES (
+			#{postId}, 
+			#{postTitle}, 
+			#{postContent}, 
+			#{postDate},
+			#{fixed}, 
+			#{faq}, 
+			#{location}, 
+			#{read}, 
+			#{boardId}, 
+			#{employeeNo}
+		)
+	</insert>
+
+	<insert id="insertAttachment" parameterType="BoardAttachmentVO">
+		<selectKey keyProperty="fileId" resultType="long" order="BEFORE">
+			SELECT board_file_seq.NEXTVAL FROM dual
+		</selectKey>
+		INSERT INTO board_file (
+			file_id, 
+			post_id, 
+			file_path, 
+			file_title, 
+			file_upload_date
+		) VALUES (
+			#{fileId}, 
+			#{postId}, 
+			#{filePath}, 
+			#{fileTitle}, 
+			#{fileRetentionPeriod}
+		)
 	</insert>
 </mapper>

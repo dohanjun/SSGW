@@ -24,11 +24,7 @@ public interface BoardService {
     
     List<BoardVO> getFreeBoardPostsPaged(int suberNo, String keyword, int offset, int limit);
     
-    // 게시글 등록
-    BoardVO getBoardByType(String type, int suberNo, Integer departmentNo, Integer employeeNo);
-    
-    void insertBoardPost(BoardPostVO postVO);
-    
-    void insertBoardPost(BoardPostVO postVO, String boardType, EmpVO emp, List<MultipartFile> files);
+    // 게시글 등록 (게시글 + 첨부파일)
+    void insertBoardPost(BoardPostVO postVO, String boardType, EmpVO loginUser, List<MultipartFile> files);
 
 }

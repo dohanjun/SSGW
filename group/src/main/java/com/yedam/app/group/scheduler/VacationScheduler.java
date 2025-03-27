@@ -37,14 +37,14 @@ public class VacationScheduler {
 
                 if ("Y".equals(employee.getResignationStatus())) {
                     //  퇴사자: 연차를 0으로 업데이트
-                    vacationService.setZeroVacation(employee.getEmployeeNo(), draftNo);
+                    vacationService.setZeroVacation(employee.getEmployeeNo());
                 } else {
                     //  재직자: 자동 연차 계산 및 부여
                     vacationService.autoGrantAnnualLeave(
                         employee.getEmployeeNo(),
                         employee.getSuberNo(),
-                        employee.getHireDate(),
-                        draftNo
+                        employee.getHireDate()
+
                     );
                 }
             }

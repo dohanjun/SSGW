@@ -7,45 +7,101 @@
 <meta charset="UTF-8">
 <title></title>
 <link rel="stylesheet" th:href="@{/css/approval.css}">
+
 </head>
 <body>
-	<div class="container vacationdd">
-		<h2 class="vacationtitle">휴가원</h2>
-		<table class="vacationtable">
-			<tr>
-				<th colspan="4">신청인</th>
-			</tr>
-			<tr>
-				<th>소속</th>
-				<td colspan="3"><input type="text" class="input-field"></td>
-			</tr>
-			<tr>
-				<th>직책</th>
-				<td colspan="3"><input type="text" class="input-field"></td>
-			</tr>
-			<tr>
-				<th>성명</th>
-				<td colspan="3"><input type="text" class="input-field"></td>
-			</tr>
-		</table>
-		<table class="vacationtable">
-			<tr>
-				<th>휴가종류</th>
-				<td colspan="3"><input type="text" class="input-field"></td>
-			</tr>
-			<tr>
-				<th>휴가기간</th>
-				<td><input type="date" class="date-field"> ~ <input
-					type="date" class="date-field"></td>
-			</tr>
-			<tr>
-				<th>휴가사유</th>
-				<td colspan="3"><textarea rows="5" cols="50"></textarea></td>
-			</tr>
-			<tr>
-				<td colspan="4" class="end">휴가기준 제 13조에 의거 휴가를 신청하오니 허락하여 주시기바랍니다.</td>
-			</tr>
-		</table>
+	<div class="container disburdd">
+    <h2 class="disburtitle">지출결의서</h2>
+
+    <!-- 신청인 정보 -->
+    <table class="distable">
+        <tr>
+            <th colspan="4">신청인</th>
+        </tr>
+        <tr>
+            <th>소속</th>
+            <td colspan="3"><input type="text" class="input-field"></td>
+        </tr>
+        <tr>
+            <th>직책</th>
+            <td colspan="3"><input type="text" class="input-field"></td>
+        </tr>
+        <tr>
+            <th>성명</th>
+            <td colspan="3"><input type="text" class="input-field"></td>
+        </tr>
+    </table>
+
+    <!-- 지출 내역 -->
+    <table class="distable mt-4">
+        <tr>
+            <th>거래처</th>
+            <th>사용내역 및 용도</th>
+            <th>금액</th>
+        </tr>
+        <tr>
+            <td><input type="text" class="input-field"></td>
+            <td><input type="text" class="input-field"></td>
+            <td><input type="number" class="input-field text-right"></td>
+        </tr>
+    </table>
+    <div class="mb-3 text-center">
+    	<button type="button" id="addRowBtn" class="btn btn-sm btn-success">행 추가</button>
 	</div>
+    <!-- 총합 -->
+    <table class="distable">
+        <tr>
+            <td class="text-center font-weight-bold">총 지출 합계</td>
+            <td><input type="number" class="input-field text-right"></td>
+        </tr>
+    </table>
+</div>
+<script>
+//행 추가
+$(document).on('click', '#addRowBtn', function () {
+    const newRow = `
+        <tr>
+            <td><input type="text" class="form-control input-field" name="vendor"></td>
+            <td><input type="text" class="form-control input-field" name="usage"></td>
+            <td>
+                <div class="input-group">
+                    <input type="number" class="form-control input-field text-right amount-input" name="amount" value="0">
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-outline-danger btn-sm remove-row-btn">삭제</button>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    `;
+    $('#Content').find('table.distable').eq(1).append(newRow); // 지출 내역 테이블에 추가
+    updateGrandTotal(); // 추가 후 총액 계산
+});
+
+// 행 삭제
+$(document).on('click', '.remove-row-btn', function () {
+    $(this).closest('tr').remove();
+    updateGrandTotal(); // 삭제 후 총액 다시 계산
+});
+
+// 금액 입력 시 총합 자동 계산
+$(document).on('input', '.amount-input', function () {
+    updateGrandTotal();
+});
+
+// 총액 계산 함수
+function updateGrandTotal() {
+    let total = 0;
+    $('#Content').find('.amount-input').each(function () {
+    	// parseInt($(this).val(), 10); 10부분은 10진수로 변환
+        const val = parseInt($(this).val(), 10);
+        if (!isNaN(val)) total += val;
+    });
+
+    $('#Content').find('input[name="grandTotal"]').val(total);
+}
+
+</script>
+
+
 </body>
 </html>

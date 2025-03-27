@@ -88,6 +88,7 @@ public class DeptController {
         return result;
     }
     
+    // 그룹웨어 구독시 대표 부서등록
     @PostMapping("/saveDepartMent")
     public ResponseEntity<Integer> saveDept(@RequestBody DeptVO deptVO) {
     	System.out.println("Controller 진입");
