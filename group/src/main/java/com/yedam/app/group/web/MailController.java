@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -177,18 +178,39 @@ public class MailController {
 	// 수정 - 페이지
 	@GetMapping("/mailUpdate")
 	public String mailUpdate(MailVO mailVO, Model model) {
-		MailVO findVO = mailService.MailSelectInfo(mailVO);
-		model.addAttribute("mail", findVO);
-		return "group/mail/mailUpdate";
+	    // 메일 정보 조회
+	    MailVO findVO = mailService.MailSelectInfo(mailVO);
+	    model.addAttribute("mail", findVO);
+	    return "group/mail/mailUpdate"; // 메일 수정 화면으로 이동
 	}
 
-
-	// 메일수정처리
+	// 메일 수정 처리 (AJAX 방식)
 	@PostMapping("/mailUpdate")
 	@ResponseBody
 	public Map<String, Object> mailUpdateAJAXJSON(@RequestBody MailVO mailVO) {
-		return mailService.MailUpdate(mailVO);
+	    // 응답 데이터를 담을 Map 객체 생성
+	    Map<String, Object> response = new HashMap<>();
+
+	    try {
+	        // 메일 수정 서비스 호출
+	        Map<String, Object> result = mailService.MailUpdate(mailVO);
+
+	        // 수정 성공 시
+	        response.put("status", "success"); // 상태 코드
+	        response.put("message", "메일이 성공적으로 수정되었습니다."); // 성공 메시지
+	        response.put("data", result); // 수정된 데이터를 포함
+
+	    } catch (Exception e) {
+	        // 예외 발생 시
+	        response.put("status", "error"); // 상태 코드
+	        response.put("message", "메일 수정 중 오류가 발생했습니다."); // 오류 메시지
+	    }
+
+	    // 응답을 클라이언트로 반환
+	    return response;
 	}
+
+
 
 	// 메일답장 페이지
 	@GetMapping("/mailReply")
