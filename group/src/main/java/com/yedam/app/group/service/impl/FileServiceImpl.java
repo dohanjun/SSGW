@@ -18,8 +18,9 @@ import com.yedam.app.group.service.RepositoryFileVO;
 import com.yedam.app.utill.AESUtil;
 
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 
-
+@RequiredArgsConstructor
 @Service
 public class FileServiceImpl implements FileService {
 
@@ -61,11 +62,7 @@ public class FileServiceImpl implements FileService {
             }
         }
     }
-  
-    public FileServiceImpl(FileMapper fileMapper) {
-        this.fileMapper = fileMapper;
-    }
-    
+ 
     // 게시글 ID(writingId)별 폴더 자동 생성 (중복 방지)
     private String getPostFolderPath(Long writingId) {
         String postFolderPath = Paths.get(uploadDir, String.valueOf(writingId)).toString(); 
