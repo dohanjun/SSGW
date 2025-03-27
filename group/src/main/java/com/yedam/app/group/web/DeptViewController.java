@@ -71,7 +71,7 @@ public class DeptViewController {
             deptVO.setDepartmentLevel(2); // 하위 부서 (원하면 +1 로직도 가능)
         }
 
-        // 부서 등록
+        
         deptService.registerDepartment(deptVO);
 
         // 부서 목록 화면으로 리다이렉트

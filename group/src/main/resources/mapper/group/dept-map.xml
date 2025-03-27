@@ -123,6 +123,14 @@
 	    FROM DEPARTMENT 
 	    WHERE DEPARTMENT_NO = #{upperDepNo}
 	</select>
+	
+	<!-- 부서장 등록 -->
+	<update id="updateManager" parameterType="DeptVO">
+	    UPDATE DEPARTMENT
+	    SET MANAGER = #{employeeNo}
+	    WHERE DEPARTMENT_NO = #{departmentNo}
+	      AND SUBER_NO = #{suberNo}
+	</update>
 
 
 </mapper>

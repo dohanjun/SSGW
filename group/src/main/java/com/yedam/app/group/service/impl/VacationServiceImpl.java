@@ -9,6 +9,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.yedam.app.group.mapper.VacationMapper;
+import com.yedam.app.group.service.EmpService;
+import com.yedam.app.group.service.EmpVO;
 import com.yedam.app.group.service.VacationService;
 import com.yedam.app.group.service.VacationVO;
 
@@ -19,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class VacationServiceImpl implements VacationService {
 
     private final VacationMapper vacationMapper;
+    private final EmpService empService;
 
     // 연차 자동 부여 메서드
     @Override
@@ -119,20 +122,16 @@ public class VacationServiceImpl implements VacationService {
     // 연차 사용일/잔여일 업데이트 로직
     @Override
     public void updateVacationUsage(int employeeNo, int suberNo, String year) {
-        // 1. 회사번호로 연차 유형 정보 조회
-        VacationVO annualType = vacationMapper.getAnnualVacationType(suberNo);
+        // 로그인한 사용자 정보 가져오기
+        EmpVO loggedInUser = empService.getLoggedInUserInfo();
 
-        // 2. 연차 ID 추출
-        int vacationTypeId = annualType.getVacationTypeId();
-
-        // 3. 업데이트용 VO 구성
+        // VO에 필요한 값 설정
         VacationVO vo = new VacationVO();
-        vo.setEmployeeNo(employeeNo);
-        vo.setSuberNo(suberNo);
-        vo.setYear(year);
-        vo.setVacationTypeId(vacationTypeId);
+        vo.setEmployeeNo(loggedInUser.getEmployeeNo());
+        vo.setSuberNo(loggedInUser.getSuberNo());
+        vo.setYear(String.valueOf(LocalDate.now().getYear()));
 
-        // 4. 연차 사용일, 잔여일 업데이트 실행
+        // XML Mapper 호출
         vacationMapper.updateVacationUsage(vo);
     }
 

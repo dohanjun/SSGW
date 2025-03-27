@@ -28,5 +28,8 @@ public interface DeptService {
     // 회사별 부서추가
     void registerDepartment(DeptVO deptVO);
 
+    // 부서장 등록
+	int updateManager(DeptVO deptVO);
+
 
 }
