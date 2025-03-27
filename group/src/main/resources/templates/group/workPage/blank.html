@@ -150,35 +150,49 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
+    // ✅ 1. DOM에서 데이터 가져오기 (HTML 요소의 data-* 속성 이용)
     let workHoursDataElement = document.getElementById('workHoursData');
 
+    // 예상 월 총 근무시간 (ex. 198시간)
     let monthlyTotalWorkHours = parseFloat(workHoursDataElement.dataset.monthlyTotalWorkHours) || 0;
+    // 실제 총 근무 시간 (ex. 157시간)
     let totalWorkedHours = parseFloat(workHoursDataElement.dataset.totalWorkedHours) || 0;
+    // 초과근무 시간 (ex. 12.5시간)
     let overtimeHours = parseFloat(workHoursDataElement.dataset.overtimeHours) || 0;
 
+    // ✅ 2. 초과근무 표시 텍스트 설정
+    // 초과근무가 있으면 시간 표기, 없으면 "없음"
     let overtimeDisplayText = (overtimeHours > 0) ? `${overtimeHours} 시간` : "없음";
 
+    // ✅ 3. 총 근무시간 & 초과근무 시간 텍스트 출력
     document.getElementById('totalWorkDisplay').innerText = totalWorkedHours + " 시간";
     document.getElementById('overtimeWorkDisplay').innerText = overtimeDisplayText;
 
+    // ✅ 4. 근무시간 파이차트 생성 (Chart.js 사용)
     new Chart(document.getElementById('workHoursPieChart'), {
-        type: 'doughnut',
+        type: 'doughnut', // 도넛 형태의 파이차트
         data: {
-            labels: ['예상 근무시간', '총 근무시간', '초과 근무시간'],
+            labels: ['예상 근무시간', '총 근무시간', '초과 근무시간'], // 범례 라벨
             datasets: [{
-                data: [Math.max(0, monthlyTotalWorkHours - totalWorkedHours), totalWorkedHours, overtimeHours],
-                backgroundColor: ['#CCCCCC', '#007bff', '#FF5733'],
+                // 데이터: 예상치-실제근무, 실제근무, 초과근무
+                data: [
+                    Math.max(0, monthlyTotalWorkHours - totalWorkedHours), // 남은 근무 시간
+                    totalWorkedHours, // 실제 근무 시간
+                    overtimeHours      // 초과 근무 시간
+                ],
+                backgroundColor: ['#CCCCCC', '#007bff', '#FF5733'], // 각 항목 색상
             }]
         },
         options: {
-            responsive: true,
+            responsive: true, // 반응형 차트
             plugins: {
-                legend: { position: 'bottom' }
+                legend: { position: 'bottom' } // 범례 위치 하단
             }
         }
     });
 });
 </script>
+
 
 </body>
 </html>

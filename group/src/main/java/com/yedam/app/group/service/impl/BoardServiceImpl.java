@@ -104,4 +104,16 @@ public class BoardServiceImpl implements BoardService {
 //            }
 //        }
     }
+
+	@Override
+	public BoardVO getBoardByType(String type, int suberNo, Integer departmentNo, Integer employeeNo) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void insertBoardPost(BoardPostVO postVO) {
+		// TODO Auto-generated method stub
+		
+	}
 }

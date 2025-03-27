@@ -210,43 +210,55 @@
 </script>
 
 <script>
+	// ✅ 이미지 미리보기 (프로필 사진 업로드 시)
 	function previewImage(event) {
-		const file = event.target.files[0];
+		const file = event.target.files[0]; // 선택된 파일
 		if (file) {
-			const reader = new FileReader();
+			const reader = new FileReader(); // 파일 읽기 객체
 			reader.onload = (e) => {
+				// 이미지 미리보기 요소(src)에 base64 설정
 				document.getElementById('imagePreview').src = e.target.result;
 			};
-			reader.readAsDataURL(file);
+			reader.readAsDataURL(file); // base64 변환
 		}
 	}
 
+	// ✅ 비밀번호 초기화 기능 (사번 기반)
 	function resetPassword() {
 		const employeeNo = document.getElementById("employeeNo").value;
+		// 백엔드로 POST 요청 전송
 		fetch(`/api/resetPassword?employeeNo=${employeeNo}`, { method: "POST" })
 			.then(res => res.text())
-			.then(msg => alert(msg))
+			.then(msg => alert(msg)) // 응답 메시지를 alert로 출력
 			.catch(err => console.error("비밀번호 초기화 실패:", err));
 	}
 
+	// ✅ 폼 제출 이벤트 처리 (수정 버튼 클릭 시)
 	document.forms.updateForm.addEventListener("submit", function (event) {
-		event.preventDefault();
+		event.preventDefault(); // 기본 submit 동작 막기
+
+		// 주소 + 상세주소 병합 처리
 		const addressField = document.getElementById("address");
 		const detailField = document.getElementById("detailAddress");
 		if (addressField && detailField) {
 			addressField.value = addressField.value + " " + detailField.value;
 		}
 
-		const formData = new FormData(this);
+		const formData = new FormData(this); // 폼 데이터 객체 생성
+
+		// 사번 추가 세팅 (보안 고려 시 서버에서 추출하는 게 안전)
 		const employeeNoInput = document.getElementById("employeeNo");
 		if (employeeNoInput) {
 			formData.append("employeeNo", employeeNoInput.value);
 		}
+
+		// 백엔드로 수정 요청
 		fetch("/MyPageUpdate", {
 			method: "POST",
 			body: formData
 		})
 			.then(response => {
+				// 리다이렉트 응답 처리
 				if (response.redirected) {
 					window.location.href = response.url;
 				} else {
@@ -254,6 +266,7 @@
 				}
 			})
 			.then(data => {
+				// 응답 내에 "에러" 포함 시 사용자 알림
 				if (typeof data === "string" && data.includes("에러")) {
 					alert("오류 발생: " + data);
 				}
@@ -264,36 +277,48 @@
 			});
 	});
 
+	// ✅ 다음 주소 검색 API 연동
 	function searchAddress() {
 		new daum.Postcode({
 			oncomplete: function (data) {
+				// 주소 검색 완료 시 전체 주소를 필드에 입력
 				const fullAddress = `[${data.zonecode}] ${data.roadAddress}`;
 				document.getElementById("address").value = fullAddress;
 			}
-		}).open();
+		}).open(); // 팝업 열기
 	}
 
+	// ✅ 페이지 로드 시 주소 필드 자동 분리
 	function splitAddressOnLoad() {
 		const addressField = document.getElementById("address");
 		const detailField = document.getElementById("detailAddress");
+
+		// 전체 주소에서 우편번호 포함 주소와 상세주소를 분리
 		if (addressField && detailField && addressField.value.includes("]")) {
 			const parts = addressField.value.split("] ");
-			addressField.value = parts[0] + "]";
-			detailField.value = parts[1] || "";
+			addressField.value = parts[0] + "]"; // 우편번호 포함 기본주소
+			detailField.value = parts[1] || "";  // 나머지는 상세주소
 		}
 	}
 
+	// ✅ 공통 셀렉트박스 로딩 함수 (부서, 직급, 권한 등)
 	function loadSelectData(url, selectId, valueField, textField, selectedValue = null) {
 		fetch(url)
 			.then(res => res.json())
 			.then(data => {
 				const select = document.getElementById(selectId);
 				if (!select) return;
+
+				// 기본 옵션 초기화
 				select.innerHTML = '<option value="">선택하세요</option>';
+
+				// 받아온 리스트로 option 추가
 				data.forEach(item => {
 					const option = document.createElement("option");
 					option.value = item[valueField];
 					option.textContent = item[textField];
+
+					// 선택된 값이면 selected 처리
 					if (selectedValue && selectedValue == item[valueField]) {
 						option.selected = true;
 					}
@@ -305,18 +330,23 @@
 			});
 	}
 
+	// ✅ 페이지 초기화 작업
 	document.addEventListener("DOMContentLoaded", function () {
+		// Thymeleaf를 통해 사전 세팅된 값 (사번, 직급, 권한 등)
 		const selectedDepartment = "[[${emp.departmentNo}]]";
 		const selectedRank = "[[${emp.rankId}]]";
 		const selectedRight = "[[${emp.rightsId}]]";
 
+		// 부서, 직급, 권한 select박스 초기 로딩
 		loadSelectData("/api/departments", "department", "departmentNo", "departmentName", selectedDepartment);
 		loadSelectData("/api/ranks", "position", "rankId", "jobTitleName", selectedRank);
 		loadSelectData("/api/rights", "role", "rightsId", "rightsName", selectedRight);
 
+		// 주소 필드 분리 (우편번호 / 상세주소)
 		splitAddressOnLoad();
 	});
 </script>
+
 
 </body>
 </html>
