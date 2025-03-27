@@ -1,16 +1,11 @@
 package com.yedam.app.group.service.impl;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.yedam.app.group.mapper.BoardMapper;
-import com.yedam.app.group.service.BoardAttachmentVO;
 import com.yedam.app.group.service.BoardPostVO;
 import com.yedam.app.group.service.BoardService;
 import com.yedam.app.group.service.BoardVO;
@@ -104,4 +99,16 @@ public class BoardServiceImpl implements BoardService {
 //            }
 //        }
     }
+
+	@Override
+	public BoardVO getBoardByType(String type, int suberNo, Integer departmentNo, Integer employeeNo) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void insertBoardPost(BoardPostVO postVO) {
+		// TODO Auto-generated method stub
+		
+	}
 }

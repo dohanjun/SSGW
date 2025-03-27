@@ -59,7 +59,7 @@ public class MailServiceImpl implements MailService {
 	// 메일등록
 	@Override
 	public int InsertMail(MailVO mailVO) {
-		int result = mailMapper.MailCreate(mailVO);
+		int result = mailMapper.mailCreate(mailVO);
 		return result == 1 ? mailVO.getMailId() : -1;
 	}
 	
@@ -179,7 +179,7 @@ public class MailServiceImpl implements MailService {
 		try {
 			javaMailSender.send(message);
 			
-			mailMapper.insertMail(vo);
+			mailMapper.mailCreate(vo);
 		} catch (MailException e) {
 			e.printStackTrace();
 			return "전송 실패";

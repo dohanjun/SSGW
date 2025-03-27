@@ -108,7 +108,7 @@
 	</select>
 	
 	<!-- 메일등록 -->
-	<insert id="MailCreate" parameterType="MailVO">
+	<insert id="mailCreate" parameterType="MailVO">
 	<selectKey keyProperty="mailId" resultType="Integer" order="BEFORE">
 	SELECT NVL(MAX(mail_id) + 1, 100) as mail_id
 	FROM Mail

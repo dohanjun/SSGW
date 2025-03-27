@@ -22,10 +22,8 @@ public interface MailMapper {
 	public MailVO MyMailFindInfo(int mailId);
 	
 	//메일등록
-	public int MailCreate(MailVO mailVO);
+	public int mailCreate(MailVO mailVO);
 	
-	//메일보내기
-	public void insertMail(MailVO vo);
 	
 	//메일받기
 	public void receiveEmails(MailVO vo);
