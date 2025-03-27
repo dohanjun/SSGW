@@ -32,5 +32,27 @@
 		    SET READ = 'Y'
 	    WHERE ALARM_NO = #{alertNo}
 	</update>
+    <insert id="insertAlarm" parameterType="com.yedam.app.group.service.AlarmVO">
+    <selectKey keyProperty="alarmNo" resultType="int" order="BEFORE">
+        SELECT NVL(MAX(ALARM_NO), 0) + 1 FROM ALARM
+    </selectKey>
+    INSERT INTO ALARM (
+        ALARM_NO,
+        ALARM_MASSAGE,
+        ALARM_TYPE,
+        CREATE_DATE,
+        READ,
+        EMPLOYEE_NO,
+        ALARM_ICON
+    ) VALUES (
+        #{alarmNo},
+        #{alarmMessage},
+        #{alarmType},
+        SYSDATE,
+        #{read},
+        #{employeeNo},
+        #{alarmIcon}
+    )
+</insert>
     
 </mapper>

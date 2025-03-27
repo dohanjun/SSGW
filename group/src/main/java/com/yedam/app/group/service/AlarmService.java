@@ -6,4 +6,5 @@ public interface AlarmService {
     List<AlarmVO> getUnreadAlarmsByEmployeeNo(int employeeNo);
 
 	boolean markAsRead(int alertNo);
+	public void insertAlarm(AlarmVO vo);
 }

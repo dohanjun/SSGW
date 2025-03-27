@@ -198,6 +198,26 @@
                     }
                 });
             	
+            	await $.ajax({
+            	    type: "POST",
+            	    url: "/insertAlarm",
+            	    data: JSON.stringify({
+            	        alarmMessage: "작성하신 QnA에 답글이 달렸습니다.",
+            	        alarmType: "info",
+            	        read: "N",
+            	        employeeNo: post.employeeNo,
+            	        alarmIcon: "fa-reply"
+            	    }),
+            	    contentType: "application/json",
+            	    success: function () {
+            	        console.log("알림 전송 완료");
+            	    },
+            	    error: function (xhr, status, error) {
+            	        alert("알림 전송 실패");
+            	        console.error(xhr.responseText);
+            	    }
+            	});
+
             },
             error: function (xhr, status, error) {
                 alert("답글 등록 실패");
