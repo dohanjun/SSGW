@@ -131,55 +131,63 @@ public class DownloadController {
     
     @GetMapping("/zip/{writingId}")
     public ResponseEntity<Resource> downloadAllFilesAsZip(@PathVariable Long writingId) {
-        // 1. 로그인 사용자 확인
         EmpVO loginUser = empService.getLoggedInUserInfo();
 
-        // 2. 공인 IP 가져오기
         String clientIp = getClientPublicIp();
         String firstIp = empService.getFirstIpByEmployeeNo(loginUser.getSuberNo());
         String secondIp = empService.getSecondIpByEmployeeNo(loginUser.getSuberNo());
         String tempIp = loginUser.getTempIp();
 
-        // 3. IP 인증
         if (!(clientIp != null &&
               (clientIp.equals(firstIp) || clientIp.equals(secondIp) || clientIp.equals(tempIp)))) {
             throw new AccessDeniedException("허용되지 않은 IP입니다.");
         }
 
-        // 4. 파일 목록 조회
         List<RepositoryFileVO> fileList = fileService.getFilesByWritingId(writingId);
         if (fileList == null || fileList.isEmpty()) {
             throw new RuntimeException("첨부파일이 없습니다.");
         }
 
-        // 5. ZIP 파일 생성
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (ZipOutputStream zos = new ZipOutputStream(baos)) {
             for (RepositoryFileVO file : fileList) {
-                String decryptedPath = isBase64(file.getFilePath()) ? AESUtil.decrypt(file.getFilePath()) : file.getFilePath();
-                String originalFileName = file.getFileName();
+                try {
+                    String decryptedPath = isBase64(file.getFilePath()) ? AESUtil.decrypt(file.getFilePath()) : file.getFilePath();
+                    String originalFileName = file.getFileName();
 
-                Path path = Paths.get(decryptedPath);
-                if (!Files.exists(path)) continue;
+                    Path path = Paths.get(decryptedPath);
+                    if (!Files.exists(path)) {
+                        System.out.println("❌ 파일 없음: " + decryptedPath);
+                        continue;
+                    }
 
-                zos.putNextEntry(new ZipEntry(originalFileName));
-                Files.copy(path, zos);
-                zos.closeEntry();
+                    long fileSize = Files.size(path);
+                    System.out.println("📁 파일명: " + originalFileName);
+                    System.out.println("📏 파일 크기: " + fileSize + " bytes");
 
-                // 6. 다운로드 로그 저장
-                DownloadVO log = new DownloadVO();
-                log.setFileId((long) file.getFileId());  // <- 여기 오류 수정 (fileId → file.getFileId())
-                log.setEmployeeNo(loginUser.getEmployeeNo());
-                log.setDownloadDate(new Timestamp(System.currentTimeMillis()));
-                log.setIp(clientIp);
+                    zos.putNextEntry(new ZipEntry(originalFileName));
+                    Files.copy(path, zos);
+                    zos.closeEntry();
+                    System.out.println("✅ 압축 성공");
 
-                fileService.insertDownloadLog(log);  // <- 잘못된 위치 수정
+                    // 다운로드 로그 저장
+                    DownloadVO log = new DownloadVO();
+                    log.setFileId((long) file.getFileId());
+                    log.setEmployeeNo(loginUser.getEmployeeNo());
+                    log.setDownloadDate(new Timestamp(System.currentTimeMillis()));
+                    log.setIp(clientIp);
+
+                    fileService.insertDownloadLog(log);
+                    System.out.println("✅ 로그 저장 완료 - 파일 ID: " + file.getFileId());
+                } catch (Exception e) {
+                    System.out.println("🚨 예외 발생 - 파일 ID: " + file.getFileId());
+                    e.printStackTrace(); // 디버깅 로그
+                }
             }
         } catch (Exception e) {
             throw new RuntimeException("ZIP 파일 생성 실패", e);
         }
 
-        // 7. 파일 응답 반환
         ByteArrayResource zipResource = new ByteArrayResource(baos.toByteArray());
         String zipName = "files_" + writingId + ".zip";
 
@@ -195,4 +203,5 @@ public class DownloadController {
             .contentType(MediaType.APPLICATION_OCTET_STREAM)
             .body(zipResource);
     }
+
 }

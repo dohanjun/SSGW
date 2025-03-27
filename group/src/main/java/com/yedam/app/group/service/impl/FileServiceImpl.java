@@ -219,7 +219,6 @@ public class FileServiceImpl implements FileService {
     
     @Override
     public void insertDownloadLog(DownloadVO downloadVO) {
-        downloadVO.setDownloadDate(new Timestamp(System.currentTimeMillis())); // 현재 시간 기록
         fileMapper.insertDownloadLog(downloadVO);
     }
     
