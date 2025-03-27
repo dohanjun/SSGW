@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -635,7 +636,7 @@ public class ApprovalController {
 	        // 최대 결재 순서와 비교하여 상태 설정
 	        if (vo.getAprvOrder().equals(maxAprvOrder)) {
 	            vo.setAprvStatus("완료");
-	            // 기안유형이 휴가인경우 휴가일수 차감
+	           // 여기에 휴가
 	            
 	        } else {
 	            vo.setAprvStatus("진행");

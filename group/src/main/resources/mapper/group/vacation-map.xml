@@ -189,11 +189,10 @@
 		  <include refid="vacationCriteria"/>
 		</select>
 		
-		<!-- 연차 사용일 & 잔여일 업데이트 (연차만 필터링) -->
-		<update id="updateVacationUsage" parameterType="VacationVO">
+		<!-- 로그인 사용자 기준 전체 휴가 사용일 및 잔여일 업데이트 -->
+<update id="updateVacationUsage" parameterType="VacationVO">
 		  UPDATE LEAVE_HISTORY
-		  SET 
-		    USED_VACATION = (
+		  SET USED_VACATION = (
 		      SELECT NVL(SUM(USED_VACATION), 0)
 		      FROM VACATION_REQUEST
 		      WHERE EMPLOYEE_NO = #{employeeNo}
@@ -208,9 +207,6 @@
 		    AND EMPLOYEE_NO IN (
 		      SELECT EMPLOYEE_NO FROM EMPLOYEES WHERE SUBER_NO = #{suberNo}
 		    )
-		</update>
+</update>
 
-		
-		
-	
 </mapper>

@@ -84,6 +84,8 @@
 		, d.DRAFT_DATE
 		, d.APRV_DATE
 		, s.STAMP_IMG_PATH
+		, d.BASICS_FORM_ID
+	    , d.FORM_ID
 		FROM aprv_documents d
 		LEFT JOIN stamp s
 		ON d.EMPLOYEE_NO = s.EMPLOYEE_NO
