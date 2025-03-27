@@ -39,7 +39,11 @@ public class ApprovalVO {
 	private List<Integer> approvers; // 결재자
 	private List<Integer> references; // 참조자
 	
-	private int page = 1;
+	private int page = 1;            // 페이지
 	private int size = 10;
 	private int offset;
+	
+	private String startDate;        // 휴가 시작일
+	private String endDate;          // 휴가 종료일
+	private String usedVacation;     // 휴가 사용일
 }

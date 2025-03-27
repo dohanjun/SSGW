@@ -77,11 +77,11 @@
 		</div>
 		<div>
 			<label for="giveName">보낸사람</label>
-			<input type="text" id="giveName" th:value="${mail.employeeId}" readonly>
+			<input type="text" id="giveName" th:value="${mail.getUser}" readonly>
 		</div>
 		<div>
 			<label for="getName">받는사람</label>
-			<input type="text" id="getName" th:value="${mail.getUser}" readonly>
+			<input type="text" id="getName" th:value="${mail.employeeId}" readonly>
 		</div>
 		<span th:text="${#calendars.format(#calendars.createNow(), 'yyyy-MM-dd HH:mm:ss')}"></span>
 		<div>

@@ -15,6 +15,7 @@ import com.yedam.app.group.service.ApprovalVO;
 import com.yedam.app.group.service.AprvRoutesVO;
 import com.yedam.app.group.service.EmpService;
 import com.yedam.app.group.service.EmpVO;
+import com.yedam.app.group.service.VacationRequestVO;
 
 @Service
 public class ApprovalServiceImpl implements ApprovalService {
@@ -256,6 +257,11 @@ public class ApprovalServiceImpl implements ApprovalService {
 	@Override
 	public int countAprvListByStatus(ApprovalVO vo) {
 	    return approvalMapper.countAprvListByStatus(vo);
+	}
+
+	@Override
+	public int createVacation(VacationRequestVO vacaVO) {
+		return approvalMapper.insertVacation(vacaVO);
 	}
 	
 }
