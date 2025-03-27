@@ -11,4 +11,5 @@ public interface AlarmMapper {
 	List<AlarmVO> getUnreadAlarmsByEmployeeNo(int employeeNo);
 
 	boolean updateReadStatus(int alertNo);
+	public void insertAlarm(AlarmVO vo);
 }

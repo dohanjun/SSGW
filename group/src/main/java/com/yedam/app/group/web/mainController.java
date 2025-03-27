@@ -359,5 +359,12 @@ public class mainController {
 
 	    return ResponseEntity.ok(response); // JSON 응답 반환
 	}
-
+	
+	@PostMapping("/insertAlarm")
+	@ResponseBody
+	public String insertAlarm(@RequestBody AlarmVO vo) {
+	    alarmService.insertAlarm(vo);
+	    return "success";
+	}
+	
 }

@@ -60,5 +60,4 @@ public interface VacationMapper {
     // 연차 사용일/잔여일 업데이트
     public int updateVacationUsage(VacationVO vo);
     
-    
 }

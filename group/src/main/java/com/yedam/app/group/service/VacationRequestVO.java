@@ -11,4 +11,5 @@ public class VacationRequestVO {
 	private int employeeNo;         // 사원번호
 	private Date startVacationDate; // 휴가 시작일
 	private Date endVacationDate;   // 휴가 종료일
+	private int vacationTypeId;     // 휴가유형ID
 }
