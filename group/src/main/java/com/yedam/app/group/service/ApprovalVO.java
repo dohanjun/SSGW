@@ -46,5 +46,5 @@ public class ApprovalVO {
 	private String startDate;        // 휴가 시작일
 	private String endDate;          // 휴가 종료일
 	private String usedVacation;     // 휴가 사용일
-	private int vacationTypeId;      // 휴가유형ID
+	private Integer vacationTypeId;      // 휴가유형ID
 }

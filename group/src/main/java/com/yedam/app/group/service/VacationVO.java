@@ -38,7 +38,7 @@ public class VacationVO {
     private String departmentName;
     private String jobTitleName;
        
-    private Integer usedVacation;	// 휴가 사용일수
+    private int usedVacation;	// 휴가 사용일수
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date startVacationDate; // 휴가 시작일
     @DateTimeFormat(pattern = "yyyy-MM-dd")

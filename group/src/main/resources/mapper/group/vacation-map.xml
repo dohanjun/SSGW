@@ -190,7 +190,7 @@
 		</select>
 		
 		<!-- 로그인 사용자 기준 전체 휴가 사용일 및 잔여일 업데이트 -->
-<update id="updateVacationUsage" parameterType="VacationVO">
+<!-- <update id="updateVacationUsage" parameterType="VacationVO">
 		  UPDATE LEAVE_HISTORY
 		  SET USED_VACATION = (
 		      SELECT NVL(SUM(USED_VACATION), 0)
@@ -207,6 +207,25 @@
 		    AND EMPLOYEE_NO IN (
 		      SELECT EMPLOYEE_NO FROM EMPLOYEES WHERE SUBER_NO = #{suberNo}
 		    )
+</update> -->
+
+<select id="selectVacationRequest" parameterType="VacationRequestVO" resultType="VacationRequestVO">
+	SELECT DRAFT_NO
+           ,USED_VACATION
+           ,START_VACATION_DATE
+           ,END_VACATION_DATE
+           ,EMPLOYEE_NO
+           ,VACATION_TYPE_ID
+    FROM   vacation_request
+    WHERE  DRAFT_NO = #{draftNo}
+</select>
+
+<update id="updateLeaveHistoryRequest" parameterType="VacationVO">
+	 UPDATE leave_history
+     SET USED_VACATION = USED_VACATION + #{usedVacation},
+         REMAINING_VACATION = REMAINING_VACATION - #{usedVacation}
+     WHERE EMPLOYEE_NO = #{employeeNo}
+       AND YEAR = TO_CHAR(SYSDATE, 'YYYY')
 </update>
 
 </mapper>

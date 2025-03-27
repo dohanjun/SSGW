@@ -80,4 +80,7 @@ public interface ApprovalMapper {
 	
 	// 휴가신청 테이블에 데이터 등록
 	public int insertVacation(VacationRequestVO vacaVO);
+	
+	// 
+	public ApprovalVO selectTitleEmpNo(int draftNo);
 }

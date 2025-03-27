@@ -370,4 +370,12 @@
 		 ,#{employeeNo}
 		 ,#{vacationTypeId})
 	</insert>
+	
+	<!-- 알림(제목, 사원번호) -->
+	<select id="selectTitleEmpNo" resultType="ApprovalVO">
+	    SELECT TITLE, 
+	           EMPLOYEE_NO
+	    FROM   APRV_DOCUMENTS
+	    WHERE  DRAFT_NO = #{draftNo}
+	</select>
 </mapper>

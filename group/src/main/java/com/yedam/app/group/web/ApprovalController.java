@@ -9,7 +9,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +33,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.yedam.app.group.service.AlarmService;
+import com.yedam.app.group.service.AlarmVO;
 import com.yedam.app.group.service.ApprovalFormVO;
 import com.yedam.app.group.service.ApprovalService;
 import com.yedam.app.group.service.ApprovalVO;
@@ -68,6 +69,7 @@ public class ApprovalController {
 	private final EmpService empService;
 	private final AprvFileService aprvFileService;
 	private final VacationService vacationService;
+	private final AlarmService alarmService;
 	
     @Value("${file.upload-dir}")  
     private String uploadDir;  // 현재 프로젝트 안에서 저장하는 폴더 설정
@@ -276,6 +278,16 @@ public class ApprovalController {
 	    		r.setAprvStatus("대기");
 	    		r.setEmployeeNo(approvers.get(i));
 	    		approvalService.createAprvRout(r);
+	    		
+	    		// 알림 추가 (결재자에게)
+	    		AlarmVO alarm = new AlarmVO();
+	    		alarm.setAlarmMessage("결재 요청이 있습니다!");
+	    		alarm.setAlarmType("결재");
+	    		alarm.setRead("N");
+	    		alarm.setEmployeeNo(approvers.get(i)); // 결재자로 지정된 사원번호
+	    		alarm.setAlarmIcon("fa-file-signature"); // 아이콘 클래스 (원하는 대로)
+
+	    		alarmService.insertAlarm(alarm);
 	    	}	    	
 	    }
 
@@ -636,14 +648,32 @@ public class ApprovalController {
 	        // 최대 결재 순서와 비교하여 상태 설정
 	        if (vo.getAprvOrder().equals(maxAprvOrder)) {
 	            vo.setAprvStatus("완료");
-	           // 여기에 휴가
+	            // 휴가내역에 추가
+	            VacationRequestVO vrVO = new VacationRequestVO();
+	            vrVO.setDraftNo(vo.getDraftNo());
+	            vacationService.findUsedVacation(vrVO);
+	            
+	         // 기안자에게 결재 완료 알림 전송
+	            ApprovalVO done = approvalService.findTitleEmpNo(vo.getDraftNo());
+
+	            if (done != null) {
+	                AlarmVO alarm = new AlarmVO();
+	                alarm.setAlarmMessage(done.getTitle() + "의 결재가 완료되었습니다!");
+	                alarm.setAlarmType("결재");
+	                alarm.setRead("N");
+	                alarm.setEmployeeNo(done.getEmployeeNo()); // 기안자
+	                alarm.setAlarmIcon("fa-check-circle");
+
+	                alarmService.insertAlarm(alarm);
+	            }
+	            
 	            
 	        } else {
 	            vo.setAprvStatus("진행");
 	        }
 
 	        // 결재 승인 처리
-	        approvalService.processApproval(vo);  
+	        approvalService.processApproval(vo);
 	        result.put("success", true);
 	    } catch (Exception e) {
 	        result.put("success", false);
@@ -659,6 +689,21 @@ public class ApprovalController {
 	    Map<String, Object> result = new HashMap<>();
 	    try {
 	        approvalService.rejectApproval(vo);
+	        
+	        // 반려 알림 보내기
+	        ApprovalVO back = approvalService.findTitleEmpNo(vo.getDraftNo());
+
+	        if (back != null) {
+	            AlarmVO alarm = new AlarmVO();
+	            alarm.setAlarmMessage(back.getTitle() + " 문서가 반려되었습니다.");
+	            alarm.setAlarmType("결재");
+	            alarm.setRead("N");
+	            alarm.setEmployeeNo(back.getEmployeeNo());
+	            alarm.setAlarmIcon("fa-times-circle");
+
+	            alarmService.insertAlarm(alarm);
+	        }
+	        
 	        result.put("success", true);
 	    } catch (Exception e) {
 	        result.put("success", false);

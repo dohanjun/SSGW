@@ -263,5 +263,10 @@ public class ApprovalServiceImpl implements ApprovalService {
 	public int createVacation(VacationRequestVO vacaVO) {
 		return approvalMapper.insertVacation(vacaVO);
 	}
+
+	@Override
+	public ApprovalVO findTitleEmpNo(int draftNo) {
+		return approvalMapper.selectTitleEmpNo(draftNo);
+	}
 	
 }
