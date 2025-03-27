@@ -34,6 +34,7 @@
                 <input type="hidden" name="basicsFormId" id="basicsFormIdInput">
                 <input type="hidden" name="aprvStatus" id="statusInput">
                 <input type="hidden" name="content" id="contentHidden">
+                <input type="hidden" name="vacationTypeId" id="vacationTypeIdInput">
                 <div class="form-group">
                     <label>제목</label>
                     <input type="text" class="form-control" name="title"
@@ -337,7 +338,7 @@ $('#loadFormBtn').click(function () {
             $.get('/aprv/vacation', function (types) {
                 const uniqueTypes = [...new Map(types.map(t => [t.vacationTypeName, t])).values()];
                 uniqueTypes.forEach(type => {
-                    $('#vacationTypeSelect').append(`<option value="${type.vacationTypeName}">${type.vacationTypeName}</option>`);
+                    $('#vacationTypeSelect').append(`<option value="${type.vacationTypeName}" data-id="${type.vacationTypeId}">${type.vacationTypeName}</option>`);
                 });
             });
 
@@ -351,7 +352,8 @@ $('#loadFormBtn').click(function () {
 // 휴가유형 선택 시 휴가원 양식 내부 input에 반영
 $('#vacationTypeSelect').on('change', function () {
     const selectedType = $(this).val();
-
+    const selectedId = $(this).find('option:selected').data('id');
+    
     // 휴가종류 input 찾기 → value 설정
     $('#Content').find('table.vacationtable input[type="text"]').each(function () {
         const thText = $(this).closest('tr').find('th').text().trim();
@@ -360,7 +362,8 @@ $('#vacationTypeSelect').on('change', function () {
         }
     });
     
-
+    $('#vacationTypeIdInput').val(selectedId);
+    
     // contentHidden에도 반영
     const finalContent = prepareFinalContent();
     $('#contentHidden').val(finalContent);
@@ -394,6 +397,7 @@ $('#ajaxSubmitBtn').on('click', function () {
     formData.append("status", "대기");
     formData.append("formId", $('#formIdInput').val());
     formData.append("basicsFormId", $('#basicsFormIdInput').val());
+    formData.append("vacationTypeId", $('#vacationTypeIdInput').val());
 
     //  formType 추출 및 추가
     const formType = $('#Content').find('.vacationtitle').text().trim();  // 예: '휴가원'
