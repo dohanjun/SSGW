@@ -78,39 +78,44 @@ function getIP(json) {
 <script type="application/javascript" src="http://ipinfo.io/?format=jsonp&callback=getIP"></script>
 <script>
 
+const params = new URLSearchParams(window.location.search);
+const token = document.querySelector('meta[name="_csrf"]')?.getAttribute("content");
+const header = document.querySelector('meta[name="_csrf_header"]')?.getAttribute("content");
 
-	
-    const params = new URLSearchParams(window.location.search);
-    const token = document.querySelector('meta[name="_csrf"]').getAttribute("content");
-    const header = document.querySelector('meta[name="_csrf_header"]').getAttribute("content");
-    
-    if (params.get("ipAlert") === "1") {
-        if (confirm("등록되지 않은 IP입니다.\n현재 IP를 사원의 임시 IP로 등록하시겠습니까?")) {
-            const ip = params.get("ip");
-            const employeeId = params.get("employeeId");
-			console.log(ip,employeeId)
-            $.ajax({
-                type: "POST",
-                url: "/registerTempIp",
-                data: JSON.stringify({ employeeId: employeeId, tempIp: ip }),
-	      	      beforeSend: function(xhr) {
-	      	        xhr.setRequestHeader(header, token);
-	      	      },
-                contentType: "application/json",
-                success: function(res) {
-                    alert("IP가 임시로 등록되었습니다. 다시 로그인해주세요.");
-                    window.location.href = "/login";
-                },
-                error: function(xhr) {
-                    alert("IP 등록에 실패했습니다.");
-                    window.location.href = "/login";
-                }
-            });
-        }
-        else{
-        	window.location.href = "/login";
-        }
+const ip = params.get("ip");
+const employeeId = params.get("employeeId");
+
+if (params.get("ipRegister") === "1") {
+    // 등록된 IP가 없음 → 등록할래?
+    if (confirm("이 기기는 등록된 IP가 없습니다.\n현재 IP를 임시 IP로 등록하시겠습니까?")) {
+        $.ajax({
+            type: "POST",
+            url: "/registerTempIp",
+            data: JSON.stringify({ employeeId: employeeId, tempIp: ip }),
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader(header, token);
+            },
+            contentType: "application/json",
+            success: function(res) {
+                alert("IP가 임시로 등록되었습니다.\n다시 로그인해주세요.");
+                window.location.href = "/login";
+            },
+            error: function(xhr) {
+                alert("IP 등록에 실패했습니다.");
+                window.location.href = "/login";
+            }
+        });
+    } else {
+        // 사용자가 등록 거부함
+        window.location.href = "/login";
     }
+}
+if (params.get("ipAlert") === "1") {
+    // 등록된 IP는 있는데 현재 IP랑 다름 → 로그인 불가
+    alert("등록된 IP와 다른 장소에서 접근하였습니다.\n로그인이 제한됩니다.\n관리자에게 문의해주세요.");
+    window.location.href = "/login";
+}
+
 </script>
 </body>
 </html>
