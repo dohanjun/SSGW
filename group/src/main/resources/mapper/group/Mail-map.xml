@@ -144,7 +144,7 @@
 		                '받은'
 		            </otherwise>
         		  </choose>
-    			 
+    			 )
 	</insert>
 	
 	<!-- 메일검색기록 -->
@@ -166,16 +166,12 @@
 	
 	<!-- 메일답장 -->
 	<update id="MailPutDate" parameterType="MailVO">
-	<selectKey keyProperty="mailId" resultType="Integer" order="BEFORE">
-	SELECT  ,employee_id
-			,get_user
-			,title
-			,content
-			,attached_file_name	   
-	FROM Mail
-	</selectKey>
 	UPDATE Mail
-	SET  content = #{content}
+	SET		get_user = #{getUser}
+	       ,cc = #{cc}
+	       ,title = #{title}
+	       ,attached_file_name = #{attachedFileName}
+	       ,content = #{content}
 	WHERE mail_id = #{mailId}
 	</update>
 	

@@ -74,7 +74,7 @@
    <tbody>
 		<tr>
 			<td>받는사람</td>
-			<td><input name="giveName" th:value="${mail.employeeId}"></td>
+			<td><input name="giveName" th:value="${mail.employeeId}" required></td>
 		</tr>
 		<tr>
 			<td>참조</td>
@@ -82,7 +82,7 @@
 		</tr>
 		<tr>
 			<td>제목</td>
-			<td><input name="title" th:value="${mail.title}"></td>
+			<td><input name="title" th:value="${mail.title}" required></td>
 		</tr>
 		<tr>
 			<td>파일첨부</td>
