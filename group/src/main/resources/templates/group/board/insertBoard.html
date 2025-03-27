@@ -23,13 +23,9 @@
 						</div>
 						<div class="card-body">
 						  <form th:action="@{/insertBoard}" method="post" enctype="multipart/form-data">
+						  <input type="hidden" name="boardType" th:value="${boardType}"/>
 							<table class="table file-info-table">
 								<tbody>
-								<select name="boardType" class="form-control" required>
-    								<option th:if="${isAdmin}" value="공지">공지</option>
-    								<option th:if="${isDepartmentMember}" value="부서">부서</option>
-    								<option value="자유">자유</option>
-								</select>
 									<tr>
 										<th>제목</th>
 										<td><input type="text" class="form-control" name="postTitle" placeholder="제목을 입력하세요" required></td>
