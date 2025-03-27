@@ -33,6 +33,9 @@ public interface DeptMapper {
     // 직원 조직도
     public List<DeptVO> getOrgChart(DeptVO deptVO);
     
+    // 부서장 업데이트
+    public int updateManager(DeptVO deptVO);
+    
 
 	
 	

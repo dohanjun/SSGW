@@ -71,6 +71,7 @@ public class DeptServiceimpl implements DeptService{
         return deptMapper.insertDepartment(deptVO);
     }
     
+    // 부서 추가등록
     @Override
     public void registerDepartment(DeptVO deptVO) {
         // 상위 부서가 있을 경우 해당 부서의 LEVEL + 1 설정
@@ -81,6 +82,12 @@ public class DeptServiceimpl implements DeptService{
             deptVO.setDepartmentLevel(1); // 최상위 부서
         }
         deptMapper.insertDepartment(deptVO);
+    }
+    
+    // 부서장등록
+    @Override
+    public int updateManager(DeptVO deptVO) {
+        return deptMapper.updateManager(deptVO);
     }
 
 

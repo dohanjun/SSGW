@@ -197,18 +197,17 @@
 		      SELECT NVL(SUM(USED_VACATION), 0)
 		      FROM VACATION_REQUEST
 		      WHERE EMPLOYEE_NO = #{employeeNo}
-		        AND YEAR = #{year}
-		        AND VACATION_TYPE_ID = #{vacationTypeId} <!-- 연차만 필터링 -->
 		    ),
 		    REMAINING_VACATION = GRANTED_VACATION - (
 		      SELECT NVL(SUM(USED_VACATION), 0)
 		      FROM VACATION_REQUEST
 		      WHERE EMPLOYEE_NO = #{employeeNo}
-		        AND YEAR = #{year}
-		        AND VACATION_TYPE_ID = #{vacationTypeId}
 		    )
 		  WHERE EMPLOYEE_NO = #{employeeNo}
 		    AND YEAR = #{year}
+		    AND EMPLOYEE_NO IN (
+		      SELECT EMPLOYEE_NO FROM EMPLOYEES WHERE SUBER_NO = #{suberNo}
+		    )
 		</update>
 
 		
