@@ -67,7 +67,7 @@
         </button>
       </div>
   <input type="hidden" name="sentState" value="0">
-  <input type="hidden" name="mailType" value="보낸">
+  <input type="hidden" name="mailType" th:value="${mailType}">
    <table class="table file-info-table">	  
    <tbody>
 		<tr>
@@ -79,8 +79,11 @@
 		<tr>
 			<th>제목</th>
 			<td><input type="text" class="form-control" id="title" name="title"></td>
-			<th>파일업로드</th>
-			<td><input type="file" multiple="multiple" class="form-control" id="file" name="files"></td>
+			<th>파일</th>
+			<td>
+			<input type="file" multiple="multiple" class="form-control" id="file" name="file"/>
+			<button type="submit"></button>
+			</td>
 		</tr>
 		<tr>
 			<th>내용</th>
@@ -93,5 +96,11 @@
   </div>
  </div>
 </div>
+ <h2>업로드된 파일</h2>
+    <ul>
+        <li th:each="file : ${files}">
+            <a th:href="@{/download/{filename}(filename=${file})}" th:text="${file}"></a>
+        </li>
+    </ul>
   </body>
 </html>

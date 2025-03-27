@@ -136,7 +136,15 @@
     			 ,#{getUser}
     			 ,#{cc}
     			 ,#{recode}
-    			 ,#{mailType})
+    			 ,<choose>
+		            <when test="isSent == true">
+		                '보낸'
+		            </when>
+		            <otherwise>
+		                '받은'
+		            </otherwise>
+        		  </choose>
+    			 
 	</insert>
 	
 	<!-- 메일검색기록 -->
