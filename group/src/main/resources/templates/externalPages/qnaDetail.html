@@ -130,6 +130,7 @@
 		var post = /*[[${boardPost}]]*/[];
 		var postId = post.postId;
 		var postPId = post.parentCommentId;
+		console.log(post.employeeNo)
 		var commentQuill;
 		var answerId;
 		const token = document.querySelector('meta[name="_csrf"]').getAttribute("content");
@@ -178,8 +179,8 @@
                 employeeNo: 0,
             }),
             contentType: "application/json",
-            success: function () {
-                $.ajax({
+            success: async function () {
+            	await $.ajax({
                     type: "POST",
                     url: "/updateBoardPost",
                     data: JSON.stringify({
@@ -196,6 +197,7 @@
                         console.error(xhr.responseText);
                     }
                 });
+            	
             },
             error: function (xhr, status, error) {
                 alert("답글 등록 실패");
