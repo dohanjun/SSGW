@@ -52,42 +52,41 @@
 </style>
 <!-- 메일수정하기 페이지-->
   <body>
-  <h3>메일수정화면</h3>
+  <h3>개인주소록 수정화면</h3>
   <div class="content-wrapper">
 	<div class="employee-container">
 	  <div class="btn-container">
 	  <a class="btn btn-primary" th:onclick="|location.href='@{/myMailSelect(mailId=${mail.mailId})}'|">
 	  </a>
 	  </div>
-	<h1>메일수정하기</h1>
-  	  <div class="btn-container">
-	     <button class="btn btn-primary">
-      		저장하기
-        </button>
-      </div>
 	<!-- 메일수정 -->
 	
 	<form name="form" method="post">
+  	  <div class="btn-container">
+	     <button type="submit" class="btn btn-primary">
+      		저장
+        </button>
+      </div>
 	<table class="table">
 		<tr>
-			<td>받는사람</td>
-			<td><input name="giveName" th:value="${mail.employeeId}"></td>
+			<td>이름</td>
+			<td><input name="giveName" th:value="${book.addressBookName}"></td>
 		</tr>
 		<tr>
-			<td>참조</td>
-			<td><input name="cc" th:value="${mail.cc}"></td>
+			<td>전화번호</td>
+			<td><input name="cc" th:value="${book.addressBookNumber}"></td>
 		</tr>
 		<tr>
-			<td>제목</td>
-			<td><input name="title" th:value="${mail.title}"></td>
+			<td>이메일 주소</td>
+			<td><input name="title" th:value="${book.addressBookEmail}"></td>
 		</tr>
 		<tr>
-			<td>파일첨부</td>
-			<td><input name="file" th:value="${mail.attachedFileName}"></td>
+			<td>회사명</td>
+			<td><input name="file" th:value="${book.addressBookCompanyName}"></td>
 		</tr>
 		<tr>
-			<td>내용</td>
-			<td><input name="content" th:value="${mail.content}"></td>
+			<td>담당부서</td>
+			<td><input name="content" th:value="${book.addressBookCompanyNumber}"></td>
 		</tr>
 	</table>
 	</form>

@@ -1,0 +1,28 @@
+참고사이트: 
+https://velog.io/@yedam_it/IT-용어
+https://github.com/cyannara/springboot/blob/main/springboot00-webprograming.md
+
+                     자바웹
+html/css
+JS  - 이벤트
+                      서블릿(res, req, context, session <- 클래스) 
+                      JSP  <%%> + <html>   
+                      서블릿+JSP       M       V      C
+                      프레임워크(spring)  -         , 트랜잭션, 예외처리
+                                      -  DI(싱글톤)   AOP
+
+서블릿이란
+MVC 패턴
+프레임워크 장점
+스프링 - DI, AOP
+트랜잭션
+
+-----------------------------------------------
+AJAX - DOM API
+application(서버)
+session
+request
+싱글톤 - 객체 생성
+new Object() -> 사용 -> 메모리 가비지 제거
+
+- 프롬프트엔지니어링
