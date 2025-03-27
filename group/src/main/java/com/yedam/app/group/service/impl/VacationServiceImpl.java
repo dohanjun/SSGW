@@ -121,7 +121,7 @@ public class VacationServiceImpl implements VacationService {
     
     // 연차 사용일/잔여일 업데이트 로직
     @Override
-    public void updateVacationUsage() {
+    public void updateVacationUsage(int employeeNo, int suberNo, String year) {
         // 로그인한 사용자 정보 가져오기
         EmpVO loggedInUser = empService.getLoggedInUserInfo();
 
