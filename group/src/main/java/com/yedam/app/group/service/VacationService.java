@@ -6,9 +6,9 @@ import java.util.List;
 public interface VacationService {
 	
     // 연차 자동 부여
-    void autoGrantAnnualLeave(int employeeNo, int suberNo, Date hireDate, int draftNo);
+    void autoGrantAnnualLeave(int employeeNo, int suberNo, Date hireDate);
 
-   	void setZeroVacation(int employeeNo, int draftNo);
+   	void setZeroVacation(int employeeNo);
 	
     // 휴가유형 등록
     void insertVacationType(VacationVO vo);
@@ -27,5 +27,8 @@ public interface VacationService {
     
     // 전체 휴가현황 개수 조회 (페이징용)
     int countVacationStatus(VacationVO vo);
+    
+    // 휴가 사용일, 휴가 잔여일 업데이트
+    void updateVacationUsage(int employeeNo, String year);
 
 }

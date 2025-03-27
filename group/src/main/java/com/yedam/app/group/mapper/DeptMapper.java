@@ -16,7 +16,10 @@ public interface DeptMapper {
 	
 	
 	// 부서 등록
+	public int insertDepartment(DeptVO deptVO);
 	
+	// 상위 부서레벨 조회
+	public int getUpperDepLevel(int upperDepNo);	
 	
     // 모든 부서 목록 조회
     public List<DeptVO> getAllDepartments(DeptVO deptVO);
@@ -29,8 +32,8 @@ public interface DeptMapper {
     
     // 직원 조직도
     public List<DeptVO> getOrgChart(DeptVO deptVO);
+    
 
-	public int insertDepartment(DeptVO deptVO);
 	
 	
 

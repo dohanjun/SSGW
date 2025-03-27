@@ -94,7 +94,8 @@
 	    </collection>
 	</resultMap>
 	
-  	<insert id="insertDepartment" parameterType="com.yedam.app.group.service.DeptVO">
+	<!-- 부서등록 -->
+  	<insert id="insertDepartment" parameterType="DeptVO">
 	    <selectKey keyProperty="departmentNo" resultType="int" order="BEFORE">
 	        SELECT NVL(MAX(DEPARTMENT_NO), 0) + 1 FROM DEPARTMENT
 	    </selectKey>
@@ -115,6 +116,13 @@
 	        #{suberNo}
 	    )
 	</insert>
+	
+	<!-- 상위 부서레벨 조회 -->
+	<select id="getUpperDepLevel" resultType="int">
+	    SELECT DEPARTMENT_LEVEL 
+	    FROM DEPARTMENT 
+	    WHERE DEPARTMENT_NO = #{upperDepNo}
+	</select>
 
 
 </mapper>
