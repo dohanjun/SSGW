@@ -162,7 +162,7 @@ public class MailController {
 	public String getMail(Model model, PageListVO vo, Paging paging) {
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 		vo.setMailType("받은");
-		vo.setGetUser(loggedInUser.getEmployeeId() +"@whtjdals963123123.com");
+		vo.setGetUser(loggedInUser.getEmployeeId() +"@test3.com");
 		// 페이징처리
 		vo.setStart(paging.getFirst());
 		vo.setEnd(paging.getLast());
@@ -179,7 +179,7 @@ public class MailController {
 	public String putMail(Model model, PageListVO vo, Paging paging) {
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 		vo.setMailType("보낸");
-		vo.setEmployeeId(loggedInUser.getEmployeeId() +"@whtjdals963123123.com");
+		vo.setEmployeeId(loggedInUser.getEmployeeId() +"@test3.com");
 		// 페이징처리loggedInUser
 		vo.setStart(paging.getFirst());
 		vo.setEnd(paging.getLast());
@@ -196,7 +196,7 @@ public class MailController {
 	public String temporaryMail(Model model, PageListVO vo, Paging paging) {
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 		vo.setMailType("임시");
-		vo.setEmployeeId(loggedInUser.getEmployeeId() +"@whtjdals963123123.com");
+		vo.setEmployeeId(loggedInUser.getEmployeeId() +"@test3.com");
 		// 페이징처리
 		vo.setStart(paging.getFirst());
 		vo.setEnd(paging.getLast());
@@ -213,7 +213,7 @@ public class MailController {
 	public String deleteMail(Model model, PageListVO vo, Paging paging) {
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 		vo.setMailType("휴지통");
-		vo.setEmployeeId(loggedInUser.getEmployeeId() +"@whtjdals963123123.com");
+		vo.setEmployeeId(loggedInUser.getEmployeeId() +"@test3.com");
 		// 페이징처리
 		vo.setStart(paging.getFirst());
 		vo.setEnd(paging.getLast());
