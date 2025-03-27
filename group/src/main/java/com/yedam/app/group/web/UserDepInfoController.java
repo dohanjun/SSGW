@@ -20,4 +20,11 @@ public class UserDepInfoController {
     public Map<String, Object> addUserDepInfo(HttpSession session) {
         return (Map<String, Object>) session.getAttribute("loginUserDepInfo");
     }
+    
+    @ModelAttribute("userInfo")
+    public EmpVO addUserInfo() {
+        EmpVO loggedInUser = empService.getLoggedInUserInfo();
+        return loggedInUser;
+    }
+
 }
