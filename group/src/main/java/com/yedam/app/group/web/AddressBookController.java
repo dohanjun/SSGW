@@ -142,7 +142,7 @@ public class AddressBookController {
 
 		    } catch (Exception e) {
 		        model.addAttribute("error", "서버 오류로 수정에 실패했습니다.");
-		        return "group/mail/myMailSelect";  // 오류 발생 시 메일 상세 화면으로 이동
+		        return "group/book/mySelect";  // 오류 발생 시 메일 상세 화면으로 이동
 		    }
 		}
 
