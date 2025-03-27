@@ -7,6 +7,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +41,7 @@ import com.yedam.app.group.service.AprvFileVO;
 import com.yedam.app.group.service.AprvRoutesVO;
 import com.yedam.app.group.service.EmpService;
 import com.yedam.app.group.service.EmpVO;
+import com.yedam.app.group.service.VacationRequestVO;
 import com.yedam.app.group.service.VacationService;
 import com.yedam.app.group.service.VacationVO;
 
@@ -236,6 +239,25 @@ public class ApprovalController {
 	    // 문서 저장
 	    approvalService.createAprvDocu(approvalVO);
 	    int draftNo = approvalVO.getDraftNo();
+	    
+	 //  휴가원 양식일 경우 vacation_request 테이블 insert
+	    if ("휴가원".equals(approvalVO.getFormType())) {
+	        VacationRequestVO vacationVO = new VacationRequestVO();
+	        vacationVO.setDraftNo(draftNo);
+	        vacationVO.setEmployeeNo(loginUser.getEmployeeNo());
+
+	        // 날짜 변환
+	        try {
+	            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	            vacationVO.setStartVacationDate(sdf.parse(approvalVO.getStartDate()));
+	            vacationVO.setEndVacationDate(sdf.parse(approvalVO.getEndDate()));
+	            vacationVO.setUsedVacation(Integer.parseInt(approvalVO.getUsedVacation()));
+	            approvalService.createVacation(vacationVO);
+	        } catch (ParseException e) {
+	            e.printStackTrace();
+	        }
+	    }
+	    
 
 	    // 첨부파일 저장 추가
 	    if (files != null && files.length > 0) {
@@ -534,10 +556,18 @@ public class ApprovalController {
 	            .findFirst()
 	            .orElse("0"); // 일치하는 aprvOrder가 없으면 기본값 0
 		
+	    // 사용자의 aprvRole 찾기
+	    String aprvRole = routList.stream()
+	    	    .filter(r -> r.getEmployeeNo() == (loggedInUser.getEmployeeNo()))
+	    	    .map(AprvRoutesVO::getAprvRole)
+	    	    .findFirst()
+	    	    .orElse("결재");
+	    
 		model.addAttribute("aprv", aprvVO);
 		model.addAttribute("aprvroutes", routList);
 		model.addAttribute("aprvOrder", aprvOrder);
 		model.addAttribute("files", fileList);
+		model.addAttribute("aprvRole", aprvRole);
 
 		return "group/approval/approval";
 	}
@@ -605,6 +635,8 @@ public class ApprovalController {
 	        // 최대 결재 순서와 비교하여 상태 설정
 	        if (vo.getAprvOrder().equals(maxAprvOrder)) {
 	            vo.setAprvStatus("완료");
+	            // 기안유형이 휴가인경우 휴가일수 차감
+	            
 	        } else {
 	            vo.setAprvStatus("진행");
 	        }

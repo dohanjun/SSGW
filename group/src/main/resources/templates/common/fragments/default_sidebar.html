@@ -124,15 +124,15 @@
                 <div id="collapseT" class="collapse" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">인사관리</h6>
-                        <a class="collapse-item" th:href="@{empinsert}">사원등록</a>
-                        <a class="collapse-item" th:href="@{empMgmt}">사원관리</a>
+                        <a class="collapse-item" th:href="@{/empinsert}">사원등록</a>
+                        <a class="collapse-item" th:href="@{/empMgmt}">사원관리</a>
                         <h6 class="collapse-header">부서관리</h6>
-                        <a class="collapse-item" th:href="@{deptMgmt}">부서조회</a>
-                        <a class="collapse-item" th:href="@{deptInsert}">부서추가</a>
+                        <a class="collapse-item" th:href="@{/deptMgmt}">부서조회</a>
+                        <a class="collapse-item" th:href="@{/deptInsert}">부서추가</a>
                         <h6 class="collapse-header">휴가관리</h6>
-                        <a class="collapse-item" th:href="@{vacaList}">휴가조회</a>
-                        <a class="collapse-item" th:href="@{vacationList}">휴가유형목록</a>
-                        <a class="collapse-item" th:href="@{vacaInsert}">휴가유형등록</a>
+                        <a class="collapse-item" th:href="@{/vacaList}">휴가조회</a>
+                        <a class="collapse-item" th:href="@{/vacationList}">휴가유형목록</a>
+                        <a class="collapse-item" th:href="@{/vacaInsert}">휴가유형등록</a>
                     </div>
                 </div>
             </li>
@@ -148,13 +148,13 @@
             <div id="mailT" class="collapse" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <h6 class="collapse-header">메일</h6>
-                    <a class="collapse-item" th:href="@{mail}">메일메인화면</a>
-                    <a class="collapse-item" th:href="@{mailInsert}">메일쓰기</a>
+                    <a class="collapse-item" th:href="@{/mail}">메일메인화면</a>
+                    <a class="collapse-item" th:href="@{/mailInsert}">메일쓰기</a>
                     <h6 class="collapse-header">메일세부항목</h6>
-                    <a class="collapse-item" th:href="@{getMail?mailType=받은}">받은메일함</a>
-                    <a class="collapse-item" th:href="@{putMail?mailType=보낸}">보낸메일함</a>
-                    <a class="collapse-item" th:href="@{temporaryMail?mailType=임시}">임시메일함</a>
-                    <a class="collapse-item" th:href="@{deleteMail?mailType=휴지통}">휴지통</a>
+                    <a class="collapse-item" th:href="@{/getMail?mailType=받은}">받은메일함</a>
+                    <a class="collapse-item" th:href="@{/putMail?mailType=보낸}">보낸메일함</a>
+                    <a class="collapse-item" th:href="@{/temporaryMail?mailType=임시}">임시메일함</a>
+                    <a class="collapse-item" th:href="@{/deleteMail?mailType=휴지통}">휴지통</a>
                 </div>
             </div>
         </li>
@@ -167,8 +167,8 @@
             </a>
             <div id="bookT" class="collapse" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
-                    <a class="collapse-item" th:href="@{bookList}">주소록</a>
-                    <a class="collapse-item" th:href="@{bookInsert}">주소록 등록</a>
+                    <a class="collapse-item" th:href="@{/bookList}">주소록</a>
+                    <a class="collapse-item" th:href="@{/bookInsert}">주소록 등록</a>
                 </div>
             </div>
         </li>
@@ -182,9 +182,9 @@
             </a>
             <div id="board" class="collapse" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
-                    <a class="collapse-item" th:href="@{noticeBoard}">공지 게시판</a>
-                    <a class="collapse-item" th:href="@{departmentBoard}">부서 게시판</a>
-                    <a class="collapse-item" th:href="@{freeBoard}">자유 게시판</a>
+                    <a class="collapse-item" th:href="@{/noticeBoard}">공지 게시판</a>
+                    <a class="collapse-item" th:href="@{/departmentBoard}">부서 게시판</a>
+                    <a class="collapse-item" th:href="@{/freeBoard}">자유 게시판</a>
                 </div>
             </div>
         </li>

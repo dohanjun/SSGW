@@ -359,6 +359,7 @@ $('#vacationTypeSelect').on('change', function () {
             $(this).val(selectedType);
         }
     });
+    
 
     // contentHidden에도 반영
     const finalContent = prepareFinalContent();
@@ -383,40 +384,59 @@ document.addEventListener("DOMContentLoaded", function () {
 $('#ajaxSubmitBtn').on('click', function () {
     const finalContent = prepareFinalContent();
 
-    // FormData 객체 생성
+    // FormData 생성
     const form = document.querySelector("form");
     const formData = new FormData(form);
 
-    // HTML 콘텐츠는 직접 넣어줘야 함
+    // 기본 데이터 추가
     formData.append("title", $('input[name="title"]').val());
     formData.append("content", finalContent);
     formData.append("status", "대기");
     formData.append("formId", $('#formIdInput').val());
     formData.append("basicsFormId", $('#basicsFormIdInput').val());
-	
+
+    //  formType 추출 및 추가
+    const formType = $('#Content').find('.vacationtitle').text().trim();  // 예: '휴가원'
+    formData.append("formType", formType);
+
+    //  휴가원일 때만 시작일/종료일/휴가일수 계산
+    if (formType === '휴가원') {
+        const dateInputs = $('#Content').find('table.vacationtable input[type="date"]');
+        const startDate = dateInputs.eq(0).val();
+        const endDate = dateInputs.eq(1).val();
+        let usedDays = "";
+
+        if (startDate && endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            if (end >= start) {
+                usedDays = Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
+            }
+        }
+
+        formData.append("startDate", startDate);
+        formData.append("endDate", endDate);
+        formData.append("usedVacation", usedDays);
+    }
+
+    // 파일 첨부 처리
     const fileInput = document.getElementById("fileInput");
     const files = fileInput.files;
     for (let i = 0; i < files.length; i++) {
         formData.append("files", files[i]);
     }
-    
-    for (let pair of formData.entries()) {
-    	  console.log(pair[0], pair[1]);
-    	}
-    
-    // approvers와 references는 hidden input이 아니라 직접 append 해도 됨
+
+    // 결재자 (필수)
     const approvers = $('#approversInput').val();
     if (!approvers) {
         alert("결재자를 한 명 이상 선택해주세요.");
         return;
     }
-    
-    if (approvers) {
-        approvers.split(',').forEach(a => {
-            formData.append("approvers", a);
-        });
-    }
+    approvers.split(',').forEach(a => {
+        formData.append("approvers", a);
+    });
 
+    // 참조자 (선택)
     const references = $('#referencesInput').val();
     if (references) {
         references.split(',').forEach(r => {
@@ -424,13 +444,14 @@ $('#ajaxSubmitBtn').on('click', function () {
         });
     }
 
+    // 전송
     $.ajax({
         url: '/aprv/writing',
         type: 'POST',
         data: formData,
-        processData: false, // FormData는 자동 처리
-        contentType: false, // content-type 헤더 설정 안 함 (브라우저가 자동 설정)
-        success: function (res) {
+        processData: false,
+        contentType: false,
+        success: function () {
             alert('기안문이 성공적으로 등록되었습니다!');
             location.href = '/aprv/list';
         },
