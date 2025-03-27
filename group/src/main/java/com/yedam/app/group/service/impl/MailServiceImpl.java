@@ -25,7 +25,6 @@ public class MailServiceImpl implements MailService {
 	private MailMapper mailMapper;
 
 
-	@Autowired
 	public MailServiceImpl(MailMapper mailMapper, JavaMailSender javaMailSender) {
 		this.mailMapper = mailMapper;
 		this.javaMailSender = javaMailSender;
