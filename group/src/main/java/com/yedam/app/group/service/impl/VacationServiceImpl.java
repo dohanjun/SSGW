@@ -116,12 +116,23 @@ public class VacationServiceImpl implements VacationService {
         return vacationMapper.countVacationStatus(vo);
     }
     
-    // 휴가 사용일, 휴가 잔여일 업데이트
+    // 연차 사용일/잔여일 업데이트 로직
     @Override
-    public void updateVacationUsage(int employeeNo, String year) {
+    public void updateVacationUsage(int employeeNo, int suberNo, String year) {
+        // 1. 회사번호로 연차 유형 정보 조회
+        VacationVO annualType = vacationMapper.getAnnualVacationType(suberNo);
+
+        // 2. 연차 ID 추출
+        int vacationTypeId = annualType.getVacationTypeId();
+
+        // 3. 업데이트용 VO 구성
         VacationVO vo = new VacationVO();
         vo.setEmployeeNo(employeeNo);
+        vo.setSuberNo(suberNo);
         vo.setYear(year);
+        vo.setVacationTypeId(vacationTypeId);
+
+        // 4. 연차 사용일, 잔여일 업데이트 실행
         vacationMapper.updateVacationUsage(vo);
     }
 
