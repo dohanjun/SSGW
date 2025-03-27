@@ -351,4 +351,19 @@
 	      AND d.employee_no = #{employeeNo}
 	      AND d.suber_no = #{suberNo}
 	</select>
+	
+	<insert id="insertVacation" parameterType="VacationRequestVO">
+		INSERT INTO vacation_request
+		(DRAFT_NO
+		,USED_VACATION
+		,START_VACATION_DATE
+		,END_VACATION_DATE
+		,EMPLOYEE_NO)
+		VALUES
+		(#{draftNo}
+		 ,#{usedVacation}
+		 ,#{startVacationDate}
+		 ,#{endVacationDate}
+		 ,#{employeeNo})
+	</insert>
 </mapper>

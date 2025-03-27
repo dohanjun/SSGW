@@ -70,4 +70,7 @@ public interface ApprovalService {
     
     //
     public int countAprvListByStatus(ApprovalVO vo);
+    
+    //
+    public int createVacation(VacationRequestVO vacaVO);
 }

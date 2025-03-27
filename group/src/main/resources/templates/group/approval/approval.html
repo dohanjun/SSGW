@@ -25,6 +25,7 @@
 <input type="hidden" id="draftNo" th:value="${aprv.draftNo}">
 <input type="hidden" id="employeeNo" th:value="${loggedInEmpNo}">
 <input type="hidden" id="aprvOrder">
+<input type="hidden" id="aprvRole">
 
 <!-- 결재선 테이블 -->
 <table class="table table-bordered text-center" style="table-layout: fixed; width: 100%;">
@@ -114,7 +115,7 @@
     			<div class="border p-3 bg-light" th:text="${aprv.rejectReason}">반려 사유 내용</div>
 			</div>
             <!-- 승인/반려 버튼 -->
-            <div class="text-right" th:if="${aprv.aprvStatus != '완료' and aprv.aprvStatus != '반려'}">
+            <div class="text-right" th:if="${aprv.aprvStatus != '완료' and aprv.aprvStatus != '반려' and aprvRole != '참조'}">
                 <button id="approvebtn" class="btn btn-success">승인</button>
                 <button id="backbtn" class="btn btn-danger">반려</button>
             </div>
