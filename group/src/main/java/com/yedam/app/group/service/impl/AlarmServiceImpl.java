@@ -24,5 +24,9 @@ public class AlarmServiceImpl implements AlarmService {
 	public boolean markAsRead(int alertNo) {
 	    return alarmMapper.updateReadStatus(alertNo);
 	}
+    @Override
+    public void insertAlarm(AlarmVO vo) {
+        alarmMapper.insertAlarm(vo);
+    }
 }
 
