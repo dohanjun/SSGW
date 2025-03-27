@@ -30,10 +30,7 @@ public class PersonnelContrtller {
 
 	
 	// 부서추가
-	@GetMapping("deptInsert")
-    public String deptInsert() {
-        return "group/personnel/deptInsert";
-    }
+
 	
 		
 }

@@ -28,7 +28,7 @@ public interface VacationService {
     // 전체 휴가현황 개수 조회 (페이징용)
     int countVacationStatus(VacationVO vo);
     
-    // 휴가 사용일, 휴가 잔여일 업데이트
-    void updateVacationUsage(int employeeNo, String year);
+    // 연차 사용일/잔여일 업데이트 (사번, 회사번호, 연도 기준)
+    void updateVacationUsage(int employeeNo, int suberNo, String year);
 
 }

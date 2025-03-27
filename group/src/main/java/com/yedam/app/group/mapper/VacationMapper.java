@@ -57,7 +57,7 @@ public interface VacationMapper {
     //  전체 휴가현황 개수 조회 (페이징용)
     public int countVacationStatus(VacationVO vo);
     
-    // 휴가 사용일, 휴가 잔여일 업데이트
+    // 연차 사용일/잔여일 업데이트
     public int updateVacationUsage(VacationVO vo);
     
     
