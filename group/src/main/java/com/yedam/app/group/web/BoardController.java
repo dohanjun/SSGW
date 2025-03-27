@@ -29,11 +29,11 @@ public class BoardController {
 	
 	@GetMapping("/boardList")
 	public String boardList(Model model) {
-	    EmpVO loginUser = empService.getLoggedInUserInfo();
+		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 
-	    List<BoardVO> noticeBoards = boardService.getBoardsByType("공지", loginUser.getSuberNo(), null, null);
-	    List<BoardVO> departmentBoards = boardService.getBoardsByType("부서", loginUser.getSuberNo(), loginUser.getDepartmentNo(), null);
-	    List<BoardVO> freeBoards = boardService.getBoardsByType("자유", loginUser.getSuberNo(), null, loginUser.getEmployeeNo());
+	    List<BoardVO> noticeBoards = boardService.getBoardsByType("공지", loggedInUser.getSuberNo(), null, null);
+	    List<BoardVO> departmentBoards = boardService.getBoardsByType("부서", loggedInUser.getSuberNo(), loggedInUser.getDepartmentNo(), null);
+	    List<BoardVO> freeBoards = boardService.getBoardsByType("자유", loggedInUser.getSuberNo(), null, loggedInUser.getEmployeeNo());
 
 	    model.addAttribute("noticeBoards", noticeBoards);
 	    model.addAttribute("departmentBoards", departmentBoards);
@@ -47,20 +47,20 @@ public class BoardController {
 	                          @RequestParam(value = "keyword", required = false) String keyword,
 	                          Model model) {
 
-	    EmpVO loginUser = empService.getLoggedInUserInfo();
+		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 
 	    int pageSize = 10;
 	    int offset = (page - 1) * pageSize;
-	    int totalCount = boardService.getNoticeBoardPostCount(loginUser.getSuberNo(), keyword);
+	    int totalCount = boardService.getNoticeBoardPostCount(loggedInUser.getSuberNo(), keyword);
 	    int totalPages = Math.max(1, (int) Math.ceil((double) totalCount / pageSize));
 
-	    List<BoardVO> postList = boardService.getNoticeBoardPostsPaged(loginUser.getSuberNo(), keyword, offset, pageSize);
+	    List<BoardVO> postList = boardService.getNoticeBoardPostsPaged(loggedInUser.getSuberNo(), keyword, offset, pageSize);
 
 	    model.addAttribute("postList", postList);
 	    model.addAttribute("page", page);
 	    model.addAttribute("totalPages", totalPages);
 	    model.addAttribute("keyword", keyword);
-	    model.addAttribute("loginUser", loginUser);
+	    model.addAttribute("loggedInUser", loggedInUser);
 
 	    return "group/board/noticeBoard";
 	}
@@ -70,22 +70,22 @@ public class BoardController {
             @RequestParam(value = "keyword", required = false) String keyword,
             Model model) {
 		
-		EmpVO loginUser = empService.getLoggedInUserInfo();
+		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 		
 		int pageSize = 10;
 	    int offset = (page - 1) * pageSize;
 	    int totalCount = boardService.getDepartmentBoardPostCount(
-	        loginUser.getSuberNo(), loginUser.getDepartmentNo(), keyword);
+	    		loggedInUser.getSuberNo(), loggedInUser.getDepartmentNo(), keyword);
 	    int totalPages = Math.max(1, (int) Math.ceil((double) totalCount / pageSize));
 
 	    List<BoardVO> postList = boardService.getDepartmentBoardPostsPaged(
-	        loginUser.getSuberNo(), loginUser.getDepartmentNo(), keyword, offset, pageSize);
+	    		loggedInUser.getSuberNo(), loggedInUser.getDepartmentNo(), keyword, offset, pageSize);
 
 	    model.addAttribute("postList", postList);
 	    model.addAttribute("page", page);
 	    model.addAttribute("totalPages", totalPages);
 	    model.addAttribute("keyword", keyword);
-	    model.addAttribute("loginUser", loginUser);
+	    model.addAttribute("loginUser", loggedInUser);
 
 	    return "group/board/departmentBoard";
     }
@@ -95,20 +95,20 @@ public class BoardController {
 	                        @RequestParam(value = "keyword", required = false) String keyword,
 	                        Model model) {
 
-	    EmpVO loginUser = empService.getLoggedInUserInfo();
+		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 
 	    int pageSize = 10;
 	    int offset = (page - 1) * pageSize;
-	    int totalCount = boardService.getFreeBoardPostCount(loginUser.getSuberNo(), keyword);
+	    int totalCount = boardService.getFreeBoardPostCount(loggedInUser.getSuberNo(), keyword);
 	    int totalPages = Math.max(1, (int) Math.ceil((double) totalCount / pageSize));
 
-	    List<BoardVO> postList = boardService.getFreeBoardPostsPaged(loginUser.getSuberNo(), keyword, offset, pageSize);
+	    List<BoardVO> postList = boardService.getFreeBoardPostsPaged(loggedInUser.getSuberNo(), keyword, offset, pageSize);
 
 	    model.addAttribute("postList", postList);
 	    model.addAttribute("page", page);
 	    model.addAttribute("totalPages", totalPages);
 	    model.addAttribute("keyword", keyword);
-	    model.addAttribute("loginUser", loginUser);
+	    model.addAttribute("loggedInUser", loggedInUser);
 
 	    return "group/board/freeBoard";
 	}
@@ -120,18 +120,19 @@ public class BoardController {
 	
 	@GetMapping("/insertBoard")
 	public String insertBoard(@RequestParam("boardType") String boardType, Model model) {
-	    EmpVO loginUser = empService.getLoggedInUserInfo();
+		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 
-	    model.addAttribute("loginUser", loginUser);
+	    model.addAttribute("writer", loggedInUser.getEmployeeName()); // 로그인한 사용자 이름
+        model.addAttribute("employeeNo", loggedInUser.getEmployeeNo()); // 로그인한 사용자 사원번호
 	    model.addAttribute("boardType", boardType); // 공지 / 부서 / 자유 판단용
 
 	    // 공지 등록 권한 → 관리자만 가능
-	    boolean isAdmin = (loginUser.getRightsId() != null && loginUser.getRightsId() == 3)
-	                   || (loginUser.getRightsLevel() != null && loginUser.getRightsLevel() == 5);
+	    boolean isAdmin = (loggedInUser.getRightsId() != null && loggedInUser.getRightsId() == 3)
+	                   || (loggedInUser.getRightsLevel() != null && loggedInUser.getRightsLevel() == 5);
 	    model.addAttribute("isAdmin", isAdmin);
 
 	    // 부서 게시판 등록 권한 → 부서장만 가능 (manager가 null이 아니면 부서장)
-	    boolean isDepartmentManager = loginUser.getManager() != null;
+	    boolean isDepartmentManager = loggedInUser.getManager() != null;
 	    model.addAttribute("isDepartmentManager", isDepartmentManager);
 
 	    return "group/board/insertBoard";
@@ -141,16 +142,23 @@ public class BoardController {
 	public String insertBoard(BoardPostVO postVO,
 	                          @RequestParam("boardType") String boardType,
 	                          @RequestParam("files") List<MultipartFile> files) {
-	    EmpVO loginUser = empService.getLoggedInUserInfo();
+		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 
-	    postVO.setEmployeeNo(loginUser.getEmployeeNo());
+	    postVO.setEmployeeNo(loggedInUser.getEmployeeNo());
 	    postVO.setPostDate(new Date());
 	    postVO.setFixed('N');
 	    postVO.setFaq('N');
 	    postVO.setRead('N');
 	    
-	    boardService.insertBoardPost(postVO, boardType, loginUser, files);
-	    return "redirect:/boardList";
+	    boardService.insertBoardPost(postVO, boardType, loggedInUser, files);
+	    
+	    // boardType에 따라 리다이렉트 분기
+	    return switch (boardType) {
+	        case "공지" -> "redirect:/noticeBoard?page=1";
+	        case "부서" -> "redirect:/departmentBoard?page=1";
+	        case "자유" -> "redirect:/freeBoard?page=1";
+	        default -> "redirect:/boardList"; // fallback
+	    };
 	}
 
 }
