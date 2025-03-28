@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -37,8 +38,9 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class MailController {
-
-    private static final String UPLOAD_DIR = "uploads/"; // 업로드 디렉토리
+    @Value("${file.upload-dir}")  
+    private String uploadDir;
+    // 업로드 디렉토리
     private final MailService mailService;
     private final EmpService empService;
 
@@ -109,7 +111,7 @@ public class MailController {
 	public ResponseEntity<Resource> downloadFile(@PathVariable String filename) {
 	    try {
 	        // 다운로드할 파일의 경로 설정
-	        Path filePath = Paths.get(UPLOAD_DIR).resolve(filename).normalize();
+	        Path filePath = Paths.get(uploadDir).resolve(filename).normalize();
 	        File file = filePath.toFile();
 
 	        // 파일이 존재하지 않으면 404 반환
@@ -144,10 +146,10 @@ public class MailController {
 	    try {
 	        // 파일 업로드 처리
 	        String filename = StringUtils.cleanPath(file.getOriginalFilename()); // 파일 이름 정리
-	        Path targetLocation = Paths.get(UPLOAD_DIR + filename); // 저장할 경로
+	        Path targetLocation = Paths.get(uploadDir + filename); // 저장할 경로
 
 	        // 디렉토리가 없으면 생성
-	        File dir = new File(UPLOAD_DIR);
+	        File dir = new File(uploadDir);
 	        if (!dir.exists()) {
 	            dir.mkdirs();
 	        }
@@ -212,22 +214,24 @@ public class MailController {
 
 
 
-	// 메일답장 페이지
+	// 메일답장 페이지 로딩
 	@GetMapping("/mailReply")
 	public String mailReplyForm(MailVO mailVO, Model model) {
-		MailVO findVO = mailService.MailSelectInfo(mailVO);
-		model.addAttribute("mail", findVO);
-		return "group/mail/mailReply";
+	    MailVO findVO = mailService.MailSelectInfo(mailVO); // 메일 정보 가져오기
+	    model.addAttribute("mail", findVO); // 메일 데이터를 model에 추가하여 Thymeleaf 템플릿에서 사용할 수 있도록 함
+	    return "group/mail/mailReply"; // 해당 뷰로 이동
 	}
 
-	// 메일답장처리
-	@PostMapping("mailReply")
+	// 메일답장 처리
+	@PostMapping("/mailReply")
 	public String mailReplyProcess(MailVO vo) {
-		// 메일 발송
+	    // 메일 발송
 	    mailService.sendMailToUser(vo);
 	    
-	    return "redirect:mail";
+	    // 메일 목록 페이지로 리다이렉트
+	    return "redirect:/mail";
 	}
+
 
 	// 전달 - 페이지
 	@GetMapping("/mailVery")
