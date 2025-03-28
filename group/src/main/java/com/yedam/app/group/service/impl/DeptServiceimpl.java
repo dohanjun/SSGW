@@ -90,5 +90,11 @@ public class DeptServiceimpl implements DeptService{
         return deptMapper.updateManager(deptVO);
     }
 
+	@Override
+	public void updateDepManager(DeptVO deptVO) {
+		deptMapper.updateDepManager(deptVO);
+		
+	}
+
 
 }

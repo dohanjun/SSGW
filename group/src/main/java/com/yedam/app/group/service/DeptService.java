@@ -31,5 +31,7 @@ public interface DeptService {
     // 부서장 등록
 	int updateManager(DeptVO deptVO);
 
+	void updateDepManager(DeptVO deptVO);
+
 
 }

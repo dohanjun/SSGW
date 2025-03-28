@@ -35,6 +35,9 @@ public interface DeptMapper {
     
     // 부서장 업데이트
     public int updateManager(DeptVO deptVO);
+
+
+	public void updateDepManager(DeptVO deptVO);
     
 
 	
