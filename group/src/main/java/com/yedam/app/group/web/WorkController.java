@@ -47,7 +47,7 @@ public class WorkController {
             // ✅ overtimeHours 계산 로직 반영 (분 ➝ 시간)
             for (AttendanceManagementVO vo : attendanceList) {
                 if (vo.getTotalOvertimeTime() != null) {
-                    double overtimeHours = vo.getTotalOvertimeTime() / 60.0;
+                    double overtimeHours = vo.getTotalOvertimeTime() / 60;
                     vo.setOvertimeHours(overtimeHours); // 이거 없으면 템플릿에서 null
                 } else {
                     vo.setOvertimeHours(0.0);
@@ -57,7 +57,7 @@ public class WorkController {
             model.addAttribute("attendanceList", attendanceList);
             model.addAttribute("monthlyTotalWorkHours", monthlyTotalWorkHours);
             model.addAttribute("totalWorkedHours", totalWorkedHours);
-            model.addAttribute("overtimeHoursCalculated", totalOvertimeMinutes / 60.0); // 🟡 그래프용도 시간단위
+            model.addAttribute("overtimeHoursCalculated", totalOvertimeMinutes / 60); // 🟡 그래프용도 시간단위
         }
 
         return "group/workPage/blank";

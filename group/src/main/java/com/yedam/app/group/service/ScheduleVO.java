@@ -20,4 +20,7 @@ public class ScheduleVO {
 	private int scheduleSharingNo;    // 일정공유번호
 	private String departmentName;    // 부서명
 	private String employeeName;      // 사원명
+	
+	private boolean todayOnly;
+	private String divisionName;
 }

@@ -137,8 +137,8 @@
             (a.clock_out_time - a.clock_in_time) * 24
           ELSE 0
         END
-      ), 2) AS totalWorkingHours,
-      ROUND(NVL(SUM(o.overtime_time), 0) / 60, 2) AS overtimeHours
+      )) AS totalWorkingHours,
+      ROUND(NVL(SUM(o.overtime_time), 0) / 60) AS overtimeHours
     FROM employees e
     JOIN department d ON e.department_no = d.department_no
     LEFT JOIN attendance_management a ON e.employee_no = a.employee_no

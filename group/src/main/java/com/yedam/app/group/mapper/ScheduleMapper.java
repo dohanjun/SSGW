@@ -17,4 +17,6 @@ public interface ScheduleMapper {
 	// 일정 삭제
 	public int deleteSchedule(ScheduleVO scheduleVO);
 	
+    // 통합 일정 조회
+	List<ScheduleVO> selectAllSchedules();
 }
