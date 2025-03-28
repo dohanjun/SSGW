@@ -41,14 +41,14 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="post : ${noticeBoardList}"
-                th:data-url="@{'/detailBoard/' + ${post.writingId}}"
+            <tr th:each="post : ${postList}"
+                th:data-url="@{'/detailBoard/' + ${post.postId}}"
                 onclick="location.href=this.dataset.url"
                 style="cursor: pointer;">
-                <td th:text="${post.writingId}"></td>
-                <td th:text="${post.title}"></td>
-                <td th:text="${post.writer}"></td>
-                <td th:text="${#dates.format(post.creationDate, 'yyyy-MM-dd')}"></td>
+                <td th:text="${post.postId}"></td>
+    			<td th:text="${post.postTitle}"></td>
+    			<td th:text="${post.employeeName}"></td>
+    			<td th:text="${#dates.format(post.postDate, 'yyyy-MM-dd')}"></td>
             </tr>
             </tbody>
         </table>

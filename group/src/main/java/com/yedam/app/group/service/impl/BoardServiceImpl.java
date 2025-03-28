@@ -40,12 +40,12 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public List<BoardVO> getNoticeBoardPostsPaged(int suberNo, String keyword, int offset, int limit) {
+    public List<BoardPostVO> getNoticeBoardPostsPaged(int suberNo, String keyword, int offset, int limit) {
         return boardMapper.selectNoticeBoardPostsPaged(suberNo, keyword, offset, limit);
     }
     
     @Override
-    public List<BoardVO> getDepartmentBoardPostsPaged(Integer suberNo, Integer departmentNo, String keyword, int offset, int limit) {
+    public List<BoardPostVO> getDepartmentBoardPostsPaged(Integer suberNo, Integer departmentNo, String keyword, int offset, int limit) {
         return boardMapper.selectDepartmentBoardPostsPaged(suberNo, departmentNo, keyword, offset, limit);
     }
 
@@ -60,25 +60,18 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public List<BoardVO> getFreeBoardPostsPaged(int suberNo, String keyword, int offset, int limit) {
+    public List<BoardPostVO> getFreeBoardPostsPaged(int suberNo, String keyword, int offset, int limit) {
         return boardMapper.selectFreeBoardPostsPaged(suberNo, keyword, offset, limit);
     }
     
     @Override
     public void insertBoardPost(BoardPostVO postVO, String boardType, EmpVO loginUser, List<MultipartFile> files) {
-        // 1. 게시판 ID 조회
-        Integer boardId = boardMapper.getBoardIdByType(
-            boardType,
-            loginUser.getSuberNo(),
-            boardType.equals("부서") ? loginUser.getDepartmentNo() : null
-        );
 
-        if (boardId == null) {
+        if (postVO.getBoardId() == 0) {
             throw new IllegalStateException("해당 게시판이 존재하지 않습니다.");
         }
 
         // 2. 게시판 ID 및 위치 설정
-        postVO.setBoardId(boardId);
         postVO.setLocation(boardType);
 
         // 3. 게시글 등록

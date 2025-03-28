@@ -54,7 +54,7 @@
 						onclick="location.href=this.dataset.url" style="cursor: pointer;">
 						<td th:text="${post.postId}"></td>
 						<td th:text="${post.postTitle}"></td>
-						<td th:text="${post.writer}"></td>
+						<td th:text="${post.employeeName}"></td>
 						<td th:text="${#dates.format(post.postDate, 'yyyy-MM-dd')}"></td>
 					</tr>
 				</tbody>

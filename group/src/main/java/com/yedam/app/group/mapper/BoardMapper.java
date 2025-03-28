@@ -11,9 +11,6 @@ import com.yedam.app.group.service.BoardVO;
 
 @Mapper
 public interface BoardMapper {
-	
-	// 게시판 ID 가져오기 (공지/부서/자유)
-    Integer getBoardIdByType(String boardType, int suberNo, Integer departmentNo);
 
     // 게시글 등록
     void insertPost(BoardPostVO postVO);
@@ -22,17 +19,22 @@ public interface BoardMapper {
     void insertAttachment(BoardAttachmentVO attach);
 
     // 게시판 종류별 목록 조회
-    List<BoardVO> selectBoardsByType(String boardType, int suberNo, Integer departmentNo, Integer employeeNo);
+    List<BoardVO> selectBoardsByType(
+    	    @Param("boardType") String boardType,
+    	    @Param("suberNo") int suberNo,
+    	    @Param("departmentNo") Integer departmentNo,
+    	    @Param("employeeNo") Integer employeeNo
+    	);
 
     // 공지 게시판
     int countNoticeBoardPosts(int suberNo, String keyword);
-    List<BoardVO> selectNoticeBoardPostsPaged(int suberNo, String keyword, int offset, int limit);
+    List<BoardPostVO> selectNoticeBoardPostsPaged(int suberNo, String keyword, int offset, int limit);
 
     // 부서 게시판
     int countDepartmentBoardPosts(Integer suberNo, Integer departmentNo, String keyword);
-    List<BoardVO> selectDepartmentBoardPostsPaged(Integer suberNo, Integer departmentNo, String keyword, int offset, int limit);
+    List<BoardPostVO> selectDepartmentBoardPostsPaged(Integer suberNo, Integer departmentNo, String keyword, int offset, int limit);
 
     // 자유 게시판
     int countFreeBoardPosts(int suberNo, String keyword);
-    List<BoardVO> selectFreeBoardPostsPaged(int suberNo, String keyword, int offset, int limit);
+    List<BoardPostVO> selectFreeBoardPostsPaged(int suberNo, String keyword, int offset, int limit);
 }
