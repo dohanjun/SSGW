@@ -55,14 +55,16 @@ public class BoardController {
 	    int totalPages = Math.max(1, (int) Math.ceil((double) totalCount / pageSize));
 
 	    List<BoardPostVO> postList = boardService.getNoticeBoardPostsPaged(loggedInUser.getSuberNo(), keyword, offset, pageSize);
-
+	    
+	    boolean isAdmin = (loggedInUser.getRightsId() != null && loggedInUser.getRightsId() == 3)
+                || (loggedInUser.getRightsLevel() != null && loggedInUser.getRightsLevel() >= 5);
+	    
 	    model.addAttribute("postList", postList);
 	    model.addAttribute("page", page);
 	    model.addAttribute("totalPages", totalPages);
 	    model.addAttribute("keyword", keyword);
 	    model.addAttribute("loggedInUser", loggedInUser);
-	    
-	    System.out.println("postList: " + postList);
+	    model.addAttribute("isAdmin", isAdmin);
 
 	    return "group/board/noticeBoard";
 	}

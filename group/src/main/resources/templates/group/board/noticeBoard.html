@@ -28,7 +28,7 @@
         </div>
 		<input type="hidden" name="boardType" value="공지" />
         <div class="text-right mb-3">
-            <a class="btn btn-primary" href='/insertBoard?boardType=공지'>등록</a>
+            <a class="btn btn-primary" id="registerBtn" href='/insertBoard?boardType=공지'>등록</a>
         </div>
 
         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
@@ -78,6 +78,24 @@
 
     </div>
 </div>
+<script th:inline="javascript">
+    // Thymeleaf에서 isAdmin 값을 JS로 넘김
+    const isAdmin = /*[[${isAdmin}]]*/ false;
 
+    document.addEventListener('DOMContentLoaded', () => {
+        // '등록' 버튼을 고유한 ID로 지정
+        const registerBtn = document.getElementById('registerBtn');
+
+        if (registerBtn) {
+            registerBtn.addEventListener('click', function (e) {
+                if (!isAdmin) {
+                    e.preventDefault();
+                    alert('공지 게시판은 관리자만 등록할 수 있습니다.');
+                }
+            });
+        }
+    });
+</script>
 </body>
 </html>
+
