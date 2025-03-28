@@ -24,17 +24,18 @@
 						<div class="card-body">
 						  <form th:action="@{/insertBoard}" method="post" enctype="multipart/form-data">
 						  <input type="hidden" name="boardType" th:value="${boardType}"/>
+						  <input type="hidden" name="boardId" th:value="${boardId}" />
 							<table class="table file-info-table">
 								<tbody>
 									<tr>
 										<th>제목</th>
 										<td><input type="text" class="form-control" name="postTitle" placeholder="제목을 입력하세요" required></td>
 										<th>작성자</th>
-										<td><input type="text" class="form-control" name="writer" th:value="${loginUser.employeeName}" readonly></td>
+										<td><input type="text" class="form-control" name="writer" th:value="${writer}" readonly></td>
 									</tr>
 									<tr>
 										<th>등록일</th>
-										<td><input type="date" class="form-control" name="postDate" th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" required></td>
+										<td><input type="date" class="form-control" name="postDate" th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" readonly></td>
 										<th>파일명</th>
 										<td><input type="file" class="form-control" name="files" multiple></td>
 									</tr>
@@ -77,19 +78,26 @@
 			}
 		});
 		
+		quill.on('text-change', function () {
+		      const html = quill.root.innerHTML.trim();
+		      const cleanContent = html.replace(/<\/?p>/g, "").trim();
+		      document.getElementById("postContent").value = cleanContent;
+		    });
+		
 		document.querySelector('.ql-editor').style.minHeight = "250px";
 		document.querySelector('.ql-editor').style.height = "300px";
 		document.querySelector('.ql-editor').style.maxHeight = "500px";
 		
-		document.querySelector("form").addEventListener("submit", function (event) {
-	        let html = quill.root.innerHTML.trim();
-	        document.getElementById("postContent").value = html;
+		document.getElementById("insertForm").addEventListener("submit", function (e) {
+		      const html = quill.root.innerHTML.trim();
+		      const cleanContent = html.replace(/<\/?p>/g, "").trim();
+		      document.getElementById("postContent").value = cleanContent;
 
-	        if (!html || html === "<p><br></p>") {
-	            alert("내용이 입력되지 않았습니다.");
-	            event.preventDefault();
-	        }
-	    })
+		      if (!cleanContent || cleanContent === "") {
+		        alert("내용이 입력되지 않았습니다.");
+		        e.preventDefault();
+		      }
+		    });
 	</script>
 </body>
 </html>

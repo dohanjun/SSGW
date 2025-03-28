@@ -2,6 +2,8 @@ package com.yedam.app.group.service;
 
 import java.util.Date;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import lombok.Data;
 
 @Data
@@ -10,6 +12,7 @@ public class BoardPostVO {
     private Integer parentCommentId; // 원글 ID (NULL 허용)
     private String postTitle;       // 제목
     private String postContent;     // 내용
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date postDate;          // 등록 날짜
     private char fixed;             // 고정 여부 (Y/N)
     private char faq;               // FAQ 여부 (Y/N)

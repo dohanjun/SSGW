@@ -54,13 +54,15 @@ public class BoardController {
 	    int totalCount = boardService.getNoticeBoardPostCount(loggedInUser.getSuberNo(), keyword);
 	    int totalPages = Math.max(1, (int) Math.ceil((double) totalCount / pageSize));
 
-	    List<BoardVO> postList = boardService.getNoticeBoardPostsPaged(loggedInUser.getSuberNo(), keyword, offset, pageSize);
+	    List<BoardPostVO> postList = boardService.getNoticeBoardPostsPaged(loggedInUser.getSuberNo(), keyword, offset, pageSize);
 
 	    model.addAttribute("postList", postList);
 	    model.addAttribute("page", page);
 	    model.addAttribute("totalPages", totalPages);
 	    model.addAttribute("keyword", keyword);
 	    model.addAttribute("loggedInUser", loggedInUser);
+	    
+	    System.out.println("postList: " + postList);
 
 	    return "group/board/noticeBoard";
 	}
@@ -78,14 +80,14 @@ public class BoardController {
 	    		loggedInUser.getSuberNo(), loggedInUser.getDepartmentNo(), keyword);
 	    int totalPages = Math.max(1, (int) Math.ceil((double) totalCount / pageSize));
 
-	    List<BoardVO> postList = boardService.getDepartmentBoardPostsPaged(
+	    List<BoardPostVO> postList = boardService.getDepartmentBoardPostsPaged(
 	    		loggedInUser.getSuberNo(), loggedInUser.getDepartmentNo(), keyword, offset, pageSize);
 
 	    model.addAttribute("postList", postList);
 	    model.addAttribute("page", page);
 	    model.addAttribute("totalPages", totalPages);
 	    model.addAttribute("keyword", keyword);
-	    model.addAttribute("loginUser", loggedInUser);
+	    model.addAttribute("loggedInUser", loggedInUser);
 
 	    return "group/board/departmentBoard";
     }
@@ -102,7 +104,7 @@ public class BoardController {
 	    int totalCount = boardService.getFreeBoardPostCount(loggedInUser.getSuberNo(), keyword);
 	    int totalPages = Math.max(1, (int) Math.ceil((double) totalCount / pageSize));
 
-	    List<BoardVO> postList = boardService.getFreeBoardPostsPaged(loggedInUser.getSuberNo(), keyword, offset, pageSize);
+	    List<BoardPostVO> postList = boardService.getFreeBoardPostsPaged(loggedInUser.getSuberNo(), keyword, offset, pageSize);
 
 	    model.addAttribute("postList", postList);
 	    model.addAttribute("page", page);
@@ -121,11 +123,25 @@ public class BoardController {
 	@GetMapping("/insertBoard")
 	public String insertBoard(@RequestParam("boardType") String boardType, Model model) {
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
+		
+		List<BoardVO> boards = boardService.getBoardsByType(
+		        boardType,
+		        loggedInUser.getSuberNo(),
+		        boardType.equals("부서") ? loggedInUser.getDepartmentNo() : null,
+		        boardType.equals("자유") ? null : loggedInUser.getEmployeeNo()
+		    );
 
+		    if (boards == null || boards.isEmpty()) {
+		        throw new IllegalStateException("등록할 게시판이 없습니다.");
+		    }
+
+		BoardVO board = boards.get(0);
+		
+		model.addAttribute("boardId", board.getBoardId());
 	    model.addAttribute("writer", loggedInUser.getEmployeeName()); // 로그인한 사용자 이름
         model.addAttribute("employeeNo", loggedInUser.getEmployeeNo()); // 로그인한 사용자 사원번호
 	    model.addAttribute("boardType", boardType); // 공지 / 부서 / 자유 판단용
-
+	    
 	    // 공지 등록 권한 → 관리자만 가능
 	    boolean isAdmin = (loggedInUser.getRightsId() != null && loggedInUser.getRightsId() == 3)
 	                   || (loggedInUser.getRightsLevel() != null && loggedInUser.getRightsLevel() == 5);
