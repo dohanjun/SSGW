@@ -34,17 +34,12 @@ import lombok.RequiredArgsConstructor;
  *  </pre>
  */
 @Controller
-@RequiredArgsConstructor // 리콰이어알규먼트 쓰고 밑에 final
+@RequiredArgsConstructor
 public class EmpController {
 
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	private final EmpService empService;
 	
-
-//	@Autowired @Resource @Qualify 등등 더있음
-//	public EmpController(EmpService empService) {
-//		this.empService = empService;
-//	}
 	
 	/**
 	 * 등록 페이지로 이동

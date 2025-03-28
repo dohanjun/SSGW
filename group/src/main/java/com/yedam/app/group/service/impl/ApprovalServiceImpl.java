@@ -15,6 +15,7 @@ import com.yedam.app.group.service.ApprovalVO;
 import com.yedam.app.group.service.AprvRoutesVO;
 import com.yedam.app.group.service.EmpService;
 import com.yedam.app.group.service.EmpVO;
+import com.yedam.app.group.service.VacationRequestVO;
 
 @Service
 public class ApprovalServiceImpl implements ApprovalService {
@@ -182,13 +183,13 @@ public class ApprovalServiceImpl implements ApprovalService {
 	// 결재문서 상신, 임시저장
 	@Override
 	public int createAprvDocu(ApprovalVO aprvVO) {
-		// 문서 저장 시 상태가 임시로 저장되도록 처리
-	    if ("임시".equals(aprvVO.getAprvStatus())) {
-	        aprvVO.setAprvStatus("임시");  // 임시 상태로 설정
+	    String status = aprvVO.getAprvStatus();
+	    if (status == null || status.trim().isEmpty()) {
+	        aprvVO.setAprvStatus("대기");  // 기본값
 	    } else {
-	        aprvVO.setAprvStatus("대기");  // 상신 상태로 설정
+	        aprvVO.setAprvStatus(status);  // 넘어온 값 그대로
 	    }
-		return approvalMapper.insertAprvDocuments(aprvVO);
+	    return approvalMapper.insertAprvDocuments(aprvVO);
 	}
 	
 	// 결재선 등록
@@ -243,13 +244,29 @@ public class ApprovalServiceImpl implements ApprovalService {
 
     @Override
     public void rejectApproval(AprvRoutesVO routVO) {
-    	routVO.setAprvStatus("반려");
-        approvalMapper.updateAprvStatus(routVO);
+    	 routVO.setAprvStatus("반려");
+    	 approvalMapper.updateAprvStatus(routVO); // 상태 업데이트
+    	 approvalMapper.updateRejectReason(routVO); // ❗ 반려사유 저장
     }
 
 	@Override
 	public String getMaxAprvOrder(int draftNo) {
 	    return approvalMapper.findMaxAprvOrder(draftNo);
+	}
+	
+	@Override
+	public int countAprvListByStatus(ApprovalVO vo) {
+	    return approvalMapper.countAprvListByStatus(vo);
+	}
+
+	@Override
+	public int createVacation(VacationRequestVO vacaVO) {
+		return approvalMapper.insertVacation(vacaVO);
+	}
+
+	@Override
+	public ApprovalVO findTitleEmpNo(int draftNo) {
+		return approvalMapper.selectTitleEmpNo(draftNo);
 	}
 	
 }

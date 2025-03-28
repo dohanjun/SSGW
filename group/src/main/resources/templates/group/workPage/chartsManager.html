@@ -17,24 +17,29 @@
             width: 100%;
             overflow-x: auto;
         }
+
         .work-info table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
+
         .work-info th, .work-info td {
             border: 1px solid #ddd;
             padding: 12px;
             text-align: center;
             white-space: nowrap;
         }
+
         .work-info th {
             background-color: #f8f9fc;
             font-weight: bold;
         }
+
         .work-info tbody tr:nth-child(even) {
             background-color: #f2f2f2;
         }
+
         .work-info tbody tr:hover {
             background-color: #e2e6ea;
         }
@@ -54,18 +59,18 @@
                 <div class="work-info">
                     <table>
                         <thead>
-                            <tr>
-                                <th>부서명</th>
-                                <th>사원번호</th>
-                                <th>사원이름</th>
-                                <th>출근시간</th>
-                                <th>퇴근시간</th>
-                                <th>총 근무시간</th>
-                                <th>초과 근무시간</th>
-                            </tr>
+                        <tr>
+                            <th>부서명</th>
+                            <th>사원번호</th>
+                            <th>사원이름</th>
+                            <th>출근시간</th>
+                            <th>퇴근시간</th>
+                            <th>총 근무시간</th>
+                            <th>초과 근무시간</th>
+                        </tr>
                         </thead>
                         <tbody id="employeeTableBody">
-                            <!-- JS로 오늘자 출결 동적 삽입 -->
+                        <!-- JS로 오늘자 출결 동적 삽입 -->
                         </tbody>
                     </table>
                 </div>
@@ -102,26 +107,19 @@
         loadTodayAttendance();
     });
 
+    // ✅ 차트 데이터 로딩 및 표시
     function loadChartData() {
         fetch("/chartsManager")
-            .then(response => {
-                if (!response.ok) throw new Error("네트워크 응답 오류");
-                return response.json();
-            })
+            .then(res => res.json())
             .then(data => {
                 chartData = data;
-                console.log("✅ 차트 데이터:", data);
-
                 const labels = data.map(item => item.employeeName);
-                const totalWorkingHours = data.map(item => typeof item.totalWorkingHours === 'number' ? item.totalWorkingHours : 0);
-                const overtimeHours = data.map(item => typeof item.overtimeHours === 'number' ? item.overtimeHours : 0);
+                const totalHours = data.map(item => item.totalWorkingHours || 0);
+                const overtime = data.map(item => item.overtimeHours || 0);
 
                 const ctx = document.getElementById('attendanceChart').getContext('2d');
 
-                if (chart) {
-                    chart.destroy();
-                }
-
+                if (chart) chart.destroy(); // ✅ 기존 차트 제거
                 chart = new Chart(ctx, {
                     type: 'bar',
                     data: {
@@ -129,13 +127,13 @@
                         datasets: [
                             {
                                 label: '총 근무 시간',
-                                data: totalWorkingHours,
-                                backgroundColor: '#f1c40f'
+                                data: totalHours,
+                                backgroundColor: '#f1c40f' // ✅ 노란색
                             },
                             {
                                 label: '초과 근무 시간',
-                                data: overtimeHours,
-                                backgroundColor: '#e74c3c'
+                                data: overtime,
+                                backgroundColor: '#e74c3c' // ✅ 빨간색
                             }
                         ]
                     },
@@ -148,14 +146,6 @@
                                 text: '이달의 부서원 근무시간 비교'
                             }
                         },
-                        onClick: (evt, activeEls) => {
-                            if (activeEls.length > 0) {
-                                const index = activeEls[0].index;
-                                const empNo = chartData[index].employeeNo;
-                                console.log("✅ 그래프 클릭 - 사원번호:", empNo);
-                                loadEmployeeTable(empNo);
-                            }
-                        },
                         scales: {
                             y: {
                                 beginAtZero: true,
@@ -163,26 +153,21 @@
                                     display: true,
                                     text: '시간 (Hours)'
                                 }
-                            },
-                            x: {
-                                stacked: false
                             }
                         }
                     }
                 });
             })
-            .catch(error => {
-                console.error('❌ 차트 데이터 로딩 오류:', error);
-            });
+            .catch(err => console.error('❌ 차트 데이터 오류:', err));
     }
 
+    // ✅ 오늘 출결 데이터 테이블
     function loadTodayAttendance() {
         fetch("/todayAttendance")
             .then(res => res.json())
             .then(data => {
                 const tbody = document.getElementById("employeeTableBody");
                 tbody.innerHTML = '';
-
                 data.forEach(emp => {
                     const row = document.createElement("tr");
                     row.innerHTML = `
@@ -197,18 +182,16 @@
                     tbody.appendChild(row);
                 });
             })
-            .catch(err => {
-                console.error("❌ 오늘 출결 로딩 실패:", err);
-            });
+            .catch(err => console.error("❌ 오늘 출결 로딩 실패:", err));
     }
 
+    // ✅ 특정 사원 테이블 (차트 클릭용)
     function loadEmployeeTable(empNo) {
         fetch(`/employeeRecord/${empNo}`)
             .then(res => res.json())
             .then(records => {
                 const tbody = document.getElementById("employeeTableBody");
                 tbody.innerHTML = '';
-
                 records.forEach(emp => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
@@ -223,11 +206,10 @@
                     tbody.appendChild(row);
                 });
             })
-            .catch(err => {
-                console.error('❌ 사원 기록 로딩 오류:', err);
-            });
+            .catch(err => console.error('❌ 사원 기록 로딩 오류:', err));
     }
 
+    // ✅ 시간 포맷
     function formatTime(datetimeStr) {
         if (!datetimeStr) return '-';
         const date = new Date(datetimeStr);

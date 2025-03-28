@@ -84,9 +84,6 @@ public class PostController {
                 }
             }
         }
-
-       // String ref = request.getHeader("referer");
-       // System.out.println("ref==========="+ref);
         // 자료실 종류에 따라 리다이렉트
         return switch (repositoryType) {
             case "전체" -> "redirect:/totalRepository?page=1";

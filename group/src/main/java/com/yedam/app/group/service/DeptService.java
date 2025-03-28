@@ -22,7 +22,16 @@ public interface DeptService {
     // 부서전체 조회
     List<DeptVO> getAllDepartments(int suberNo);
 
-    //부서등록
+    // 그룹웨어 구독시 대표 부서등록
     int insertDepartment(DeptVO deptVO); 
+    
+    // 회사별 부서추가
+    void registerDepartment(DeptVO deptVO);
+
+    // 부서장 등록
+	int updateManager(DeptVO deptVO);
+
+	void updateDepManager(DeptVO deptVO);
+
 
 }

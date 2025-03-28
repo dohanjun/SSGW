@@ -204,28 +204,26 @@
 }
 
 /* 지출결의서 */
-.disbur {
-	width:800px;
-	margin: 5px auto;
-	border: 1px solid black;
-	background-color: #ddd;
-	border-collapse: collapse;
+.disburdd {
+    margin-top: 30px;
 }
 
-.disbur th {
-	text-align: center;
-	font-weight: bold;
+.disburtitle {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
 }
 
-.distable th, 
-.distable td{
-	border: 1px solid black;
-	padding: 10px;
-	text-align: left;
+.distable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
 }
 
-.disburtr th{
-	border: 1px solid black !important;
+.distable th, .distable td {
+    border: 1px solid #ccc;
+    padding: 8px 12px;
 }
 
 .routes th{

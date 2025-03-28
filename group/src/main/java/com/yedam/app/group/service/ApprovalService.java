@@ -67,5 +67,13 @@ public interface ApprovalService {
 
     // 반려 처리
     public void rejectApproval(AprvRoutesVO aprvRoutesVO);
-  
+    
+    //
+    public int countAprvListByStatus(ApprovalVO vo);
+    
+    //
+    public int createVacation(VacationRequestVO vacaVO);
+    
+    //
+    public ApprovalVO findTitleEmpNo(int draftNo);
 }

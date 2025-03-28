@@ -20,7 +20,7 @@
         SELECT COUNT(*)
         FROM LEAVE_HISTORY
         WHERE EMPLOYEE_NO = #{employeeNo}
-          AND TO_CHAR(YEAR, 'YYYY') = #{year}
+          AND YEAR = #{year}
     </select>
 
         <!-- 연차 내역 등록 -->
@@ -31,16 +31,14 @@
             GRANTED_VACATION,
             USED_VACATION,
             REMAINING_VACATION,
-            YEAR,
-            DRAFT_NO
+            YEAR
         ) VALUES (
             #{leaveHistoryId},
             #{employeeNo},
             #{grantedVacation},
             0,
             #{remainingVacation},
-            #{year},
-            #{draftNo}
+            #{year}
             
         )
     </insert>
@@ -74,8 +72,7 @@
     <update id="updateLeaveHistory" parameterType="VacationVO">
         UPDATE LEAVE_HISTORY
         SET GRANTED_VACATION = #{grantedVacation},
-            REMAINING_VACATION = #{remainingVacation},
-            DRAFT_NO = #{draftNo}
+            REMAINING_VACATION = #{remainingVacation}
         WHERE EMPLOYEE_NO = #{employeeNo}
           AND YEAR = #{year}
     </update>
@@ -192,5 +189,51 @@
 		  <include refid="vacationCriteria"/>
 		</select>
 		
-	
+		<!-- 로그인 사용자 기준 전체 휴가 사용일 및 잔여일 업데이트 -->
+<!-- <update id="updateVacationUsage" parameterType="VacationVO">
+		  UPDATE LEAVE_HISTORY
+		  SET USED_VACATION = (
+		      SELECT NVL(SUM(USED_VACATION), 0)
+		      FROM VACATION_REQUEST
+		      WHERE EMPLOYEE_NO = #{employeeNo}
+		    ),
+		    REMAINING_VACATION = GRANTED_VACATION - (
+		      SELECT NVL(SUM(USED_VACATION), 0)
+		      FROM VACATION_REQUEST
+		      WHERE EMPLOYEE_NO = #{employeeNo}
+		    )
+		  WHERE EMPLOYEE_NO = #{employeeNo}
+		    AND YEAR = #{year}
+		    AND EMPLOYEE_NO IN (
+		      SELECT EMPLOYEE_NO FROM EMPLOYEES WHERE SUBER_NO = #{suberNo}
+		    )
+</update> -->
+
+<select id="selectVacationRequest" parameterType="VacationRequestVO" resultType="VacationRequestVO">
+	SELECT DRAFT_NO
+           ,USED_VACATION
+           ,START_VACATION_DATE
+           ,END_VACATION_DATE
+           ,EMPLOYEE_NO
+           ,VACATION_TYPE_ID
+    FROM   vacation_request
+    WHERE  DRAFT_NO = #{draftNo}
+</select>
+
+<update id="updateLeaveHistoryRequest" parameterType="VacationVO">
+	 UPDATE leave_history
+     SET USED_VACATION = USED_VACATION + #{usedVacation},
+         REMAINING_VACATION = REMAINING_VACATION - #{usedVacation}
+     WHERE EMPLOYEE_NO = #{employeeNo}
+       AND YEAR = TO_CHAR(SYSDATE, 'YYYY')
+</update>
+   
+        <!-- 잔여일 계산 -->
+		<select id="getLeaveHistory" parameterType="map" resultType="VacationVO">
+		    SELECT GRANTED_VACATION, USED_VACATION, REMAINING_VACATION
+		    FROM LEAVE_HISTORY
+		    WHERE EMPLOYEE_NO = #{employeeNo}
+		      AND YEAR = #{year}
+		</select>
+
 </mapper>

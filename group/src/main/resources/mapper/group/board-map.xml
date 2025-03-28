@@ -37,18 +37,15 @@
 	</select>
 
 	<select id="selectNoticeBoardPostsPaged"
-		resultType="com.yedam.app.group.service.BoardVO">
+		resultType="BoardPostVO">
 		SELECT * FROM (
 		SELECT
 		p.*,
-		e.employee_name AS writer,
-		ROW_NUMBER() OVER
-		(ORDER BY p.post_date DESC) AS rn
+		e.employee_name AS employeeName,
+		ROW_NUMBER() OVER (ORDER BY p.post_date DESC) AS rn
 		FROM board_post p
-		JOIN board b ON
-		p.board_id = b.board_id
-		JOIN employees e ON p.employee_no =
-		e.employee_no
+		JOIN board b ON p.board_id = b.board_id
+		JOIN employees e ON p.employee_no = e.employee_no
 		WHERE b.suber_no = #{suberNo}
 		AND b.board_type = '공지'
 		<if test="keyword != null and keyword != ''">
@@ -85,11 +82,11 @@
 	</select>
 
 	<select id="selectDepartmentBoardPostsPaged"
-		resultType="com.yedam.app.group.service.BoardVO">
+		resultType="BoardPostVO">
 		SELECT * FROM (
 		SELECT
 		p.*,
-		e.employee_name AS writer,
+		e.employee_name AS employeeName,
 		ROW_NUMBER() OVER
 		(ORDER BY p.post_date DESC) AS rn
 		FROM board_post p
@@ -114,56 +111,90 @@
 	</select>
 
 	<!-- 자유게시판 전체 글 수 -->
-	<select id="countFreeBoardPosts" resultType="int">
-		SELECT COUNT(*)
-		FROM board_post p
-		JOIN board b ON p.board_id = b.board_id
-		JOIN employees e ON p.employee_no = e.employee_no
-		WHERE b.suber_no = #{suberNo}
-		AND b.board_type = '자유'
-		<if test="keyword != null and keyword != ''">
-			AND (
-			LOWER(p.post_title) LIKE '%' || LOWER(#{keyword}) || '%'
-			OR LOWER(p.post_content) LIKE '%' || LOWER(#{keyword}) || '%'
-			OR LOWER(e.employee_name) LIKE '%' || LOWER(#{keyword}) || '%'
-			)
-		</if>
-	</select>
-
-	<!-- 자유게시판 페이징 글 목록 -->
-	<select id="selectFreeBoardPostsPaged"
-		resultType="com.yedam.app.group.service.BoardVO">
-		SELECT * FROM (
-		SELECT
-		p.*,
-		e.employee_name AS writer,
-		ROW_NUMBER() OVER (ORDER BY p.post_date DESC) AS rn
-		FROM board_post p
-		JOIN board b ON p.board_id = b.board_id
-		JOIN employees e ON p.employee_no = e.employee_no
-		WHERE b.suber_no = #{suberNo}
-		AND b.board_type = '자유'
-		<if test="keyword != null and keyword != ''">
-			AND (
-			LOWER(p.post_title) LIKE '%' || LOWER(#{keyword}) || '%'
-			OR LOWER(p.post_content) LIKE '%' || LOWER(#{keyword}) || '%'
-			OR LOWER(e.employee_name) LIKE '%' || LOWER(#{keyword}) || '%'
-			)
-		</if>
+<select id="countFreeBoardPosts" resultType="int">
+	SELECT COUNT(*)
+	FROM board_post p
+	JOIN board b ON p.board_id = b.board_id
+	JOIN employees e ON p.employee_no = e.employee_no
+	WHERE b.suber_no = #{suberNo}
+	  AND b.board_type = '자유'
+	<if test="keyword != null and keyword != ''">
+		AND (
+			LOWER(p.post_title) LIKE '%' || LOWER(#{keyword}) || '%' OR
+			LOWER(p.post_content) LIKE '%' || LOWER(#{keyword}) || '%' OR
+			LOWER(e.employee_name) LIKE '%' || LOWER(#{keyword}) || '%'
 		)
-		WHERE rn BETWEEN #{offset} + 1 AND #{offset} + #{limit}
-	</select>
+	</if>
+</select>
 
-	<insert id="insertBoardPost" parameterType="com.yedam.app.group.service.BoardPostVO">
-    <selectKey keyProperty="postId" resultType="int" order="BEFORE">
-        SELECT board_post_seq.NEXTVAL FROM dual
-    </selectKey>
-    INSERT INTO board_post (
-        post_id, board_id, employee_no, post_title, post_content, post_date,
-        fixed, faq, location, read
-    ) VALUES (
-        #{postId}, #{boardId}, #{employeeNo}, #{postTitle}, #{postContent}, #{postDate},
-        #{fixed}, #{faq}, #{location}, #{read}
-    )
+<!-- 자유게시판 페이징 글 목록 -->
+<select id="selectFreeBoardPostsPaged" resultType="com.yedam.app.group.service.BoardPostVO">
+	SELECT * FROM (
+		SELECT
+			p.*,
+			e.employee_name AS employeeName,
+			ROW_NUMBER() OVER (ORDER BY p.post_date DESC) AS rn
+		FROM board_post p
+		JOIN board b ON p.board_id = b.board_id
+		JOIN employees e ON p.employee_no = e.employee_no
+		WHERE b.suber_no = #{suberNo}
+		  AND b.board_type = '자유'
+		<if test="keyword != null and keyword != ''">
+			AND (
+				LOWER(p.post_title) LIKE '%' || LOWER(#{keyword}) || '%' OR
+				LOWER(p.post_content) LIKE '%' || LOWER(#{keyword}) || '%' OR
+				LOWER(e.employee_name) LIKE '%' || LOWER(#{keyword}) || '%'
+			)
+		</if>
+	)
+	WHERE rn BETWEEN #{offset} + 1 AND #{offset} + #{limit}
+</select>
+
+	<insert id="insertPost" parameterType="BoardPostVO" useGeneratedKeys="true">
+		<selectKey keyProperty="postId" resultType="int" order="BEFORE">
+			SELECT NVL(MAX(post_id), 0) + 1 FROM board_post
+		</selectKey>
+		INSERT INTO board_post (
+			post_id, 
+			post_title, 
+			post_content, 
+			post_date,
+			fixed, 
+			faq, 
+			location, 
+			read, 
+			board_id, 
+			employee_no
+		) VALUES (
+			#{postId}, 
+			#{postTitle}, 
+			#{postContent}, 
+			#{postDate},
+			#{fixed}, 
+			#{faq}, 
+			#{location}, 
+			#{read}, 
+			#{boardId}, 
+			#{employeeNo}
+		)
 	</insert>
+
+	<insert id="insertAttachment" parameterType="BoardAttachmentVO">
+    <selectKey keyProperty="attachmentId" resultType="int" order="BEFORE">
+        SELECT NVL(MAX(attachment_id), 0) + 1 FROM board_attachment
+    </selectKey>
+    INSERT INTO board_attachment (
+        attachment_id, 
+        post_id, 
+        file_path, 
+        file_title, 
+        file_retention_period
+    ) VALUES (
+        #{attachmentId}, 
+        #{postId}, 
+        #{filePath}, 
+        #{fileTitle}, 
+        #{fileRetentionPeriod}
+    )
+</insert>
 </mapper>

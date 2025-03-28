@@ -8,31 +8,19 @@
 			class="btn btn-link d-md-none rounded-circle mr-3">
 			<i class="fa fa-bars"></i>
 		</button>
-
-		<!-- Topbar Search -->
-		<form
-			class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
-			<div class="input-group">
-				<input type="text" class="form-control bg-light border-0 small"
-					placeholder="Search for..." aria-label="Search"
-					aria-describedby="basic-addon2">
-				<div class="input-group-append">
-					<button class="btn btn-primary" type="button">
-						<i class="fas fa-search fa-sm"></i>
-					</button>
-				</div>
-			</div>
-		</form>
-
-		<!-- Topbar Navbar -->
+		<div style="font-size: 1.2rem; font-weight: bold; margin: 20px 0;">
+			<span th:text="${userInfo.employeeName + '님 '}"></span> <span
+				id="greeting"></span>
+		</div>
 		<ul class="navbar-nav ml-auto">
-
 			<!-- Nav Item - Search Dropdown (Visible Only XS) -->
 			<li class="nav-item dropdown no-arrow d-sm-none"><a
 				class="nav-link dropdown-toggle" href="#" id="searchDropdown"
 				role="button" data-toggle="dropdown" aria-haspopup="true"
 				aria-expanded="false"> <i class="fas fa-search fa-fw"></i>
-			</a> <!-- Dropdown - Messages -->
+
+
+			</a> <!-- 여기 -->
 				<div
 					class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
 					aria-labelledby="searchDropdown">
@@ -59,46 +47,19 @@
 				class="nav-link dropdown-toggle" href="#" id="alertsDropdown"
 				role="button" data-toggle="dropdown" aria-haspopup="true"
 				aria-expanded="false"> <i class="fas fa-bell fa-fw"></i> <!-- Counter - Alerts -->
-					<span class="badge badge-danger badge-counter">3+</span>
-			</a> <!-- Dropdown - Alerts -->
+					<span class="badge badge-danger badge-counter alrambadge"></span>
+			</a> <!-- 밑에 보여지는 부분 -->
 				<div
 					class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
 					aria-labelledby="alertsDropdown">
-					<h6 class="dropdown-header">Alerts Center</h6>
-					<a class="dropdown-item d-flex align-items-center" href="#">
-						<div class="mr-3">
-							<div class="icon-circle bg-primary">
-								<i class="fas fa-file-alt text-white"></i>
-							</div>
-						</div>
-						<div>
-							<div class="small text-gray-500">December 12, 2019</div>
-							<span class="font-weight-bold">A new monthly report is
-								ready to download!</span>
-						</div>
-					</a> <a class="dropdown-item d-flex align-items-center" href="#">
-						<div class="mr-3">
-							<div class="icon-circle bg-success">
-								<i class="fas fa-donate text-white"></i>
-							</div>
-						</div>
-						<div>
-							<div class="small text-gray-500">December 7, 2019</div>
-							$290.29 has been deposited into your account!
-						</div>
-					</a> <a class="dropdown-item d-flex align-items-center" href="#">
-						<div class="mr-3">
-							<div class="icon-circle bg-warning">
-								<i class="fas fa-exclamation-triangle text-white"></i>
-							</div>
-						</div>
-						<div>
-							<div class="small text-gray-500">December 2, 2019</div>
-							Spending Alert: We've noticed unusually high spending for your
-							account.
-						</div>
-					</a> <a class="dropdown-item text-center small text-gray-500" href="#">Show
-						All Alerts</a>
+					<h6 class="dropdown-header">미확인 알람</h6>
+
+					<!-- 알림 리스트 컨테이너 -->
+					<div id="alertListContainer"
+						style="max-height: 300px; overflow-y: auto;">
+						<!-- 알림 내용은 여기에 추가됩니다. -->
+					</div>
+
 				</div></li>
 
 			<!-- Nav Item - Messages -->
@@ -163,12 +124,11 @@
 
 			<!-- Nav Item - User Information -->
 			<li class="nav-item dropdown no-arrow"><a
-				class="nav-link dropdown-toggle" href="#" id="userDropdown"
-				role="button" data-toggle="dropdown" aria-haspopup="true"
-				aria-expanded="false"> <span
-					class="mr-2 d-none d-lg-inline text-gray-600 small"></span> <img
+				class="nav-link dropdown-toggle" id="userDropdown" role="button"
+				data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<span class="mr-2 d-none d-lg-inline text-gray-600 small"></span> <img
 					class="img-profile rounded-circle" src="img/undraw_profile.svg">
-			</a> <!-- Dropdown - User Information -->
+			</a>
 				<div
 					class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
 					aria-labelledby="userDropdown">
@@ -249,6 +209,109 @@
 	    }
 	});
 
+</script>
+	<script>
+  const messages = [
+    "오늘도 힘내세요 💪",
+    "멋지게 하루를 시작해볼까요? 🌟",
+    "당신의 노력을 응원합니다 🙌",
+    "작은 성취도 큰 걸음이에요 👣",
+    "지치지 마세요, 곧 좋은 일이 생길 거예요 😊",
+    "오늘도 파이팅! 🔥",
+    "스스로를 믿으세요 💖",
+    ": 아 집가고 싶다 🏠",
+    "월급은 안오르고 물가는 오르고 에휴! 💸",
+    "이게 맞나 싶지만 일단 해봅시다 😶‍",
+    "언젠가는 빛날 날이 올 거예요 ✨",
+    "커피 한 잔으로 버텨봅시다 ☕",
+    "오늘도 출근하신 거, 정말 대단해요 👏",
+    "점심시간만 기다려져요 🍱",
+    "퇴근이 기다려지네요 🏃‍♂️",
+    "내일은 더 나을 거예요 🙏",
+    "지금 잘하고 계십니다 😊",
+    "이 또한 지나갈 거예요 🍃",
+    "다들 힘든 시기지만, 함께 이겨냅시다 💪",
+    "하루하루가 쌓여서 내일을 만듭니다 🧱"
+    
+  ];
+
+  // 랜덤으로 메시지 하나 선택
+  const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+
+  // 화면에 출력
+  document.getElementById("greeting").innerText = randomMessage;
+</script>
+	<script src="/js/common.js"></script>
+	<script th:inline="javascript">
+const employeeNo = /*[[${userInfo.employeeNo}]]*/[];
+
+//알림 클릭 시 읽음 처리
+function markAsRead(alertNo) {
+    fetch(`/alerts/markAsRead?alertNo=${alertNo}`, {
+        method: 'POST',  // POST 방식으로 읽음 처리
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())  // 응답을 JSON으로 파싱
+    .then(data => {
+
+        loadMoreAlerts(); // 읽음 처리 후 알림 목록을 다시 로드
+    })
+    .catch(error => {
+        console.error("알림 읽음 처리 실패:", error);
+    });
+}
+
+
+// 알림 불러오기
+function loadMoreAlerts() {
+	fetch(`/alerts?employeeNo=${employeeNo}`)
+    .then(response => response.json())
+    .then(data => {
+        const container = document.getElementById("alertListContainer");
+        const showMore = document.getElementById("alertShowMore");
+        const badge = document.querySelector('.alrambadge');
+        container.innerHTML = "";
+        
+        if (data.length === 0) {
+            container.innerHTML = `
+                <div class="text-center text-gray-500 py-3">
+                    알림이 없습니다.
+                </div>`;
+            badge.textContent = "";
+            return;
+        }
+	    
+        data.forEach(alert => {
+            const alertDate = new Date(alert.createDate);
+            const formattedDate = ("0" + alertDate.getFullYear()).slice(-2) + "/" + 
+                                  ("0" + (alertDate.getMonth() + 1)).slice(-2) + "/" + 
+                                  ("0" + alertDate.getDate()).slice(-2);
+
+            const alertHTML = `
+                <a class="dropdown-item d-flex align-items-center" href="#" onclick="markAsRead(${alert.alarmNo})">
+                    <div class="mr-3">
+                        <div class="icon-circle bg-${alert.alarmType}">
+                            <i class="fas ${alert.alarmIcon} text-white"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="small text-gray-500">${formattedDate}</div>
+                        <span class="font-weight-bold">${alert.alarmMessage}</span>
+                    </div>
+                </a>`;
+            container.insertAdjacentHTML("beforeend", alertHTML);
+        });
+        const totalAlerts = data.length;
+        const badgeText = totalAlerts > 9 ? "9+" : totalAlerts;
+        badge.textContent = badgeText;
+    })
+    .catch(error => {
+        console.error("알림 불러오기 실패:", error);
+    });
+}
+loadMoreAlerts(); // 페이지 로딩 시 첫 번째 알림을 로드
 </script>
 
 </div>

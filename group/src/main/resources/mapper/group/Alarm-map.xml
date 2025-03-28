@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yedam.app.group.mapper.AlarmMapper">
+    <resultMap id="AlarmResultMap" type="com.yedam.app.group.service.AlarmVO">
+        <result property="alarmNo" column="ALARM_NO"/>
+        <result property="alarmMessage" column="ALARM_MASSAGE"/>
+        <result property="alarmType" column="ALARM_TYPE"/>
+        <result property="createDate" column="CREATE_DATE"/>
+        <result property="read" column="READ"/>
+        <result property="employeeNo" column="EMPLOYEE_NO"/>
+        <result property="alarmIcon" column="ALARM_ICON"/>  <!-- 아이콘 추가 -->
+    </resultMap>
+
+    <select id="getUnreadAlarmsByEmployeeNo" parameterType="int" resultMap="AlarmResultMap">
+        SELECT
+            ALARM_NO,
+            ALARM_MASSAGE,
+            ALARM_TYPE,
+            CREATE_DATE,
+            READ,
+            EMPLOYEE_NO,
+            ALARM_ICON  <!-- 아이콘 컬럼 추가 -->
+        FROM
+            ALARM
+        WHERE
+            EMPLOYEE_NO = #{employeeNo}
+            AND READ = 'N'
+    </select>
+    
+    <update id="updateReadStatus" parameterType="int">
+	    UPDATE ALARM
+		    SET READ = 'Y'
+	    WHERE ALARM_NO = #{alertNo}
+	</update>
+    <insert id="insertAlarm" parameterType="com.yedam.app.group.service.AlarmVO">
+    <selectKey keyProperty="alarmNo" resultType="int" order="BEFORE">
+        SELECT NVL(MAX(ALARM_NO), 0) + 1 FROM ALARM
+    </selectKey>
+    INSERT INTO ALARM (
+        ALARM_NO,
+        ALARM_MASSAGE,
+        ALARM_TYPE,
+        CREATE_DATE,
+        READ,
+        EMPLOYEE_NO,
+        ALARM_ICON
+    ) VALUES (
+        #{alarmNo},
+        #{alarmMessage},
+        #{alarmType},
+        SYSDATE,
+        #{read},
+        #{employeeNo},
+        #{alarmIcon}
+    )
+</insert>
+    
+</mapper>

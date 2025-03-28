@@ -84,6 +84,8 @@
 		, d.DRAFT_DATE
 		, d.APRV_DATE
 		, s.STAMP_IMG_PATH
+		, d.BASICS_FORM_ID
+	    , d.FORM_ID
 		FROM aprv_documents d
 		LEFT JOIN stamp s
 		ON d.EMPLOYEE_NO = s.EMPLOYEE_NO
@@ -338,5 +340,42 @@
     	WHERE draft_no = #{draftNo}
 	</update>
 	
+	<update id="updateRejectReason" parameterType="AprvRoutesVO">
+		UPDATE aprv_documents
+	    SET reject_reason = #{rejectReason}
+	    WHERE draft_no = #{draftNo}
+	</update>
 	
+	<select id="countAprvListByStatus" parameterType="ApprovalVO" resultType="int">
+	    SELECT COUNT(*)
+	    FROM aprv_documents d
+	    WHERE d.aprv_status = #{aprvStatus}
+	      AND d.employee_no = #{employeeNo}
+	      AND d.suber_no = #{suberNo}
+	</select>
+	
+	<insert id="insertVacation" parameterType="VacationRequestVO">
+		INSERT INTO vacation_request
+		(DRAFT_NO
+		,USED_VACATION
+		,START_VACATION_DATE
+		,END_VACATION_DATE
+		,EMPLOYEE_NO
+		,VACATION_TYPE_ID)
+		VALUES
+		(#{draftNo}
+		 ,#{usedVacation}
+		 ,#{startVacationDate}
+		 ,#{endVacationDate}
+		 ,#{employeeNo}
+		 ,#{vacationTypeId})
+	</insert>
+	
+	<!-- 알림(제목, 사원번호) -->
+	<select id="selectTitleEmpNo" resultType="ApprovalVO">
+	    SELECT TITLE, 
+	           EMPLOYEE_NO
+	    FROM   APRV_DOCUMENTS
+	    WHERE  DRAFT_NO = #{draftNo}
+	</select>
 </mapper>

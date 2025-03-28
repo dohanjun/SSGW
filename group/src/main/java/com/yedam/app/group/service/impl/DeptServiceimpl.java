@@ -64,11 +64,37 @@ public class DeptServiceimpl implements DeptService{
 
 	    return deptList;
     }
-
+	
+	// 그룹웨어 구독시 대표 부서등록
     @Override
     public int insertDepartment(DeptVO deptVO) {
         return deptMapper.insertDepartment(deptVO);
     }
+    
+    // 부서 추가등록
+    @Override
+    public void registerDepartment(DeptVO deptVO) {
+        // 상위 부서가 있을 경우 해당 부서의 LEVEL + 1 설정
+        if (deptVO.getUpperDepNo() != null) {
+            Integer parentLevel = deptMapper.getUpperDepLevel(deptVO.getUpperDepNo());
+            deptVO.setDepartmentLevel(parentLevel != null ? parentLevel + 1 : 2);
+        } else {
+            deptVO.setDepartmentLevel(1); // 최상위 부서
+        }
+        deptMapper.insertDepartment(deptVO);
+    }
+    
+    // 부서장등록
+    @Override
+    public int updateManager(DeptVO deptVO) {
+        return deptMapper.updateManager(deptVO);
+    }
+
+	@Override
+	public void updateDepManager(DeptVO deptVO) {
+		deptMapper.updateDepManager(deptVO);
+		
+	}
 
 
 }

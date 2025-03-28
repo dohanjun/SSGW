@@ -9,6 +9,9 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.yedam.app.group.mapper.VacationMapper;
+import com.yedam.app.group.service.EmpService;
+import com.yedam.app.group.service.EmpVO;
+import com.yedam.app.group.service.VacationRequestVO;
 import com.yedam.app.group.service.VacationService;
 import com.yedam.app.group.service.VacationVO;
 
@@ -19,48 +22,65 @@ import lombok.RequiredArgsConstructor;
 public class VacationServiceImpl implements VacationService {
 
     private final VacationMapper vacationMapper;
+    private final EmpService empService;
 
+    // 연차 자동 부여 메서드
     @Override
-    public void autoGrantAnnualLeave(int employeeNo, int suberNo, Date hireDate, int draftNo) {
+    public void autoGrantAnnualLeave(int employeeNo, int suberNo, Date hireDate) {
+        // 현재 날짜와 입사일(LocalDate) 계산
         LocalDate currentDate = LocalDate.now();
         LocalDate hireLocalDate = hireDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
+        // 입사일 기준으로 경과된 개월 수와 년 수 계산
         long months = ChronoUnit.MONTHS.between(hireLocalDate, currentDate);
         long years = ChronoUnit.YEARS.between(hireLocalDate, currentDate);
 
+        // 부여할 연차 계산
+        // 1년 이상 근속 시: 15일 + 추가일수, 1년 미만은 월 단위로 최대 11일
         int grantDays = (years >= 1) ? (15 + (int)((years - 1) / 2)) : (int) Math.min(months, 11);
 
+        // 연도 문자열 (예: "2025")
         String yearStr = String.valueOf(currentDate.getYear());
-        java.sql.Date yearDate = java.sql.Date.valueOf(currentDate.withMonth(1).withDayOfMonth(1));
 
+        // 이미 해당 연도에 연차가 등록되어 있는지 확인
         int count = vacationMapper.existsLeaveHistory(employeeNo, yearStr);
 
+        // 연차정보 객체 생성
         VacationVO vo = new VacationVO();
         vo.setEmployeeNo(employeeNo);
-        vo.setGrantedVacation(grantDays);
-        vo.setRemainingVacation(grantDays);
-        vo.setYear(yearDate);
-        vo.setDraftNo(draftNo);
+        vo.setGrantedVacation(grantDays);       // 부여 연차
+        vo.setRemainingVacation(grantDays);     // 초기 잔여 연차는 부여 연차와 동일
+        vo.setYear(yearStr);                    // 연도 문자열로 설정
 
         if (count > 0) {
+            // 이미 등록된 연차가 있으면 → 사용된 연차를 고려해 잔여일 다시 계산
+            VacationVO existing = vacationMapper.getLeaveHistory(employeeNo, yearStr);
+            int used = existing.getUsedVacation();
+
+            vo.setRemainingVacation(grantDays - used); // ❗ 사용일 차감한 잔여일
             vacationMapper.updateLeaveHistory(vo);
         } else {
+            // 처음 생성일 경우는 granted와 remaining 동일
+            vo.setRemainingVacation(grantDays);
             vo.setLeaveHistoryId(vacationMapper.getNextLeaveHistoryId());
             vacationMapper.insertLeaveHistory(vo);
         }
     }
 
+    // 퇴사자 등 연차를 0으로 리셋하는 메서드
     @Override
-    public void setZeroVacation(int employeeNo, int draftNo) {
-        java.sql.Date yearDate = java.sql.Date.valueOf(LocalDate.now().withMonth(1).withDayOfMonth(1));
+    public void setZeroVacation(int employeeNo) {
+        // 현재 연도 문자열
+        String yearStr = String.valueOf(LocalDate.now().getYear());
 
+        // 연차 정보 객체 생성
         VacationVO vo = new VacationVO();
         vo.setEmployeeNo(employeeNo);
-        vo.setDraftNo(draftNo);
-        vo.setYear(yearDate);
-        vo.setGrantedVacation(0);
-        vo.setRemainingVacation(0);
+        vo.setYear(yearStr);             // 연도 설정
+        vo.setGrantedVacation(0);        // 부여 연차 0
+        vo.setRemainingVacation(0);      // 잔여 연차 0
 
+        // 연차 내역 업데이트
         vacationMapper.updateLeaveHistory(vo);
     }
     
@@ -104,5 +124,34 @@ public class VacationServiceImpl implements VacationService {
     public int countVacationStatus(VacationVO vo) {
         return vacationMapper.countVacationStatus(vo);
     }
+    
+    // 연차 사용일/잔여일 업데이트 로직
+    @Override
+    public void updateVacationUsage(int employeeNo, int suberNo, String year) {
+        // 로그인한 사용자 정보 가져오기
+        EmpVO loggedInUser = empService.getLoggedInUserInfo();
+
+        // VO에 필요한 값 설정
+        VacationVO vo = new VacationVO();
+        vo.setEmployeeNo(loggedInUser.getEmployeeNo());
+        vo.setSuberNo(loggedInUser.getSuberNo());
+        vo.setYear(String.valueOf(LocalDate.now().getYear()));
+
+        // XML Mapper 호출
+        vacationMapper.updateVacationUsage(vo);
+    }
+
+	@Override
+	public void findUsedVacation(VacationRequestVO vrVO) {
+		VacationRequestVO request = vacationMapper.selectVacationRequest(vrVO);
+
+        if (request != null) {
+            VacationVO vacationVO = new VacationVO();
+            vacationVO.setEmployeeNo(request.getEmployeeNo());
+            vacationVO.setUsedVacation(request.getUsedVacation());
+
+            vacationMapper.updateLeaveHistoryRequest(vacationVO);
+        }
+	}
 
 }

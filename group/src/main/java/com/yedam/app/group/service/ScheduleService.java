@@ -16,6 +16,8 @@ public interface ScheduleService {
 	// 일정삭제
 	public int removeSchedule(ScheduleVO scheduleVO);
 	
+
     // 통합 일정 조회
 	List<ScheduleVO> getAllSchedules();
+
 }

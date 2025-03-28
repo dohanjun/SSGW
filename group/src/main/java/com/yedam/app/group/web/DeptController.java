@@ -88,12 +88,16 @@ public class DeptController {
         return result;
     }
     
+    // 그룹웨어 구독시 대표 부서등록
     @PostMapping("/saveDepartMent")
     public ResponseEntity<Integer> saveDept(@RequestBody DeptVO deptVO) {
-    	System.out.println("Controller 진입");
-    	System.out.println(deptVO);
         deptService.insertDepartment(deptVO);
-        System.out.println("삽입 후 부서번호: " + deptVO.getDepartmentNo());
         return ResponseEntity.ok(deptVO.getDepartmentNo());
+    }
+    
+    @PostMapping("/updateDepartMent")
+    public ResponseEntity<String> updateManager(@RequestBody DeptVO deptVO) {
+    	deptService.updateDepManager(deptVO);
+        return ResponseEntity.ok("success");
     }
 }

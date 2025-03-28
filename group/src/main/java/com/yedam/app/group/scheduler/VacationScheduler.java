@@ -20,7 +20,7 @@ public class VacationScheduler {
         this.vacationMapper = vacationMapper;
     }
 
-    //  자동 연차 부여 스케줄링 - 1시간마다 실행
+//      자동 연차 부여 스케줄링 - 1시간마다 실행
     @Scheduled(cron = "0 0 * * * ?")
 //    @Scheduled(cron = "*/5 * * * * ?") // 테스트용: 5초마다
     public void autoGrantAnnualLeaveForAllEmployees() {
@@ -37,14 +37,14 @@ public class VacationScheduler {
 
                 if ("Y".equals(employee.getResignationStatus())) {
                     //  퇴사자: 연차를 0으로 업데이트
-                    vacationService.setZeroVacation(employee.getEmployeeNo(), draftNo);
+                    vacationService.setZeroVacation(employee.getEmployeeNo());
                 } else {
                     //  재직자: 자동 연차 계산 및 부여
                     vacationService.autoGrantAnnualLeave(
                         employee.getEmployeeNo(),
                         employee.getSuberNo(),
-                        employee.getHireDate(),
-                        draftNo
+                        employee.getHireDate()
+
                     );
                 }
             }

@@ -4,105 +4,118 @@
 	layout:decorate="~{common/layouts/default_layout}"
 	layout:fragment="content">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>자료실 상세</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
-    <link href="/static/css/sb-admin-2.min.css" rel="stylesheet">
-    <link href="/css/detailRepository.css" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>자료실 상세</title>
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+	rel="stylesheet">
+<link href="/static/css/sb-admin-2.min.css" rel="stylesheet">
+<link href="/css/detailRepository.css" rel="stylesheet">
 </head>
 <body id="page-top">
-    <div id="wrapper">
-        <div id="content-wrapper" class="d-flex flex-column">
-            <div id="content">
-                <div class="container-fluid px-0">
-                    <div class="card shadow mb-4" style="width: 100%; margin-top: 20px; margin-bottom: auto;">
-                        <div class="card-header py-3 d-flex d-flex justify-content-between align-items-center">
-                          <div class="d-flex align-items-center">
-                            <h6 class="m-0 font-weight-bold text-primary">자료 정보</h6>
-                            <!-- 고정 상태일 때 뱃지처럼 표시 -->
-        					<span th:if="${post.fix == 'Y'}" class="badge badge-warning ml-2">
-            					<i class="fas fa-thumbtack"></i> 고정됨
-        					</span>
-                          </div>
-                          
-                          <!-- 고정/해제 버튼 -->
-    						<form th:if="${isEditable}" th:action="@{/toggleFix}" method="post" class="mb-0">
-        						<input type="hidden" name="writingId" th:value="${post.writingId}" />
-        						<button type="submit" class="btn btn-sm"
-                						th:classappend="${post.fix?.equals('Y')} ? 'btn-outline-danger' : 'btn-outline-primary'">
-            						<i class="fas fa-thumbtack"></i>
-            						<span th:text="${post.fix == 'Y' ? '고정 해제' : '고정'}"></span>
-        						</button>
-    						</form>
-                        </div>
-                        <div class="card-body">
-                            <table class="table table-bordered file-info-table">
-                                <tbody>
-                                    <tr>
-                                        <th>제목</th><td th:text="${post.title}"></td>
-                                        <th>작성자</th><td th:text="${post.writer}"></td>
-                                    </tr>
-                                    <tr>
-                                        <th>등록일</th><td th:text="${#dates.format(post.creationDate, 'yyyy-MM-dd')}"></td>
-                                        <th>첨부파일</th>
-                                        <td>
-                                        	<ul>
-                								<li th:each="file : ${fileList}">
-                    								<a th:href="@{'/download/' + ${file.fileId}}" th:text="${file.fileName}"></a>
-                								</li>
-                								<li th:if="${#lists.isEmpty(fileList)}">첨부파일 없음</li>
-            								</ul>
-            								<div th:if="${not #lists.isEmpty(fileList)}" class="mt-2">
-            									<form th:action="@{/download/all}" method="post">
-                									<input type="hidden" name="writingId" th:value="${post.writingId}" />
-                									<button type="submit" class="btn btn-info btn-sm">
-                    									<i class="fas fa-file-archive"></i> 전체 다운로드
-                									</button>
-            									</form>
-        									</div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="4">
-                                            <textarea class="content-area" th:utext="${post.content}"></textarea>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <div class="text-center mb-3">
-    							<div class="d-inline-flex gap-2">
-    							<a href="javascript:history.back()" class="btn btn-secondary">
-        							<i class="fas fa-arrow-left"></i>
-    							</a>
-    
-    							<a th:if="${isEditable}" th:href="@{/editPost(writingId=${post.writingId})}" class="btn btn-warning">
-        							<i class="fas fa-edit"></i>
-    							</a>
-    
-    							<form th:if="${isEditable}" th:action="@{/basket/moveToBasket}" method="post" style="display:inline;">
-        						<input type="hidden" name="writingIds" th:value="${post.writingId}" />
-        						<input type="hidden" name="repositoryType" th:value="${post.repositoryType ?: '전체'}" />
-        						<button type="submit" class="btn btn-danger">
-            						<i class="fas fa-trash"></i>
-        						</button>
-    							</form>
+	<div id="wrapper">
+		<div id="content-wrapper" class="d-flex flex-column">
+			<div id="content">
+				<div class="container-fluid px-0">
+					<div class="card shadow mb-4"
+						style="width: 100%; margin-top: 20px; margin-bottom: auto;">
+						<div
+							class="card-header py-3 d-flex d-flex justify-content-between align-items-center">
+							<div class="d-flex align-items-center">
+								<h6 class="m-0 font-weight-bold text-primary">자료 정보</h6>
+								<!-- 고정 상태일 때 뱃지처럼 표시 -->
+								<span th:if="${post.fix == 'Y'}"
+									class="badge badge-warning ml-2"> <i
+									class="fas fa-thumbtack"></i> 고정됨
+								</span>
 							</div>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script src="/static/vendor/jquery/jquery.min.js"></script>
-    <script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="/static/js/sb-admin-2.min.js"></script>
+
+							<div class="d-flex gap-2">
+								<!-- 고정/해제 버튼 -->
+								<form th:if="${isEditable}" th:action="@{/toggleFix}"
+									method="post" class="mb-0 mr-2">
+									<input type="hidden" name="writingId"
+										th:value="${post.writingId}" />
+									<button type="submit" class="btn btn-sm"
+										th:classappend="${post.fix?.equals('Y')} ? 'btn-outline-danger' : 'btn-outline-primary'">
+										<i class="fas fa-thumbtack"></i> <span
+											th:text="${post.fix == 'Y' ? '고정 해제' : '고정'}"></span>
+									</button>
+								</form>
+
+								<!-- 전체 다운로드 버튼 -->
+								<a th:if="${not #lists.isEmpty(fileList)}"
+									th:href="@{'/download/zip/' + ${post.writingId}}"
+									class="btn btn-sm btn-info"> <i class="fas fa-file-archive"></i>
+									전체 다운로드
+								</a>
+							</div>
+						</div>
+						<div class="card-body">
+							<table class="table table-bordered file-info-table">
+								<tbody>
+									<tr>
+										<th>제목</th>
+										<td th:text="${post.title}"></td>
+										<th>작성자</th>
+										<td th:text="${post.writer}"></td>
+									</tr>
+									<tr>
+										<th>등록일</th>
+										<td
+											th:text="${#dates.format(post.creationDate, 'yyyy-MM-dd')}"></td>
+										<th>첨부파일</th>
+										<td>
+											<ul>
+												<li th:each="file : ${fileList}"><a
+													th:href="@{'/download/' + ${file.fileId}}"
+													th:text="${file.fileName}"></a></li>
+												<li th:if="${#lists.isEmpty(fileList)}">첨부파일 없음</li>
+											</ul>
+										</td>
+									</tr>
+									<tr>
+										<td colspan="4"><textarea class="content-area"
+												th:utext="${post.content}"></textarea></td>
+									</tr>
+								</tbody>
+							</table>
+							<div class="text-center mb-3">
+								<div class="d-inline-flex gap-2">
+									<a href="javascript:history.back()" class="btn btn-secondary">
+										<i class="fas fa-arrow-left"></i>
+									</a> <a th:if="${isEditable}"
+										th:href="@{/editPost(writingId=${post.writingId})}"
+										class="btn btn-warning"> <i class="fas fa-edit"></i>
+									</a>
+
+									<form th:if="${isEditable}" th:action="@{/basket/moveToBasket}"
+										method="post" style="display: inline;">
+										<input type="hidden" name="writingIds"
+											th:value="${post.writingId}" /> <input type="hidden"
+											name="repositoryType"
+											th:value="${post.repositoryType ?: '전체'}" />
+										<button type="submit" class="btn btn-danger">
+											<i class="fas fa-trash"></i>
+										</button>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="/static/vendor/jquery/jquery.min.js"></script>
+	<script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+	<script src="/static/js/sb-admin-2.min.js"></script>
 </body>
 </html>
 <script>
-  function goToDetail(writingId) {
-    window.location.href = '/detailPost/' + writingId;
-  }
+	function goToDetail(writingId) {
+		window.location.href = '/detailPost/' + writingId;
+	}
 </script>
 

@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import com.yedam.app.group.service.ApprovalFormVO;
 import com.yedam.app.group.service.ApprovalVO;
 import com.yedam.app.group.service.AprvRoutesVO;
+import com.yedam.app.group.service.VacationRequestVO;
 
 @Mapper
 public interface ApprovalMapper {
@@ -70,5 +71,16 @@ public interface ApprovalMapper {
 	
 	// 결재 staus 변경
 	public int updateAprvStatus(AprvRoutesVO aprvRoutesVO);
-
+	
+	// 반려
+	public int updateRejectReason(AprvRoutesVO aprvRoutesVO);
+	
+	//
+	public int countAprvListByStatus(ApprovalVO vo);
+	
+	// 휴가신청 테이블에 데이터 등록
+	public int insertVacation(VacationRequestVO vacaVO);
+	
+	// 
+	public ApprovalVO selectTitleEmpNo(int draftNo);
 }

@@ -108,7 +108,7 @@
 	</select>
 	
 	<!-- 메일등록 -->
-	<insert id="MailCreate" parameterType="MailVO">
+	<insert id="mailCreate" parameterType="MailVO">
 	<selectKey keyProperty="mailId" resultType="Integer" order="BEFORE">
 	SELECT NVL(MAX(mail_id) + 1, 100) as mail_id
 	FROM Mail
@@ -136,7 +136,15 @@
     			 ,#{getUser}
     			 ,#{cc}
     			 ,#{recode}
-    			 ,#{mailType})
+    			 ,<choose>
+		            <when test="isSent == true">
+		                '보낸'
+		            </when>
+		            <otherwise>
+		                '받은'
+		            </otherwise>
+        		  </choose>
+    			 )
 	</insert>
 	
 	<!-- 메일검색기록 -->
@@ -158,16 +166,12 @@
 	
 	<!-- 메일답장 -->
 	<update id="MailPutDate" parameterType="MailVO">
-	<selectKey keyProperty="mailId" resultType="Integer" order="BEFORE">
-	SELECT  ,employee_id
-			,get_user
-			,title
-			,content
-			,attached_file_name	   
-	FROM Mail
-	</selectKey>
 	UPDATE Mail
-	SET  content = #{content}
+	SET		get_user = #{getUser}
+	       ,cc = #{cc}
+	       ,title = #{title}
+	       ,attached_file_name = #{attachedFileName}
+	       ,content = #{content}
 	WHERE mail_id = #{mailId}
 	</update>
 	

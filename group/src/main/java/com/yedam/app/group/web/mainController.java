@@ -1,4 +1,5 @@
 package com.yedam.app.group.web;
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.yedam.app.group.service.AlarmService;
+import com.yedam.app.group.service.AlarmVO;
 import com.yedam.app.group.service.BoardPostService;
 import com.yedam.app.group.service.BoardPostVO;
 import com.yedam.app.group.service.EmpService;
@@ -49,6 +52,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.HttpStatus;
 
 import java.io.ByteArrayOutputStream;
+import java.io.Console;
 import java.nio.charset.StandardCharsets;
 import jakarta.servlet.http.HttpSession;
 import java.util.Map;
@@ -76,6 +80,7 @@ public class mainController {
 	private final SubscriberService subscriberService;
 	private final PaymentService paymentService;
 	private final EmpService empService;
+	private final AlarmService alarmService;
 	
 	
 	/**
@@ -339,5 +344,27 @@ public class mainController {
 	    }
 	}
 
+	@GetMapping("/alerts")
+	@ResponseBody
+	public List<AlarmVO> getUnreadAlarms(@RequestParam("employeeNo") int employeeNo) {
+	    return alarmService.getUnreadAlarmsByEmployeeNo(employeeNo);
+	}
+	
+	@PostMapping("/alerts/markAsRead")
+	@ResponseBody
+	public ResponseEntity<Map<String, String>> markAsRead(@RequestParam("alertNo") int alertNo) {
+	    alarmService.markAsRead(alertNo); 
+	    Map<String, String> response = new HashMap<>();
+	    response.put("message", "알림 읽음 처리 완료");
 
+	    return ResponseEntity.ok(response); // JSON 응답 반환
+	}
+	
+	@PostMapping("/insertAlarm")
+	@ResponseBody
+	public String insertAlarm(@RequestBody AlarmVO vo) {
+	    alarmService.insertAlarm(vo);
+	    return "success";
+	}
+	
 }

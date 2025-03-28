@@ -82,6 +82,7 @@
 	background-color: #f9f1d8;
 	font-weight: bold;
 }
+
 .faq-row .postId {
 	color: #e67e22;
 }
@@ -94,16 +95,16 @@
 			<div class="table-responsive">
 
 				<!-- 검색 기능 -->
-			<form class="search-container" th:action="@{/qnaBoard}" method="get">
-				<div class="search-box">
-					<input type="text" class="form-control" name="keyword"
-						placeholder="검색어 입력" th:value="${keyword}">
-					
-					<button type="submit" class="search-icon-btn">
-						<i class="fas fa-search"></i>
-					</button>
-				</div>
-			</form>
+				<form class="search-container" th:action="@{/qnaBoard}" method="get">
+					<div class="search-box">
+						<input type="text" class="form-control" name="keyword"
+							placeholder="검색어 입력" th:value="${keyword}">
+
+						<button type="submit" class="search-icon-btn">
+							<i class="fas fa-search"></i>
+						</button>
+					</div>
+				</form>
 
 				<!-- 게시판 테이블 -->
 				<table class="table table-bordered" id="dataTable" width="100%"
@@ -118,16 +119,22 @@
 					</thead>
 					<tbody>
 						<tr th:each="board : ${boardList}"
-							th:if="${board.parentCommentId == null}"
+							th:if="${boardList != null and #lists.size(boardList) > 0 and board.parentCommentId == null}"
 							th:classappend="${#strings.equals(board.faq, 'Y')} ? 'faq-row'">
 							<td class="postId"
 								th:text="${#strings.equals(board.faq, 'Y')} ? 'FAQ' : ${board.postId}"></td>
-							<td><a th:href="@{/qnaBoard/detail(postId=${board.postId})}"
-								th:text="${board.postTitle}"></a></td>
+							<td><a th:href="@{/qnaBoard/detail(postId=${board.postId})}">
+									<span th:text="${board.postTitle}"></span> <span
+									th:if="${board.childYn == 'Y'}">(답글 있음)</span>
+							</a></td>
 							<td th:text="${board.employeeName}"></td>
 							<td th:text="${#dates.format(board.postDate, 'yyyy-MM-dd')}"></td>
 						</tr>
+						<tr th:if="${boardList == null or #lists.isEmpty(boardList)}">
+							<td colspan="4" class="text-center">글이 없습니다.</td>
+						</tr>
 					</tbody>
+
 				</table>
 				<div class="pagination-container">
 					<nav aria-label="페이지네이션">
@@ -139,9 +146,9 @@
 								th:href="@{/qnaBoard(page=${currentPage - 1}, keyword=${keyword})}">&laquo;</a>
 							</li>
 
-							<!-- 페이지 번호 목록 -->
+							<!-- 페이지 번호 목록 (1페이지는 최소 보장) -->
 							<li class="page-item"
-								th:each="i : ${#numbers.sequence(1, totalPages)}"
+								th:each="i : ${#numbers.sequence(1, totalPages > 0 ? totalPages : 1)}"
 								th:classappend="${currentPage == i} ? 'active'"><a
 								class="page-link"
 								th:href="@{/qnaBoard(page=${i}, keyword=${keyword})}"
@@ -149,14 +156,15 @@
 
 							<!-- 다음 페이지 -->
 							<li class="page-item"
-								th:classappend="${currentPage == totalPages} ? 'disabled'">
+								th:classappend="${currentPage == totalPages or totalPages == 0} ? 'disabled'">
 								<a class="page-link"
 								th:href="@{/qnaBoard(page=${currentPage + 1}, keyword=${keyword})}">&raquo;</a>
 							</li>
 						</ul>
-
 					</nav>
 				</div>
+
+
 
 			</div>
 		</div>

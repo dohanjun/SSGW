@@ -15,11 +15,11 @@ public class VacationVO {
 	private Integer suberNo;						// 회사번호
 	
 	private Integer grantedVacation;		// 부여된 휴가일
-	private Integer userVacation;			// 사용한 휴가일
+//	private Integer usedVacation;			// 사용한 휴가일
 	private Integer remainingVacation;		// 휴가 잔여일
 	private Integer employeeNo;				// 사원번호
 	private Integer leaveHistoryId;			// 휴가내역번호
-	private Date year;						// 연도
+	private String  year;					// 연도
 	private Integer draftNo;				// 기안문서번호
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date hireDate;			  // 입사일
@@ -31,12 +31,20 @@ public class VacationVO {
 	private int size =10;
 	private int offset;
 	
-    private String employeeName;    // 이름 검색
+    private String employeeName;     // 이름 검색
     private Integer departmentNo;    // 부서 검색
     private Integer rankId;          // 직급 검색
     
     private String departmentName;
     private String jobTitleName;
+       
+    private int usedVacation;	// 휴가 사용일수
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date startVacationDate; // 휴가 시작일
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date endVacationDate;   // 휴가 종료일
+    
+    
     
     
 	
