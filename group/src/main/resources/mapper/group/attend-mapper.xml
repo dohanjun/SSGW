@@ -134,33 +134,30 @@
   </select>
 
   <!-- ✅ 부서별 근무 요약 (차트용) -->
-  <select id="getDepartmentAttendanceSummary" resultType="AttendanceSummaryDTO">
-    SELECT 
-      e.employee_no,
-      e.employee_name,
-      d.department_name,
-
-      -- 총 근무시간: clockIn/Out 이 있는 날만 합산 (시간 단위)
-      ROUND(SUM(
-        CASE
-          WHEN a.clock_in_time IS NOT NULL AND a.clock_out_time IS NOT NULL THEN
-            (a.clock_out_time - a.clock_in_time) * 24
-          ELSE 0
-        END
-      ), 2) AS totalWorkingHours,
-
-      -- 초과근무 시간: 분 ➝ 시간 단위로 변환
-      ROUND(NVL(SUM(o.overtime_time), 0) / 60) AS overtimeHours
-
-    FROM employees e
-    JOIN department d ON e.department_no = d.department_no
-    LEFT JOIN attendance_management a ON e.employee_no = a.employee_no
-      AND a.attendance_date IS NOT NULL
-    LEFT JOIN overtime o ON a.work_attitude_id = o.work_attitude_id
-    WHERE e.department_no = #{departmentNo}
-    GROUP BY e.employee_no, e.employee_name, d.department_name
-    ORDER BY e.employee_no
-  </select>
+<select id="getDepartmentAttendanceSummary" resultType="AttendanceSummaryDTO">
+  SELECT 
+    e.employee_no,
+    e.employee_name,
+    d.department_name,
+    ROUND(SUM(
+      CASE
+        WHEN a.clock_in_time IS NOT NULL AND a.clock_out_time IS NOT NULL THEN
+          (a.clock_out_time - a.clock_in_time) * 24
+        ELSE 0
+      END
+    ), 2) AS totalWorkingHours,
+    ROUND(NVL(SUM(o.overtime_time), 0) / 60) AS overtimeHours
+  FROM employees e
+  JOIN department d ON e.department_no = d.department_no
+  LEFT JOIN attendance_management a 
+    ON e.employee_no = a.employee_no 
+    AND a.attendance_date IS NOT NULL
+  LEFT JOIN overtime o 
+    ON a.work_attitude_id = o.work_attitude_id
+  WHERE e.department_no = #{departmentNo}
+  GROUP BY e.employee_no, e.employee_name, d.department_name
+  ORDER BY e.employee_no
+</select>
 
   <!-- ✅ 오늘 해당 부서 사원들의 출근 현황 리스트 -->
   <select id="selectTodayAttendanceByDept" parameterType="int" resultMap="AttendanceResultMap">
