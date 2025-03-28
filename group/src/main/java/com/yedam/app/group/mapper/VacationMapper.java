@@ -67,5 +67,8 @@ public interface VacationMapper {
     //
     public void updateLeaveHistoryRequest(VacationVO vacaVO);
     
+    // 잔여일 계산
+    public VacationVO getLeaveHistory(int employeeNo, String year);
+    
     
 }

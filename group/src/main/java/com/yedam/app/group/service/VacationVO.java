@@ -15,7 +15,7 @@ public class VacationVO {
 	private Integer suberNo;						// 회사번호
 	
 	private Integer grantedVacation;		// 부여된 휴가일
-	private Integer userVacation;			// 사용한 휴가일
+//	private Integer usedVacation;			// 사용한 휴가일
 	private Integer remainingVacation;		// 휴가 잔여일
 	private Integer employeeNo;				// 사원번호
 	private Integer leaveHistoryId;			// 휴가내역번호

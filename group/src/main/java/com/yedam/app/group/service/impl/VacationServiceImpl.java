@@ -53,10 +53,15 @@ public class VacationServiceImpl implements VacationService {
         vo.setYear(yearStr);                    // 연도 문자열로 설정
 
         if (count > 0) {
-            // 이미 존재하는 경우 → 연차 정보 업데이트
+            // 이미 등록된 연차가 있으면 → 사용된 연차를 고려해 잔여일 다시 계산
+            VacationVO existing = vacationMapper.getLeaveHistory(employeeNo, yearStr);
+            int used = existing.getUsedVacation();
+
+            vo.setRemainingVacation(grantDays - used); // ❗ 사용일 차감한 잔여일
             vacationMapper.updateLeaveHistory(vo);
         } else {
-            // 존재하지 않으면 → 새 연차 내역 등록
+            // 처음 생성일 경우는 granted와 remaining 동일
+            vo.setRemainingVacation(grantDays);
             vo.setLeaveHistoryId(vacationMapper.getNextLeaveHistoryId());
             vacationMapper.insertLeaveHistory(vo);
         }
