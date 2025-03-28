@@ -91,7 +91,7 @@ public class AddressBookController {
 		    public String myBookSelect(AddressBookVO addressBookVO, Model model) {
 			 AddressBookVO findVO = addressBookService.MyAddressBookSelectInfo(addressBookVO);
 		     model.addAttribute("book", findVO);
-			 return "group/book/mySelect";  // mainPage.html을 반환
+			 return "group/book/mySelect";
 		    }	
 		 
 		 

@@ -60,12 +60,21 @@
 	<div class="card-header py-3">
 	  <h6 class="m-0 font-weight-bold text-primary">메일답장하기</h6>
 	</div>
+	
+	<div class="email-container">
+        <h2>이메일</h2>
+        <p><strong>보낸 사람:</strong><span th:text="${mail.employeeId}"></span></p>
+        <p><strong>제목:</strong><span th:text="${mail.title}"></span></p>
+        <p><strong>본문:</strong><span th:text="${mail.content}"></span></p>
 
-<div class="card-body">
-  <form th:action="@{mailReply}" method="post" class="user">
+        <button id="replyButton">답장하기</button>
+    </div>
+
+<div class="card-body" id="replyForm">
+  <form th:action="@{mailReply}" method="post" class="user" id="emailForm">
   	  <div class="btn-container">
 	     <button class="btn btn-primary">
-      		보내기
+      		답장하기
         </button>
 	     <button class="btn btn-primary">
       		임시저장
@@ -101,5 +110,10 @@
   </div>
  </div>
 </div>
+<script>
+      document.getElementById('emailForm').addEventListener('submit', function(event){
+    	  event.preventDefault();
+      })  
+    </script>
   </body>
 </html>

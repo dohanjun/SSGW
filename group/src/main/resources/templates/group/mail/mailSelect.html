@@ -80,13 +80,13 @@
     <!-- 보낸 사람 -->
     <div>
         <label for="giveName">보낸사람</label>
-        <input type="text" id="giveName" th:value="${mail.getUser}" readonly>
+        <input type="text" id="giveName" th:value="${mail.employeeId}" readonly>
     </div>
 
     <!-- 받는 사람 -->
     <div>
         <label for="getName">받는사람</label>
-        <input type="text" id="getName" th:value="${mail.employeeId}" readonly>
+        <input type="text" id="getName" th:value="${mail.getUser}" readonly>
     </div>
 
     <!-- 현재 날짜/시간 표시 -->
@@ -112,7 +112,7 @@
 
 <!-- 첨부파일 다운로드 버튼 -->
 <div>
-<a th:href="@{/download/{filename}(filename=${mail.attachedFileName})}" class="btn btn-primary">첨부파일 다운로드</a>
+<a th:href="@{/download-mail/{filename}(filename=${mail.attachedFileName})}" class="btn btn-primary">첨부파일 다운로드</a>
 </div>
 </div>
 </div>
