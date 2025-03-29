@@ -48,12 +48,6 @@ public class MailServiceImpl implements MailService {
 	public MailVO MailSelectInfo(MailVO mailVO) {
 		return mailMapper.MailFindInfo(mailVO.getMailId());
 	}
-
-	// 나의메일상세조회
-	@Override
-	public MailVO MyMailSelectInfo(MailVO mailVO) {
-		return mailMapper.MyMailFindInfo(mailVO.getMailId());
-	}
 	
 	// 메일등록
 	@Override
@@ -66,26 +60,6 @@ public class MailServiceImpl implements MailService {
 	@Override
 	public int MailRecodeInfo(MailVO mailVO) {
 		return mailMapper.MailRecode(mailVO);
-	}
-
-	// 메일수정
-	@Override
-	public Map<String, Object> MailUpdate(MailVO mailVO) {
-		Map<String, Object> map = new HashMap<>();
-		boolean isSuccessed = false;
-
-		int result = mailMapper.MailModify(mailVO);
-
-		if (result == 1) {
-			isSuccessed = true;
-		}
-
-		map.put("result", isSuccessed);
-		map.put("target", mailVO);
-
-		MailVO findVO = (MailVO) map.get("target");
-
-		return map;
 	}
 
 	// 메일답장

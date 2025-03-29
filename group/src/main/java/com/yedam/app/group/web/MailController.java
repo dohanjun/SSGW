@@ -88,25 +88,6 @@ public class MailController {
 	    return "group/mail/mailSelect";
 	}
 
-	// 내 메일상세보기
-	@GetMapping("/myMailSelect")
-	public String myMailSelect(MailVO mailVO, Model model) {
-	    try {
-	        // 로그인된 사용자 정보 가져오기
-	        EmpVO loggedInUser = empService.getLoggedInUserInfo();
-	        mailVO.setEmployeeId(loggedInUser.getEmployeeId());
-
-	        // 메일 정보 조회
-	        MailVO findVO = mailService.MyMailSelectInfo(mailVO);
-	        model.addAttribute("mail", findVO);
-
-	        return "group/mail/myMailSelect";  // 메일 상세 페이지로 이동
-	    } catch (Exception e) {
-	        model.addAttribute("error", "메일 상세 정보를 가져오는 중 오류가 발생했습니다.");
-	        return "group/mail/myMailSelect";  // 오류 발생 시 메일 상세 화면으로 이동
-	    }
-	}
-
 	// 파일 다운로드 처리
 	@GetMapping("/download-mail/{filename}")
 	public ResponseEntity<Resource> downloadFile(@PathVariable String filename) {
@@ -177,43 +158,6 @@ public class MailController {
 	    // 메일 발송 후 mail 목록 페이지로 리다이렉트
 	    return "redirect:mail"; // 메일 목록 페이지로 리다이렉트 (올바른 경로)
 	}
-
-
-	// 수정 - 페이지
-	@GetMapping("/mailUpdate")
-	public String mailUpdate(MailVO mailVO, Model model) {
-	    // 메일 정보 조회
-	    MailVO findVO = mailService.MailSelectInfo(mailVO);
-	    model.addAttribute("mail", findVO);
-	    return "group/mail/mailUpdate"; // 메일 수정 화면으로 이동
-	}
-
-	// 메일 수정 처리 (AJAX 방식)
-	@PostMapping("/mailUpdate")
-	@ResponseBody
-	public Map<String, Object> mailUpdateAJAXJSON(@RequestBody MailVO mailVO) {
-	    // 응답 데이터를 담을 Map 객체 생성
-	    Map<String, Object> response = new HashMap<>();
-
-	    try {
-	        // 메일 수정 서비스 호출
-	        Map<String, Object> result = mailService.MailUpdate(mailVO);
-
-	        // 수정 성공 시
-	        response.put("status", "success"); // 상태 코드
-	        response.put("message", "메일이 성공적으로 수정되었습니다."); // 성공 메시지
-	        response.put("data", result); // 수정된 데이터를 포함
-
-	    } catch (Exception e) {
-	        // 예외 발생 시
-	        response.put("status", "error"); // 상태 코드
-	        response.put("message", "메일 수정 중 오류가 발생했습니다."); // 오류 메시지
-	    }
-
-	    // 응답을 클라이언트로 반환
-	    return response;
-	}
-
 
 
 	// 메일답장 페이지 로딩
