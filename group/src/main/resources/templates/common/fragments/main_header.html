@@ -1,37 +1,56 @@
 <!DOCTYPE html>
 <div xmlns:th="https://www.thymeleaf.org" th:fragment="header">
-  <!-- Navigation -->
-  <nav class="navbar navbar-expand-lg bg-secondary text-uppercase" id="mainNav">
-    <div class="container">
-      <a class="navbar-brand" th:href="@{/}">IMMIPIS</a>
-      <div class="collapse navbar-collapse" id="navbarResponsive">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item mx-0 mx-lg-1" th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}">
-            <a class="nav-link py-3 px-0 px-lg-3 rounded" th:href="@{/module}">모듈관리</a>
-          </li>
-          <li class="nav-item mx-0 mx-lg-1" th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}">
-            <a class="nav-link py-3 px-0 px-lg-3 rounded" th:href="@{/suberList}">구독현황</a>
-          </li>
-          <li class="nav-item mx-0 mx-lg-1" th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}">
-            <a class="nav-link py-3 px-0 px-lg-3 rounded" th:href="@{/qna}">QnA</a>
-          </li>
-          <li class="nav-item mx-0 mx-lg-1" th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}">
-            <a class="nav-link py-3 px-0 px-lg-3 rounded" th:href="@{/logout}">로그아웃</a>
-          </li>
-          
-          <li class="nav-item mx-0 mx-lg-1" th:if="${!#authorization.expression('hasRole(''ROLE_MANAGER'')')}">
-            <a class="nav-link py-3 px-0 px-lg-3 rounded" th:href="@{/subscribe}">subscribe</a>
-          </li>
-          <li class="nav-item mx-0 mx-lg-1" th:if="${!#authorization.expression('hasRole(''ROLE_MANAGER'')')}">
-            <a class="nav-link py-3 px-0 px-lg-3 rounded" th:href="@{/manual}">manual</a>
-          </li>
-          <li class="nav-item mx-0 mx-lg-1" th:if="${!#authorization.expression('hasRole(''ROLE_MANAGER'')')}">
-            <a class="nav-link py-3 px-0 px-lg-3 rounded" th:href="@{/login}">login</a>
-          </li>
-        </ul>
-      </div>
-      	<p th:text="${#authentication.name}"></p>
-		<p th:text="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}"></p>
-    </div>
-  </nav>
+	<!-- Navigation -->
+	<nav class="navbar navbar-expand-lg bg-secondary text-uppercase"
+		id="mainNav">
+		<div class="container">
+			<a class="navbar-brand" th:href="@{/}">IMMIPIS</a>
+			<div class="collapse navbar-collapse" id="navbarResponsive">
+				<ul class="navbar-nav ms-auto">
+					<li class="nav-item mx-0 mx-lg-1"
+						th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+						<a class="nav-link py-3 px-0 px-lg-3 rounded" th:href="@{/module}">모듈관리</a>
+					</li>
+					<li class="nav-item mx-0 mx-lg-1"
+						th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+						<a class="nav-link py-3 px-0 px-lg-3 rounded"
+						th:href="@{/suberList}">구독현황</a>
+					</li>
+					<li class="nav-item mx-0 mx-lg-1"
+						th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+						<a class="nav-link py-3 px-0 px-lg-3 rounded" th:href="@{/qna}">QnA</a>
+					</li>
+					<li class="nav-item mx-0 mx-lg-1"
+						th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+						<a class="nav-link py-3 px-0 px-lg-3 rounded" href="#"
+						onclick="document.getElementById('logoutForm').submit(); return false;">
+							로그아웃 </a>
+					</li>
+
+					<li class="nav-item mx-0 mx-lg-1"
+						th:if="${!#authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+						<a class="nav-link py-3 px-0 px-lg-3 rounded"
+						th:href="@{/subscribe}">subscribe</a>
+					</li>
+					<li class="nav-item mx-0 mx-lg-1"
+						th:if="${!#authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+						<a class="nav-link py-3 px-0 px-lg-3 rounded" th:href="@{/manual}">manual</a>
+					</li>
+					<li class="nav-item mx-0 mx-lg-1"
+						th:if="${!#authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+						<a class="nav-link py-3 px-0 px-lg-3 rounded" th:href="@{/login}">login</a>
+					</li>
+				</ul>
+			</div>
+			<p th:text="${#authentication.name}"></p>
+			<p
+				th:text="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}"></p>
+		</div>
+	</nav>
+	<form id="logoutForm" th:action="@{/logout}" method="post"
+		style="display: none;">
+		<input type="hidden" th:name="${_csrf.parameterName}"
+			th:value="${_csrf.token}" />
+	</form>
+
 </div>

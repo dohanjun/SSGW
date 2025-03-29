@@ -8,19 +8,22 @@
 			SELECT NVL(MAX(suber_no), 0) + 1 FROM SUBER
 		</selectKey>
 		INSERT INTO SUBER(
-		suber_no, 
-		sub_uid, 
-		sub_id, 
+		suber_no,
+		sub_uid,
+		sub_id,
 		sub_pw, sub_name, sub_email, sub_bnis_no,
-		max_count, max_size, company_name, first_ip, domain,max_up_size
+		max_count, max_size, company_name,
+		first_ip, domain,max_up_size
 		) VALUES (
-		#{suberNo}, #{subUid}, #{subId}, #{subPw}, #{subName}, #{subEmail}, #{subBnisNo},
-		#{maxCount}, #{maxSize},
+		#{suberNo}, #{subUid}, #{subId},
+		#{subPw}, #{subName}, #{subEmail}, #{subBnisNo},
+		#{maxCount},
+		#{maxSize},
 		#{companyName},#{firstIp},#{domain},#{maxUpSize}
 		)
 	</insert>
 
-	<select id="selectAllSubers"	resultType="SubscriptionSummaryVO">
+	<select id="selectAllSubers" resultType="SubscriptionSummaryVO">
 	  <![CDATA[
 	    SELECT 
 	      s.suber_no AS suberNo,
@@ -39,74 +42,60 @@
 
 	<select id="selectinfoSuber"
 		resultType="com.yedam.app.group.service.SubscriberVO">
-WITH pd_ranked AS (
-  SELECT pd.*, 
-         ROW_NUMBER() OVER (PARTITION BY pd.payment_no ORDER BY pd.payment_details_no) AS rn
-  FROM payment_details pd
-),
-sd_ranked AS (
-  SELECT sd.*, 
-         m.module_name,
-         ROW_NUMBER() OVER (PARTITION BY sd.suber_no ORDER BY sd.module_no) AS rn
-  FROM sub_details sd
-  JOIN module m ON sd.module_no = m.module_no
-),
-main_query AS (
-  SELECT
-    s.company_name,
-    s.suber_no,
-    NVL(pd.payment_price, 0) AS payment_price,
-    p.payment_start_date,
-    p.payment_end_date,
-    NVL(sd.module_name, '기본모듈 구독중') AS module_name,
-    s.MAX_UP_SIZE,
-    s.MAX_SIZE,
-    s.MAX_COUNT
-  FROM suber s
-  LEFT JOIN payment p ON s.suber_no = p.suber_no
-  LEFT JOIN pd_ranked pd ON p.payment_no = pd.payment_no
-  LEFT JOIN sd_ranked sd ON s.suber_no = sd.suber_no AND pd.rn = sd.rn
-  WHERE s.suber_no = #{suberNo}
-)
-SELECT * FROM main_query
-ORDER BY module_name
-
+SELECT
+  m.module_name,
+  p.payment_start_date,
+  p.payment_end_date,
+  pd.payment_price,
+  pd.payment_state,
+  pd.payment_details_no
+FROM sub_details sd
+JOIN module m ON sd.module_no = m.module_no
+JOIN payment_details pd ON sd.sub_details_no = pd.sub_details_no
+JOIN payment p ON pd.payment_no = p.payment_no
+WHERE sd.suber_no = #{suberNo}
+  AND pd.payment_state = '완료'
+ORDER BY m.module_name
 
 	</select>
-	<select id="selectSuber" resultType="com.yedam.app.group.service.SubscriberVO">
+	<select id="selectSuber"
+		resultType="com.yedam.app.group.service.SubscriberVO">
 		select *
 		from suber
 		where suber_no = #{suberNo}
 	</select>
-	
-	<update id="updateSuber" parameterType="com.yedam.app.group.service.SubscriberVO">
-    UPDATE suber
-    SET 
-        sub_pw = #{subPw},
-        sub_name = #{subName},
-        sub_email = #{subEmail},
-        sub_bnis_no = #{subBnisNo},
-        company_name = #{companyName},
-        first_ip = #{firstIp},
-        second_ip = #{secondIp},
-        max_count = #{maxCount},
-        max_size = #{maxSize},
-        max_up_size = #{maxUpSize}
-    WHERE suber_no = #{suberNo}
-</update>
-<select id="checkedId" parameterType="String" resultType="boolean">
-    SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
-    FROM employees
-    WHERE EMPLOYEE_ID = #{subId}
-</select>
-	<update id="updateSubscriberPassword" parameterType="SubscriberVO">
-    UPDATE suber
-    SET sub_pw = #{subPw}
-    WHERE suber_no = #{suberNo}
-</update>
-<insert id="insertTempIp">
-    UPDATE employees
-    SET temp_ip = #{tempIp}
-    WHERE employee_id = #{employeeId}
-</insert>
+
+	<update id="updateSuber"
+		parameterType="com.yedam.app.group.service.SubscriberVO">
+		UPDATE suber
+		SET
+		sub_pw = #{subPw},
+		sub_name = #{subName},
+		sub_email = #{subEmail},
+		sub_bnis_no = #{subBnisNo},
+		company_name = #{companyName},
+		first_ip = #{firstIp},
+		second_ip = #{secondIp},
+		max_count = #{maxCount},
+		max_size = #{maxSize},
+		max_up_size = #{maxUpSize}
+		WHERE suber_no = #{suberNo}
+	</update>
+	<select id="checkedId" parameterType="String"
+		resultType="boolean">
+		SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
+		FROM employees
+		WHERE EMPLOYEE_ID = #{subId}
+	</select>
+	<update id="updateSubscriberPassword"
+		parameterType="SubscriberVO">
+		UPDATE suber
+		SET sub_pw = #{subPw}
+		WHERE suber_no = #{suberNo}
+	</update>
+	<insert id="insertTempIp">
+		UPDATE employees
+		SET temp_ip = #{tempIp}
+		WHERE employee_id = #{employeeId}
+	</insert>
 </mapper>
