@@ -4,8 +4,12 @@
 	layout:decorate="~{common/layouts/default_layout}"
 	layout:fragment="content">
 <head>
+
 <meta charset="UTF-8">
 <title>모듈 관리</title>
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 <style>
 .period-select-wrapper {
 	display: flex;
@@ -128,8 +132,15 @@
 			<div class="module-name" th:text="${item.moduleName}">모듈명</div>
 			<div class="module-dates"
 				th:text="${#dates.format(item.paymentStartDate, 'yyyy-MM-dd')} + ' ~ ' + ${#dates.format(item.paymentEndDate, 'yyyy-MM-dd')}">
-				2025-01-01 ~ 2025-02-01</div>
+			</div>
+			<div class="module-actions">
+				<button class="btn btn-sm btn-danger"
+					th:onclick="'requestRefund(' + ${item.paymentDetailsNo} + ')'">
+					<i class="fa-solid fa-money-bill-transfer"></i>
+				</button>
+			</div>
 		</div>
+
 
 		<div class="footer-buttons">
 			<button id="payment">청구내역 보기</button>
@@ -469,6 +480,33 @@
         return `${year}-${month}-${day}`;
     }
 
+	
+    function requestRefund(paymentDetailsNo) {
+    	if (!confirm("정말 이 결제 항목을 환불하시겠습니까?")) {
+    		console.log("환불 디테일 번호"+paymentDetailsNo)
+    		return;
+    	}
+
+    /* 	$.ajax({
+    		type: 'POST',
+    		url: '/requestRefund',
+    		data: JSON.stringify({
+    			paymentDetailsNo: paymentDetailsNo
+    		}),
+    		contentType: 'application/json',
+    		beforeSend: function (xhr) {
+    			xhr.setRequestHeader(header, token);
+    		},
+    		success: function (response) {
+    			alert("✅ 환불이 성공적으로 처리되었습니다.");
+    			location.reload();
+    		},
+    		error: function (xhr) {
+    			alert("❌ 환불 요청 중 오류가 발생했습니다.");
+    			console.error(xhr.responseText);
+    		}
+    	});
+ */    }
 
 </script>
 

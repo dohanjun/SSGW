@@ -139,18 +139,23 @@
 						Log
 					</a>
 					<div class="dropdown-divider"></div>
-					<a class="dropdown-item" href="logout" data-toggle="modal"
-						data-target="#logoutModal"> <i
-						class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+					<a class="dropdown-item" href="#"
+						onclick="document.getElementById('logoutForm').submit(); return false;">
+						<i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
 						Logout
 					</a>
+
 				</div></li>
 
 		</ul>
 
 	</nav>
 	<!-- End of Topbar -->
-
+	<form id="logoutForm" th:action="@{/logout}" method="post"
+		style="display: none;">
+		<input type="hidden" th:name="${_csrf.parameterName}"
+			th:value="${_csrf.token}" />
+	</form>
 	<script>
 	document.addEventListener("DOMContentLoaded", function () {
 	    const startBtn = document.getElementById("startWorkBtn");
