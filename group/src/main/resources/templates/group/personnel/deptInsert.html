@@ -7,7 +7,17 @@
 <head>
     <meta charset="UTF-8">
     <title>부서 관리</title>
+
+    <!-- CSRF 토큰 (스프링 시큐리티용) -->
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.6.2/css/bootstrap.min.css">
+    <style>
+        #orgTree, #orgTree ul { list-style: none; padding-left: 20px; }
+        #orgTree li { cursor: pointer; margin-bottom: 4px; }
+        .toggle-icon { margin-right: 5px; cursor: pointer; }
+    </style>
 </head>
 
 <body>
@@ -15,54 +25,64 @@
     <h2 class="text-center mb-4">부서 관리</h2>
     <div class="row">
 
-        <!-- 왼쪽: 부서 등록 영역 -->
+        <!--  왼쪽: 부서 등록 -->
         <div class="col-md-6">
             <div class="card h-100">
                 <div class="card-header font-weight-bold text-center">부서 등록</div>
                 <div class="card-body">
-                    <form th:action="@{/deptInsert}" th:object="${deptVO}" method="post" onsubmit="return confirmInsert()">
-                        <input type="hidden" th:field="*{departmentNo}"/>
-                        <input type="hidden" th:field="*{suberNo}"/>
-
-                        <div class="form-group">
-                            <label>부서명</label>
-                            <input type="text" class="form-control" th:field="*{departmentName}" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label>상위 부서</label>
-                            <select class="form-control" th:field="*{upperDepNo}">
-                                <option value="0">최상위 부서</option>
-                                <option th:each="dept : ${deptList}"
-                                        th:value="${dept.departmentNo}"
-                                        th:text="${dept.departmentName}">
-                                </option>
-                            </select>
-                        </div>
-
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-success btn-block">등록</button>
-                            <button type="button" class="btn btn-danger btn-block" onclick="window.history.back()">뒤로</button>
-                        </div>
-                    </form>
+				<!--  기존 form 안에서 -->
+				<form th:action="@{/deptInsert}" th:object="${deptVO}" method="post" onsubmit="return confirmInsert()">
+				    <input type="hidden" th:field="*{departmentNo}" />
+				    <input type="hidden" th:field="*{suberNo}" />
+				
+				    <div class="form-group">
+				        <label>부서명</label>
+				        <input type="text" class="form-control" th:field="*{departmentName}" required>
+				    </div>
+				
+				    <div class="form-group">
+				        <label>상위 부서</label>
+				        <select class="form-control" th:field="*{upperDepNo}">
+				            <option value="0">최상위 부서</option>
+				            <option th:each="dept : ${deptList}" th:value="${dept.departmentNo}" th:text="${dept.departmentName}"></option>
+				        </select>
+				    </div>
+				
+				    <!--  버튼 영역: form 내부 + 가운데 정렬 + 살짝 위쪽 여백 -->
+				    <div class="d-flex justify-content-center mt-4">
+				        <button type="submit" class="btn btn-success mx-2 px-4">등록</button>
+				        <button type="button" class="btn btn-danger mx-2 px-4" onclick="window.history.back()">뒤로</button>
+				    </div>
+				</form>
                 </div>
+
             </div>
         </div>
 
-        <!-- 오른쪽: 부서장 지정 리스트 (클릭 시 모달 오픈) -->
+        <!--  오른쪽: 부서장 추가 -->
         <div class="col-md-6">
             <div class="card h-100">
                 <div class="card-header font-weight-bold text-center">부서장 추가</div>
                 <div class="card-body">
                     <ul class="list-group">
-                        <li class="list-group-item d-flex justify-content-between align-items-center"
+                        <li class="list-group-item d-flex justify-content-start align-items-center position-relative"
                             th:each="dept : ${deptList}"
-                            th:onclick="|openOrgModal(${dept.departmentNo})|" style="cursor:pointer">
-                            <strong th:text="${dept.departmentName}"></strong>
-                            <span th:if="${dept.employeeName != null}"
-                                  th:text="' - 부서장: ' + ${dept.employeeName}"
-                                  class="text-success ml-2"></span>
-                            <span th:if="${dept.employeeName == null}" class="text-danger ml-2">(부서장 미지정)</span>
+                            th:onclick="|openOrgModal(${dept.departmentNo})|"
+                            style="cursor: pointer; height: 40px;">
+
+                            <!-- 왼쪽: 부서명 -->
+                            <div style="width: 200px;">
+                                <strong th:text="${dept.departmentName}"></strong>
+                            </div>
+
+                            <!-- 가운데: 부서장 텍스트 (li 중앙 정렬) -->
+                            <div style="position: absolute; left: 50%; transform: translateX(-50%); text-align: center; width: max-content;">
+                                <span th:if="${dept.employeeName != null}"
+                                      th:text="' 부서장 : ' + ${dept.employeeName}"
+                                      class="text-success small"></span>
+                                <span th:if="${dept.employeeName == null}"
+                                      class="text-danger small">(부서장 미지정)</span>
+                            </div>
                         </li>
                     </ul>
                 </div>
@@ -72,99 +92,194 @@
     </div>
 </div>
 
-<!-- 조직도 모달 -->
+<!--  조직도 모달 -->
 <div class="modal fade" id="orgModal" tabindex="-1" role="dialog" aria-labelledby="orgModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">조직도에서 부서장 선택</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
             </div>
             <div class="modal-body">
-                <!-- 조직도 데이터가 여기에 비동기로 로드됨 -->
-                <div id="orgTreeContainer"></div>
+                <input type="text" id="searchInput" class="form-control mb-3" placeholder="🔍 사원명 검색">
+                <div class="row">
+                    <div class="col-md-6"><ul id="orgTree" class="list-unstyled"></ul></div>
+                    <div class="col-md-6">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h5>직원 정보</h5><hr>
+                                <p><strong>이름:</strong> <span id="empName">-</span></p>
+                                <p><strong>부서:</strong> <span id="empDept">-</span></p>
+                                <p><strong>직급:</strong> <span id="empTitle">-</span></p>
+                                <p><strong>연락처:</strong> <span id="empPhone">-</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<script th:inline="javascript">
-    // 등록 완료 알림
+<!--  JavaScript (with 설명 주석) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    let selectedDeptNo = null;
+
+    // CSRF 설정
+    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+    // 부서 등록 시 알림
     function confirmInsert() {
         alert("부서가 등록되었습니다.");
         return true;
     }
 
- // 조직도 불러오기
-    function buildTree(data, treeId) {
-        const tree = document.getElementById(treeId);
+    // 부서 클릭 시 조직도 모달 열기
+    function openOrgModal(deptNo) {
+        selectedDeptNo = deptNo;
+        fetch("/api/orgchart")
+            .then(res => res.json())
+            .then(data => {
+                buildTree(data);
+                $('#orgModal').modal('show');
+            });
+    }
+
+    // 조직도 트리 생성
+    function buildTree(data) {
+        const tree = document.getElementById("orgTree");
         tree.innerHTML = "";
 
-        const deptMap = {}, childDeptMap = {};
-        data.forEach(dept => {
-            if (!deptMap[dept.departmentNo]) deptMap[dept.departmentNo] = dept;
-            if (!childDeptMap[dept.upperDepNo]) childDeptMap[dept.upperDepNo] = [];
-            childDeptMap[dept.upperDepNo].push(dept);
+        const deptMap = {}, companyMap = {};
+
+        // 부서, 회사 정보 정리
+        data.forEach(item => {
+            if (!companyMap[item.suberNo]) {
+                companyMap[item.suberNo] = { companyName: item.companyName, departments: [] };
+            }
+            companyMap[item.suberNo].departments.push(item);
+            deptMap[item.departmentNo] = item;
         });
 
-        const topDepts = childDeptMap[null] || childDeptMap[0] || [];
-        topDepts.forEach(dept => {
-            const deptLi = createDeptNodeRecursive(dept, childDeptMap);
-            tree.appendChild(deptLi);
+        // 회사별 트리 구성
+        Object.values(companyMap).forEach(company => {
+            const companyLi = document.createElement("li");
+            companyLi.innerHTML = `<span class="toggle-icon">▶</span> <strong style="color:blue">${company.companyName}</strong>`;
+            const deptTree = document.createElement("ul");
+            deptTree.style.display = "none";
+
+            const topDepts = company.departments.filter(d => !company.departments.some(sub => sub.departmentNo === d.upperDepNo));
+            topDepts.forEach(dept => deptTree.appendChild(createDeptNode(dept, deptMap)));
+
+            companyLi.appendChild(deptTree);
+            tree.appendChild(companyLi);
+
+            // 펼치기 버튼
+            companyLi.querySelector(".toggle-icon").addEventListener("click", function () {
+                deptTree.style.display = deptTree.style.display === "none" ? "block" : "none";
+                this.textContent = deptTree.style.display === "none" ? "▶" : "▼";
+            });
         });
     }
 
-    function createDeptNodeRecursive(dept, childDeptMap) {
-        const deptLi = document.createElement("li");
-        deptLi.innerHTML = `<span class="toggle-icon">▶</span> 📁 <strong>${dept.departmentName} (${dept.employees.length}명)</strong>`;
+    // 부서 노드 생성
+    function createDeptNode(dept, deptMap) {
+        const li = document.createElement("li");
         const subTree = document.createElement("ul");
         subTree.style.display = "none";
 
-        dept.employees.forEach(emp => {
-            const empLi = document.createElement("li");
-            empLi.innerHTML = `
-              <input type="checkbox" class="emp-check" value="${emp.employeeNo}" data-name="${emp.employeeName}" data-job="${emp.jobTitleName}">
-              🙍‍♂️ ${emp.employeeName} (${emp.jobTitleName})
-            `;
-            subTree.appendChild(empLi);
-        });
+        const empList = (dept.employees || []).map(emp => `
+            <li>
+                🙍‍♂️ <a href="#" onclick="
+                    showEmpInfo('${emp.employeeName}', '${dept.departmentName}', '${emp.jobTitleName}', '${emp.phoneNumber}');
+                    selectManager(${emp.employeeNo});
+                ">${emp.employeeName} (${emp.jobTitleName})</a>
+            </li>`).join('');
 
-        const children = childDeptMap[dept.departmentNo] || [];
-        children.forEach(child => {
-            const subDeptLi = createDeptNodeRecursive(child, childDeptMap);
-            subTree.appendChild(subDeptLi);
-        });
+        li.innerHTML = `<span class="toggle-icon">▶</span> 📁 <strong>${dept.departmentName}</strong><ul>${empList}</ul>`;
 
-        deptLi.querySelector(".toggle-icon").addEventListener("click", function () {
+        // 하위 부서 연결
+        (Object.values(deptMap).filter(d => d.upperDepNo === dept.departmentNo) || [])
+            .forEach(sub => subTree.appendChild(createDeptNode(sub, deptMap)));
+
+        li.querySelector("ul").appendChild(subTree);
+
+        // 트리 펼치기 이벤트
+        li.querySelector(".toggle-icon").addEventListener("click", function () {
             subTree.style.display = subTree.style.display === "none" ? "block" : "none";
             this.textContent = subTree.style.display === "none" ? "▶" : "▼";
         });
 
-        deptLi.appendChild(subTree);
-        return deptLi;
+        return li;
     }
 
-    function filterTree(inputId, treeId) {
-        const searchText = document.getElementById(inputId).value.toLowerCase();
-        document.querySelectorAll(`#${treeId} li`).forEach(item => {
-            const text = item.textContent.toLowerCase();
-            item.style.display = text.includes(searchText) ? "" : "none";
+    // 오른쪽 정보 카드에 선택한 사원 표시
+    function showEmpInfo(name, dept, title, phone) {
+        document.getElementById("empName").textContent = name;
+        document.getElementById("empDept").textContent = dept;
+        document.getElementById("empTitle").textContent = title;
+        document.getElementById("empPhone").textContent = phone;
+    }
+
+    // 부서장 지정
+    function selectManager(employeeNo) {
+        if (!selectedDeptNo) return;
+        if (!confirm("이 사원을 부서장으로 지정하시겠습니까?")) return;
+
+        const params = new URLSearchParams();
+        params.append("employeeNo", employeeNo);
+        params.append("departmentNo", selectedDeptNo);
+
+        fetch("/updateManager", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                [csrfHeader]: csrfToken
+            },
+            body: params
+        })
+        .then(res => res.text())
+        .then(result => {
+            if (result === "success") {
+                alert("부서장이 지정되었습니다.");
+                location.reload();
+            } else {
+                alert("지정 실패!");
+            }
+        })
+        .catch(err => {
+            alert("오류 발생!");
+            console.error(err);
         });
     }
 
-    // 선택한 사원을 부서장으로 지정
-    function selectManager(employeeNo, departmentNo) {
-        if (confirm('이 사원을 부서장으로 지정하시겠습니까?')) {
-            fetch(`/updateManager?employeeNo=${employeeNo}&departmentNo=${departmentNo}`, { method: 'POST' })
-                .then(() => location.reload());
-        }
-    }
+    // 조직도 검색 기능
+    document.getElementById("searchInput").addEventListener("input", function () {
+        const searchText = this.value.toLowerCase();
+        const items = document.querySelectorAll("#orgTree li");
+        items.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            if (text.includes(searchText)) {
+                item.style.display = "";
+                let parent = item.parentElement;
+                while (parent && parent.id !== "orgTree") {
+                    if (parent.tagName === "UL") parent.style.display = "block";
+                    if (parent.tagName === "LI") {
+                        const toggle = parent.querySelector(".toggle-icon");
+                        if (toggle) toggle.textContent = "▼";
+                    }
+                    parent = parent.parentElement;
+                }
+            } else {
+                item.style.display = "none";
+            }
+        });
+    });
 </script>
 
-<!-- Bootstrap JS (모달용) -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

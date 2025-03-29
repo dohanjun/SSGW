@@ -125,6 +125,13 @@ public class EmpServiceImpl implements EmpService{
     public void updateEmployeePasswordBySuberNo(EmpVO employee) {
         empMapper.updateEmployeePasswordBySuberNo(employee);
     }
+    
+    
+    // 아이디 중복체크
+    @Override
+    public boolean isEmployeeIdDuplicate(String employeeId) {
+        return empMapper.isEmployeeIdDuplicate(employeeId) > 0;
+    }
 	
 
 }
