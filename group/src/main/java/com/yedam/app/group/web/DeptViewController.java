@@ -7,6 +7,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.yedam.app.group.service.DeptService;
 import com.yedam.app.group.service.DeptVO;
@@ -49,7 +51,7 @@ public class DeptViewController {
         deptVO.setSuberNo(suberNo);
 
         // 회사번호 기준 기존 부서 목록 조회
-        List<DeptVO> deptList = deptService.getAllDepartments(deptVO);
+        List<DeptVO> deptList = deptService.getAllDepartments(suberNo);
 
         // 모델에 전달
         model.addAttribute("deptVO", deptVO);         // 입력 폼 바인딩용
@@ -77,6 +79,28 @@ public class DeptViewController {
         // 부서 목록 화면으로 리다이렉트
         return "redirect:/deptMgmt";
     }
+    
+    // 부서장 업데이트
+    @PostMapping("/updateManager")
+    @ResponseBody
+    public String updateManager(@RequestParam int employeeNo,
+                                @RequestParam int departmentNo) {
+
+        // 로그인한 사용자 회사번호 가져오기
+        EmpVO loggedInUser = empService.getLoggedInUserInfo();
+        int suberNo = loggedInUser.getSuberNo();
+
+        DeptVO deptVO = new DeptVO();
+        deptVO.setEmployeeNo(employeeNo);         // 사원 번호 (선택된 사원)
+        deptVO.setManager(employeeNo);            // 실제 DB에 들어갈 필드
+        deptVO.setDepartmentNo(departmentNo);     // 선택된 부서
+        deptVO.setSuberNo(suberNo);               // 로그인한 회사 번호
+
+        deptService.updateManager(deptVO);        // Mapper 호출
+
+        return "success";
+    }
+
 
     
 
