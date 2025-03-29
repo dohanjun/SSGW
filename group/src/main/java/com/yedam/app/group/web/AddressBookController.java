@@ -3,16 +3,16 @@ package com.yedam.app.group.web;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.yedam.app.group.service.AddressBookService;
 import com.yedam.app.group.service.AddressBookVO;
 import com.yedam.app.group.service.EmpService;
-import com.yedam.app.group.service.MailVO;
 import com.yedam.app.group.service.PageListVO;
 import com.yedam.app.group.service.Paging;
 
@@ -125,9 +125,8 @@ public class AddressBookController {
 		
 		//개인주소록 수정 - 처리
 		@PostMapping("/bookUpdate")
-		public String bookUpdateForm(AddressBookVO addressBookVO, Model model) {
-			AddressBookVO findVO = addressBookService.AddressBookSelectInfo(addressBookVO);
-			model.addAttribute("book", findVO);
+		@ResponseBody
+		public boolean bookUpdateForm(@RequestBody AddressBookVO addressBookVO, Model model) {
 			try {
 		        // 수정할 데이터가 넘어오면 서비스에서 업데이트 처리
 		    	Map<String, Object> updateSuccess = addressBookService.AddressBookUpdate(addressBookVO);
@@ -138,11 +137,11 @@ public class AddressBookController {
 		            model.addAttribute("message", "주소록 수정에 실패했습니다.");
 		        }
 		        
-		        return "redirect:/addressBookList";  // 수정 후 주소록 목록으로 리다이렉트
+		        return true;  // 수정 후 주소록 목록으로 리다이렉트
 
 		    } catch (Exception e) {
 		        model.addAttribute("error", "서버 오류로 수정에 실패했습니다.");
-		        return "group/book/mySelect";  // 오류 발생 시 메일 상세 화면으로 이동
+		        return false;  // 오류 발생 시 메일 상세 화면으로 이동
 		    }
 		}
 

@@ -51,7 +51,7 @@ import org.springframework.security.web.SecurityFilterChain;
 	                .invalidateHttpSession(true)   
 	                .permitAll()
 	            )
-	            .csrf(csrf -> csrf.ignoringRequestMatchers("/logout","/savePayment","/insertModule", "/updateModule","/deleteModule/*","/updateModuleBasic/*","/updateModuleActive/*","/qna", "/aprv/**","/insertModule","/saveForm", "/schedule/**","/qna","/fixed","/saveSubDetail","/saveSubDetail","/saveSuber","/savePaymentDetails","/saveUser","/insertBoardPost","/selectBoardPost","/updateBoardPost","/basket/**","/api/**","/alerts/**","/insertAlarm"));
+	            .csrf(csrf -> csrf.ignoringRequestMatchers("/logout","/savePayment","/insertModule", "/updateModule","/deleteModule/*","/updateModuleBasic/*","/updateModuleActive/*","/qna", "/aprv/**","/insertModule","/saveForm", "/schedule/**","/qna","/fixed","/saveSubDetail","/saveSubDetail","/saveSuber","/savePaymentDetails","/saveUser","/insertBoardPost","/selectBoardPost","/updateBoardPost","/basket/**","/api/**","/alerts/**","/insertAlarm","/bookUpdate"));
 	        return http.build();
 	    }
 	    // 비밀번호 암호화
