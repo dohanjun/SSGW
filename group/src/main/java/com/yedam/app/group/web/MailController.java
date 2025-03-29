@@ -2,6 +2,7 @@ package com.yedam.app.group.web;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,6 +13,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +35,6 @@ import com.yedam.app.group.service.MailVO;
 import com.yedam.app.group.service.PageListVO;
 import com.yedam.app.group.service.Paging;
 
-import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -121,12 +122,13 @@ public class MailController {
 
 	        // 파일을 Resource로 변환 (FileSystemResource로 생성)
 	        Resource resource = (Resource) new FileSystemResource(file);
-
+	        filename = URLEncoder.encode(filename, "UTF-8");
 	        // 파일을 다운로드하도록 헤더 설정
 	        return ResponseEntity.ok()
 	                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
 	                .body(resource);
 	    } catch (Exception e) {
+	    	e.printStackTrace();
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 	    }
 	}
@@ -146,7 +148,7 @@ public class MailController {
 	    try {
 	        // 파일 업로드 처리
 	        String filename = StringUtils.cleanPath(file.getOriginalFilename()); // 파일 이름 정리
-	        Path targetLocation = Paths.get(uploadDir + filename); // 저장할 경로
+	        Path targetLocation = Paths.get(uploadDir +"/" + filename); // 저장할 경로
 
 	        // 디렉토리가 없으면 생성
 	        File dir = new File(uploadDir);

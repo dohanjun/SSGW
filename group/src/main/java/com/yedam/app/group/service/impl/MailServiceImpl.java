@@ -170,19 +170,24 @@ public class MailServiceImpl implements MailService {
 	
 	public String sendMailToUser(MailVO vo) {
 
-		SimpleMailMessage message = new SimpleMailMessage();
-		message.setFrom(ADMIN_SEND_EMAIL); // 이메일을 보낼 송신자
-		message.setTo(vo.getGetUser()); // 이메일을 받을 수신자
-		message.setSubject(vo.getTitle()); // 이메일 제목
-		message.setText(vo.getContent()); // 이메일 본문
-		try {
-			javaMailSender.send(message);
-			
-			mailMapper.mailCreate(vo);
-		} catch (MailException e) {
-			e.printStackTrace();
-			return "전송 실패";
+		if(vo.getMailType().equals("보낸")) {
+			SimpleMailMessage message = new SimpleMailMessage();
+			message.setFrom(ADMIN_SEND_EMAIL); // 이메일을 보낼 송신자
+			message.setTo(vo.getGetUser()); // 이메일을 받을 수신자
+			message.setSubject(vo.getTitle()); // 이메일 제목
+			message.setText(vo.getContent()); // 이메일 본문
+			try {
+				javaMailSender.send(message);
+				
+				
+				
+			} catch (MailException e) {
+				e.printStackTrace();
+				return "전송 실패";
+			}
 		}
+		mailMapper.mailCreate(vo);
+		
 		return "전송성공";
 	}
 

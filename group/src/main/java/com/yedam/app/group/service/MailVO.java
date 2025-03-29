@@ -30,4 +30,6 @@ public class MailVO {
     private LocalDateTime expiryDate;
     
     private String isSent;
+    
+    private Integer employeeNo;
 }
