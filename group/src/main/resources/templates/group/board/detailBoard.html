@@ -7,10 +7,53 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>게시글 상세</title>
-<link
-	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
-	rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
 <link href="/css/detailRepository.css" rel="stylesheet">
+<style>
+.file-info-table td img {
+    max-width: 100%; /* 테이블 셀 크기에 맞춰 최대 크기 설정 */
+    height: auto;    /* 비율에 맞게 자동 크기 조정 */
+    display: block;  /* 기본적으로 block으로 설정하여 가로 크기 맞춤 */
+    margin: 0 auto;  /* 가운데 정렬 */
+}
+
+.content-area {
+  overflow: hidden;
+  max-height: 600px;  /* 원하는 최대 높이 */
+  overflow-y: auto;   /* 이미지가 클 경우 스크롤 생기게 */
+}
+
+.ql-align-center {
+  text-align: center;
+}
+
+.ql-align-right {
+  text-align: right;
+}
+
+iframe.pdf-viewer {
+  width: 100%;
+  height: 600px;
+  border: 1px solid #ccc;
+}
+
+/* 이미지가 영역에 맞게 줄어들되, 넘치진 않게 */
+.content-area img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 10px auto;
+  object-fit: contain;
+  border-radius: 6px;
+}
+  
+  /* 클릭 시 확대효과를 줄 수도 있음 */
+  .content-area img:hover {
+    transform: scale(1.02);
+  }
+</style>
 </head>
 <body id="page-top">
 	<div id="wrapper">
@@ -19,27 +62,51 @@
 				<div class="container-fluid px-0">
 					<div class="card shadow mb-4"
 						style="width: 100%; margin-top: 20px; margin-bottom: auto;">
-						<div class="card-header py-3 d-flex align-items-center">
+						<div class="card-header py-3 d-flex justify-content-between d-flex align-items-center">
 							<h6 class="m-0 font-weight-bold text-primary">게시글 정보</h6>
-							<i class="fa-solid fa-thumbtack text-primary ml-2"></i>
+						  <div>
+							<a th:if="${hasPdf}" th:href="@{/download/view/pdf/{id}(id=${firstPdfId})}" 
+		   					   class="btn btn-sm btn-outline-secondary mr-2" target="_blank">
+		   					   <i class="fas fa-eye"></i> 미리보기
+							</a>
+							
+							<a th:if="${attachments != null and !#lists.isEmpty(attachments)}"
+       						   th:href="@{/download/boardFile/zip/{postId}(postId=${post.postId})}"
+                               class="btn btn-sm btn-info">
+        						<i class="fas fa-file-archive"></i> 전체 다운로드
+    						</a>
+    					  </div>
 						</div>
 						<div class="card-body">
 							<table class="table table-bordered file-info-table">
 								<tbody>
 									<tr>
 										<th>제목</th>
-										<td></td>
+										<td th:text="${post.postTitle}"></td>
 										<th>작성자</th>
-										<td></td>
+										<td th:text="${post.employeeName}"></td>
 									</tr>
 									<tr>
 										<th>등록일</th>
-										<td></td>
-										<th>첨부파일</th>
-										<td></td>
+										<td th:text="${#dates.format(post.postDate, 'yyyy-MM-dd')}"></td>
+										<th>조회수</th>
+    									<td th:text="${post.views}"></td>
 									</tr>
 									<tr>
-										<td colspan="4"><textarea class="content-area" readonly></textarea>
+    									<th>첨부파일</th>
+    									<td colspan="3">
+        									<div th:if="${attachments != null and !#lists.isEmpty(attachments)}">
+            									<div th:each="file : ${attachments}">
+                									<a th:href="@{/download/boardFile/{id}(id=${file.attachmentId})}"
+                   								       th:text="${file.fileTitle}" target="_blank"></a><br />
+            									</div>
+        									</div>
+        									<span th:if="${attachments == null or #lists.isEmpty(attachments)}">첨부파일 없음</span>
+    									</td>
+									</tr>
+									<tr>
+										<td colspan="4">
+											<div class="content-area" th:utext="${post.postContent}"></div>
 										</td>
 									</tr>
 								</tbody>
@@ -64,10 +131,9 @@
 						<div class="card-body">
 							<!-- 댓글 입력창 -->
 							<div class="d-flex align-items-center">
-								<input type="text" id="commentInput" class="form-control"
-									placeholder="댓글을 입력하세요">
-								 <button id="commentSubmitBtn" class="btn btn-primary ml-2"
-               						 style="width: 80px; height: 40px; font-size: 0.9rem; border-radius: 6px;">등록</button>
+  								<input type="text" id="commentInput" class="form-control" placeholder="댓글을 입력하세요">
+  								<button id="commentSubmitBtn" class="btn btn-primary ml-2"
+          								style="width: 80px; height: 40px; font-size: 0.9rem; border-radius: 6px;">등록</button>
 							</div>
 
 							<!-- 댓글 목록 -->
@@ -80,6 +146,117 @@
 			</div>
 		</div>
 	</div>
-	<script src="/js/comment.js"></script>
+<script src="/js/comment.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const images = document.querySelectorAll('.content-area img');
+    images.forEach(img => {
+      img.addEventListener('click', () => {
+        window.open(img.src, '_blank');
+      });
+    });
+  });
+  
+  document.getElementById('commentSubmitBtn').addEventListener('click', function () {
+	  const commentInput = document.getElementById('commentInput').value;
+
+	  if (commentInput.trim() === '') {
+	    alert('댓글 내용을 입력하세요.');
+	    return;
+	  }
+
+	  // 서버로 댓글 전송 (AJAX 요청)
+	  fetch('/submitComment', {
+	    method: 'POST',
+	    headers: {
+	      'Content-Type': 'application/json'
+	    },
+	    body: JSON.stringify({
+	      postId: postId,  // 해당 게시글 ID
+	      content: commentInput
+	    })
+	  })
+	  .then(response => response.json())
+	  .then(data => {
+	    if (data.success) {
+	      loadComments();  // 댓글 목록을 새로고침
+	      document.getElementById('commentInput').value = '';  // 댓글 입력창 초기화
+	    } else {
+	      alert('댓글 등록에 실패했습니다.');
+	    }
+	  })
+	  .catch(error => {
+	    console.error('Error:', error);
+	    alert('댓글 등록 중 오류가 발생했습니다.');
+	  });
+	});
+  
+  function loadComments() {
+	  fetch(`/getComments/${postId}`)  // 해당 게시글 ID를 서버로 전송하여 댓글 목록을 조회
+	    .then(response => response.json())
+	    .then(comments => {
+	      const commentList = document.getElementById('commentList');
+	      commentList.innerHTML = '';  // 댓글 목록을 초기화
+
+	      comments.forEach(comment => {
+	        const commentItem = document.createElement('div');
+	        commentItem.classList.add('comment-item');
+	        commentItem.innerHTML = `
+	          <div class="comment-content">
+	            <strong>${comment.employeeName}</strong> ${comment.content}
+	          </div>
+	          <button class="btn btn-warning btn-sm" onclick="editComment(${comment.commentId})">수정</button>
+	          <button class="btn btn-danger btn-sm" onclick="deleteComment(${comment.commentId})">삭제</button>
+	        `;
+	        commentList.appendChild(commentItem);
+	      });
+	    })
+	    .catch(error => console.error('Error:', error));
+	}
+  
+  function deleteComment(commentId) {
+	  fetch(`/deleteComment/${commentId}`, {
+	    method: 'DELETE'
+	  })
+	  .then(response => response.json())
+	  .then(data => {
+	    if (data.success) {
+	      loadComments();  // 댓글 목록 새로고침
+	    } else {
+	      alert('댓글 삭제에 실패했습니다.');
+	    }
+	  })
+	  .catch(error => {
+	    console.error('Error:', error);
+	    alert('댓글 삭제 중 오류가 발생했습니다.');
+	  });
+	}
+  
+  function editComment(commentId) {
+	  const newContent = prompt("수정할 내용을 입력하세요.");
+
+	  if (newContent) {
+	    fetch(`/updateComment/${commentId}`, {
+	      method: 'PUT',
+	      headers: {
+	        'Content-Type': 'application/json'
+	      },
+	      body: JSON.stringify({ content: newContent })
+	    })
+	    .then(response => response.json())
+	    .then(data => {
+	      if (data.success) {
+	        loadComments();  // 댓글 목록 새로고침
+	      } else {
+	        alert('댓글 수정에 실패했습니다.');
+	      }
+	    })
+	    .catch(error => {
+	      console.error('Error:', error);
+	      alert('댓글 수정 중 오류가 발생했습니다.');
+	    });
+	  }
+	}
+</script>
 </body>
 </html>

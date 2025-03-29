@@ -89,7 +89,7 @@ public class BoardServiceImpl implements BoardService {
 
                     BoardAttachmentVO attach = new BoardAttachmentVO();
                     attach.setPostId(postVO.getPostId());
-                    attach.setFilePath("/uploads/" + uuid); // 웹 접근 경로
+                    attach.setFilePath(savePath); // 웹 접근 경로
                     attach.setFileTitle(originalName);
                     attach.setFileRetentionPeriod(new Date());
 
@@ -101,6 +101,15 @@ public class BoardServiceImpl implements BoardService {
             }
         }
     }
-
-
+    
+    @Override
+    public BoardPostVO getPostDetail(int postId) {
+    	boardMapper.increaseViewCount(postId);
+        return boardMapper.selectPostById(postId);
+    }
+    
+    @Override
+    public List<BoardAttachmentVO> getAttachments(int postId) {
+        return boardMapper.getAttachments(postId);
+    }
 }

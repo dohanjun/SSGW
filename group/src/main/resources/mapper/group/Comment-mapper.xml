@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yedam.app.group.mapper.CommentMapper">
+
+<!-- 게시글에 해당하는 댓글 조회 -->
+    <!-- 게시글에 해당하는 댓글 조회 -->
+    <select id="selectCommentsByPostId" resultType="com.yedam.app.group.service.CommentVO">
+        SELECT 
+            comment_id AS commentId,
+            content,
+            board_date AS boardDate,
+            employee_no AS employeeNo,
+            post_id AS postId,
+            re_comment AS reComment  <!-- re_comment로 수정 -->
+        FROM board_comment
+        WHERE post_id = #{postId}
+        ORDER BY board_date DESC
+    </select>
+
+    <!-- 댓글 추가 -->
+    <insert id="insertComment" parameterType="com.yedam.app.group.service.CommentVO">
+        INSERT INTO board_comment (content, board_date, employee_no, post_id, re_comment)
+        VALUES (#{content}, #{boardDate}, #{employeeNo}, #{postId}, #{reComment}) <!-- re_comment로 수정 -->
+    </insert>
+
+    <!-- 대댓글 추가 -->
+    <insert id="insertReplyComment" parameterType="com.yedam.app.group.service.CommentVO">
+        INSERT INTO board_comment (content, board_date, employee_no, post_id, re_comment)
+        VALUES (#{content}, #{boardDate}, #{employeeNo}, #{postId}, #{reComment}) <!-- re_comment로 수정 -->
+    </insert>
+
+    <!-- 댓글 수정 -->
+    <update id="updateComment" parameterType="com.yedam.app.group.service.CommentVO">
+        UPDATE board_comment
+        SET content = #{content}
+        WHERE comment_id = #{commentId}
+    </update>
+
+    <!-- 댓글 삭제 -->
+    <delete id="deleteComment" parameterType="int">
+        DELETE FROM board_comment
+        WHERE comment_id = #{commentId}
+    </delete>
+
+</mapper>

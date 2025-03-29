@@ -11,7 +11,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.yedam.app.group.mapper.BoardMapper;
 import com.yedam.app.group.mapper.FileMapper;
+import com.yedam.app.group.service.BoardAttachmentVO;
 import com.yedam.app.group.service.DownloadVO;
 import com.yedam.app.group.service.FileService;
 import com.yedam.app.group.service.RepositoryFileVO;
@@ -25,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 public class FileServiceImpl implements FileService {
 
 	private final FileMapper fileMapper;
+	private final BoardMapper boardMapper;
 
     @Value("${file.upload-dir}")  
     private String uploadDir;  // 현재 프로젝트 안에서 저장하는 폴더 설정
@@ -230,5 +233,15 @@ public class FileServiceImpl implements FileService {
     @Override
     public void deleteDownloadLogByWritingId(Long writingId) {
         fileMapper.deleteDownloadLogByWritingId(writingId);
+    }
+    
+    @Override
+    public BoardAttachmentVO getBoardAttachmentById(int attachmentId) {
+        return boardMapper.getBoardAttachmentById(attachmentId);
+    }
+    
+    @Override
+    public List<BoardAttachmentVO> getBoardAttachmentsByPostId(int postId) {
+        return boardMapper.selectBoardAttachmentsByPostId(postId);
     }
 }
