@@ -20,9 +20,10 @@
 .main-grid {
 	display: grid;
 	grid-template-columns: 1fr 2fr 1fr 1fr;
-	grid-template-rows: 300px 300px;
+	grid-template-rows: 100px 300px 300px;
 	gap: 20px;
-	grid-template-areas: "datetime 자료실 공지 approval" "일정    자료실 공지 approval";
+	grid-template-areas: "userinfo userinfo userinfo userinfo"
+		"datetime 자료실 공지 approval" "일정 자료실 공지 recentApproval";
 }
 
 body {
@@ -30,26 +31,7 @@ body {
 	background-size: contain;
 	background-attachment: fixed;
 	background-color: #f8f9fc;
-}
-
-.datetime-box {
-	grid-area: datetime;
-}
-
-.approval {
-	grid-area: approval;
-}
-
-.board-section1 {
-	grid-area: 자료실;
-}
-
-.board-section2 {
-	grid-area: 공지;
-}
-
-.schedule-box {
-	grid-area: 일정;
+	font-family: 'Noto Sans KR', sans-serif;
 }
 
 .card, .datetime-box, .board-box {
@@ -59,7 +41,25 @@ body {
 	background-color: #ffffff;
 }
 
+.userinfo-box {
+	grid-area: userinfo;
+	background: #ffffff;
+	border-radius: 12px;
+	padding: 20px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.userinfo-box img {
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+}
+
 .datetime-box {
+	grid-area: datetime;
 	background: #f1f2f6;
 	padding: 20px;
 	text-align: center;
@@ -78,6 +78,32 @@ body {
 	color: #007bff;
 	font-weight: bold;
 	margin-top: 10px;
+}
+
+.weather-box {
+	margin-top: 10px;
+	font-size: 0.9rem;
+	color: #555;
+}
+
+.approval {
+	grid-area: approval;
+}
+
+.recentApproval {
+	grid-area: recentApproval;
+}
+
+.board-section1 {
+	grid-area: 자료실;
+}
+
+.board-section2 {
+	grid-area: 공지;
+}
+
+.schedule-box {
+	grid-area: 일정;
 }
 
 .board-box {
@@ -126,27 +152,45 @@ body {
 	color: #0056b3;
 	text-decoration: underline;
 }
-</style>
 
+.clickable-card:hover {
+	transform: translateY(-2px);
+	transition: all 0.2s ease-in-out;
+	cursor: pointer;
+	box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+</style>
 </head>
 
 <body id="page-top">
-
 	<div id="wrapper">
 		<div id="content-wrapper" class="d-flex flex-column">
 			<div id="content">
 				<div class="container-fluid">
 
- 
-
-
-
 					<div class="main-grid">
+
+						<!-- 사용자 정보 -->
+						<div class="userinfo-box">
+							<div>
+								<h5 class="mb-1 fw-bold">
+									👋 환영합니다, <span th:text="${#authentication.name}">홍길동</span> 님
+								</h5>
+								<p class="mb-0 text-muted">오늘도 좋은 하루 되세요!</p>
+							</div>
+							<div>
+								<img id="profilePreview" src="img/default-profile.png"
+									alt="프로필 이미지">
+							</div>
+						</div>
 
 						<!-- 날짜 & 시간 -->
 						<div class="datetime-box datetime">
 							<div class="date" id="dateText"></div>
 							<div class="time" id="timeText"></div>
+							<div class="weather-box">
+								🌤️ 현재 날씨: <span id="weatherText">로딩 중...</span>
+							</div>
 						</div>
 
 						<!-- 자료실 -->
@@ -155,11 +199,11 @@ body {
 							data-url="/totalRepository">
 							<div class="board-title">📂 자료실</div>
 							<ul class="board-list">
-								<li><a href="#">2025년 업무 메뉴얼.pdf</a></li>
-								<li><a href="#">복무규정 다운로드</a></li>
-								<li><a href="#">신규 사원 교육자료</a></li>
+								<li th:each="post : ${repositoryList}"><a
+									th:text="${post.title}" th:href="@{/totalRepository}"></a></li>
 							</ul>
 						</div>
+
 						<!-- 공지 / 업무 -->
 						<div
 							class="board-box board-section2 shadow-sm border clickable-card"
@@ -171,17 +215,7 @@ body {
 								<li><a href="#">업무 공지사항</a></li>
 							</ul>
 						</div>
-						<!-- 일정 -->
-						<div class="card shadow border-0 schedule-box clickable-card"
-							data-url="/schedulePage">
-							<div class="card-header bg-primary text-white fw-bold">📅
-								오늘 내 일정</div>
-							<div class="card-body">
-								<ul id="companyScheduleList"></ul>
-								<ul id="deptScheduleList"></ul>
-								<ul id="personalScheduleList"></ul>
-							</div>
-						</div>
+
 						<!-- 결재 서류 -->
 						<div class="card shadow border-0 approval clickable-card"
 							data-url="/aprv/request">
@@ -189,15 +223,47 @@ body {
 								현황</div>
 							<div class="card-body">결재 서류 내용</div>
 						</div>
-					</div>
 
+						<!-- 일정 -->
+						<div class="card shadow border-0 schedule-box">
+							<div class="card-header bg-primary text-white fw-bold">📅
+								오늘 내 일정</div>
+							<div class="card-body">
+								<ul>
+									<li th:each="schedule : ${todaySchedule}"><a
+										th:href="@{/schedulePage}" class="text-dark"> 🗓️ <span
+											th:text="${schedule.scheduleTitle}">일정 제목</span>
+									</a></li>
+								</ul>
+							</div>
+						</div>
+
+						<!-- 최근 결재 문서 -->
+						<div class="card shadow-sm recentApproval clickable-card"
+							data-url="/aprv/request">
+							<div class="card-header bg-success text-white fw-bold">📌
+								최근 결재 문서</div>
+							<div class="card-body">
+								<ul class="mb-0">
+									<li th:each="aprv : ${recentApprovalList}"><span
+										th:text="${aprv.title} + ' - ' + ${aprv.aprvStatus}">결재
+											제목</span></li>
+								</ul>
+							</div>
+						</div>
+
+
+					</div>
 				</div>
 			</div>
 
 			<footer class="sticky-footer bg-white">
 				<div class="container my-auto">
 					<div class="text-center my-auto copyright">
-						<span>Copyright &copy; Your Company 2025</span>
+						<span>Copyright &copy; Your Company 2025 | <a
+							href="/privacy-policy" class="text-muted">개인정보처리방침</a> | <a
+							href="/terms" class="text-muted">이용약관</a>
+						</span>
 					</div>
 				</div>
 			</footer>
@@ -205,63 +271,28 @@ body {
 	</div>
 
 	<script>
-	const days = [ '일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일' ];
-	const dateElement = document.getElementById('dateText');
-	const timeElement = document.getElementById('timeText');
+    const days = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+    const dateElement = document.getElementById('dateText');
+    const timeElement = document.getElementById('timeText');
 
-	function updateTime() {
-		const now = new Date();
-		const date = now.toLocaleDateString('ko-KR');
-		const day = days[now.getDay()];
-		const time = now.toLocaleTimeString('ko-KR');
-		const today = new Date().toISOString().slice(0, 10);
-		dateElement.innerText = `${date} (${day})`;
-		timeElement.innerText = time;
-	}
-	updateTime();
-	setInterval(updateTime, 1000);
+    function updateTime() {
+      const now = new Date();
+      const date = now.toLocaleDateString('ko-KR');
+      const day = days[now.getDay()];
+      const time = now.toLocaleTimeString('ko-KR');
+      dateElement.innerText = `${date} (${day})`;
+      timeElement.innerText = time;
+    }
 
-	fetch('/api/companySchedule')
-	.then(response => response.json())
-	.then(data => {
-		const list = document.getElementById('companyScheduleList');
-		list.innerHTML = '';
-		data.filter(item => item.scheduleStart.substring(0,10) === today)
-		.forEach(item => {
-			const li = document.createElement('li');
-			li.textContent = `🟡 ${item.scheduleTitle}`;
-			list.appendChild(li);
-		});
-	});
+    updateTime();
+    setInterval(updateTime, 1000);
 
-	// 부서일정
-	fetch('/api/deptSchedule')
-	.then(response => response.json())
-	.then(data => {
-		const list = document.getElementById('deptScheduleList');
-		list.innerHTML = '';
-		data.filter(item => item.scheduleStart.substring(0,10) === today)
-		.forEach(item => {
-			const li = document.createElement('li');
-			li.textContent = `🔵 ${item.scheduleTitle}`;
-			list.appendChild(li);
-		});
-	});
-
-	// 개인일정
-	fetch('/api/personalSchedule')
-	.then(response => response.json())
-	.then(data => {
-		const list = document.getElementById('personalScheduleList');
-		list.innerHTML = '';
-		data.filter(item => item.scheduleStart.substring(0,10) === today)
-		.forEach(item => {
-			const li = document.createElement('li');
-			li.textContent = `🟢 ${item.scheduleTitle}`;
-			list.appendChild(li);
-		});
-	});
-	</script>
-
+    fetch('https://api.open-meteo.com/v1/forecast?latitude=37.57&longitude=126.98&current_weather=true')
+      .then(response => response.json())
+      .then(data => {
+        const weather = data.current_weather;
+        document.getElementById('weatherText').innerText = `${weather.temperature}°C, 풍속 ${weather.windspeed} km/h`;
+      });
+  </script>
 </body>
 </html>
