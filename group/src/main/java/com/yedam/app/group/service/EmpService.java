@@ -42,5 +42,8 @@ public interface EmpService {
     
     //
 	public void updateEmployeePasswordBySuberNo(EmpVO employee);
+	
+	// 아이디 중복 체크
+	public boolean isEmployeeIdDuplicate(String employeeId);
 
 }

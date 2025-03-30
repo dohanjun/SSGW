@@ -117,17 +117,11 @@ document.addEventListener('click', function(event) {
 		.forEach(dropdown => dropdown.style.display = 'none');
 });
 document.addEventListener("DOMContentLoaded", function() {
-	let form = document.querySelector("form");
+	const form = document.querySelector("#subscribeForm");
 	let paymentModal = document.getElementById("paymentModal");
 
 	form.addEventListener("submit", function(event) {
 		event.preventDefault();
-
-
-		if (dupId) {
-			alert("아이디 중복확인을 하세요");
-			return;
-		}
 
 		for (let e of document.querySelectorAll('.form-control')) {
 			if (!e.value.trim()) {

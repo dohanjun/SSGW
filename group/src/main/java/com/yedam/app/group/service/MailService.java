@@ -14,9 +14,6 @@ public interface MailService {
 	//메일단건조회
 	public MailVO MailSelectInfo(MailVO mailVO);
 	
-	//나의메일단건조회
-	public MailVO MyMailSelectInfo(MailVO mailVO);
-	
 	//메일등록
 	public int InsertMail(MailVO mailVO);
 	
@@ -25,9 +22,6 @@ public interface MailService {
 	
 	//메일검색기록
 	public int MailRecodeInfo(MailVO mailVO);
-	
-	//메일수정
-	public Map<String, Object> MailUpdate(MailVO mailVO);
 	
 	//메일답장
 	public int MailPutInfo(MailVO mailVO);

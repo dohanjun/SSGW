@@ -231,5 +231,12 @@
 	    SET employee_pw = #{employeePw}
 	    WHERE suber_no = #{suberNo}
 	</update>
+	
+	<!-- 아이디 중복 검사 -->
+	<select id="isEmployeeIdDuplicate" parameterType="String" resultType="int">
+	  SELECT COUNT(*) 
+	  FROM employees 
+	  WHERE employee_id = #{employeeId}
+	</select>
 
 </mapper>

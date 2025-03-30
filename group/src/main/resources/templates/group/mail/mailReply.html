@@ -113,7 +113,13 @@
 <script>
       document.getElementById('emailForm').addEventListener('submit', function(event){
     	  event.preventDefault();
-      })  
+    	  
+    	  const subject = document.getElementById('subject').value;
+          const content = document.getElementById('content').value;
+    	  
+    	  document.getElementById('previewSubject').textContent = subject;
+    	  document.getElementById('previewContent').innerHTML = content;
+      });
     </script>
   </body>
 </html>

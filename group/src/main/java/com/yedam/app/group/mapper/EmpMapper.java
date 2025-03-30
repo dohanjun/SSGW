@@ -44,4 +44,7 @@ public interface EmpMapper {
     String getSecondIpByEmployeeNo(Integer employeeNo);
 
 	public void updateEmployeePasswordBySuberNo(EmpVO employee);
+	
+	// 아이디 중복 체크
+	public int isEmployeeIdDuplicate(String employeeId);
 }

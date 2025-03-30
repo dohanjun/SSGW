@@ -13,8 +13,7 @@ public interface DeptMapper {
 	
 	// 전체 부서 조회
 	public List<DeptVO> selectAllDepartments(@Param("suberNo") int suberNo);
-	
-	
+		
 	// 부서 등록
 	public int insertDepartment(DeptVO deptVO);
 	

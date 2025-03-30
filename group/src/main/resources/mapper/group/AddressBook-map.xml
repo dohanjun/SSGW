@@ -136,7 +136,8 @@
 	       ,ADDRESS_BOOK_NUMBER = #{addressBookNumber}
 	       ,ADDRESS_BOOK_EMAIL = #{addressBookEmail}
 	       ,ADDRESS_BOOK_COMPANY_NAME = #{addressBookCompanyName}
-	       ,ADDRESS_BOOK_COMPANY_NUMBER = #{addressBookCompanyNumber}
+	       ,BOOK_DEPARTMENT_TYPE = #{bookDepartmentType}
+	WHERE ADDRESS_BOOK_ID = #{addressBookId}
 	</update>
 
 	<!-- 메일삭제 -->
