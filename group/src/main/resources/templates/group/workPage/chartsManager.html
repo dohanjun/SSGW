@@ -65,12 +65,11 @@
                             <th>사원이름</th>
                             <th>출근시간</th>
                             <th>퇴근시간</th>
-                            <th>총 근무시간</th>
+                            <th>오늘 근무시간</th>
                             <th>초과 근무시간</th>
                         </tr>
                         </thead>
                         <tbody id="employeeTableBody">
-                        <!-- JS로 오늘자 출결 동적 삽입 -->
                         </tbody>
                     </table>
                 </div>
@@ -93,6 +92,15 @@
     </div>
 </div>
 
+<!-- ✅ 관리자 접근 제어 -->
+<script th:inline="javascript">
+    const rankId = [[${loginEmployee.rankId}]]; // 🔥 현재 사용자 직급 정보
+    if (rankId !== 7) {
+        alert("관리자 권한이 없습니다. 사원 근태관리 페이지로 이동합니다.");
+        location.href = "/blank";
+    }
+</script>
+
 <!-- ✅ JS -->
 <script src="/vendor/jquery/jquery.min.js"></script>
 <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -107,7 +115,6 @@
         loadTodayAttendance();
     });
 
-    // ✅ 차트 데이터 로딩 및 표시
     function loadChartData() {
         fetch("/chartsManager")
             .then(res => res.json())
@@ -119,7 +126,7 @@
 
                 const ctx = document.getElementById('attendanceChart').getContext('2d');
 
-                if (chart) chart.destroy(); // ✅ 기존 차트 제거
+                if (chart) chart.destroy();
                 chart = new Chart(ctx, {
                     type: 'bar',
                     data: {
@@ -128,12 +135,12 @@
                             {
                                 label: '총 근무 시간',
                                 data: totalHours,
-                                backgroundColor: '#f1c40f' // ✅ 노란색
+                                backgroundColor: '#f1c40f'
                             },
                             {
                                 label: '초과 근무 시간',
                                 data: overtime,
-                                backgroundColor: '#e74c3c' // ✅ 빨간색
+                                backgroundColor: '#e74c3c'
                             }
                         ]
                     },
@@ -161,7 +168,6 @@
             .catch(err => console.error('❌ 차트 데이터 오류:', err));
     }
 
-    // ✅ 오늘 출결 데이터 테이블
     function loadTodayAttendance() {
         fetch("/todayAttendance")
             .then(res => res.json())
@@ -185,7 +191,6 @@
             .catch(err => console.error("❌ 오늘 출결 로딩 실패:", err));
     }
 
-    // ✅ 특정 사원 테이블 (차트 클릭용)
     function loadEmployeeTable(empNo) {
         fetch(`/employeeRecord/${empNo}`)
             .then(res => res.json())
@@ -209,12 +214,12 @@
             .catch(err => console.error('❌ 사원 기록 로딩 오류:', err));
     }
 
-    // ✅ 시간 포맷
     function formatTime(datetimeStr) {
         if (!datetimeStr) return '-';
         const date = new Date(datetimeStr);
         return date.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
     }
+    
 </script>
 
 </body>

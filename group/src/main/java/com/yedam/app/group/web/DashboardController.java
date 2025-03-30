@@ -8,9 +8,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import com.yedam.app.group.service.ApprovalVO;
+import com.yedam.app.group.service.BoardVO;
 import com.yedam.app.group.service.DashboardService;
 import com.yedam.app.group.service.EmpService;
 import com.yedam.app.group.service.EmpVO;
+import com.yedam.app.group.service.MailVO;
 import com.yedam.app.group.service.RepositoryPostVO;
 import com.yedam.app.group.service.ScheduleVO;
 
@@ -32,12 +34,16 @@ public class DashboardController {
             List<ScheduleVO> scheduleList = dashboardService.getTodaySchedule(loginEmployee.getEmployeeNo());
             List<RepositoryPostVO> repositoryList = dashboardService.getRecentRepositoryPosts();
             List<ApprovalVO> approvalList = dashboardService.getRecentApprovalList(loginEmployee.getEmployeeNo());
-            
+            List<BoardVO> boardList = dashboardService.getRecentBoardList(loginEmployee.getSuberNo());
+            List<MailVO> mailList = dashboardService.getRecentMailList(loginEmployee.getEmployeeId()); // 메일 추가
+
             
 
             model.addAttribute("todaySchedule", scheduleList);
             model.addAttribute("repositoryList", repositoryList);
             model.addAttribute("recentApprovalList", approvalList);
+            model.addAttribute("recentBoardList", boardList);
+            model.addAttribute("recentMailList", mailList);
             // ✅ 디버깅
             System.out.println("✅ 로그인 사원: " + loginEmployee);
             System.out.println("✅ 오늘 일정 수: " + scheduleList.size());

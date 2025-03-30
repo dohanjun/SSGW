@@ -10,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -74,5 +75,6 @@ public class SecurityConfig {
 				+ "  UNION ALL " + "  SELECT EMPLOYEE_ID AS username, 'ROLE_USER' AS authority FROM EMPLOYEES "
 				+ ") WHERE username = ?");
 		return manager;
+
 	}
 }
