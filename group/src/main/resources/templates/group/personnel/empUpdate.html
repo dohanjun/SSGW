@@ -222,7 +222,7 @@
 	        }
 	    }
         
-        function resetPassword() {
+        /**/function resetPassword() {
             document.getElementById('pw').value = '12345678';
         }
         
@@ -397,17 +397,28 @@
 		    }
 		});
         
-        // 비밀번호 초기화 API 버튼
+        //비밀번호 초기화 API 버튼
 		function resetPassword() {
-		    let employeeNo = document.getElementById("number").value; // 사원번호 가져오기
+		    const employeeNo = document.getElementById("number").value;
 		
 		    fetch("/api/resetPassword?employeeNo=" + employeeNo, {
 		        method: "POST"
 		    })
 		    .then(response => response.text())
-		    .then(message => alert(message)) // 성공 메시지 알림
-		    .catch(error => console.error("비밀번호 초기화 실패:", error));
+		    .then(message => {
+		        alert(message); // 예: 비밀번호가 123456으로 초기화되었습니다.
+		        document.getElementById("pw").value = ""; // 입력칸 비우기 (선택사항)
+		    })
+		    .catch(error => {
+		        console.error("비밀번호 초기화 실패:", error);
+		        alert("비밀번호 초기화에 실패했습니다.");
+		    });
 		}
+		
+		//비밀번호 초기화 API 버튼
+		fetch("/api/resetPassword?employeeNo=" + employeeNo, {
+		    method: "POST"
+		})
 
     </script>
 </body>
