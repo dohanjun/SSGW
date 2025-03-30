@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{common/layouts/default_layout}"
+	layout:fragment="content">
+
+<head>
+<meta charset="UTF-8">
+<title>게시글 수정</title>
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css"
+	rel="stylesheet">
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+	rel="stylesheet">
+<style>
+#editor-container {
+	height: 300px;
+}
+</style>
+</head>
+
+<body>
+	<div class="container mt-4">
+		<div class="card shadow mb-4">
+			<div class="card-header py-3 d-flex align-items-center">
+				<h6 class="m-0 font-weight-bold text-primary">게시글 수정</h6>
+				<i class="fas fa-pen text-primary ml-2"></i>
+			</div>
+			<div class="card-body">
+				<form id="updateForm" th:action="@{/updateBoard}" method="post"
+					enctype="multipart/form-data">
+					<input type="hidden" name="postId" th:value="${post.postId}" /> <input
+						type="hidden" name="boardId" th:value="${post.boardId}" /> <input
+						type="hidden" name="employeeNo" th:value="${post.employeeNo}" />
+
+					<div class="form-group">
+						<label for="postTitle">제목</label> <input type="text"
+							class="form-control" id="postTitle" name="postTitle"
+							th:value="${post.postTitle}" required />
+					</div>
+
+					<div class="form-group">
+						<label for="postContent">내용</label>
+						<div id="editor-container"></div>
+						<input type="hidden" name="postContent" id="postContent">
+					</div>
+
+					<!-- 기존 파일 목록 표시 -->
+					<div class="form-group">
+						<label>기존 첨부파일</label>
+						<div th:each="file : ${attachments}">
+							<div class="mb-2">
+								<a
+									th:href="@{/download/boardFile/{id}(id=${file.attachmentId})}"
+									th:text="${file.fileTitle}" target="_blank"></a> <label
+									class="ml-2"> <input type="checkbox"
+									name="deleteFileIds" th:value="${file.attachmentId}" /> 삭제
+								</label>
+							</div>
+						</div>
+					</div>
+
+					<!-- 새 파일 업로드 -->
+					<div class="form-group">
+						<label for="files">새 파일 첨부</label> <input type="file"
+							class="form-control-file" id="files" name="files" multiple>
+					</div>
+
+					<div class="text-center mt-4">
+						<button type="submit" class="btn btn-primary">
+							<i class="fas fa-save"></i> 저장
+						</button>
+						<a th:href="@{/detailBoard/{postId}(postId=${post.postId})}"
+							class="btn btn-secondary"> <i class="fas fa-arrow-left"></i>
+							취소
+						</a>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+	<script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+        var quill = new Quill('#editor-container', {
+            theme: 'snow'
+        });
+
+        // Quill에 기존 HTML 내용 세팅
+        var originalContent = /*[[${post.postContent}]]*/ "";
+        quill.root.innerHTML = originalContent;
+
+        // 내용 숨은 input에 담기
+        document.getElementById("updateForm").addEventListener("submit", function () {
+            document.getElementById("postContent").value = quill.root.innerHTML;
+        });
+    });
+</script>
+</body>
+
+</html>

@@ -47,4 +47,10 @@ public interface BoardMapper {
     BoardAttachmentVO getBoardAttachmentById(int attachmentId);
     
     List<BoardAttachmentVO> selectBoardAttachmentsByPostId(int postId);
+    
+    void updateBoardPost(BoardPostVO postVO);
+    
+    void deleteAttachmentById(int attachmentId);
+    
+    void deleteBoard(int postId);
 }

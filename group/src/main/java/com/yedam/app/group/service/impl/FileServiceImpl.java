@@ -244,4 +244,9 @@ public class FileServiceImpl implements FileService {
     public List<BoardAttachmentVO> getBoardAttachmentsByPostId(int postId) {
         return boardMapper.selectBoardAttachmentsByPostId(postId);
     }
+    
+    @Override
+    public void deleteFileById(Long fileId) {
+        fileMapper.deleteFileById(fileId);
+    }
 }

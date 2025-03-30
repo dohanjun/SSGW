@@ -17,4 +17,6 @@ public interface CommentService {
 
     // 댓글 삭제
     void deleteComment(int commentId);
+    
+    CommentVO getCommentById(int commentId);
 }

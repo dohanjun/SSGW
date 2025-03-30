@@ -77,4 +77,8 @@
         	WHERE writing_id = #{writingId}
     	)
 	</delete>
+	
+	<delete id="deleteFileById">
+    	DELETE FROM repository_file WHERE file_id = #{fileId}
+	</delete>
 </mapper>

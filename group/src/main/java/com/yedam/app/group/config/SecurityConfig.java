@@ -35,6 +35,7 @@ import org.springframework.security.web.SecurityFilterChain;
 	                .requestMatchers("/aprv/modify", "/aprv/upload","/saveSubDetail","/saveSuber","/savePayment","/savePaymentDetails","/saveUser","/insertBoardPost","/selectBoardPost","/updateBoardPost").permitAll()
 	                .requestMatchers("/insertPost","/basket/**","/api/**","/alerts/**","/insertAlarm").permitAll()
 	                .requestMatchers("/uploadImage").permitAll()
+	                .requestMatchers("/comment/**").permitAll()
 	                // 관리자만 접근 가능
 	                .requestMatchers("/module","/insertModule","/updateModule","/deleteModule/*","/updateModuleBasic/*","/updateModuleActive/*","/qna","/fixed").hasAuthority("ROLE_MANAGER")
 	                // 로그인시 접근 가능
@@ -52,7 +53,7 @@ import org.springframework.security.web.SecurityFilterChain;
 	                .invalidateHttpSession(true)   
 	                .permitAll()
 	            )
-	            .csrf(csrf -> csrf.ignoringRequestMatchers("/logout","/savePayment","/insertModule", "/updateModule","/deleteModule/*","/updateModuleBasic/*","/updateModuleActive/*","/qna", "/aprv/**","/insertModule","/saveForm", "/schedule/**","/qna","/fixed","/saveSubDetail","/saveSubDetail","/saveSuber","/savePaymentDetails","/saveUser","/insertBoardPost","/selectBoardPost","/updateBoardPost","/basket/**","/api/**","/alerts/**","/insertAlarm","/bookUpdate","/uploadImage"));
+	            .csrf(csrf -> csrf.ignoringRequestMatchers("/logout","/savePayment","/insertModule", "/updateModule","/deleteModule/*","/updateModuleBasic/*","/updateModuleActive/*","/qna", "/aprv/**","/insertModule","/saveForm", "/schedule/**","/qna","/fixed","/saveSubDetail","/saveSubDetail","/saveSuber","/savePaymentDetails","/saveUser","/insertBoardPost","/selectBoardPost","/updateBoardPost","/basket/**","/api/**","/alerts/**","/insertAlarm","/bookUpdate","/uploadImage","/comment/**"));
 	        return http.build();
 	    }
 	    // 비밀번호 암호화

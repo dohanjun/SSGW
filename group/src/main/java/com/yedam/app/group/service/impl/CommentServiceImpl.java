@@ -39,4 +39,9 @@ public class CommentServiceImpl implements CommentService{
     public void deleteComment(int commentId) {
         commentMapper.deleteComment(commentId);
     }
+    
+    @Override
+    public CommentVO getCommentById(int commentId) {
+        return commentMapper.selectCommentById(commentId);
+    }
 }

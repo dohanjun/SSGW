@@ -30,5 +30,10 @@ public interface BoardService {
     BoardPostVO getPostDetail(int postId);
     
     List<BoardAttachmentVO> getAttachments(int postId);
-
+    
+    void updateBoardPost(BoardPostVO postVO, List<MultipartFile> files, List<Integer> deleteFileIds);
+    
+    // 게시글 삭제
+    void deleteBoard(int postId);
+    
 }
