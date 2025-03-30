@@ -206,10 +206,12 @@ public class EmpController {
 	}
 
 	// 비밀번호 초기화 API
-	@PostMapping("/resetPassword")
+	@PostMapping("/api/resetPassword")
+	@ResponseBody
 	public String resetPassword(@RequestParam int employeeNo) {
-		empService.resetPassword(employeeNo);
-		return "비밀번호가 초기화되었습니다.";
+	    String defaultPw = "123456"; // 기본 비번 고정
+	    empService.resetPassword(employeeNo, defaultPw); //  매개변수 추가
+	    return "비밀번호가 123456으로 초기화되었습니다.";
 	}
 
     // 조직도 화면 이동
