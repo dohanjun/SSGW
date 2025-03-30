@@ -43,6 +43,7 @@ import org.springframework.security.web.SecurityFilterChain;
 	                .loginPage("/login")
 	                .loginProcessingUrl("/login")
 	                .successHandler(successHandler)
+	                .defaultSuccessUrl("/MainPage", true)
 	                .permitAll()
 	            )
 	            .logout(logout -> logout

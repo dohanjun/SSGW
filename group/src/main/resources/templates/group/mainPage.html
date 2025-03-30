@@ -23,7 +23,8 @@
 	grid-template-rows: 100px 300px 300px;
 	gap: 20px;
 	grid-template-areas: "userinfo userinfo userinfo userinfo"
-		"datetime 자료실 공지 approval" "일정 자료실 공지 recentApproval";
+		"datetime 자료실 공지 approval"
+		"일정 자료실 공지 recentApproval";
 }
 
 body {
@@ -32,9 +33,10 @@ body {
 	background-attachment: fixed;
 	background-color: #f8f9fc;
 	font-family: 'Noto Sans KR', sans-serif;
+	user-select: none;
 }
 
-.card, .datetime-box, .board-box {
+.card, .datetime-box {
 	height: 100%;
 	border-radius: 12px;
 	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -113,46 +115,87 @@ body {
 	justify-content: flex-start;
 }
 
-.board-title {
-	font-size: 1.2rem;
-	font-weight: bold;
-	color: #333;
-	margin-bottom: 12px;
-	border-bottom: 2px solid #ddd;
-	padding-bottom: 6px;
+/* ✅ 박스 헤더 색상 */
+.board-section1 .board-title {
+	background-color: #3498db;
+	color: #fff;
+	padding: 8px 12px;
+	border-radius: 6px;
 }
 
-.board-list {
+.board-section2 .board-title {
+	background-color: #e67e22;
+	color: #fff;
+	padding: 8px 12px;
+	border-radius: 6px;
+}
+
+.approval .board-title {
+	background-color: #17a2b8;
+	color: #fff;
+	padding: 8px 12px;
+	border-radius: 6px;
+}
+
+.schedule-box .board-title {
+	background-color: #007bff;
+	color: #fff;
+	padding: 8px 12px;
+	border-radius: 6px;
+}
+
+.recentApproval .board-title {
+	background-color: #28a745;
+	color: #fff;
+	padding: 8px 12px;
+	border-radius: 6px;
+}
+
+.card-body ul {
 	list-style: none;
 	padding: 0;
 	margin: 0;
 }
 
-.board-list li {
-	margin-bottom: 10px;
-	font-size: 1rem;
+.card-body ul li, .board-list li {
+	background-color: rgba(0, 123, 255, 0.05);
+	border-radius: 8px;
+	padding: 8px 12px;
+	margin-bottom: 8px;
+	font-size: 0.95rem;
 	color: #555;
 	display: flex;
 	align-items: center;
+	transition: background-color 0.2s ease-in-out;
 }
 
-.board-list li::before {
+.card-body ul li:hover, .board-list li:hover {
+	background-color: rgba(0, 123, 255, 0.1);
+}
+
+.card-body ul li::before, .board-list li::before {
 	content: "📄";
 	margin-right: 8px;
 	color: #007bff;
 }
 
-.board-list li a {
-	color: #007bff;
+.card-body ul li a, .board-list li a {
+	color: #2c3e50;
+	font-weight: 500;
 	text-decoration: none;
-	transition: color 0.2s;
 }
 
-.board-list li a:hover {
+.card-body ul li a:hover, .board-list li a:hover {
 	color: #0056b3;
 	text-decoration: underline;
 }
 
+.board-title {
+	font-size: 1.2rem;
+	font-weight: bold;
+	color: #333;
+	margin-bottom: 12px;
+}
 .clickable-card:hover {
 	transform: translateY(-2px);
 	transition: all 0.2s ease-in-out;
@@ -160,6 +203,8 @@ body {
 	box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 </style>
+
+<link href="/css/dashboard.css" rel="stylesheet">
 </head>
 
 <body id="page-top">
@@ -193,7 +238,7 @@ body {
 							</div>
 						</div>
 
-						<!-- 자료실 -->
+						<!-- 📂 자료실 -->
 						<div
 							class="board-box board-section1 shadow-sm border clickable-card"
 							data-url="/totalRepository">
@@ -204,54 +249,50 @@ body {
 							</ul>
 						</div>
 
-						<!-- 공지 / 업무 -->
+						<!-- 📢 공지 · 업무 -->
 						<div
 							class="board-box board-section2 shadow-sm border clickable-card"
 							data-url="/noticeBoard">
 							<div class="board-title">📢 공지 · 업무</div>
 							<ul class="board-list">
-								<li><a href="#">전자결재 사용법 안내</a></li>
-								<li><a href="#">부서별 업무 담당자 명단</a></li>
-								<li><a href="#">업무 공지사항</a></li>
+								<li th:each="board : ${recentBoardList}"><a
+									th:text="${board.boardName}" th:href="@{/noticeBoard}"></a></li>
 							</ul>
 						</div>
 
-						<!-- 결재 서류 -->
-						<div class="card shadow border-0 approval clickable-card"
+						<!-- 📨 받은 메일함 -->
+						<div
+							class="board-box approval shadow-sm border clickable-card"
+							data-url="/mailBox">
+							<div class="board-title">📨 받은 메일함</div>
+							<ul class="board-list">
+								<li th:each="mail : ${recentMailList}"><a
+									th:text="${mail.title}" th:href="@{/mailBox}"></a></li>
+							</ul>
+						</div>
+
+						<!-- 📅 오늘 내 일정 -->
+						<div
+							class="board-box schedule-box shadow-sm border clickable-card"
+							data-url="/schedulePage">
+							<div class="board-title">📅 오늘 내 일정</div>
+							<ul class="board-list">
+								<li th:each="schedule : ${todaySchedule}"><a
+									th:text="${schedule.scheduleTitle}" th:href="@{/schedulePage}"></a></li>
+							</ul>
+						</div>
+
+						<!-- 📌 최근 결재 문서 -->
+						<div
+							class="board-box recentApproval shadow-sm border clickable-card"
 							data-url="/aprv/request">
-							<div class="card-header bg-warning text-dark fw-bold">결재 서류
-								현황</div>
-							<div class="card-body">결재 서류 내용</div>
+							<div class="board-title">📌 최근 결재 문서</div>
+							<ul class="board-list">
+								<li th:each="aprv : ${recentApprovalList}"><a
+									th:text="${aprv.title} + ' - ' + ${aprv.aprvStatus}"
+									th:href="@{/aprv/request}"></a></li>
+							</ul>
 						</div>
-
-						<!-- 일정 -->
-						<div class="card shadow border-0 schedule-box">
-							<div class="card-header bg-primary text-white fw-bold">📅
-								오늘 내 일정</div>
-							<div class="card-body">
-								<ul>
-									<li th:each="schedule : ${todaySchedule}"><a
-										th:href="@{/schedulePage}" class="text-dark"> 🗓️ <span
-											th:text="${schedule.scheduleTitle}">일정 제목</span>
-									</a></li>
-								</ul>
-							</div>
-						</div>
-
-						<!-- 최근 결재 문서 -->
-						<div class="card shadow-sm recentApproval clickable-card"
-							data-url="/aprv/request">
-							<div class="card-header bg-success text-white fw-bold">📌
-								최근 결재 문서</div>
-							<div class="card-body">
-								<ul class="mb-0">
-									<li th:each="aprv : ${recentApprovalList}"><span
-										th:text="${aprv.title} + ' - ' + ${aprv.aprvStatus}">결재
-											제목</span></li>
-								</ul>
-							</div>
-						</div>
-
 
 					</div>
 				</div>
@@ -260,9 +301,9 @@ body {
 			<footer class="sticky-footer bg-white">
 				<div class="container my-auto">
 					<div class="text-center my-auto copyright">
-						<span>Copyright &copy; Your Company 2025 | <a
-							href="/privacy-policy" class="text-muted">개인정보처리방침</a> | <a
-							href="/terms" class="text-muted">이용약관</a>
+						<span>Copyright &copy; Your Company 2025 | 
+							<a href="/privacy-policy" class="text-muted">개인정보처리방침</a> | 
+							<a href="/terms" class="text-muted">이용약관</a>
 						</span>
 					</div>
 				</div>
