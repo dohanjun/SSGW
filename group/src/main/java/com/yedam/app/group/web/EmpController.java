@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.yedam.app.group.mapper.EmpMapper;
@@ -216,4 +217,13 @@ public class EmpController {
     public String orgChartPage() {
         return "group/personnel/orgChart";
     }
+    
+    // 아이디 중복 체크 (Ajax 호출용)
+    @GetMapping("/checkEmployeeId")
+    @ResponseBody
+    public String checkEmployeeId(@RequestParam String employeeId) {
+        boolean isDuplicate = empService.isEmployeeIdDuplicate(employeeId);
+        return isDuplicate ? "duplicate" : "available";
+    }
+
 }

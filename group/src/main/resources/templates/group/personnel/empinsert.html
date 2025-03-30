@@ -65,9 +65,16 @@
                 </td>
             </tr>
             <tr>
-                <th><label for="empid">ID</label></th>
-                <td><input type="text" id="empid" th:field="*{employeeId}"></td>
-            </tr>
+			    <th><label for="empid">ID</label></th>
+			    <td>
+			        <div class="d-flex">
+			            <input type="text" id="empid" th:field="*{employeeId}" >
+			            <button type="button" class="btn btn-secondary btn-sm" onclick="checkDuplicate()">중복확인</button>
+			        </div>
+			        <small id="idCheckResult" class="form-text text-muted mt-1"></small>
+			    </td>
+			</tr>
+
             <tr>
                 <th><label for="emppw">비밀번호</label></th>
                 <td><input type="password" id="emppw" th:field="*{employeePw}"></td>
@@ -135,6 +142,9 @@
 
     <script src="/js/emp.js"></script>
 <script>
+    
+	let isIdChecked = false;      // 중복검사 수행 여부
+	let isIdAvailable = false;    // 사용 가능한 ID인지 여부
 
 	
 	// 페이지 로드 시 데이터 가져오기
@@ -156,6 +166,45 @@
             reader.readAsDataURL(file);
         }
     }
+    
+ 	// ID 중복 검사 함수
+	function checkDuplicate() {
+	    const idInput = document.getElementById("empid");
+	    const resultText = document.getElementById("idCheckResult");
+	    const employeeId = idInput.value.trim();
+	
+	    if (!employeeId) {
+	        alert("아이디를 입력해주세요.");
+	        idInput.focus();
+	        return;
+	    }
+	
+	    fetch(`/checkEmployeeId?employeeId=` + encodeURIComponent(employeeId))
+	        .then(response => response.text())
+	        .then(result => {
+	            isIdChecked = true; // 체크는 했음
+	            if (result === "duplicate") {
+	                isIdAvailable = false; // 중복이라 안 됨
+	                resultText.textContent = "❌ 이미 사용 중인 아이디입니다.";
+	                resultText.classList.remove("text-success");
+	                resultText.classList.add("text-danger");
+	            } else {
+	                isIdAvailable = true; // 사용 가능!
+	                resultText.textContent = "✅ 사용 가능한 아이디입니다.";
+	                resultText.classList.remove("text-danger");
+	                resultText.classList.add("text-success");
+	            }
+	        })
+	        .catch(error => {
+	            console.error("중복 검사 오류:", error);
+	            isIdChecked = false;
+	            isIdAvailable = false;
+	            resultText.textContent = "⚠️ 서버 오류 발생";
+	            resultText.classList.remove("text-success");
+	            resultText.classList.add("text-danger");
+	        });
+	}
+
 
     //  주소 검색 API
     function searchAddress() {
@@ -170,6 +219,20 @@
     
     document.querySelector("form[name='insertForm']").addEventListener("submit", function (event) {
     event.preventDefault(); // 기본 제출 방지
+    
+    //  아이디 중복검사 안 했을 때
+    if (!isIdChecked) {
+        alert("아이디 중복 확인을 해주세요.");
+        document.getElementById("empid").focus();
+        return;
+    }
+
+    //  중복된 아이디일 경우
+    if (!isIdAvailable) {
+        alert("이미 사용 중인 아이디입니다. 다른 아이디를 입력해주세요.");
+        document.getElementById("empid").focus();
+        return;
+    }
 
     let fields = [
         { id: "empid", message: "아이디가 입력되지 않았습니다." },
