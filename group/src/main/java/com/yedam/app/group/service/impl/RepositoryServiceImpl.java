@@ -44,4 +44,9 @@ public class RepositoryServiceImpl implements RepositoryService {
         return postMapper.getPostDetail(writingId);
     }
     
+    @Override
+    public List<RepositoryPostVO> getRecentRepositoryPosts() {
+        return repositoryMapper.getRecentRepositoryPosts();
+    }
+    
 }

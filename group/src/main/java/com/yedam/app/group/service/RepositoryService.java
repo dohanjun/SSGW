@@ -11,4 +11,6 @@ public interface RepositoryService {
     
     RepositoryPostVO getPostDetail(Long writingId);
     
+    List<RepositoryPostVO> getRecentRepositoryPosts();
+    
 }

@@ -23,5 +23,8 @@ public interface ScheduleMapper {
 
 	// 일정 고융
 	public void insertScheduleSharing(ScheduleVO scheduleVO);
+	
+	// 메인페이지
+	List<ScheduleVO> selectTodaySchedule(String employeeId);
 
 }
