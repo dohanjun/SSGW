@@ -182,7 +182,7 @@ function payment(type) {
 		},
 		async function(rsp) {
 			if (rsp.success) {
-				// 1. 회사정보 등록
+				const impUid = rsp.imp_uid;
 				let suberNo = await $.ajax({
 					type: "POST",
 					url: "/saveSuber",
@@ -239,6 +239,7 @@ function payment(type) {
 
 
 				let paymentdata = {
+					impUid: impUid,
 					paymentType: type,
 					paymentPrice: num,
 					suberNo: suberNo,
