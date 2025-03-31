@@ -89,4 +89,7 @@ public interface ApprovalMapper {
 	
 	// 
 	public ApprovalVO selectTitleEmpNo(int draftNo);
+	
+	//
+	public int countReferenceList(ApprovalVO aprvVO);
 }

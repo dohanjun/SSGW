@@ -278,5 +278,10 @@ public class ApprovalServiceImpl implements ApprovalService {
 	public int countAllList(ApprovalVO aprvVO) {
 		return approvalMapper.countAllList(aprvVO);
 	}
+
+	@Override
+	public int countReferenceList(ApprovalVO aprvVO) {
+		return approvalMapper.countReferenceList(aprvVO);
+	}
 	
 }

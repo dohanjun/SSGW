@@ -116,6 +116,9 @@ public class ApprovalController {
             model.addAttribute("currentPage", page);
             model.addAttribute("totalPages", totalPages);
             model.addAttribute("aprvStatus", aprvVO.getAprvStatus());
+            model.addAttribute("searchTitle", aprvVO.getTitle());
+            model.addAttribute("searchEmployeeName", aprvVO.getEmployeeName());
+            model.addAttribute("searchDraftDate", aprvVO.getDraftDate());
 
             ApprovalVO stamp = approvalService.getActiveStamp(aprvVO);
             model.addAttribute("stampImgPath", (stamp != null) ? stamp.getStampImgPath() : "");
@@ -144,18 +147,32 @@ public class ApprovalController {
 	 * @return 참조열람함페이지
 	 */
 	@GetMapping("aprv/reference")
-	public String aprvReferenceList(ApprovalVO aprvVO, Model model) {
+	public String aprvReferenceList(@RequestParam(defaultValue = "1") int page, ApprovalVO aprvVO, Model model) {
 	    // 로그인한 사용자 정보 가져오기
 	    EmpVO loggedInUser = empService.getLoggedInUserInfo();
 	    if (loggedInUser != null) {
 	        aprvVO.setEmployeeNo(loggedInUser.getEmployeeNo());
 	        aprvVO.setSuberNo(loggedInUser.getSuberNo());
-
-	        // '참조' 역할인 문서만 조회
 	        aprvVO.setAprvRole("참조");  // 참조자 역할만
-	        List<ApprovalVO> list = approvalService.findAprvListByRole(aprvVO); // 새로 만든 메서드 호출
-	        model.addAttribute("aprvs", list);
+	        
+	        aprvVO.setPage(page);
+	        aprvVO.setSize(10);
+	        aprvVO.setOffset((page - 1) * aprvVO.getSize());
 
+	        int totalCount = approvalService.countReferenceList(aprvVO);
+	        int totalPages = (int) Math.ceil((double) totalCount / aprvVO.getSize());
+	        if (totalPages == 0) totalPages = 1;
+	        
+	        List<ApprovalVO> list = approvalService.findAprvListByRole(aprvVO);
+	        model.addAttribute("aprvs", list);
+	        
+	        model.addAttribute("currentPage", page);
+	        model.addAttribute("totalPages", totalPages);
+	        
+	        model.addAttribute("searchTitle", aprvVO.getTitle());
+	        model.addAttribute("searchEmployeeName", aprvVO.getEmployeeName());
+	        model.addAttribute("searchDraftDate", aprvVO.getDraftDate());
+	        
 	        // 활성화된 도장 정보 가져오기
 	        ApprovalVO stamp = approvalService.getActiveStamp(aprvVO);
 	        model.addAttribute("stampImgPath", (stamp != null) ? stamp.getStampImgPath() : "");

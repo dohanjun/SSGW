@@ -82,4 +82,7 @@ public interface ApprovalService {
     
     // 결재문서확인
     public List<AprvRoutesVO> findAprvRoutesForDone(AprvRoutesVO aprvRoutesVO);
+    
+    // 참조문서
+    public int countReferenceList(ApprovalVO aprvVO);
 }

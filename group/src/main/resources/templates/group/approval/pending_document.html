@@ -20,10 +20,9 @@
 				<form th:action="@{/aprv/list}" method="GET">
 					<input type="hidden" name="aprvStatus" th:value='대기'>
 					<p>
-						기안자 <input type="text" name="employeeName"> 문서제목 <input
-							type="text" name="title"> 상신일 <input type="date"
-							th:value="${#dates.format(approvalVO.draftDate,'yyyy-MM-dd')}"
-							name="draftDate">
+						기안자 <input type="text" name="employeeName"  th:value="${searchEmployeeName}"> 문서제목 <input
+							type="text" name="title"  th:value="${searchTitle}"> 상신일 <input type="date"
+							name="draftDate"  th:value="${searchDraftDate}">
 						<button type="submit" class="float-right">검색</button>
 					</p>
 				</form>
@@ -55,32 +54,46 @@
 			</div>
 		</div>
 	</div>
-	<!-- 페이징 영역 -->
-	<div class="text-center mt-4">
-		<ul class="pagination justify-content-center">
-			<!-- 이전 페이지 -->
-			<li class="page-item"
-				th:classappend="${currentPage == 1} ? 'disabled'"><a
-				class="page-link"
-				th:href="@{/aprv/list(page=${currentPage - 1}, aprvStatus='대기')}">이전</a>
-			</li>
-			<!-- 페이지 번호 목록 -->
-			<th:block th:if="${totalPages > 0}">
-				<li class="page-item"
-					th:each="i : ${#numbers.sequence(1, totalPages)}"
-					th:classappend="${i == currentPage} ? 'active'"><a
-					class="page-link"
-					th:href="@{/aprv/list(page=${i}, aprvStatus='대기')}"
-					th:text="${i}">1</a></li>
-			</th:block>
-			<!-- 다음 페이지 -->
-			<li class="page-item"
-				th:classappend="${currentPage == totalPages} ? 'disabled'"><a
-				class="page-link"
-				th:href="@{/aprv/list(page=${currentPage + 1}, aprvStatus='대기')}">다음</a>
-			</li>
-		</ul>
-	</div>
+<!-- 페이징 영역 -->
+<div class="text-center mt-4">
+    <ul class="pagination justify-content-center">
+    
+        <!-- 이전 버튼 -->
+        <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+            <a class="page-link"
+               th:href="@{/aprv/list(page=${currentPage - 1},
+                                     aprvStatus='대기',
+                                     title=${searchTitle},
+                                     employeeName=${searchEmployeeName},
+                                     draftDate=${searchDraftDate})}">이전</a>
+        </li>
+
+        <!-- 페이지 번호 반복 -->
+        <li class="page-item"
+            th:each="i : ${#numbers.sequence(1, totalPages)}"
+            th:classappend="${i == currentPage} ? 'active'">
+            <a class="page-link"
+               th:href="@{/aprv/list(page=${i},
+                                     aprvStatus='대기',
+                                     title=${searchTitle},
+                                     employeeName=${searchEmployeeName},
+                                     draftDate=${searchDraftDate})}"
+               th:text="${i}">1</a>
+        </li>
+
+        <!-- 다음 버튼 -->
+        <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+            <a class="page-link"
+               th:href="@{/aprv/list(page=${currentPage + 1},
+                                     aprvStatus='대기',
+                                     title=${searchTitle},
+                                     employeeName=${searchEmployeeName},
+                                     draftDate=${searchDraftDate})}">다음</a>
+        </li>
+    </ul>
+</div>
+
+
 
 
 

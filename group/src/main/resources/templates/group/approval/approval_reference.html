@@ -17,13 +17,13 @@
 		<div class="card shadow mb-4">
 			<div class="card-header py-3">
 				<!-- 검색부분 -->
-				<form th:action="@{/aprv/list}" method="GET">
+				<form th:action="@{/aprv/reference}" method="GET">
 					<input type="hidden" name="aprvStatus" th:value="${aprvStatus}">
 					<input type="hidden" name="aprvRole" th:value="참조">
 					<p>
-						기안자 <input type="text" name="employeeName"> 문서제목 <input
-							type="text" name="title"> 상신일 <input type="date"
-							name="draftDate">
+						기안자 <input type="text" name="employeeName" th:value="${searchEmployeeName}"> 문서제목 <input
+							type="text" name="title" th:value="${searchTitle}"> 상신일 <input type="date"
+							name="draftDate"  th:value="${searchDraftDate}">
 						<button type="submit" class="float-right">검색</button>
 					</p>
 				</form>
@@ -56,6 +56,25 @@
 			</div>
 		</div>
 	</div>
+	<nav>
+    <ul class="pagination justify-content-center">
+        <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+            <a class="page-link"
+               th:href="@{/aprv/reference(page=${currentPage - 1}, title=${searchTitle}, employeeName=${searchEmployeeName}, draftDate=${searchDraftDate})}">이전</a>
+        </li>
+        <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}"
+            th:classappend="${i == currentPage} ? 'active'">
+            <a class="page-link"
+               th:href="@{/aprv/reference(page=${i}, title=${searchTitle}, employeeName=${searchEmployeeName}, draftDate=${searchDraftDate})}"
+               th:text="${i}"></a>
+        </li>
+        <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+            <a class="page-link"
+               th:href="@{/aprv/reference(page=${currentPage + 1}, title=${searchTitle}, employeeName=${searchEmployeeName}, draftDate=${searchDraftDate})}">다음</a>
+        </li>
+    </ul>
+</nav>
+	
 	<div class="modal fade" id="stampModal" tabindex="-1" role="dialog"
 		aria-labelledby="stampModalLabel" aria-hidden="true">
 		<div class="modal-dialog" role="document">
