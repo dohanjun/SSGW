@@ -13,7 +13,7 @@ public class ScheduleVO {
 	private Date scheduleStart;       // 시작일시
 	private Date scheduleEnd;         // 종료일시
 	private int employeeNo;           // 사원번호
-	private int departmentNo;         // 부서번호
+	private Integer departmentNo;     // 부서번호
 	private String scheduleDivision;  // 일정구분(개인 o1, 부서 o2, 회사o3)
 	private String repeatCycle;       // 반복주기
 	private int suberNo;              // 회사번호

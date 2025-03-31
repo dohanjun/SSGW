@@ -18,10 +18,11 @@
 			<div class="card-header py-3">
 				<!-- 검색부분 -->
 				<form th:action="@{/aprv/list}" method="GET">
-					<input type="hidden" name="aprvStatus" th:value="${aprvStatus}">
+					<input type="hidden" name="aprvStatus" th:value='대기'>
 					<p>
 						기안자 <input type="text" name="employeeName"> 문서제목 <input
-							type="text" name="title"> 상신일 <input type="date" th:value="${#dates.format(approvalVO.draftDate,'yyyy-MM-dd')}"
+							type="text" name="title"> 상신일 <input type="date"
+							th:value="${#dates.format(approvalVO.draftDate,'yyyy-MM-dd')}"
 							name="draftDate">
 						<button type="submit" class="float-right">검색</button>
 					</p>
@@ -29,8 +30,7 @@
 			</div>
 			<div class="card-body">
 				<div class="table-responsive">
-					<table class="table table-bordered" id="dataTable" 
-						>
+					<table class="table table-bordered" id="dataTable">
 						<thead>
 							<tr>
 								<th>문서번호</th>
@@ -56,23 +56,35 @@
 		</div>
 	</div>
 	<!-- 페이징 영역 -->
-<div class="text-center mt-4">
-    <ul class="pagination justify-content-center">
-        <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
-            <a class="page-link" th:href="@{/aprv/list(page=${currentPage - 1}, aprvStatus=${aprvStatus})}">이전</a>
-        </li>
-        <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}"
-            th:classappend="${i == currentPage} ? 'active'">
-            <a class="page-link" th:href="@{/aprv/list(page=${i}, aprvStatus=${aprvStatus})}" th:text="${i}">1</a>
-        </li>
-        <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
-            <a class="page-link" th:href="@{/aprv/list(page=${currentPage + 1}, aprvStatus=${aprvStatus})}">다음</a>
-        </li>
-    </ul>
-</div>
-	
-	
-	
+	<div class="text-center mt-4">
+		<ul class="pagination justify-content-center">
+			<!-- 이전 페이지 -->
+			<li class="page-item"
+				th:classappend="${currentPage == 1} ? 'disabled'"><a
+				class="page-link"
+				th:href="@{/aprv/list(page=${currentPage - 1}, aprvStatus='대기')}">이전</a>
+			</li>
+			<!-- 페이지 번호 목록 -->
+			<th:block th:if="${totalPages > 0}">
+				<li class="page-item"
+					th:each="i : ${#numbers.sequence(1, totalPages)}"
+					th:classappend="${i == currentPage} ? 'active'"><a
+					class="page-link"
+					th:href="@{/aprv/list(page=${i}, aprvStatus='대기')}"
+					th:text="${i}">1</a></li>
+			</th:block>
+			<!-- 다음 페이지 -->
+			<li class="page-item"
+				th:classappend="${currentPage == totalPages} ? 'disabled'"><a
+				class="page-link"
+				th:href="@{/aprv/list(page=${currentPage + 1}, aprvStatus='대기')}">다음</a>
+			</li>
+		</ul>
+	</div>
+
+
+
+
 	<div class="modal fade" id="stampModal" tabindex="-1" role="dialog"
 		aria-labelledby="stampModalLabel" aria-hidden="true">
 		<div class="modal-dialog" role="document">
@@ -142,6 +154,8 @@
 	    .then(result => {
 	        if (result.success) {
 	            alert("도장이 성공적으로 삭제되었습니다.");
+	            $('#stampModal').modal('hide'); // 모달 닫기
+	            location.reload(); // 페이지 새로고침
 	        } else {
 	            alert("도장 삭제 실패: " + result.message);
 	        }
@@ -170,7 +184,8 @@
     .then(result => {
         if (result.success) {
             alert("도장 수정 성공!");
-
+            $('#stampModal').modal('hide'); // 모달 닫기
+            location.reload(); // 페이지 새로고침
         } else {
             alert("도장 수정 실패!");
         }
@@ -199,7 +214,8 @@ function insertStamp() {
     .then(result => {
         if (result.success) {
             alert("도장 등록 성공!");
-
+            $('#stampModal').modal('hide'); // 모달 닫기
+            location.reload(); // 페이지 새로고침
         } else {
             alert("도장 등록 실패!");
         }

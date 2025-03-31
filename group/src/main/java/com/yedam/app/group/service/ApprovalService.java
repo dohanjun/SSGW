@@ -11,6 +11,9 @@ public interface ApprovalService {
 	// 결재요청함, 임시저장함
 	public List<ApprovalVO> findAllList(ApprovalVO aprvVO);
 	
+	// 문서갯수
+	public int countAllList(ApprovalVO aprvVO);
+	
 	// 참조열람함
 	public List<ApprovalVO> findAprvListByRole(ApprovalVO aprvVO);
 	
@@ -76,4 +79,7 @@ public interface ApprovalService {
     
     //
     public ApprovalVO findTitleEmpNo(int draftNo);
+    
+    // 결재문서확인
+    public List<AprvRoutesVO> findAprvRoutesForDone(AprvRoutesVO aprvRoutesVO);
 }

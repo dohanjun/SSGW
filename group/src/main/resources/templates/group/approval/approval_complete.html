@@ -42,7 +42,7 @@
 						</thead>
 						<tbody>
 							<tr th:each="aprv : ${aprvs}"
-								th:onclick="|location.href='@{/aprv/info(draftNo=${aprv.draftNo})}'|">
+								th:onclick="|location.href='@{/aprv/done(draftNo=${aprv.draftNo})}'|">
 								<td>[[${aprv.draftNo}]]</td>
 								<td>[[${aprv.employeeName}]]</td>
 								<td>[[${aprv.title}]]</td>
@@ -59,14 +59,14 @@
 <div class="text-center mt-4">
     <ul class="pagination justify-content-center">
         <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
-            <a class="page-link" th:href="@{/aprv/list(page=${currentPage - 1}, aprvStatus=${aprvStatus})}">이전</a>
+            <a class="page-link" th:href="@{/aprv/list(page=${currentPage - 1}, aprvStatus='완료')}">이전</a>
         </li>
         <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}"
             th:classappend="${i == currentPage} ? 'active'">
-            <a class="page-link" th:href="@{/aprv/list(page=${i}, aprvStatus=${aprvStatus})}" th:text="${i}">1</a>
+            <a class="page-link" th:href="@{/aprv/list(page=${i}, aprvStatus='완료')}" th:text="${i}">1</a>
         </li>
         <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
-            <a class="page-link" th:href="@{/aprv/list(page=${currentPage + 1}, aprvStatus=${aprvStatus})}">다음</a>
+            <a class="page-link" th:href="@{/aprv/list(page=${currentPage + 1}, aprvStatus='완료')}">다음</a>
         </li>
     </ul>
 </div>

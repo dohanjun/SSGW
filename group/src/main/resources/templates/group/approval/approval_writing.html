@@ -142,46 +142,106 @@ function forceCloseModal(modalId) {
         $('body').focus();
 }
 
-// 조직도 불러오기
-function buildTree(data, treeId) {
+document.addEventListener("DOMContentLoaded", function () {
+    fetch("/api/orgchart")
+        .then(response => response.json())
+        .then(data => {
+            console.log("[조직도 데이터]", data);
+            buildOrgChart(data, "orgTreeApprover"); // 결재자용 트리
+            buildOrgChart(data, "orgTreeReference"); // 참조자용 트리
+        })
+        .catch(error => console.error("조직도 불러오기 오류:", error));
+});
+
+// 회사별로 구분해서 조직도 구성
+function buildOrgChart(data, treeId) {
     const tree = document.getElementById(treeId);
     tree.innerHTML = "";
 
-    const deptMap = {}, childDeptMap = {};
-    data.forEach(dept => {
-        if (!deptMap[dept.departmentNo]) deptMap[dept.departmentNo] = dept;
+    const companyMap = {};
+
+    // suberNo 기준으로 회사 그룹핑
+    data.forEach(item => {
+        if (!companyMap[item.suberNo]) {
+            companyMap[item.suberNo] = {
+                companyName: item.companyName,
+                departments: []
+            };
+        }
+        companyMap[item.suberNo].departments.push(item);
+    });
+
+    Object.values(companyMap).forEach(company => {
+        const companyLi = document.createElement("li");
+        companyLi.innerHTML = `<span class="toggle-icon">▶</span> 🏢 <strong>${company.companyName}</strong>`;
+
+        const deptTree = document.createElement("ul");
+        deptTree.style.display = "none";
+
+        // 부서 트리 구조화
+        buildDeptTree(company.departments, deptTree);
+
+        companyLi.appendChild(deptTree);
+        tree.appendChild(companyLi);
+
+        // 토글
+        companyLi.querySelector(".toggle-icon").addEventListener("click", function () {
+            deptTree.style.display = deptTree.style.display === "none" ? "block" : "none";
+            this.textContent = deptTree.style.display === "none" ? "▶" : "▼";
+        });
+    });
+}
+
+// 부서를 계층적으로 연결해서 트리 생성
+function buildDeptTree(departments, containerUl) {
+    const childDeptMap = {};
+
+    departments.forEach(dept => {
         if (!childDeptMap[dept.upperDepNo]) childDeptMap[dept.upperDepNo] = [];
         childDeptMap[dept.upperDepNo].push(dept);
     });
 
-    const topDepts = childDeptMap[null] || childDeptMap[0] || [];
+    // 상위 부서가 목록에 존재하지 않으면 최상위 부서로 간주
+    const allDeptNos = departments.map(d => d.departmentNo);
+    const topDepts = departments.filter(d => !allDeptNos.includes(d.upperDepNo));
+
     topDepts.forEach(dept => {
         const deptLi = createDeptNodeRecursive(dept, childDeptMap);
-        tree.appendChild(deptLi);
+        containerUl.appendChild(deptLi);
     });
 }
 
 function createDeptNodeRecursive(dept, childDeptMap) {
     const deptLi = document.createElement("li");
-    deptLi.innerHTML = `<span class="toggle-icon">▶</span> 📁 <strong>${dept.departmentName} (${dept.employees.length}명)</strong>`;
+    const empCount = (dept.employees && dept.employees.length) || 0;
+    deptLi.innerHTML = `<span class="toggle-icon">▶</span> 📁 <strong>${dept.departmentName} (${empCount}명)</strong>`;
+
     const subTree = document.createElement("ul");
     subTree.style.display = "none";
 
-    dept.employees.forEach(emp => {
-        const empLi = document.createElement("li");
-        empLi.innerHTML = `
-          <input type="checkbox" class="emp-check" value="${emp.employeeNo}" data-name="${emp.employeeName}" data-job="${emp.jobTitleName}">
-          🙍‍♂️ ${emp.employeeName} (${emp.jobTitleName})
-        `;
-        subTree.appendChild(empLi);
-    });
+    // 사원 체크박스 추가
+    if (dept.employees) {
+        dept.employees.forEach(emp => {
+            const empLi = document.createElement("li");
+            empLi.innerHTML = `
+                <input type="checkbox" class="emp-check" 
+                       value="${emp.employeeNo}" 
+                       data-name="${emp.employeeName}" 
+                       data-job="${emp.jobTitleName}">
+                🙍‍♂️ ${emp.employeeName} (${emp.jobTitleName})
+            `;
+            subTree.appendChild(empLi);
+        });
+    }
 
+    // 하위 부서 재귀 호출
     const children = childDeptMap[dept.departmentNo] || [];
     children.forEach(child => {
         const subDeptLi = createDeptNodeRecursive(child, childDeptMap);
         subTree.appendChild(subDeptLi);
     });
 
+    // 토글 이벤트
     deptLi.querySelector(".toggle-icon").addEventListener("click", function () {
         subTree.style.display = subTree.style.display === "none" ? "block" : "none";
         this.textContent = subTree.style.display === "none" ? "▶" : "▼";
@@ -191,14 +251,32 @@ function createDeptNodeRecursive(dept, childDeptMap) {
     return deptLi;
 }
 
+// 검색 기능 (트리 자동 펼침 포함)
 function filterTree(inputId, treeId) {
     const searchText = document.getElementById(inputId).value.toLowerCase();
-    document.querySelectorAll(`#${treeId} li`).forEach(item => {
+    const allItems = document.querySelectorAll(`#${treeId} li`);
+
+    allItems.forEach(item => {
         const text = item.textContent.toLowerCase();
-        item.style.display = text.includes(searchText) ? "" : "none";
+        const match = text.includes(searchText);
+        item.style.display = match ? "" : "none";
+
+        // 검색된 항목이 보일 경우 상위 트리도 펼치기
+        if (match) {
+            let parent = item.parentElement;
+            while (parent && parent.id !== treeId) {
+                if (parent.tagName === "UL") parent.style.display = "block";
+                if (parent.tagName === "LI") {
+                    const toggle = parent.querySelector(".toggle-icon");
+                    if (toggle) toggle.textContent = "▼";
+                }
+                parent = parent.parentElement;
+            }
+        }
     });
 }
 
+// 검색 이벤트 연결
 $('#searchApprover').on('input', () => filterTree('searchApprover', 'orgTreeApprover'));
 $('#searchReference').on('input', () => filterTree('searchReference', 'orgTreeReference'));
 // 여기까지 조직도
@@ -207,13 +285,15 @@ $('#searchReference').on('input', () => filterTree('searchReference', 'orgTreeRe
 $('#approverModal').on('show.bs.modal', function () {
     fetch('/api/orgchart')
         .then(res => res.json())
-        .then(data => buildTree(data, 'orgTreeApprover'));
+        .then(data => {
+        	console.log("[조직도 데이터]", data);
+        	buildOrgChart(data, 'orgTreeApprover')});
 });
 
 $('#referenceModal').on('show.bs.modal', function () {
     fetch('/api/orgchart')
         .then(res => res.json())
-        .then(data => buildTree(data, 'orgTreeReference'));
+        .then(data => buildOrgChart(data, 'orgTreeReference'));
 });
 
 // 결재자 순서 변경 이벤트
@@ -553,6 +633,82 @@ $.get('/aprv/vacation', function (types) {
         $('#vacationTypeSelect').append(`<option value="${type.vacationTypeName}">${type.vacationTypeName}</option>`);
     });
 });
+
+// 총액 계산 함수 정의 (콤마 포함)
+function updateTotal($container) {
+    let total = 0;
+    $container.find('table.distable').eq(1).find('input[type="number"]').each(function () {
+        const value = parseInt($(this).val().replace(/,/g, '')) || 0;
+        total += value;
+    });
+    // 숫자를 콤마로 변환하여 총합 필드에 표시 (text로 변경했으므로 정상 표시됨)
+    $container.find('table.distable').eq(2).find('input[type="text"]').val(total.toLocaleString());
+}
+
+//  행 추가 이벤트 (이벤트 위임)
+$(document).on('click', '#addDisRowBtn', function () {
+    const newRow = `
+        <tr>
+            <td><input type="text" class="input-field"></td>
+            <td><input type="text" class="input-field"></td>
+            <td>
+                <div class="d-flex justify-content-between align-items-center">
+                    <input type="number" class="input-field text-right" style="flex: 1;">
+                    <button type="button" class="btn btn-sm btn-danger ml-2 remove-dis-row">삭제</button>
+                </div>
+            </td>
+        </tr>
+    `;
+    const $disburdd = $(this).closest('.disburdd');
+    $disburdd.find('table.distable').eq(1).append(newRow);
+    updateTotal($disburdd);  // 총합 다시 계산
+});
+
+$(document).on('click', '.remove-dis-row', function () {
+    const $row = $(this).closest('tr');
+    const $disburdd = $row.closest('.disburdd');
+    $row.remove();
+    updateTotal($disburdd);  // 총합 다시 계산
+});
+
+
+//  금액 입력 필드 변경 시 총합 업데이트 (이벤트 위임)
+$(document).on('input', '.disburdd table.distable:eq(1) input[type="number"]', function () {
+    const $disburdd = $(this).closest('.disburdd');
+    updateTotal($disburdd);
+});
+
+//  양식 로딩 후 초기 총액 계산
+function initDisbursementForm() {
+    const $disburdd = $('.disburdd');
+    if ($disburdd.length > 0) {
+        updateTotal($disburdd);
+    }
+}
+
+// 결재자 추가
+document.getElementById("addRowBtn").addEventListener("click", function () {
+    const tbody = document.getElementById("approvalTableBody");
+
+    const newRow = document.createElement("tr");
+    newRow.innerHTML = `
+        <td><input type="text" name="approverName" class="form-control"></td>
+        <td><button type="button" class="btn btn-danger btn-sm removeRowBtn">삭제</button></td>
+    `;
+
+    tbody.appendChild(newRow);
+});
+
+
+
+// 행 삭제 처리
+document.getElementById("approvalTableBody").addEventListener("click", function (event) {
+    if (event.target && event.target.classList.contains("removeRowBtn")) {
+        const row = event.target.closest("tr");
+        row.remove(); // 해당 행 삭제
+    }
+});
+
 </script>
 
 </body>

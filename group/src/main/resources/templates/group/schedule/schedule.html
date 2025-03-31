@@ -193,7 +193,6 @@
                 fetch(url)
                     .then(response => response.json())
                     .then(data => {
-
                         // FullCalendar에서 인식할 수 있도록 데이터 변환
                         let events = data.map(event => {
                             if (!event) {

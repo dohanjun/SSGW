@@ -18,6 +18,9 @@ public interface ApprovalMapper {
 	// 결재요청함, 임시저장함
 	public List<ApprovalVO> selectAllList(ApprovalVO aprvVO);
 	
+	// 문서갯수
+	public int countAllList(ApprovalVO aprvVO);
+	
 	// 참조열람함
 	public List<ApprovalVO> selectAprvListByRole(ApprovalVO aprvVO);
 	
@@ -38,6 +41,9 @@ public interface ApprovalMapper {
 	
 	// 결재승인페이지
 	public List<AprvRoutesVO> selectAprvRout(AprvRoutesVO routVO);
+	
+	// 결재완료
+	public List<AprvRoutesVO> selectAprvRoutForDone(AprvRoutesVO routVO);
 	
 	// 도장 등록
 	public int insertStamp(ApprovalVO aprvVO);

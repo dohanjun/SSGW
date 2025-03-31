@@ -229,3 +229,7 @@
 .routes th{
 	border: 1px solid black;
 }
+
+.disburdd th {
+		background-color:#ddd;
+	}

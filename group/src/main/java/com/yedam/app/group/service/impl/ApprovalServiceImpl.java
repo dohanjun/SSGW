@@ -269,4 +269,14 @@ public class ApprovalServiceImpl implements ApprovalService {
 		return approvalMapper.selectTitleEmpNo(draftNo);
 	}
 	
+	@Override
+    public List<AprvRoutesVO> findAprvRoutesForDone(AprvRoutesVO routVO) {
+        return approvalMapper.selectAprvRoutForDone(routVO);
+    }
+
+	@Override
+	public int countAllList(ApprovalVO aprvVO) {
+		return approvalMapper.countAllList(aprvVO);
+	}
+	
 }

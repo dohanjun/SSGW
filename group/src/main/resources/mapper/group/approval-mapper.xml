@@ -4,7 +4,8 @@
 	
 	<!-- 결재문서함(대기,완료,반려,진행) -->
 	<select id="selectAprvListByStatus" parameterType="ApprovalVO" resultType="ApprovalVO">
-    SELECT d.DRAFT_NO,
+    SELECT *
+    FROM (SELECT d.DRAFT_NO,
            d.TITLE,
            d.CONTENT,
            d.APRV_STATUS,
@@ -16,7 +17,8 @@
            d.BASICS_FORM_ID,
            d.SUBER_NO,
            r.EMPLOYEE_NO,
-           r.APRV_ROLE
+           r.APRV_ROLE,
+           ROW_NUMBER() OVER (ORDER BY d.draft_no DESC) AS rnum
     FROM aprv_documents d
     JOIN employees e ON d.EMPLOYEE_NO = e.EMPLOYEE_NO
     JOIN aprv_routes r ON r.DRAFT_NO = d.DRAFT_NO
@@ -34,8 +36,8 @@
     </if>
     <if test="aprvStatus != '참조'">
         AND r.APRV_ROLE != '참조'
-    </if>
-    ORDER BY d.DRAFT_NO
+    </if>)
+    WHERE rnum BETWEEN (#{page} - 1) * 10 + 1 AND #{page} * 10
 </select>
 
 <!-- 참조열람함 -->
@@ -208,7 +210,10 @@
 	
 	<!-- 결재요청함 ,임시저장함 -->
 <select id="selectAllList" parameterType="ApprovalVO" resultType="ApprovalVO">    
-    SELECT  d.DRAFT_NO,
+    SELECT *  
+    FROM (
+        SELECT 
+            d.DRAFT_NO,
             d.TITLE,
             d.CONTENT,
             d.APRV_STATUS,
@@ -219,30 +224,32 @@
             d.FORM_ID,
             d.BASICS_FORM_ID,
             d.SUBER_NO,
-            d.EMPLOYEE_NO
-    FROM aprv_documents d
-    JOIN employees e ON d.EMPLOYEE_NO = e.EMPLOYEE_NO
-    WHERE d.EMPLOYEE_NO = #{employeeNo}
-    AND d.SUBER_NO = #{suberNo}
-    <!-- 임시저장함 상태 조건 추가 -->
-    <if test="aprvStatus eq '임시'">
-        AND d.APRV_STATUS = '임시'  
-    </if>
-    <!-- 결재요청함은 임시를 제외한 모든 상태를 조회 -->
-    <if test="aprvStatus != '임시'">
-        AND d.APRV_STATUS != '임시'  
-    </if>
-    <if test="aprvStatus != null and aprvStatus != ''">
-    	AND d.APRV_STATUS LIKE '%' || #{aprvStatus} || '%' 
-    </if>
-    <if test="title != null and title != ''">
-        AND d.TITLE LIKE '%' || #{title} || '%'
-    </if>
-    <if test="draftDate != null">
-        AND d.DRAFT_DATE >= #{draftDate} AND d.DRAFT_DATE <![CDATA[ < ]]> #{draftDate} +1
-    </if>
-    ORDER BY d.draft_no
+            d.EMPLOYEE_NO,
+            ROW_NUMBER() OVER (ORDER BY d.DRAFT_NO DESC) AS rnum
+        FROM aprv_documents d
+        JOIN employees e ON d.EMPLOYEE_NO = e.EMPLOYEE_NO
+        WHERE d.EMPLOYEE_NO = #{employeeNo}
+        AND d.SUBER_NO = #{suberNo}
+        
+        <if test="aprvStatus eq '임시'">
+            AND d.APRV_STATUS = '임시'
+        </if>
+        <if test="aprvStatus != '임시'">
+            AND d.APRV_STATUS != '임시'
+        </if>
+        <if test="aprvStatus != null and aprvStatus != ''">
+            AND d.APRV_STATUS LIKE '%' || #{aprvStatus} || '%'
+        </if>
+        <if test="title != null and title != ''">
+            AND d.TITLE LIKE '%' || #{title} || '%'
+        </if>
+        <if test="draftDate != null">
+            AND d.DRAFT_DATE >= #{draftDate} AND d.DRAFT_DATE <![CDATA[ < ]]> #{draftDate} + 1
+        </if>
+    )
+    WHERE rnum BETWEEN (#{page} - 1) * #{size} + 1 AND #{page} * #{size}
 </select>
+
 
 	
 	<!-- 결재문서상신 -->
@@ -378,4 +385,53 @@
 	    FROM   APRV_DOCUMENTS
 	    WHERE  DRAFT_NO = #{draftNo}
 	</select>
+	
+	<!-- 결재완료 -->
+	<select id="selectAprvRoutForDone" parameterType="AprvRoutesVO" resultType="AprvRoutesVO">
+	SELECT  a.APRV_ID,
+			a.APRV_ORDER,
+			a.APRV_DATE,
+			a.DRAFT_NO,
+			a.APRV_ROLE,
+			a.EMPLOYEE_NO,
+			e.EMPLOYEE_NAME,
+			e.RANK_ID,
+			r.JOB_TITLE_NAME,
+			a.STAMP_ID,
+			s.STAMP_IMG_PATH
+	FROM aprv_routes a
+	JOIN employees e 
+	  ON a.employee_no = e.employee_no
+	JOIN rank r 
+	  ON e.rank_id = r.rank_id
+	LEFT JOIN stamp s 
+	  ON a.stamp_id = s.stamp_id
+	WHERE a.draft_no = #{draftNo}
+	  AND e.suber_no = #{suberNo}
+	ORDER BY a.APRV_ORDER
+</select>
+
+<!-- 문서 카운팅 -->
+<select id="countAllList" parameterType="ApprovalVO" resultType="int">
+    SELECT COUNT(*)
+    FROM aprv_documents d
+    WHERE d.EMPLOYEE_NO = #{employeeNo}
+    AND d.SUBER_NO = #{suberNo}
+    
+    <if test="aprvStatus eq '임시'">
+        AND d.APRV_STATUS = '임시'
+    </if>
+    <if test="aprvStatus != '임시'">
+        AND d.APRV_STATUS != '임시'
+    </if>
+    <if test="aprvStatus != null and aprvStatus != ''">
+        AND d.APRV_STATUS LIKE '%' || #{aprvStatus} || '%'
+    </if>
+    <if test="title != null and title != ''">
+        AND d.TITLE LIKE '%' || #{title} || '%'
+    </if>
+    <if test="draftDate != null">
+        AND d.DRAFT_DATE >= #{draftDate} AND d.DRAFT_DATE <![CDATA[ < ]]> #{draftDate} + 1
+    </if>
+</select>
 </mapper>

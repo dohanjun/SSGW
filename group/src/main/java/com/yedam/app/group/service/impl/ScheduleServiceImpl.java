@@ -44,9 +44,12 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 	@Override
 	public int removeSchedule(ScheduleVO scheduleVO) {
+		
+		// 공유된 일정 삭제
+		scheduleMapper.deleteScheduleSharing(scheduleVO);
+		
 		return scheduleMapper.deleteSchedule(scheduleVO);
 	}
-	
 
 
 }

@@ -12,21 +12,27 @@
 		SCHEDULE_ID,
 		SCHEDULE_TITLE,
 		SCHEDULE_CONTENT,
-		SCHEDULE_START, SCHEDULE_END, EMPLOYEE_NO,
+		SCHEDULE_START, 
+		SCHEDULE_END, 
+		EMPLOYEE_NO,
 		DEPARTMENT_NO,
 		SCHEDULE_DIVISION, SUBER_NO
-		) VALUES (
-		#{scheduleId}, #{scheduleTitle},
+		) 
+		VALUES (
+		#{scheduleId}, 
+		#{scheduleTitle},
 		#{scheduleContent},
-		#{scheduleStart}, #{scheduleEnd}, #{employeeNo},
-		#{departmentNo}, #{scheduleDivision}, #{suberNo}
+		#{scheduleStart}, 
+		#{scheduleEnd}, 
+		#{employeeNo},
+		#{departmentNo},
+		#{scheduleDivision},
+		#{suberNo}
 		)
 	</insert>
 
 
-
 	<!-- 일정조회 -->
-
 	<select id="SelectAllScheduleList" resultType="ScheduleVO"
 		parameterType="ScheduleVO">
 		SELECT s.SCHEDULE_ID
@@ -49,7 +55,8 @@
 		ON s.employee_no =
 		e.employee_no
 		WHERE s.SUBER_NO = #{suberNo}
-		AND 
+		AND(
+
 		(s.SCHEDULE_DIVISION =
 		'개인' AND s.EMPLOYEE_NO = #{employeeNo})
 		OR
@@ -57,6 +64,12 @@
 		AND s.DEPARTMENT_NO = #{departmentNo})
 		OR
 		(s.SCHEDULE_DIVISION = '회사')
+		OR (s.SCHEDULE_ID IN (
+              SELECT ss.SCHEDULE_ID
+              FROM schedule_sharing ss
+              WHERE ss.EMPLOYEE_NO = #{employeeNo}
+          ))
+		)
 	</select>
 
 
@@ -77,14 +90,15 @@
 	<!-- 일정삭제 -->
 	<delete id="deleteSchedule" parameterType="ScheduleVO">
 		DELETE schedule
-		WHERE
-		schedule_id = #{scheduleId}
+		WHERE schedule_id = #{scheduleId}
 	</delete>
 
-
-
-
-
+	<!-- 공유된 일정 삭제 -->
+	<delete id="deleteScheduleSharing" parameterType="ScheduleVO">
+		DELETE schedule_sharing
+		WHERE schedule_id = #{scheduleId}
+	</delete>
+	
 
 	<!-- 일정공유 -->
 	<insert id="insertScheduleSharing" parameterType="ScheduleVO">
