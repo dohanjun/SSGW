@@ -125,7 +125,7 @@
 								th:text="${#strings.equals(board.faq, 'Y')} ? 'FAQ' : ${board.postId}"></td>
 							<td><a th:href="@{/qnaBoard/detail(postId=${board.postId})}">
 									<span th:text="${board.postTitle}"></span> <span
-									th:if="${board.childYn == 'Y'}">(답글 있음)</span>
+									th:if="${board.childYn == 'Y'}">(!)</span>
 							</a></td>
 							<td th:text="${board.employeeName}"></td>
 							<td th:text="${#dates.format(board.postDate, 'yyyy-MM-dd')}"></td>

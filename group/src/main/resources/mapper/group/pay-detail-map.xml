@@ -16,16 +16,14 @@
 		sub_details_no,
 		payment_price,
 		payment_state,
-		payment_date,
-		imp_uid
+		payment_date
 		) VALUES (
 		#{paymentDetailsNo},
 		#{paymentNo},
 		#{subDetailsNo},
 		#{paymentPrice},
 		#{paymentState},
-		SYSDATE,
-		#{impUid}
+		SYSDATE
 		)
 	</insert>
 

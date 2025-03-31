@@ -182,7 +182,6 @@ function payment(type) {
 		},
 		async function(rsp) {
 			if (rsp.success) {
-				const impUid = rsp.imp_uid;
 				let suberNo = await $.ajax({
 					type: "POST",
 					url: "/saveSuber",
@@ -220,15 +219,11 @@ function payment(type) {
 					contentType: "application/json"
 				})
 
-				console.log(response)
 				
 				let subDetailsNoList = response.map(detail => ({
 					subDetailsNo: detail.subDetailsNo,
 					discountPrice: detail.discountPrice
 				}));
-
-
-
 
 				//3 결제 정보 저장				
 				let paymentDetailsList = subDetailsNoList.map(detail => ({
@@ -239,7 +234,6 @@ function payment(type) {
 
 
 				let paymentdata = {
-					impUid: impUid,
 					paymentType: type,
 					paymentPrice: num,
 					suberNo: suberNo,
