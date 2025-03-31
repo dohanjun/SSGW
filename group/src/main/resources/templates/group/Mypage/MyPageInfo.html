@@ -138,14 +138,26 @@
 					th:value="${emp.phoneNumber}" readonly>
 			</div>
 
-			<div class="form-group">
-				<label for="address">주소</label> <input type="text" id="address"
-					th:value="${emp.address}" readonly>
+			<div class="form-group" style="display: flex; gap: 10px;">
+			    <div style="flex: 1;">
+			        <label for="address">주소</label>
+			        <input type="text" id="address" th:value="${emp.address}" readonly>
+			    </div>
+			    <div style="flex: 1;">
+			        <label for="resign">재직상태</label>
+			        <input type="text" id="resign" th:value="${emp.resignationStatus == 'N' ? '재직' : '퇴사'}" readonly>
+			    </div>
 			</div>
 
-			<div class="form-group">
-				<label for="hire-date">입사일</label> <input type="date" id="hire-date"
-					th:value="${#dates.format(emp.hireDate, 'yyyy-MM-dd') }" readonly>
+			<div class="form-group" style="display: flex; gap: 10px;">
+			    <div style="flex: 1;">
+			        <label for="hire-date">입사일</label>
+			        <input type="date" id="hire-date" th:value="${#dates.format(emp.hireDate, 'yyyy-MM-dd')}" readonly>
+			    </div>
+			    <div style="flex: 1;">
+			        <label for="exit-date">퇴사일</label>
+			        <input type="date" id="exit-date" th:value="${#dates.format(emp.exitDate, 'yyyy-MM-dd')}" readonly>
+			    </div>
 			</div>
 
 			<div class="form-group">
