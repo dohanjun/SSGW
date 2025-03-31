@@ -60,37 +60,33 @@
         </div>
 
         <!--  오른쪽: 부서장 추가 -->
-        <div class="col-md-6">
-            <div class="card h-100">
-                <div class="card-header font-weight-bold text-center">부서장 추가</div>
-                <div class="card-body">
-                    <ul class="list-group">
-                        <li class="list-group-item d-flex justify-content-start align-items-center position-relative"
-                            th:each="dept : ${deptList}"
-                            th:onclick="|openOrgModal(${dept.departmentNo})|"
-                            style="cursor: pointer; height: 40px;">
+<!-- 오른쪽: 부서장 추가 -->
+<div class="col-md-6">
+    <div class="card h-100">
+        <div class="card-header font-weight-bold text-center">부서장 추가</div>
+        <div class="card-body">
+            <ul class="list-group">
+                <li class="list-group-item d-flex align-items-center justify-content-between"
+                    th:each="dept : ${deptList}">
+                    
+                    <!-- 부서명 + 부서장 정보 클릭 시 조직도 모달 -->
+                    <div class="d-flex align-items-center" style="cursor: pointer;" th:onclick="|openOrgModal(${dept.departmentNo})|">
+                        <strong th:text="${dept.departmentName}" class="mr-3"></strong>
+                        <span th:if="${dept.employeeName != null}" th:text="'부서장 : ' + ${dept.employeeName}" class="text-success small"></span>
+                        <span th:if="${dept.employeeName == null}" class="text-danger small">(부서장 미지정)</span>
+                    </div>
 
-                            <!-- 왼쪽: 부서명 -->
-                            <div style="width: 200px;">
-                                <strong th:text="${dept.departmentName}"></strong>
-                            </div>
-
-                            <!-- 가운데: 부서장 텍스트 (li 중앙 정렬) -->
-                            <div style="position: absolute; left: 50%; transform: translateX(-50%); text-align: center; width: max-content;">
-                                <span th:if="${dept.employeeName != null}"
-                                      th:text="' 부서장 : ' + ${dept.employeeName}"
-                                      class="text-success small"></span>
-                                <span th:if="${dept.employeeName == null}"
-                                      class="text-danger small">(부서장 미지정)</span>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+                    <!-- 삭제 버튼 -->
+					<button type="button" class="btn btn-sm btn-danger"
+					        th:onclick="|event.stopPropagation(); deleteDepartment(${dept.departmentNo})|">
+					    삭제
+					</button>
+                </li>
+            </ul>
         </div>
-
     </div>
 </div>
+
 
 <!--  조직도 모달 -->
 <div class="modal fade" id="orgModal" tabindex="-1" role="dialog" aria-labelledby="orgModalLabel" aria-hidden="true">
@@ -125,7 +121,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 
-<script>
+<script th:inline="javascript">
     let selectedDeptNo = null;
 
     // CSRF 설정
@@ -279,6 +275,38 @@
             }
         });
     });
+    
+ // 부서 삭제 요청
+    function deleteDepartment(departmentNo) {
+        if (!confirm("정말로 이 부서를 삭제하시겠습니까?")) return;
+
+        fetch("/deleteDepartment", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                [csrfHeader]: csrfToken
+            },
+            body: "departmentNo=" + departmentNo
+        })
+        .then(res => res.text())
+        .then(result => {
+            if (result === "hasChild") {
+                alert("❌ 하위 부서가 있어 삭제할 수 없습니다.");
+            } else if (result === "hasEmployee") {
+                alert("❌ 소속된 사원이 있어 삭제할 수 없습니다.");
+            } else if (result === "success") {
+                alert("✅ 부서가 삭제되었습니다.");
+                location.reload();
+            } else {
+                alert("⚠️ 삭제에 실패했습니다.");
+            }
+        })
+        .catch(err => {
+            alert("🚨 오류 발생");
+            console.error(err);
+        });
+    }
+
 </script>
 
 </body>

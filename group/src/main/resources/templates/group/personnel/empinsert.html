@@ -36,6 +36,55 @@
         #photo {
             display: none;
         }
+        
+            body {
+        font-size: 14px;
+	    }
+	
+	    table td, table th {
+	        vertical-align: middle;
+	        padding: 0.5rem !important;
+	    }
+	
+	    input.form-control, select.form-control, select, input[type="text"], input[type="password"], input[type="date"] {
+	        font-size: 14px;
+	        padding: 0.375rem 0.5rem;
+	        height: auto;
+	    }
+	
+	    input[readonly] {
+	        background-color: #f9f9f9;
+	        cursor: not-allowed;
+	    }
+	
+	    .form-control-sm {
+	        padding: 0.25rem 0.5rem;
+	        font-size: 0.875rem;
+	    }
+	
+	    .btn-sm {
+	        padding: 0.25rem 0.5rem;
+	        font-size: 0.875rem;
+	    }
+	
+	    .table {
+	        margin-bottom: 1rem;
+	    }
+	
+	    .container {
+	        max-width: 900px;
+	    }
+	
+	    .profile-img {
+	        width: 80px;
+	        height: 80px;
+
+	        object-fit: cover;
+	    }
+	
+	    .profile-container {
+	        margin-bottom: 1rem;
+	    }
     </style>
 </head>
 <body>
@@ -54,81 +103,117 @@
     </div>
 
     <div class="container">
-        <table class="table table-bordered">
-            <tr>
-                <th><label for="empno">사원번호</label></th>
-                <td><input type="number" id="empno" th:field="*{employeeNo}" readonly></td>
-            </tr>
-            <tr style="display: none;">
-                <td colspan="2">
-                    <input type="hidden" id="subno" th:field="*{suberNo}" readonly>
-                </td>
-            </tr>
-            <tr>
-			    <th><label for="empid">ID</label></th>
-			    <td>
-			        <div class="d-flex">
-			            <input type="text" id="empid" th:field="*{employeeId}" maxlength="20" minlength="4" required>
-			            <button type="button" class="btn btn-secondary btn-sm" onclick="checkDuplicate()">중복확인</button>
-			        </div>
-			        <small id="idCheckResult" class="form-text text-muted mt-1"></small>
-			    </td>
-			</tr>
+	<table class="table table-bordered">
+	    <tr>
+	        <th><label for="empno">사원번호</label></th>
+	        <td>
+	            <div class="col-6 p-0">
+	                <input type="number" id="empno" th:field="*{employeeNo}" class="form-control" readonly>
+	            </div>
+	        </td>
+	    </tr>
+	    <tr style="display: none;">
+	        <td colspan="2">
+	            <input type="hidden" id="subno" th:field="*{suberNo}" readonly>
+	        </td>
+	    </tr>
+		<tr>
+		    <th><label for="empid">ID</label></th>
+		    <td>
+		        <div class="d-flex col-6 p-0">
+		            <input type="text" id="empid" th:field="*{employeeId}" maxlength="20" minlength="4"
+		                   class="form-control" required>
+		            <div class="ml-2" style="flex-shrink: 0;">
+		                <button type="button" class="btn btn-secondary btn-sm h-100" onclick="checkDuplicate()">중복확인</button>
+		            </div>
+		        </div>
+		        <small id="idCheckResult" class="form-text text-muted mt-1"></small>
+		    </td>
+		</tr>
 
-            <tr>
-                <th><label for="emppw">비밀번호</label></th>
-                <td><input type="password" id="emppw" th:field="*{employeePw}" maxlength="20" minlength="6" required></td>
-            </tr>
-            <tr>
-                <th><label for="empname">이름</label></th>
-                <td><input type="text" id="empname" th:field="*{employeeName}" maxlength="10" minlength="2" required></td>
-            </tr>
-            <tr>
-                <th><label for="depa">부서</label></th>
-                <td>
-                    <select id="depa" th:field="*{departmentNo}">
-                        <option value="">부서를 선택하세요</option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <th><label for="rank">직급</label></th>
-                <td>
-                    <select id="rank" th:field="*{rankId}">
-                        <option value="">직급을 선택하세요</option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <th><label for="auth">권한</label></th>
-                <td>
-                    <select id="auth" th:field="*{rightsId}">
-                        <option value="">권한을 선택하세요</option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <th><label for="pho">연락처</label></th>
-                <td><input type="text" id="pho" th:field="*{phoneNumber}" maxlength="13" ></td>
-            </tr>
-            <tr>
-                <th><label for="add">주소</label></th>
-                <td>
-                    <input type="text" id="add" th:field="*{address}" readonly>
-                    <button type="button" class="btn btn-info btn-sm" onclick="searchAddress()">주소 검색</button>
-                </td>
-            </tr>
-            <tr>
-                <th><label for="detailAdd">상세주소</label></th>
-                <td>
-                    <input type="text" id="detailAdd" placeholder="상세주소 입력">
-                </td>
-            </tr>
-            <tr>
-                <th><label for="hire">입사일</label></th>
-                <td><input type="date" id="hire" th:field="*{hireDate}"></td>
-            </tr>
-        </table>
+	    <tr>
+	        <th><label for="emppw">비밀번호</label></th>
+	        <td>
+	            <div class="col-6 p-0">
+	                <input type="password" id="emppw" th:field="*{employeePw}" class="form-control" maxlength="20" minlength="6" required>
+	            </div>
+	        </td>
+	    </tr>
+	    <tr>
+	        <th><label for="empname">이름</label></th>
+	        <td>
+	            <div class="col-6 p-0">
+	                <input type="text" id="empname" th:field="*{employeeName}" class="form-control" maxlength="10" minlength="2" required>
+	            </div>
+	        </td>
+	    </tr>
+	    <tr>
+	        <th><label for="depa">부서</label></th>
+	        <td>
+	            <div class="col-6 p-0">
+	                <select id="depa" th:field="*{departmentNo}" class="form-control">
+	                    <option value="">부서를 선택하세요</option>
+	                </select>
+	            </div>
+	        </td>
+	    </tr>
+	    <tr>
+	        <th><label for="rank">직급</label></th>
+	        <td>
+	            <div class="col-6 p-0">
+	                <select id="rank" th:field="*{rankId}" class="form-control">
+	                    <option value="">직급을 선택하세요</option>
+	                </select>
+	            </div>
+	        </td>
+	    </tr>
+	    <tr>
+	        <th><label for="auth">권한</label></th>
+	        <td>
+	            <div class="col-6 p-0">
+	                <select id="auth" th:field="*{rightsId}" class="form-control">
+	                    <option value="">권한을 선택하세요</option>
+	                </select>
+	            </div>
+	        </td>
+	    </tr>
+	    <tr>
+	        <th><label for="pho">연락처</label></th>
+	        <td>
+	            <div class="col-6 p-0">
+	                <input type="text" id="pho" th:field="*{phoneNumber}" class="form-control" maxlength="13">
+	            </div>
+	        </td>
+	    </tr>
+		<tr>
+		    <th><label for="add">주소</label></th>
+		    <td>
+		        <div class="d-flex col-8 p-0">
+		            <input type="text" id="add" th:field="*{address}" class="form-control" readonly>
+		            <div class="ml-2" style="flex-shrink: 0;">
+		                <button type="button" class="btn btn-info btn-sm h-100" onclick="searchAddress()">주소 검색</button>
+		            </div>
+		        </div>
+		    </td>
+		</tr>
+	    <tr>
+	        <th><label for="detailAdd">상세주소</label></th>
+	        <td>
+	            <div class="col-6 p-0">
+	                <input type="text" id="detailAdd" placeholder="상세주소 입력" class="form-control">
+	            </div>
+	        </td>
+	    </tr>
+	    <tr>
+	        <th><label for="hire">입사일</label></th>
+	        <td>
+	            <div class="col-6 p-0">
+	                <input type="date" id="hire" th:field="*{hireDate}" class="form-control">
+	            </div>
+	        </td>
+	    </tr>
+	</table>
+
         <div class="container text-center mt-3">
             <button type="submit" class="btn btn-primary">등록</button>
             <button type="button" class="btn btn-danger" th:onclick="|location.href = '@{/empMgmt}'|">취소</button>

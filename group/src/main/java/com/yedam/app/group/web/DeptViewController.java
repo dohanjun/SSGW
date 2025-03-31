@@ -100,6 +100,18 @@ public class DeptViewController {
 
         return "success";
     }
+    
+    // 부서삭제
+    @PostMapping("/deleteDepartment")
+    @ResponseBody
+    public String deleteDepartment(@RequestParam int departmentNo) {
+        if (deptService.hasChildDepartments(departmentNo)) return "hasChild";
+        if (deptService.hasEmployeesInDept(departmentNo)) return "hasEmployee";
+
+        boolean deleted = deptService.deleteDepartment(departmentNo);
+        return deleted ? "success" : "fail";
+    }
+
 
 
     

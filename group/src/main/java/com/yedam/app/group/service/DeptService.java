@@ -32,6 +32,15 @@ public interface DeptService {
 	int updateManager(DeptVO deptVO);
 
 	void updateDepManager(DeptVO deptVO);
+	
+	// 하위 부서 개수 확인
+	boolean hasChildDepartments(int departmentNo);
+	
+	// 부서에 속한 사원 수 확인
+	boolean hasEmployeesInDept(int departmentNo);
+	
+	// 부서삭제
+	boolean deleteDepartment(int departmentNo);
 
 
 }
