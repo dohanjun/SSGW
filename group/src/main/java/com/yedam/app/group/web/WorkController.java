@@ -62,14 +62,21 @@ public class WorkController {
         return "group/workPage/blank";
     }
 
-    // ✅ 관리자용 차트 페이지 이동 (부장 이상만 접근 가능)
-    @GetMapping("/chartsManagerPage")
+    // ✅ 관리자 페이지 이동
+    @GetMapping("/chartsManager")
     public String showChartsManagerPage() {
-        EmpVO loginUser = empService.getLoggedInUserInfo();
-        if (loginUser == null || loginUser.getRankId() != 7) { // 🔥 추가된 부분
-            return "redirect:/access-denied";
-        }
         return "group/workPage/chartsManager";
+    }
+
+    // ✅ 관리자용 근태 데이터 (JSON)
+    @GetMapping("/chartsManagerData")
+    @ResponseBody
+    public List<AttendanceSummaryDTO> getChartData() {
+        EmpVO emp = empService.getLoggedInUserInfo();
+        if (emp == null || emp.getDepartmentNo() == null) {
+            return Collections.emptyList();
+        }
+        return attendanceService.getDepartmentAttendanceSummary(emp.getDepartmentNo());
     }
 
     @GetMapping("/todayAttendance")
@@ -80,16 +87,6 @@ public class WorkController {
             return Collections.emptyList();
         }
         return attendanceService.getTodayAttendanceByDept(emp.getDepartmentNo());
-    }
-
-    @GetMapping("/chartsManager")
-    @ResponseBody
-    public List<AttendanceSummaryDTO> getChartData() {
-        EmpVO emp = empService.getLoggedInUserInfo();
-        if (emp == null || emp.getDepartmentNo() == null) {
-            return Collections.emptyList();
-        }
-        return attendanceService.getDepartmentAttendanceSummary(emp.getDepartmentNo());
     }
 
     @GetMapping("/employeeRecord/{employeeNo}")
