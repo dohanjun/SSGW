@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.yedam.app.group.mapper.EmpMapper;
@@ -205,10 +206,12 @@ public class EmpController {
 	}
 
 	// 비밀번호 초기화 API
-	@PostMapping("/resetPassword")
+	@PostMapping("/api/resetPassword")
+	@ResponseBody
 	public String resetPassword(@RequestParam int employeeNo) {
-		empService.resetPassword(employeeNo);
-		return "비밀번호가 초기화되었습니다.";
+	    String defaultPw = "123456"; // 기본 비번 고정
+	    empService.resetPassword(employeeNo, defaultPw); //  매개변수 추가
+	    return "비밀번호가 123456으로 초기화되었습니다.";
 	}
 
     // 조직도 화면 이동
@@ -216,4 +219,13 @@ public class EmpController {
     public String orgChartPage() {
         return "group/personnel/orgChart";
     }
+    
+    // 아이디 중복 체크 (Ajax 호출용)
+    @GetMapping("/checkEmployeeId")
+    @ResponseBody
+    public String checkEmployeeId(@RequestParam String employeeId) {
+        boolean isDuplicate = empService.isEmployeeIdDuplicate(employeeId);
+        return isDuplicate ? "duplicate" : "available";
+    }
+
 }

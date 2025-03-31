@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.yedam.app.group.mapper.EmpMapper;
@@ -15,15 +16,19 @@ import com.yedam.app.group.service.EmpVO;
 import com.yedam.app.group.service.EmpserchVO;
 import com.yedam.app.group.service.PasswordUtils;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 @Service
 public class EmpServiceImpl implements EmpService{
 	
-	private EmpMapper empMapper;
+	private final EmpMapper empMapper;
+	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	
-	@Autowired
-	public EmpServiceImpl(EmpMapper empMapper ){
-		this.empMapper = empMapper;
-	}
+//	@Autowired
+//	public EmpServiceImpl(EmpMapper empMapper ){
+//		this.empMapper = empMapper;
+//	}
 	
 	// 사원등록
 	@Override
@@ -97,18 +102,9 @@ public class EmpServiceImpl implements EmpService{
 
     // 비밀번호 업데이트
     @Override
-    public void resetPassword(int employeeNo) {
-        // 1️ 랜덤 비밀번호 생성
-        String randomPassword = PasswordUtils.generateRandomPassword();
-        
-        // 2️ 비밀번호 암호화(해싱)
-        String hashedPassword = PasswordUtils.hashPassword(randomPassword);
-
-        // 3️ 비밀번호 업데이트 (DB에 저장)
-        empMapper.updatePassword(employeeNo, hashedPassword);
-
-//        // 4️ (선택) 이메일 전송 가능
-//        System.out.println("새로운 비밀번호: " + randomPassword); // 콘솔 확인용
+    public void resetPassword(int employeeNo, String defaultPw) {
+        String encodedPw = bCryptPasswordEncoder.encode(defaultPw); // 해시 암호화
+        empMapper.updatePassword(employeeNo, encodedPw);
     }
   
     @Override
@@ -124,6 +120,13 @@ public class EmpServiceImpl implements EmpService{
     @Override
     public void updateEmployeePasswordBySuberNo(EmpVO employee) {
         empMapper.updateEmployeePasswordBySuberNo(employee);
+    }
+    
+    
+    // 아이디 중복체크
+    @Override
+    public boolean isEmployeeIdDuplicate(String employeeId) {
+        return empMapper.isEmployeeIdDuplicate(employeeId) > 0;
     }
 	
 

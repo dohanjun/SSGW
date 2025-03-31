@@ -1,16 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.yedam.app.group.mapper.PaymentDetailsMapper">
+<mapper
+	namespace="com.yedam.app.group.mapper.PaymentDetailsMapper">
 
-	<insert id="insertPaymentDetails" parameterType="com.yedam.app.group.service.PaymentDetailsVO">
-	    <selectKey keyProperty="paymentDetailsNo" resultType="int" order="BEFORE">
-	        SELECT NVL(MAX(PAYMENT_DETAILS_NO), 0) + 1 FROM payment_details
-	    </selectKey>
-	
-	    INSERT INTO payment_details (
-	        payment_details_no, payment_no, sub_details_no, payment_price, payment_state, payment_date
-	    ) VALUES (
-	        #{paymentDetailsNo}, #{paymentNo}, #{subDetailsNo}, #{paymentPrice}, #{paymentState}, SYSDATE
-	    )
+	<insert id="insertPaymentDetails"
+		parameterType="com.yedam.app.group.service.PaymentDetailsVO">
+		<selectKey keyProperty="paymentDetailsNo" resultType="int"
+			order="BEFORE">
+			SELECT NVL(MAX(PAYMENT_DETAILS_NO), 0) + 1 FROM payment_details
+		</selectKey>
+
+		INSERT INTO payment_details (
+		payment_details_no,
+		payment_no,
+		sub_details_no,
+		payment_price,
+		payment_state,
+		payment_date,
+		imp_uid
+		) VALUES (
+		#{paymentDetailsNo},
+		#{paymentNo},
+		#{subDetailsNo},
+		#{paymentPrice},
+		#{paymentState},
+		SYSDATE,
+		#{impUid}
+		)
 	</insert>
+
 </mapper>

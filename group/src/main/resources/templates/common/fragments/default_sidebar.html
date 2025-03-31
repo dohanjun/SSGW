@@ -9,7 +9,7 @@
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
  
         <!-- Sidebar - Brand -->
-        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="main">
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="MainPage">
             <div class="sidebar-brand-icon rotate-n-15"> 
                 <i class="fas fa-laugh-wink"></i>
             </div>
@@ -81,8 +81,8 @@
             </a>
             <div id="work" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
-                <th:block th:if="${session.rightsLevel != null and session.rightsLevel >= 5}">
-                    <a class="collapse-item" href="chartsManagerPage">관리자 근태관리</a>
+                <th:block th:if="${#authorization.expression('hasAnyAuthority(''ROLE_BOARD_ADMIN'', ''ROLE_MANAGER'', ''ROLE_HR'')')}">
+                    <a class="collapse-item" href="chartsManager">관리자 근태관리</a>
                 </th:block>
                     <a class="collapse-item" href="blank">사원 근태관리</a>
                 </div>
@@ -113,8 +113,8 @@
             </div>
         </li>
 
-        <!-- 인사관리 (권한 체크) -->
-        <th:block th:if="${session.rightsLevel != null and session.rightsLevel >= 7}">
+			<!-- 인사관리자 또는 최고관리자만 접근 가능 -->
+			<th:block th:if="${#authorization.expression('hasAnyAuthority(''ROLE_MANAGER'', ''ROLE_HR'')')}">
             <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseT"
                    aria-expanded="true" aria-controls="collapseT">

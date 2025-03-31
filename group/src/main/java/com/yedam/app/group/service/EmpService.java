@@ -32,7 +32,7 @@ public interface EmpService {
     public EmpVO getLoggedInUserInfo();
     
     // 비밀번호 초기화 기능 추가
-    public void resetPassword(int employeeNo); 
+    public void resetPassword(int employeeNo, String defaultPw);
     
     // 첫번째 ip
     String getFirstIpByEmployeeNo(Integer employeeNo);
@@ -42,5 +42,8 @@ public interface EmpService {
     
     //
 	public void updateEmployeePasswordBySuberNo(EmpVO employee);
+	
+	// 아이디 중복 체크
+	public boolean isEmployeeIdDuplicate(String employeeId);
 
 }

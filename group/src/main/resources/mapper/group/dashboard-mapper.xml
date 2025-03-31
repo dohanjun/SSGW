@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yedam.app.group.mapper.DashboardMapper">
+
+	<!-- 오늘 내 일정 -->
+	<select id="selectTodaySchedule" parameterType="int"
+		resultType="com.yedam.app.group.service.ScheduleVO">
+		SELECT schedule_id, schedule_title, schedule_start,
+		employee_no
+		FROM schedule
+		WHERE employee_no = #{employeeNo}
+		AND
+		TO_CHAR(schedule_start, 'YYYY-MM-DD') = TO_CHAR(SYSDATE,
+		'YYYY-MM-DD')
+	</select>
+
+	<!-- 최근 게시물 3개 -->
+	<select id="selectRecentRepositoryPosts"
+		resultType="com.yedam.app.group.service.RepositoryPostVO">
+		SELECT writing_id, title, creation_date, employee_no
+		FROM (
+		SELECT writing_id, title, creation_date, employee_no
+		FROM
+		repository_post
+		ORDER BY creation_date DESC
+		)
+		WHERE ROWNUM &lt;= 10
+	</select>
+
+
+
+	<select id="selectRecentApprovalList"
+		resultType="com.yedam.app.group.service.ApprovalVO">
+		SELECT draft_no, title, aprv_status, draft_date,
+		employee_no
+		FROM (
+		SELECT draft_no, title, aprv_status, draft_date,
+		employee_no
+		FROM aprv_documents
+		WHERE employee_no = #{employeeNo}
+		ORDER
+		BY draft_date DESC
+		)
+		WHERE ROWNUM &lt;= 10
+	</select>
+
+	<select id="selectRecentBoardList"
+		resultType="com.yedam.app.group.service.BoardVO">
+		SELECT board_id, board_type, department_no, board_name,
+		board_state,
+		suber_no
+		FROM (
+		SELECT board_id, board_type, department_no,
+		board_name, board_state,
+		suber_no
+		FROM board
+		WHERE suber_no = #{suberNo}
+		ORDER BY board_id DESC
+		)
+		WHERE ROWNUM &lt;= 5
+	</select>
+
+	<select id="selectRecentMailList"
+		resultType="com.yedam.app.group.service.MailVO">
+		SELECT mail_id, title, sent_date, get_user
+		FROM (
+		SELECT mail_id, title, sent_date, get_user
+		FROM mail
+		WHERE get_user =
+		#{employeeId}
+		ORDER BY sent_date DESC
+		)
+		WHERE ROWNUM &lt;= 5
+	</select>
+
+
+</mapper>

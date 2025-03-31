@@ -2,38 +2,53 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yedam.app.group.mapper.RepositoryMapper">
 
-	<select id="findTotalRepository" parameterType="int" resultType="RepositoryVO">
-    	SELECT file_repository_id, suber_no, file_repository_type
-    	  FROM repository
-    	 WHERE suber_no = #{suberNo} 
-    	   AND file_repository_type = '전체'
+	<select id="findTotalRepository" parameterType="int"
+		resultType="RepositoryVO">
+		SELECT file_repository_id, suber_no, file_repository_type
+		FROM repository
+		WHERE suber_no = #{suberNo}
+		AND file_repository_type =
+		'전체'
 	</select>
 
 	<!-- 부서 자료실 (회사 번호 + 부서 번호로 조회) -->
-	<select id="findDepartmentRepository" parameterType="map" resultType="com.yedam.app.group.service.RepositoryVO">
-    	SELECT file_repository_id, suber_no, department_no, file_repository_type
-    	FROM repository
-    	WHERE suber_no = #{suberNo} AND department_no = #{departmentNo} AND file_repository_type = '부서'
+	<select id="findDepartmentRepository" parameterType="map"
+		resultType="com.yedam.app.group.service.RepositoryVO">
+		SELECT file_repository_id, suber_no, department_no,
+		file_repository_type
+		FROM repository
+		WHERE suber_no = #{suberNo} AND
+		department_no = #{departmentNo} AND
+		file_repository_type = '부서'
 	</select>
 
 	<!-- 개인 자료실 (회사 번호 + 사원 번호로 조회) -->
-	<select id="findIndividualRepository" parameterType="map" resultType="com.yedam.app.group.service.RepositoryVO">
-    	SELECT file_repository_id, suber_no, employee_no, file_repository_type
-    	FROM repository
-    	WHERE suber_no = #{suberNo} AND employee_no = #{employeeNo} AND file_repository_type = '개인'
+	<select id="findIndividualRepository" parameterType="map"
+		resultType="com.yedam.app.group.service.RepositoryVO">
+		SELECT file_repository_id, suber_no, employee_no,
+		file_repository_type
+		FROM repository
+		WHERE suber_no = #{suberNo} AND
+		employee_no = #{employeeNo} AND
+		file_repository_type = '개인'
 	</select>
-	
-	<select id="getPostDetail" parameterType="long" resultType="com.yedam.app.group.service.RepositoryPostVO">
-    	SELECT 
-       		p.writing_id,
-        	p.title,
-        	p.content,
-        	p.creation_date,
-        	p.employee_no,
-        	e.employee_name AS writer
-    	FROM repository_post p
-    	JOIN employees e ON p.employee_no = e.employee_no
-    	WHERE p.writing_id = #{writingId}
+
+	<select id="getPostDetail" parameterType="long"
+		resultType="com.yedam.app.group.service.RepositoryPostVO">
+		SELECT
+		p.writing_id,
+		p.title,
+		p.content,
+		p.creation_date,
+		p.employee_no,
+		e.employee_name AS writer
+		FROM repository_post p
+		JOIN
+		employees e ON p.employee_no = e.employee_no
+		WHERE p.writing_id =
+		#{writingId}
 	</select>
-	
+
+
+
 </mapper>
