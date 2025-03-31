@@ -146,5 +146,48 @@
 			SET MANAGER = #{manager}
 		WHERE suber_no = #{suberNo}
 	</update>
+	
+	<!-- 하위 부서 개수 확인 -->
+	<select id="countChildDepartments" resultType="int">
+	    SELECT COUNT(*) FROM DEPARTMENT WHERE UPPER_DEP_NO = #{departmentNo}
+	</select>
+	
+	<!-- 부서에 소속된 사원 개수 확인 -->
+	<select id="countEmployeesInDept" resultType="int">
+	  SELECT COUNT(*)
+	  FROM EMPLOYEES E
+	  WHERE E.DEPARTMENT_NO = #{departmentNo}
+	    AND E.RESIGNATION_STATUS = 'N'
+	    AND E.EMPLOYEE_NO != (
+	      SELECT NVL(D.MANAGER, -1)
+	      FROM DEPARTMENT D
+	      WHERE D.DEPARTMENT_NO = #{departmentNo}
+	    )
+	</select>
+	
+	<!-- 부서 삭제 -->
+	<delete id="deleteDepartment">
+	    DELETE FROM DEPARTMENT WHERE DEPARTMENT_NO = #{departmentNo}
+	</delete>
+	
+	<!-- 부서장 NULL 처리 -->
+	<update id="clearManagerBeforeDelete" parameterType="int">
+	    UPDATE DEPARTMENT
+	    SET MANAGER = NULL
+	    WHERE DEPARTMENT_NO = #{departmentNo}
+	</update>
+	
+	<!-- 사원 부서 NULL 처리 -->
+	<update id="clearEmployeesInDept" parameterType="int">
+	    UPDATE EMPLOYEES
+	    SET DEPARTMENT_NO = NULL
+	    WHERE DEPARTMENT_NO = #{departmentNo}
+	</update>
+	
+	<!--  부서와 연결된 자료실 완전 삭제 -->
+	<delete id="deleteFileRepositoryByDeptNo">
+	    DELETE FROM REPOSITORY
+	    WHERE DEPARTMENT_NO = #{departmentNo}
+	</delete>
 
 </mapper>

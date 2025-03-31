@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.yedam.app.group.mapper.DeptMapper;
+import com.yedam.app.group.mapper.EmpMapper;
 import com.yedam.app.group.service.DeptService;
 import com.yedam.app.group.service.DeptVO;
 import com.yedam.app.group.service.EmpVO;
@@ -20,6 +21,7 @@ public class DeptServiceimpl implements DeptService{
 	
     @Autowired
     private DeptMapper deptMapper;
+    private EmpMapper empMapper;
 
 	@Override
 	public List<DeptVO> getAllDepartments(DeptVO deptVO) {
@@ -94,6 +96,34 @@ public class DeptServiceimpl implements DeptService{
 	public void updateDepManager(DeptVO deptVO) {
 		deptMapper.updateDepManager(deptVO);
 		
+	}
+	
+	// 하위 부서 개수 확인
+	@Override
+	public boolean hasChildDepartments(int departmentNo) {
+	    return deptMapper.countChildDepartments(departmentNo) > 0;
+	}
+
+	// 부서에 속한 사원 수 확인
+	@Override
+	public boolean hasEmployeesInDept(int departmentNo) {
+	    return deptMapper.countEmployeesInDept(departmentNo) > 0;
+	}
+
+	// 부서삭제
+	@Override
+	public boolean deleteDepartment(int departmentNo) {
+	    if (deptMapper.countChildDepartments(departmentNo) > 0) return false;
+	    if (deptMapper.countEmployeesInDept(departmentNo) > 0) return false;
+
+	    //  자료실 완전 삭제
+	    deptMapper.deleteFileRepositoryByDeptNo(departmentNo);
+
+	    //  부서장 연결 해제
+	    deptMapper.clearManagerBeforeDelete(departmentNo);
+
+	    //  부서 삭제
+	    return deptMapper.deleteDepartment(departmentNo) > 0;
 	}
 
 

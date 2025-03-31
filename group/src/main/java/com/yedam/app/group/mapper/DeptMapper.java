@@ -35,8 +35,26 @@ public interface DeptMapper {
     // 부서장 업데이트
     public int updateManager(DeptVO deptVO);
 
-
+    //
 	public void updateDepManager(DeptVO deptVO);
+	
+    // 하위 부서 개수 확인
+    public int countChildDepartments(@Param("departmentNo") int departmentNo);
+
+    // 부서에 속한 사원 수 확인
+    public int countEmployeesInDept(@Param("departmentNo") int departmentNo);
+
+    // 부서 삭제
+    public int deleteDepartment(@Param("departmentNo") int departmentNo);
+    
+    // 부서장 null처리
+    public int clearManagerBeforeDelete(int departmentNo);
+    
+    // 사원 부서 NULL 처리 
+    public int clearEmployeesInDept(int departmentNo);
+        
+    // 부서 자료실 삭제
+    public int deleteFileRepositoryByDeptNo(int departmentNo);
     
 
 	
