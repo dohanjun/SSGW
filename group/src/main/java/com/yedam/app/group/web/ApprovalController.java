@@ -100,7 +100,11 @@ public class ApprovalController {
 
             int totalCount = approvalService.countAprvListByStatus(aprvVO);
             int totalPages = (int) Math.ceil((double) totalCount / aprvVO.getSize());
-
+            if (totalPages == 0) {
+                totalPages = 1;
+            }
+            System.out.println(totalPages);
+            
             List<ApprovalVO> list = approvalService.findAprvListByStatus(aprvVO);
 
             // 참조 제외
@@ -111,6 +115,7 @@ public class ApprovalController {
             model.addAttribute("aprvs", list);
             model.addAttribute("currentPage", page);
             model.addAttribute("totalPages", totalPages);
+            model.addAttribute("aprvStatus", aprvVO.getAprvStatus());
 
             ApprovalVO stamp = approvalService.getActiveStamp(aprvVO);
             model.addAttribute("stampImgPath", (stamp != null) ? stamp.getStampImgPath() : "");
@@ -169,7 +174,7 @@ public class ApprovalController {
 	 */
 	// 결재요청함, 임시저장함
 	@GetMapping("aprv/request")
-	public String aprvRequestList(ApprovalVO aprvVO, Model model) {
+	public String aprvRequestList(@RequestParam(defaultValue = "1") int page, ApprovalVO aprvVO, Model model) {
 	    // 로그인한 사용자 정보 가져오기
 	    EmpVO loggedInUser = empService.getLoggedInUserInfo();
 	    
@@ -180,17 +185,26 @@ public class ApprovalController {
         aprvVO.setEmployeeNo(loggedInUser.getEmployeeNo());  // 로그인한 사용자 정보 설정
         aprvVO.setSuberNo(loggedInUser.getSuberNo());        // 로그인한 사용자 회사번호
         
-        // 임시저장 문서일 경우
-        if ("임시".equals(aprvVO.getAprvStatus())) {
-            List<ApprovalVO> list = approvalService.findAllList(aprvVO);  // 임시저장 문서 조회
-            System.out.println("검색 결과 리스트 크기: " + list.size());
-            model.addAttribute("aprvs", list);
-            return "group/approval/approval_save";  // 임시저장함 페이지로 리디렉션
-        } else {
-            List<ApprovalVO> list = approvalService.findAllList(aprvVO);  // 결재요청 문서 조회
-            model.addAttribute("aprvs", list);
-            return "group/approval/approval_request";  // 결재요청함 페이지로 리디렉션
-        }
+        // 페이징 세팅
+        aprvVO.setPage(page);
+        aprvVO.setSize(10);  // 한 페이지당 10개
+        aprvVO.setOffset((page - 1) * aprvVO.getSize());
+        
+        int totalCount = approvalService.countAllList(aprvVO);
+        int totalPages = (int) Math.ceil((double) totalCount / aprvVO.getSize());
+        
+        List<ApprovalVO> list = approvalService.findAllList(aprvVO);
+
+        //  공통 model 추가
+        model.addAttribute("aprvs", list);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("aprvStatus", aprvVO.getAprvStatus());
+
+        //  뷰 분기
+        return "임시".equals(aprvVO.getAprvStatus())
+                ? "group/approval/approval_save"
+                : "group/approval/approval_request";
 	}
 
 
@@ -538,6 +552,30 @@ public class ApprovalController {
 	    return ResponseEntity.ok(response);
 	}
 	
+	// 도장확인
+	@GetMapping("/aprv/checkStamp/{employeeNo}")
+	@ResponseBody
+	public Map<String, Object> checkActiveStamp(@PathVariable Integer employeeNo) {
+	    Map<String, Object> result = new HashMap<>();
+
+	    try {
+	        // 활성화된 도장이 있는지 여부 조회
+	        ApprovalVO aprvVO = new ApprovalVO();
+	        aprvVO.setEmployeeNo(employeeNo);
+
+	        ApprovalVO activeStamp = approvalService.getActiveStamp(aprvVO); // 이미 만든 메서드 활용
+
+	        result.put("activeStamp", activeStamp != null);  // 도장이 있으면 true, 없으면 false
+	        result.put("success", true);
+	    } catch (Exception e) {
+	        result.put("success", false);
+	        result.put("message", e.getMessage());
+	    }
+
+	    return result;
+	}
+
+	
 	/**
 	 * 대기함, 진행함에서 문서 li태그를 클릭시 이동하는 페이지
 	 * @param draftNo
@@ -585,13 +623,44 @@ public class ApprovalController {
 		return "group/approval/approval";
 	}
 	
+	// 완료함 상세 페이지
+    @GetMapping("aprv/done")
+    public String aprvDoneInfo(AprvRoutesVO routVO, Model model) {
+        EmpVO loggedInUser = empService.getLoggedInUserInfo();
+        model.addAttribute("loggedInEmpNo", loggedInUser.getEmployeeNo());
+
+        ApprovalVO infoVO = new ApprovalVO();
+        infoVO.setDraftNo(routVO.getDraftNo());
+
+        ApprovalVO aprvVO = approvalService.findAprvInfo(infoVO);
+
+        routVO.setSuberNo(loggedInUser.getSuberNo());
+        List<AprvRoutesVO> routList = approvalService.findAprvRoutesForDone(routVO);
+        List<AprvFileVO> fileList = aprvFileService.findFilesByDraftNo(routVO.getDraftNo());
+
+        model.addAttribute("aprv", aprvVO);
+        model.addAttribute("aprvroutes", routList);
+        model.addAttribute("files", fileList);
+
+        return "group/approval/approval_done"; // 완료함용 HTML
+    }
+	
+	
 	@PostMapping("/aprv/stampsave")
 	@ResponseBody
 	public Map<String, Object> registerStamp(@RequestBody AprvRoutesVO routVO) {
 	    Map<String, Object> result = new HashMap<>();
 
 	    try {
-	        approvalService.modifyStampForRoute(routVO);  // 서비스 호출
+	    	// 1. 도장 정보 등록
+	        approvalService.modifyStampForRoute(routVO);
+
+	        // 2. 등록된 도장의 이미지 경로 다시 조회
+	        ApprovalVO stampVO = new ApprovalVO();
+	        stampVO.setEmployeeNo(routVO.getEmployeeNo());
+	        ApprovalVO activeStamp = approvalService.getActiveStamp(stampVO);
+
+	        result.put("stampImgPath", (activeStamp != null) ? activeStamp.getStampImgPath() : null);
 	        result.put("success", true);
 	    } catch (Exception e) {
 	        result.put("success", false);
@@ -749,11 +818,6 @@ public class ApprovalController {
 	@GetMapping("schedulePage")
 	public String scheduleList() {
 		return "group/schedule/schedule";
-	}
-	
-	@GetMapping("/tes")
-	public String testdfasdf() {
-		return "group/approval/test";
 	}
 	
 }

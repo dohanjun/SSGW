@@ -17,14 +17,16 @@ public interface ScheduleMapper {
 	// 일정 삭제
 	public int deleteSchedule(ScheduleVO scheduleVO);
 	
-
-    // 통합 일정 조회
-	List<ScheduleVO> selectAllSchedules();
-
-	// 일정 고융
+	// 공유된 일정 삭제
+	public int deleteScheduleSharing(ScheduleVO scheduleVO);
+	
+	// 일정 공유
 	public void insertScheduleSharing(ScheduleVO scheduleVO);
 	
 	// 메인페이지
 	List<ScheduleVO> selectTodaySchedule(String employeeId);
 
+	
+	// 통합 일정 조회
+	List<ScheduleVO> selectAllSchedules();
 }

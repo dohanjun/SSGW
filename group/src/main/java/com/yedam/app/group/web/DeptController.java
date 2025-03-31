@@ -60,6 +60,7 @@ public class DeptController {
     	
         return deptMapper.getAllRanks(rankVO);
     }
+    
     // 권한 목록 조회 API
     @GetMapping("/rights")
     public List<RightsVO> getRights(RightsVO rightsVO) {

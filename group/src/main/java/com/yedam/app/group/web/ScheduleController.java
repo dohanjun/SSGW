@@ -41,7 +41,9 @@ public class ScheduleController {
 	    scheduleVO.setEmployeeNo(loggedInUser.getEmployeeNo());  // 로그인한 사용자 정보 설정
 	    scheduleVO.setSuberNo(loggedInUser.getSuberNo()); // 로그인한 사용자 회사번호
 	    scheduleVO.setDepartmentNo(loggedInUser.getDepartmentNo()); // 로그인한 사용자 부서번호
-
+	    
+	    System.out.println("✅ departmentNo: " + loggedInUser.getDepartmentNo());
+	    
 	    int result = scheduleService.createSchedule(scheduleVO);
 
 	    if (result > 0) {
@@ -55,13 +57,14 @@ public class ScheduleController {
 	
 	// 일정 조회
 	@GetMapping("")
-    public List<ScheduleVO> getScheduleList(ScheduleVO scheduleVO, Model model) {
+    public List<ScheduleVO> getScheduleList(ScheduleVO scheduleVO) {
 		
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 		
 		scheduleVO.setEmployeeNo(loggedInUser.getEmployeeNo());  //  로그인한 사용자 사원번호
 		scheduleVO.setSuberNo(loggedInUser.getSuberNo()); // 로그인한 사용자 회사번호
 		scheduleVO.setDepartmentNo(loggedInUser.getDepartmentNo()); // 로그인한 사용자 부서번호
+		
 		
         return scheduleService.findAllSchedules(scheduleVO);
     }

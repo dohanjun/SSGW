@@ -143,12 +143,31 @@
                  AND SUBER_NO = #{suberNo}
                  
       </update>
+      
       <!-- 로그인한 사람 아이디 -->
 	  <select id="findByEmployeeId" parameterType="String" resultType="EmpVO">
-	  		 SELECT * 
-	  		 FROM employees 
-	  		 WHERE employee_id = #{employeeId}
-	  </select>
+  SELECT  EMPLOYEE_NO,
+	      EMPLOYEE_NAME,
+	      EMPLOYEE_ID,
+	      EMPLOYEE_PW,
+	      RESIGNATION_STATUS,
+	      TEMP_IP,
+	      PASSWORD_CHANGED,
+	      HIRE_DATE,
+	      EXIT_DATE,
+	      PHONE_NUMBER,
+	      ADDRESS,
+	      PROFILE_IMAGE,
+	      SUBER_NO,
+	      RANK_ID,
+	      RIGHTS_ID,
+	      MANAGER,
+	      DEPARTMENT_NO,
+	      PROFILE_IMAGE_BLOB
+  FROM employees 
+  WHERE employee_id = #{employeeId}
+</select>
+
 	  
 	  <sql id="criteria">
 		    WHERE 1=1

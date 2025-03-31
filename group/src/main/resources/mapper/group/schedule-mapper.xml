@@ -12,53 +12,27 @@
 		SCHEDULE_ID,
 		SCHEDULE_TITLE,
 		SCHEDULE_CONTENT,
-		SCHEDULE_START, SCHEDULE_END, EMPLOYEE_NO,
+		SCHEDULE_START, 
+		SCHEDULE_END, 
+		EMPLOYEE_NO,
 		DEPARTMENT_NO,
 		SCHEDULE_DIVISION, SUBER_NO
-		) VALUES (
-		#{scheduleId}, #{scheduleTitle},
+		) 
+		VALUES (
+		#{scheduleId}, 
+		#{scheduleTitle},
 		#{scheduleContent},
-		#{scheduleStart}, #{scheduleEnd}, #{employeeNo},
-		#{departmentNo}, #{scheduleDivision}, #{suberNo}
+		#{scheduleStart}, 
+		#{scheduleEnd}, 
+		#{employeeNo},
+		#{departmentNo},
+		#{scheduleDivision},
+		#{suberNo}
 		)
 	</insert>
 
-	<select id="getDepartmentAttendanceSummary"
-		resultType="com.yedam.app.group.service.AttendanceSummaryDTO">
-		SELECT
-		e.employee_no AS employeeNo,
-		e.employee_name AS
-		employeeName,
-		d.department_name AS departmentName,
-		ROUND(SUM(
-		CASE
-		WHEN
-		a.clock_in_time IS NOT NULL AND a.clock_out_time IS NOT NULL THEN
-		(a.clock_out_time - a.clock_in_time) * 24
-		ELSE 0
-		END
-		), 2) AS
-		totalWorkingHours,
-		ROUND(SUM(
-		CASE
-		WHEN ot.overtime_minutes IS NOT NULL
-		THEN ot.overtime_minutes / 60
-		ELSE 0
-		END
-		), 2) AS overtimeHours
-		FROM
-		attendance_management a
-		JOIN employee e ON a.employee_no =
-		e.employee_no
-		JOIN department d ON e.department_no = d.department_no
-		LEFT JOIN overtime ot ON a.work_attitude_id = ot.work_attitude_id
-		WHERE e.department_no = #{departmentNo}
-		GROUP BY e.employee_no,
-		e.employee_name, d.department_name
-	</select>
 
 	<!-- 일정조회 -->
-
 	<select id="SelectAllScheduleList" resultType="ScheduleVO"
 		parameterType="ScheduleVO">
 		SELECT s.SCHEDULE_ID
@@ -81,7 +55,7 @@
 		ON s.employee_no =
 		e.employee_no
 		WHERE s.SUBER_NO = #{suberNo}
-		AND (
+		AND(
 		(s.SCHEDULE_DIVISION =
 		'개인' AND s.EMPLOYEE_NO = #{employeeNo})
 		OR
@@ -89,6 +63,12 @@
 		AND s.DEPARTMENT_NO = #{departmentNo})
 		OR
 		(s.SCHEDULE_DIVISION = '회사')
+		OR (s.SCHEDULE_ID IN (
+              SELECT ss.SCHEDULE_ID
+              FROM schedule_sharing ss
+              WHERE ss.EMPLOYEE_NO = #{employeeNo}
+          ))
+		)
 	</select>
 
 
@@ -109,34 +89,15 @@
 	<!-- 일정삭제 -->
 	<delete id="deleteSchedule" parameterType="ScheduleVO">
 		DELETE schedule
-		WHERE
-		schedule_id = #{scheduleId}
+		WHERE schedule_id = #{scheduleId}
 	</delete>
 
-
-	<select id="selectAllSchedules"
-		resultType="com.yedam.app.group.service.ScheduleVO">
-		SELECT *,
-		CASE
-		WHEN schedule_division = '회사' THEN '회사'
-		WHEN
-		schedule_division = '부서' THEN '부서'
-		WHEN schedule_division = '개인' THEN
-		'개인'
-		ELSE '기타'
-		END AS division_name
-		FROM schedule
-		WHERE schedule_division
-		IN ('회사', '부서', '개인')
-		AND schedule_start = TO_CHAR(SYSDATE, 'RR/MM/DD')
-		ORDER BY schedule_start
-		DESC
-		FETCH FIRST 10 ROWS ONLY
-	</select>
-
-
-
-
+	<!-- 공유된 일정 삭제 -->
+	<delete id="deleteScheduleSharing" parameterType="ScheduleVO">
+		DELETE schedule_sharing
+		WHERE schedule_id = #{scheduleId}
+	</delete>
+	
 	<!-- 일정공유 -->
 	<insert id="insertScheduleSharing" parameterType="ScheduleVO">
 		<selectKey keyProperty="scheduleSharingNo" resultType="int"
