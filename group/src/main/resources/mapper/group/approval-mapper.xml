@@ -42,35 +42,57 @@
 
 <!-- 참조열람함 -->
 <select id="selectAprvListByRole" parameterType="ApprovalVO" resultType="ApprovalVO">
-    SELECT d.DRAFT_NO,
-           d.TITLE,
-           d.CONTENT,
-           d.APRV_STATUS,
-           d.REJECT_REASON,
-           d.DRAFT_DATE,
-           e.EMPLOYEE_NAME,
-           d.APRV_DATE,
-           d.FORM_ID,
-           d.BASICS_FORM_ID,
-           d.SUBER_NO,
-           r.EMPLOYEE_NO,
-           r.APRV_ROLE
+    SELECT * FROM (
+        SELECT d.DRAFT_NO,
+               d.TITLE,
+               d.CONTENT,
+               d.APRV_STATUS,
+               d.REJECT_REASON,
+               d.DRAFT_DATE,
+               e.EMPLOYEE_NAME,
+               d.APRV_DATE,
+               d.FORM_ID,
+               d.BASICS_FORM_ID,
+               d.SUBER_NO,
+               r.EMPLOYEE_NO,
+               r.APRV_ROLE,
+               ROW_NUMBER() OVER (ORDER BY d.DRAFT_NO DESC) AS rnum
+        FROM aprv_documents d
+        JOIN employees e ON d.EMPLOYEE_NO = e.EMPLOYEE_NO
+        JOIN aprv_routes r ON r.DRAFT_NO = d.DRAFT_NO
+        WHERE r.APRV_ROLE = '참조'
+          AND r.EMPLOYEE_NO = #{employeeNo}
+          AND d.SUBER_NO = #{suberNo}
+          <if test="employeeName != null and employeeName != ''">
+              AND e.EMPLOYEE_NAME LIKE '%' || #{employeeName} || '%'
+          </if>
+          <if test="title != null and title != ''">
+              AND d.TITLE LIKE '%' || #{title} || '%'
+          </if>
+          <if test="draftDate != null">
+              AND d.DRAFT_DATE = #{draftDate}
+          </if>
+    )
+    WHERE rnum BETWEEN (#{page} - 1) * 10 + 1 AND #{page} * 10
+</select>
+<!-- 참조검색 -->
+<select id="countReferenceList" parameterType="ApprovalVO" resultType="int">
+    SELECT COUNT(*)
     FROM aprv_documents d
     JOIN employees e ON d.EMPLOYEE_NO = e.EMPLOYEE_NO
     JOIN aprv_routes r ON r.DRAFT_NO = d.DRAFT_NO
     WHERE r.APRV_ROLE = '참조'
-    AND r.EMPLOYEE_NO = #{employeeNo}
-    AND d.SUBER_NO = #{suberNo}
-    <if test="employeeName != null and employeeName != ''">
-        AND e.EMPLOYEE_NAME LIKE '%' || #{employeeName} || '%'
-    </if>
-    <if test="title != null and title != ''">
-        AND d.TITLE LIKE '%' || #{title} || '%'
-    </if>
-    <if test="draftDate != null">
-        AND d.DRAFT_DATE = #{draftDate}
-    </if>
-    ORDER BY d.DRAFT_NO
+      AND r.EMPLOYEE_NO = #{employeeNo}
+      AND d.SUBER_NO = #{suberNo}
+      <if test="employeeName != null and employeeName != ''">
+          AND e.EMPLOYEE_NAME LIKE '%' || #{employeeName} || '%'
+      </if>
+      <if test="title != null and title != ''">
+          AND d.TITLE LIKE '%' || #{title} || '%'
+      </if>
+      <if test="draftDate != null">
+          AND d.DRAFT_DATE = #{draftDate}
+      </if>
 </select>
 
 
