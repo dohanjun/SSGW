@@ -52,6 +52,7 @@ iframe.pdf-viewer {
 .content-area img:hover {
 	transform: scale(1.02);
 }
+
 </style>
 </head>
 <body id="page-top">
@@ -158,7 +159,7 @@ iframe.pdf-viewer {
 			</div>
 		</div>
 	</div>
-	<script>
+<script>
   document.addEventListener('DOMContentLoaded', function () {
     const postId = document.getElementById("postId").value;
 
@@ -171,7 +172,7 @@ iframe.pdf-viewer {
     });
 });
 </script>
-	<script>
+<script>
   document.addEventListener('DOMContentLoaded', function () {
 	  let loginUser = null;
 	  let boardType = null;  
@@ -250,11 +251,15 @@ iframe.pdf-viewer {
         let replyBtnHtml = '';
         // 공지 게시판이 아니거나 관리자일 경우에만 답글 달기 버튼 표시
         if (boardType !== '공지' || loginUser.rightsId === 3 || loginUser.rightsLevel === 5) {
-          replyBtnHtml = `<button class="btn btn-sm btn-outline-primary" onclick="showReplyForm(${parent.commentId})">답글 달기</button>`;
+          replyBtnHtml = `<button class="btn btn-sm btn-outline-primary" onclick="showReplyForm(${parent.commentId})">답글</button>`;
         }
 
         const parentDiv = document.createElement('div');
         parentDiv.classList.add('comment-item', 'mb-3');
+        
+        parentDiv.style.marginBottom = '1.5rem';
+        parentDiv.style.lineHeight = '2';
+        
         parentDiv.innerHTML = `
           <div class="comment-content">
             <strong>[${parent.departmentName}] ${parent.employeeName}</strong><br>
@@ -282,6 +287,10 @@ iframe.pdf-viewer {
 
           const replyDiv = document.createElement('div');
           replyDiv.classList.add('ml-4', 'border-left', 'pl-3', 'mt-2');
+          
+          replyDiv.style.marginTop = '1.5rem';
+          replyDiv.style.lineHeight = '2';
+          
           replyDiv.innerHTML = `
             <div class="comment-content">
               <strong>[${reply.departmentName}] ${reply.employeeName}</strong><br>
@@ -298,6 +307,11 @@ iframe.pdf-viewer {
         });
 
         commentListElement.appendChild(parentDiv);
+        
+     	// 댓글 간 간격을 위한 여백 div 추가
+        const gapDiv = document.createElement('div');
+        gapDiv.style.height = '1.5rem';
+        commentListElement.appendChild(gapDiv);
       });
     })
     .catch(error => {
