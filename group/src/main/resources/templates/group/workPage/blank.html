@@ -140,7 +140,7 @@
                                 <td th:text="${attendance.workAttitudeType}"></td>
                                 <td th:text="${attendance.reason} ?: '-'"></td>
                                 <td></td>
-								<td th:text="${attendance.totalWorkingHours}"></td>
+								<td th:text="${attendance.totalWorkingHours != null ? attendance.totalWorkingHours + ' 시간' : '0 시간'}"></td>
                                 <td th:text="${attendance.overtimeHours != null ? attendance.overtimeHours + ' 시간' : '0 시간'}"></td>
                             </tr>
                         </tbody>
