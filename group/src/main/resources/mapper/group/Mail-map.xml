@@ -2,214 +2,215 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yedam.app.group.mapper.MailMapper">
 
-	  <select id="findByEmployeeId" parameterType="String" resultType="EmpVO">
-	  		 SELECT * 
-	  		 FROM employees 
-	  		 WHERE employee_no = #{employeeNo}
-	  </select>
+	<select id="findByEmployeeId" parameterType="String"
+		resultType="EmpVO">
+		SELECT *
+		FROM employees
+		WHERE employee_no = #{employeeNo}
+	</select>
 
-<!-- 단건조회 -->
-	<select id="getPageList" parameterType="PageListVO" resultType="PageListVO">
-		SELECT  *
+	<!-- 단건조회 -->
+	<select id="getPageList" parameterType="PageListVO"
+		resultType="PageListVO">
+		SELECT *
 		FROM Mail
 		WHERE MAIL_ID = #{mailId}
 	</select>
-	
 
-<sql id="mailCondition">
-		  <where>
 
-		  	<if test="search != null and search != ''">
-		  		( TITLE LIKE '%' || #{search} || '%'
-		  		OR GET_USER LIKE '%' || #{search} || '%'
-		  		OR RECODE LIKE '%' || #{search} || '%' )
-		  	</if>	
-		  	<if test="mailType != null">
-			  	    and mail_type = #{mailType}  
-			  	   <if test= "mailType == '받은'">
-	     			and get_user = #{getUser}	  	   
-			  	   </if>
-			  	   <if test= "mailType == '보낸'">
-	     			and employee_id = #{employeeId}   
-			  	   </if>
-			  	   <if test= "mailType == '임시'">
-	     			and employee_id = #{employeeId}   
-			  	   </if>
-			  	   <if test= "mailType == '휴지통'">
-	     			(mail_type = '받은' and get_user = #{getUser}
-   			 		or mail_type = '보낸' and employee_id = #{employeeId})  
-			  	   </if>
-   			 <if test="mailType == null">
-   			 	(mail_type = '받은' and get_user = #{getUser}
-   			 	or mail_type = '보낸' and employee_id = #{employeeId})
-   			 </if>
-   			 </if>
-		  </where>
-</sql>
+	<sql id="mailCondition">
+		<where>
 
- 
+			<if test="search != null and search != ''">
+				( TITLE LIKE '%' || #{search} || '%'
+				OR GET_USER LIKE '%' || #{search} || '%'
+				OR RECODE LIKE '%' || #{search} || '%' )
+			</if>
+			<if test="mailType != null">
+				and mail_type = #{mailType}
+				<if test="mailType == '받은'">
+					and get_user = #{getUser}
+				</if>
+				<if test="mailType == '보낸'">
+					and employee_id = #{employeeId}
+				</if>
+				<if test="mailType == '임시'">
+					and employee_id = #{employeeId}
+				</if>
+				<if test="mailType == '휴지통'">
+					(mail_type = '받은' and get_user = #{getUser}
+					or mail_type = '보낸' and employee_id = #{employeeId})
+				</if>
+				<if test="mailType == null">
+					(mail_type = '받은' and get_user = #{getUser}
+					or mail_type = '보낸' and employee_id = #{employeeId})
+				</if>
+			</if>
+		</where>
+	</sql>
+
+
 	<!-- 메일전체조회 -->
 	<select id="MailFindAll" resultType="MailVO">
-	SELECT B.* FROM ( SELECT A.*, ROWNUM RN FROM(
-	SELECT   mail_id
-	        ,title
-	        ,content
-	        ,sent_state
-	        ,sent_date
-	        ,employee_id
-	        ,attached_file_name
-	        ,get_user
-	        ,cc
-	        ,recode
-	        ,mail_type
-	FROM Mail
-	<include refid="mailCondition"></include>
-	  	ORDER BY
-	  	<choose>
-	  		<when test='sortKey !=  null and sortKey.equals("list")'>
-	  			TITLE
-	  		</when>
-	  		<when test='"file".equals(sortKey)'>
-	  			ATTACHED_FILE_NAME
-	  		</when>
-	  		<when test='sortKey !=  null and sortKey.equals("desc")'>
-	  			mail_Id  DESC
-	  		</when>
-	  		<when test='sortKey !=  null and sortKey.equals("asc")'>
-	  			mail_id ASC
-	  		</when>
-	  		<otherwise>
-	  			mail_id DESC
-	  		</otherwise>
-	  	</choose>
-	) A ) B WHERE RN BETWEEN #{start} AND #{end}
+		SELECT B.* FROM ( SELECT A.*, ROWNUM RN FROM(
+		SELECT mail_id
+		,title
+		,content
+		,sent_state
+		,sent_date
+		,employee_id
+		,attached_file_name
+		,get_user
+		,cc
+		,recode
+		,mail_type
+		FROM Mail
+		<include refid="mailCondition"></include>
+		ORDER BY
+		<choose>
+			<when test='sortKey !=  null and sortKey.equals("list")'>
+				TITLE
+			</when>
+			<when test='"file".equals(sortKey)'>
+				ATTACHED_FILE_NAME
+			</when>
+			<when test='sortKey !=  null and sortKey.equals("desc")'>
+				mail_Id DESC
+			</when>
+			<when test='sortKey !=  null and sortKey.equals("asc")'>
+				mail_id ASC
+			</when>
+			<otherwise>
+				mail_id DESC
+			</otherwise>
+		</choose>
+		) A ) B WHERE RN BETWEEN #{start} AND #{end}
 	</select>
 
 	<!-- 메일단건조회 -->
 	<select id="MailFindInfo" resultType="MailVO">
-	SELECT   mail_id
-	        ,title
-	        ,content
-	        ,sent_state
-	        ,sent_date
-	        ,employee_id
-	        ,attached_file_name
-	        ,get_user
-	        ,cc
-	        ,recode
-	        ,mail_type
-	FROM Mail
-	WHERE mail_id = #{mailId}
+		SELECT mail_id
+		,title
+		,content
+		,sent_state
+		,sent_date
+		,employee_id
+		,attached_file_name
+		,get_user
+		,cc
+		,recode
+		,mail_type
+		FROM Mail
+		WHERE mail_id = #{mailId}
 	</select>
-	
+
 	<!-- 메일등록 -->
 	<insert id="mailCreate" parameterType="MailVO">
-	<selectKey keyProperty="mailId" resultType="Integer" order="BEFORE">
-	SELECT NVL(MAX(mail_id) + 1, 100) as mail_id
-	FROM Mail
-	</selectKey>
-	INSERT INTO Mail(
-                  mail_id
-                 ,title
-                 ,content
-                 ,sent_state
-                 ,sent_date
-                 ,employee_id
-                 ,attached_file_name
-                 ,get_user
-                 ,cc
-                 ,recode
-                 ,mail_type)
-    VALUES(
-    			 #{mailId}
-    			 ,#{title}
-    			 ,#{content}
-    			 ,#{sentState}
-    			 ,sysdate
-    			 ,#{employeeId}
-    			 ,#{attachedFileName}
-    			 ,#{getUser}
-    			 ,#{cc}
-    			 ,#{recode}
-    			 ,<choose>
-		            <when test="isSent == true">
-		                '보낸'
-		            </when>
-		            <otherwise>
-		                '받은'
-		            </otherwise>
-        		  </choose>
-    			 )
+		<selectKey keyProperty="mailId" resultType="Integer"
+			order="BEFORE">
+			SELECT NVL(MAX(mail_id) + 1, 100) as mail_id
+			FROM Mail
+		</selectKey>
+		INSERT INTO Mail(
+		mail_id
+		,title
+		,content
+		,sent_state
+		,sent_date
+		,employee_id
+		,attached_file_name
+		,get_user
+		,cc
+		,recode
+		,mail_type)
+		VALUES(
+		#{mailId}
+		,#{title}
+		,#{content}
+		,#{sentState}
+		,sysdate
+		,#{employeeId}
+		,#{attachedFileName}
+		,#{getUser}
+		,#{cc}
+		,#{recode}
+		,
+		<choose>
+			<when test="isSent == true">
+				'보낸'
+			</when>
+			<otherwise>
+				'받은'
+			</otherwise>
+		</choose>
+		)
 	</insert>
-	
+
 	<!-- 메일검색기록 -->
 	<insert id="MailRecode" parameterType="MailVO">
-	INSERT INTO Mail recode
-    VALUES      #{recode}
+		INSERT INTO Mail recode
+		VALUES #{recode}
 	</insert>
-	
+
 	<!-- 메일답장 -->
 	<update id="MailPutDate" parameterType="MailVO">
-	UPDATE Mail
-	SET		get_user = #{getUser}
-	       ,cc = #{cc}
-	       ,title = #{title}
-	       ,attached_file_name = #{attachedFileName}
-	       ,content = #{content}
-	WHERE mail_id = #{mailId}
+		UPDATE Mail
+		SET get_user = #{getUser}
+			,cc = #{cc}
+			,title = #{title}
+			,attached_file_name = #{attachedFileName}
+			,content = #{content}
+			,recode = #{recode}
+		WHERE mail_id = #{mailId}
 	</update>
-	
+
 	<!-- 메일전달 -->
 	<update id="MailVeryDate" parameterType="MailVO">
-	<selectKey keyProperty="mailId" resultType="Integer" order="BEFORE">
-	SELECT NVL(MAX(mail_id) + 1, 100) as mail_id
-	FROM Mail
-
-	SELECT   mail_id
-	        ,title
-	        ,content
-	        ,sent_state
-	        ,sent_date
-	        ,employee_id
-	        ,attached_file_name
-	        ,get_user
-	        ,cc
-	        ,recode
-	        ,mail_type
-	FROM Mail
-	WHERE mail_id = #{mailId}
-	</selectKey>
-	UPDATE content
-	FROM Mail
-	WHERE mail_id = #{mailId}
+		INSERT INTO Mail(
+		get_user
+		,cc
+		VALUES(
+		,#{getUser}
+		,#{cc}
+)
 	</update>
-	
-	<!-- 메일삭제 -->
+
+	<!-- 단건메일 삭제 -->
+
 	<delete id="MailRemove" parameterType="int">
-	DELETE FROM Mail
-	WHERE mail_id = #{mailId}
+		DELETE FROM Mail
+		WHERE mail_id = #{mailId}
 	</delete>
-	
+
+	    <!-- 여러 개의 메일 삭제 -->
+    <delete id="MailRemoves" parameterType="java.util.List">
+        DELETE FROM Mail
+        WHERE mail_id IN
+        <foreach item="mailId" collection="list" open="(" separator="," close=")">
+            #{mailId}
+        </foreach>
+    </delete>
+
 	<!-- 전체건수반환 -->
 	<select id="getCount" resultType="int">
-	SELECT COUNT(*)
-	FROM Mail
-	<include refid="mailCondition"></include>
+		SELECT COUNT(*)
+		FROM Mail
+		<include refid="mailCondition"></include>
 	</select>
-	
-	
+
+
 	<!-- 임시메일 자동삭제 -->
 	<delete id="deleteExpiredMails">
-        DELETE FROM mail
-        WHERE is_temporary = 1
-        AND expiry_date &lt;= sysdate
-    </delete>
-    
-    	<!-- 휴지통 자동삭제 -->
+		DELETE FROM mail
+		WHERE is_temporary = 1
+		AND expiry_date &lt;= sysdate
+	</delete>
+
+	<!-- 휴지통 자동삭제 -->
 	<delete id="deleteCurrentMails">
-        DELETE FROM mail
-        WHERE is_temporary = 1
-        AND expiry_date &lt;= sysdate
-    </delete>
-    
+		DELETE FROM mail
+		WHERE is_temporary = 1
+		AND expiry_date &lt;= sysdate
+	</delete>
+
 </mapper>

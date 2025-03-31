@@ -73,20 +73,20 @@
 	<div>
     <!-- 메일 제목 -->
     <div>
-        <label for="mid">제목</label>
-        <input type="text" id="mid" th:value="${mail.title}" readonly>
+        <label for="title">제목</label>
+        <input type="text" id="title" th:value="${mail.title}" readonly>
     </div>
 
     <!-- 보낸 사람 -->
     <div>
-        <label for="giveName">보낸사람</label>
-        <input type="text" id="giveName" th:value="${mail.employeeId}" readonly>
+        <label for="employeeId">보낸사람</label>
+        <input type="text" id="employeeId" th:value="${mail.employeeId}" readonly>
     </div>
 
     <!-- 받는 사람 -->
     <div>
-        <label for="getName">받는사람</label>
-        <input type="text" id="getName" th:value="${mail.getUser}" readonly>
+        <label for="getUser">받는사람</label>
+        <input type="text" id="getUser" th:value="${mail.getUser}" readonly>
     </div>
 
     <!-- 현재 날짜/시간 표시 -->
@@ -106,6 +106,10 @@
         <label for="content">내용</label>
         <input type="text" id="content" th:value="${mail.content}" readonly>
     </div>
+    <div>
+		<label for="recode">답장</label>
+		<input type="text" id="recode" th:value="${mail.recode}" readonly>
+	</div>
 </div>
 
 <!-- 메일상세기능 마침 -->

@@ -7,7 +7,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +16,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -39,18 +39,17 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class MailController {
-    @Value("${file.upload-dir}")  
-    private String uploadDir;
-    // 업로드 디렉토리
-    private final MailService mailService;
-    private final EmpService empService;
+	@Value("${file.upload-dir}")
+	private String uploadDir;
+	// 업로드 디렉토리
+	private final MailService mailService;
+	private final EmpService empService;
 
-    // 생성자 주입 방식
-    public MailController(MailService mailService, EmpService empService) {
-        this.mailService = mailService;
-        this.empService = empService;
-    }
-
+	// 생성자 주입 방식
+	public MailController(MailService mailService, EmpService empService) {
+		this.mailService = mailService;
+		this.empService = empService;
+	}
 
 	// 메일목록
 	@GetMapping("/mail")
@@ -61,7 +60,7 @@ public class MailController {
 		vo.setEnd(paging.getLast());
 		paging.setTotalRecord(mailService.pageGetCount(vo));
 		model.addAttribute("paging", paging);
-		
+
 		List<MailVO> list = mailService.MailSelectAll(vo);
 		model.addAttribute("mails", list);
 
@@ -71,138 +70,147 @@ public class MailController {
 	// 메일상세보기
 	@GetMapping("/mailSelect")
 	public String mailSelect(MailVO mailVO, Model model) {
-	    // 로그인한 사용자 정보 가져오기
-	    EmpVO loggedInUser = empService.getLoggedInUserInfo();
-	    mailVO.setEmployeeId(loggedInUser.getEmployeeId());
+		// 로그인한 사용자 정보 가져오기
+		EmpVO loggedInUser = empService.getLoggedInUserInfo();
+		mailVO.setEmployeeId(loggedInUser.getEmployeeId());
 
-	    // 메일 조회
-	    MailVO findVO = mailService.MailSelectInfo(mailVO);
-	    model.addAttribute("mail", findVO);
+		// 메일 조회
+		MailVO findVO = mailService.MailSelectInfo(mailVO);
+		model.addAttribute("mail", findVO);
 
-	    // 첨부파일 다운로드 URL 생성 (첨부파일이 있을 경우)
-	    if (findVO.getAttachedFileName() != null && !findVO.getAttachedFileName().isEmpty()) {
-	        model.addAttribute("downloadUrl", "/download/" + findVO.getAttachedFileName());
-	    }
+		// 첨부파일 다운로드 URL 생성 (첨부파일이 있을 경우)
+		if (findVO.getAttachedFileName() != null && !findVO.getAttachedFileName().isEmpty()) {
+			model.addAttribute("downloadUrl", "/download/" + findVO.getAttachedFileName());
+		}
 
-	    // "group/mail/mailSelect" 템플릿 반환
-	    return "group/mail/mailSelect";
+		// "group/mail/mailSelect" 템플릿 반환
+		return "group/mail/mailSelect";
 	}
 
 	// 파일 다운로드 처리
 	@GetMapping("/download-mail/{filename}")
 	public ResponseEntity<Resource> downloadFile(@PathVariable String filename) {
-	    try {
-	        // 다운로드할 파일의 경로 설정
-	        Path filePath = Paths.get(uploadDir).resolve(filename).normalize();
-	        File file = filePath.toFile();
+		try {
+			// 다운로드할 파일의 경로 설정
+			Path filePath = Paths.get(uploadDir).resolve(filename).normalize();
+			File file = filePath.toFile();
 
-	        // 파일이 존재하지 않으면 404 반환
-	        if (!file.exists()) {
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-	        }
+			// 파일이 존재하지 않으면 404 반환
+			if (!file.exists()) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+			}
 
-	        // 파일을 Resource로 변환 (FileSystemResource로 생성)
-	        Resource resource = (Resource) new FileSystemResource(file);
-	        filename = URLEncoder.encode(filename, "UTF-8");
-	        // 파일을 다운로드하도록 헤더 설정
-	        return ResponseEntity.ok()
-	                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-	                .body(resource);
-	    } catch (Exception e) {
-	    	e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-	    }
+			// 파일을 Resource로 변환 (FileSystemResource로 생성)
+			Resource resource = (Resource) new FileSystemResource(file);
+			filename = URLEncoder.encode(filename, "UTF-8");
+			// 파일을 다운로드하도록 헤더 설정
+			return ResponseEntity.ok()
+					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+					.body(resource);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		}
 	}
 
-    
-    
 	// 등록 - 페이지
 	@GetMapping("/mailInsert")
 	public String InsertMailForm() {
 		return "group/mail/mailInsert";
 	}
 
-
 	// 메일등록
 	@PostMapping("/mailInsert")
 	public String insertMail(MailVO vo, @RequestParam("file") MultipartFile file) {
-	    try {
-	        // 파일 업로드 처리
-	        String filename = StringUtils.cleanPath(file.getOriginalFilename()); // 파일 이름 정리
-	        Path targetLocation = Paths.get(uploadDir +"/" + filename); // 저장할 경로
+		try {
+			// 파일 업로드 처리
+			String filename = StringUtils.cleanPath(file.getOriginalFilename()); // 파일 이름 정리
+			Path targetLocation = Paths.get(uploadDir + "/" + filename); // 저장할 경로
 
-	        // 디렉토리가 없으면 생성
-	        File dir = new File(uploadDir);
-	        if (!dir.exists()) {
-	            dir.mkdirs();
-	        }
+			// 디렉토리가 없으면 생성
+			File dir = new File(uploadDir);
+			if (!dir.exists()) {
+				dir.mkdirs();
+			}
 
-	        // 파일을 지정된 경로에 복사
-	        Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-	        
-	        // 업로드된 파일 경로를 MailVO에 포함 (필요한 경우)
-	        vo.setAttachedFileName(filename); // 메일 VO에 파일 이름을 설정
+			// 파일을 지정된 경로에 복사
+			Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-	    } catch (IOException e) {
-	        // 파일 업로드 실패 시 처리
-	        return "redirect:/error"; // 오류 페이지로 리다이렉트 (필요 시)
-	    }
+			// 업로드된 파일 경로를 MailVO에 포함 (필요한 경우)
+			vo.setAttachedFileName(filename); // 메일 VO에 파일 이름을 설정
 
-	    // 로그인한 사용자 정보 가져오기
-	    EmpVO loggedInUser = empService.getLoggedInUserInfo();
-	    vo.setEmployeeId(loggedInUser.getEmployeeId());
+		} catch (IOException e) {
+			// 파일 업로드 실패 시 처리
+			return "redirect:/error"; // 오류 페이지로 리다이렉트 (필요 시)
+		}
 
-	    // 메일 발송
-	    mailService.sendMailToUser(vo);
+		// 로그인한 사용자 정보 가져오기
+		EmpVO loggedInUser = empService.getLoggedInUserInfo();
+		vo.setEmployeeId(loggedInUser.getEmployeeId());
 
-	    // 메일 발송 후 mail 목록 페이지로 리다이렉트
-	    return "redirect:mail"; // 메일 목록 페이지로 리다이렉트 (올바른 경로)
+		// 메일 발송
+		mailService.sendMailToUser(vo);
+
+		// 메일 발송 후 mail 목록 페이지로 리다이렉트
+		return "redirect:mail"; // 메일 목록 페이지로 리다이렉트 (올바른 경로)
 	}
 
-
-	// 메일답장 페이지 로딩
+	// 메일답장 페이지
 	@GetMapping("/mailReply")
 	public String mailReplyForm(MailVO mailVO, Model model) {
-	    MailVO findVO = mailService.MailSelectInfo(mailVO); // 메일 정보 가져오기
-	    model.addAttribute("mail", findVO); // 메일 데이터를 model에 추가하여 Thymeleaf 템플릿에서 사용할 수 있도록 함
-	    return "group/mail/mailReply"; // 해당 뷰로 이동
+		MailVO findVO = mailService.MailSelectInfo(mailVO);
+		model.addAttribute("mail", findVO);
+		return "group/mail/mailReply";
 	}
 
 	// 메일답장 처리
 	@PostMapping("/mailReply")
 	public String mailReplyProcess(MailVO vo) {
-	    // 메일 발송
-	    mailService.sendMailToUser(vo);
-	    
-	    // 메일 목록 페이지로 리다이렉트
-	    return "redirect:/mail";
-	}
+		// 로그인한 사용자 정보 가져오기
+		EmpVO loggedInUser = empService.getLoggedInUserInfo();
+		vo.setEmployeeId(loggedInUser.getEmployeeId());
 
+		mailService.sendMailToUser(vo);
+
+		return "redirect:mail";
+	}
 
 	// 전달 - 페이지
 	@GetMapping("/mailVery")
-	public String mailVery(MailVO mailVO, Model model) {
+	public String mailVeryForm(MailVO mailVO, Model model) {
 		MailVO findVO = mailService.MailSelectInfo(mailVO);
 		model.addAttribute("mail", findVO);
 		return "group/mail/mailVery";
 	}
 
-
 	// 메일전달처리
 	@PostMapping("mailVery")
-	@ResponseBody
-	public Map<String, Object> mailVeryAJAXJSON(@RequestBody MailVO mailVO) {
-		return mailService.MailVeryInfo(mailVO);
+	public String mailVeryProcess(MailVO vo) {
+		// 로그인한 사용자 정보 가져오기
+		EmpVO loggedInUser = empService.getLoggedInUserInfo();
+		vo.setEmployeeId(loggedInUser.getEmployeeId());
+
+		mailService.sendMailToUser(vo);
+
+		return "redirect:mail";
 	}
 
-	// 메일삭제
+	// 단건메일삭제
 	@GetMapping("mailDelete")
 	public String mailDelete(Integer mailId) {
 		mailService.MailDelete(mailId);
 		return "redirect:mail";
 	}
 
-	
+	// 여러개의 메일삭제
+	@PostMapping("/mail/mailDeletes")
+	public String mailDeletes(@RequestParam List<Integer> mailIds) {
+		// 여러 메일을 삭제하도록 MailDelete 메서드 호출
+		mailService.MailDeletes(mailIds);
+		// 삭제 후 메일 목록 페이지로 리다이렉트
+		return "redirect:/mail";
+	}
+
 //세부메일함
 
 	// 받은메일함
@@ -272,34 +280,34 @@ public class MailController {
 		model.addAttribute("mails", list);
 		return "group/mail/deleteMail";
 	}
-	
-	 // 메일 검색 폼
-    @GetMapping("/searchMailForm")
-    public String showSearchForm(HttpSession session, Model model) {
-        // 세션에서 기존 검색 조건을 가져옵니다.
-        MailVO searchCriteria = (MailVO) session.getAttribute("searchCriteria");
 
-        // 검색 조건이 있으면 모델에 추가
-        if (searchCriteria != null) {
-            model.addAttribute("searchCriteria", searchCriteria);
-        }
+	// 메일 검색 폼
+	@GetMapping("/searchMailForm")
+	public String showSearchForm(HttpSession session, Model model) {
+		// 세션에서 기존 검색 조건을 가져옵니다.
+		MailVO searchCriteria = (MailVO) session.getAttribute("searchCriteria");
 
-        return "group/mail/mailSearch";
-    }
+		// 검색 조건이 있으면 모델에 추가
+		if (searchCriteria != null) {
+			model.addAttribute("searchCriteria", searchCriteria);
+		}
 
-    // 검색 처리
-    @GetMapping("/searchMail")
-    public String searchMail(MailVO mailVO, HttpSession session, Model model) {
-        // 검색 조건을 세션에 저장
-        session.setAttribute("searchCriteria", mailVO);
+		return "group/mail/mailSearch";
+	}
 
-        // 메일 목록 조회
-        List<MailVO> mailList = mailService.searchMails(mailVO);
+	// 검색 처리
+	@GetMapping("/searchMail")
+	public String searchMail(MailVO mailVO, HttpSession session, Model model) {
+		// 검색 조건을 세션에 저장
+		session.setAttribute("searchCriteria", mailVO);
 
-        // 검색 결과를 모델에 추가
-        model.addAttribute("mailList", mailList);
+		// 메일 목록 조회
+		List<MailVO> mailList = mailService.searchMails(mailVO);
 
-        return "group/mail/mailSearchResults";
-    }
-    
+		// 검색 결과를 모델에 추가
+		model.addAttribute("mailList", mailList);
+
+		return "group/mail/mailSearchResults";
+	}
+
 }

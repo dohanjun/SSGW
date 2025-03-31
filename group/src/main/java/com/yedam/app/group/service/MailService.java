@@ -27,11 +27,14 @@ public interface MailService {
 	public int MailPutInfo(MailVO mailVO);
 	
 	//메일전달
-	public Map<String, Object> MailVeryInfo(MailVO mailVO);
+	public int MailVeryInfo(MailVO mailVO);
 	
-	//메일삭제
-	public Map<String, Object> MailDelete(int mailId);
-
+	//단건메일 삭제
+	public Map<String, Object> MailDelete(int MailId);
+	
+	//여러개의 메일삭제
+	public int MailDeletes(List<Integer> mailIds);
+	
 	//메일 페이지네이션
 	public int pageGetCount(PageListVO pagelistVO);
 	
