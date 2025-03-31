@@ -375,15 +375,16 @@
         				pay_method: type,
         				merchant_uid: merchant_uid,
         				name: username + "님의 결제",
-        				amount: 100,
+        				amount: 0,
         				buyer_name: username,
         				buyer_tel: userPhone,
         				escrow: true,
         				vbank_due: "YYYYMMDD",
         			},
-        			function(rsp) {
+        			async function(rsp) {
+        				console.log(rsp)
         				if (rsp.success) {
-        					$.ajax({
+        					let response = await $.ajax({
         						type: "POST",
         						url: "/saveSubDetail",
         						data: JSON.stringify(
@@ -391,66 +392,45 @@
         								suberNo: suber.suberNo,
         								moduleNo: module.moduleNo,
         								subPeriod: selectedPeriod,
-        								discount: selectedPeriod === 12 ? 'Y' : 'N',
-        								discountRate: selectedPeriod === 12 ? 0.200 : 0.000,
-        								discountPrice: selectedPeriod === 12 ? Number(module.modulePrice) * 12 * 0.8 : Number(module.modulePrice)
+        								discount: selectedPeriod === "12" ? 'Y' : 'N',
+        								discountRate: selectedPeriod === "12" ? 0.200 : 0.000,
+        								discountPrice: selectedPeriod === "12" ? Number(module.modulePrice) * 12 * 0.8 : Number(module.modulePrice)
         							}))
         						),
-        						contentType: "application/json",
-        						success: function(response) {
-        							subDetailsNoList = response.map(detail => ({
-        								subDetailsNo: detail.subDetailsNo,
-        								discountPrice: detail.discountPrice
-        							}));
+        						contentType: "application/json"
+        					})
 
-        							$.ajax({
-        								type: "POST",
-        								url: "/savePayment",
-        								data: JSON.stringify({
-        									paymentType: type,
-        									paymentPrice: num,
-        									suberNo: suber.suberNo,
-        									subPeriod: selectedPeriod,
-        									paymentStatus: "완료",
-        									claim: "Y",
-        									claimState: "완료"
-        								}),
-        								contentType: "application/json",
-        								success: function(response2) {
-        									let paymentNo = response2.paymentNo;
+        					let subDetailsNoList = response.map(detail => ({
+        						subDetailsNo: detail.subDetailsNo,
+        						discountPrice: detail.discountPrice
+        					}));
 
-        									let paymentDetailsList = subDetailsNoList.map(detail => ({
-        										paymentNo: paymentNo,
-        										subDetailsNo: detail.subDetailsNo,
-        										paymentPrice: detail.discountPrice,
-        										paymentState: "완료"
-        									}));
+        					//3 결제 정보 저장
+        					let paymentDetailsList = subDetailsNoList.map(detail => ({
+        						subDetailsNo: detail.subDetailsNo,
+        						paymentPrice: detail.discountPrice,
+        						paymentState: "완료"
+        					}));
 
-        									$.ajax({
-        										type: "POST",
-        										url: "/savePaymentDetails",
-        										data: JSON.stringify(paymentDetailsList),
-        										contentType: "application/json",
-        										success: function(response3) {
-        											location.reload();
-        										},
-        										error: function(xhr, status, error) {
-        											alert("❌ 결제 상세 정보 저장 중 오류 발생.");
-        											console.error(xhr.responseText);
-        										}
-        									});
-        								},
-        								error: function(xhr, status, error) {
-        									alert("❌ 결제 정보 저장 중 오류가 발생했습니다.");
-        									console.error(xhr.responseText);
-        								}
-        							});
-        						},
-        						error: function(xhr, status, error) {
-        							alert("❌ 구독 상세 저장 중 오류 발생.");
-        							console.error(xhr.responseText);
-        						}
-        					});
+        					let paymentdata = {
+        						paymentType: type,
+        						paymentPrice: num,
+        						suberNo: suber.suberNo,
+        						subPeriod: selectedPeriod,
+        						paymentStatus: "완료",
+        						claim: "Y",
+        						claimState: "완료",
+        						paymentDetailsList
+        					}
+
+        					await $.ajax({
+        						type: "POST",
+        						url: "/savePayment",
+        						data: JSON.stringify(paymentdata),
+        						contentType: "application/json"
+        					})
+        					
+        					location.reload();
         				} else {
         					var mesg = '결제를 실패하였습니다.';
         					console.log(rsp);

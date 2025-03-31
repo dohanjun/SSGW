@@ -11,5 +11,4 @@ public class PaymentDetailsVO {
     private Integer paymentPrice;     // ✅ 결제 금액 (NOT NULL)
     private String paymentState;      // ✅ 결제 상태 (VARCHAR2(20), NOT NULL)
     private Date paymentDate;         // ✅ 결제 날짜 (DATE, NOT NULL)
-    private String impUid;
 }

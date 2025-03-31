@@ -21,8 +21,6 @@ import com.yedam.app.group.service.EmpVO;
 import com.yedam.app.group.service.ModuleDetailService;
 import com.yedam.app.group.service.ModuleService;
 import com.yedam.app.group.service.ModuleVO;
-import com.yedam.app.group.service.PaymentDetailsService;
-import com.yedam.app.group.service.PaymentDetailsVO;
 import com.yedam.app.group.service.PaymentService;
 import com.yedam.app.group.service.PaymentVO;
 import com.yedam.app.group.service.SubscriberService;
@@ -39,7 +37,6 @@ public class ModuleController {
 	private final SubscriberService subscriberService;
 	private final ModuleDetailService moduleDetailService;
 	private final PaymentService paymentService;
-	private final PaymentDetailsService paymentDetailsService;
 	private final EmpService empService;
 	
 	@Autowired
@@ -77,18 +74,9 @@ public class ModuleController {
 
 	@PostMapping("/savePayment")
 	public ResponseEntity<PaymentVO> savePayment(@RequestBody PaymentVO payment) {
-	    paymentService.savePayment(payment);
-	    List<PaymentDetailsVO> savedDetails = paymentDetailsService.createPaymentDetails(payment.getPaymentDetailsList());
+		paymentService.savePayment(payment);
 	    return ResponseEntity.ok(payment);
 	}
-	
-//	 @PostMapping("/savePaymentDetails")
-//	    public ResponseEntity<List<PaymentDetailsVO>> savePaymentDetails(@RequestBody List<PaymentDetailsVO> request) {
-//	        System.out.println(request);
-//	        return ResponseEntity.ok(savedDetails);
-//	    }
-
-	
 	
 	@PostMapping("/login")
 	public String login() {

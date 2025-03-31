@@ -82,7 +82,6 @@ public class mainController {
 	private final EmpService empService;
 	private final AlarmService alarmService;
 	
-	
 	/**
 	 * 메인페이지로 이동
 	 * @return group/mainPage
@@ -366,5 +365,4 @@ public class mainController {
 	    alarmService.insertAlarm(vo);
 	    return "success";
 	}
-	
 }
