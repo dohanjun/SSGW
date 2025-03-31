@@ -35,6 +35,26 @@
 					</div>
 
 					<div class="form-group">
+						<label>기존 첨부파일</label>
+
+						<!-- 파일 목록이 있을 때 -->
+						<div th:if="${files != null and !#lists.isEmpty(files)}">
+							<div th:each="file : ${files}" class="mb-2">
+								<a th:href="@{/download/repositoryFile/{id}(id=${file.fileId})}"
+									th:text="${file.fileName}" target="_blank"></a> <label
+									class="ml-2"> <input type="checkbox"
+									name="deleteFileIds" th:value="${file.fileId}" /> 삭제
+								</label>
+							</div>
+						</div>
+
+						<!-- 파일이 없을 때 -->
+						<div th:if="${files == null or #lists.isEmpty(files)}">
+							<span>첨부파일 없음</span>
+						</div>
+					</div>
+
+					<div class="form-group">
 						<label for="files">첨부파일</label> <input type="file" id="files"
 							name="files" class="form-control" multiple />
 					</div>

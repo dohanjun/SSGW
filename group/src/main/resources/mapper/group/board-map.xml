@@ -3,7 +3,7 @@
 <mapper namespace="com.yedam.app.group.mapper.BoardMapper">
 
 	<select id="selectBoardsByType"
-		resultType="com.yedam.app.group.service.BoardVO">
+		resultType="BoardVO">
 		SELECT *
 		FROM board
 		WHERE board_type = #{boardType}
@@ -11,9 +11,6 @@
 		#{suberNo}
 		<if test="departmentNo != null">
 			AND department_no = #{departmentNo}
-		</if>
-		<if test="employeeNo != null">
-			AND employee_no = #{employeeNo}
 		</if>
 	</select>
 
@@ -197,4 +194,55 @@
         #{fileRetentionPeriod}
     )
 </insert>
+
+<!-- 조회수 증가 -->
+<update id="increaseViewCount">
+    UPDATE board_post
+    SET views = NVL(views, 0) + 1
+    WHERE post_id = #{postId}
+</update>
+
+<!-- 게시글 상세 조회 -->
+<select id="selectPostById" resultType="BoardPostVO">
+    SELECT 
+        p.*, 
+        e.employee_name AS employeeName
+    FROM board_post p
+    JOIN employees e ON p.employee_no = e.employee_no
+    WHERE p.post_id = #{postId}
+</select>
+
+<select id="getAttachments" resultType="BoardAttachmentVO">
+    SELECT *
+    FROM board_attachment
+    WHERE post_id = #{postId}
+</select>
+
+<select id="getBoardAttachmentById" resultType="BoardAttachmentVO">
+    SELECT * FROM board_attachment WHERE attachment_id = #{attachmentId}
+</select>
+
+<select id="selectBoardAttachmentsByPostId" resultType="BoardAttachmentVO">
+    SELECT * FROM board_attachment WHERE post_id = #{postId}
+</select>
+
+<update id="updateBoardPost">
+        UPDATE board_post
+        SET post_title = #{postTitle},
+            post_content = #{postContent},
+            fixed = #{fixed},
+            faq = #{faq},
+            read = #{read}
+        WHERE post_id = #{postId}
+    </update>
+
+<delete id="deleteAttachmentById" parameterType="int">
+    DELETE FROM board_attachment WHERE attachment_id = #{attachmentId}
+</delete>
+
+<!-- 게시글 삭제 -->
+<delete id="deleteBoard" parameterType="int">
+	DELETE FROM board_post WHERE post_id = #{postId}
+</delete>
+
 </mapper>

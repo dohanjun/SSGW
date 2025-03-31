@@ -10,7 +10,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -37,13 +36,15 @@ public class SecurityConfig {
 						"/savePaymentDetails", "/saveUser", "/insertBoardPost", "/selectBoardPost", "/updateBoardPost")
 				.permitAll().requestMatchers("/insertPost", "/basket/**", "/api/**", "/alerts/**", "/insertAlarm")
 				.permitAll()
+        .requestMatchers("/uploadImage").permitAll()
+	      .requestMatchers("/comment/**").permitAll()
 				// 관리자만 접근 가능
 				.requestMatchers("/module", "/insertModule", "/updateModule", "/deleteModule/*", "/updateModuleBasic/*",
 						"/updateModuleActive/*", "/qna", "/fixed")
 				.hasAuthority("ROLE_MANAGER")
 				// 로그인시 접근 가능
 				.anyRequest().authenticated())
-				.formLogin(form -> form.loginPage("/login").loginProcessingUrl("/login").successHandler(successHandler)
+				.formLogin(form -> form.loginPage("/login").loginProcessingUrl("/login").successHandler(successHandler).defaultSuccessUrl("/MainPage", true)
 						.permitAll())
 				.logout(logout -> logout.logoutUrl("/logout").logoutSuccessUrl("/login?logout")
 						.invalidateHttpSession(true).deleteCookies("JSESSIONID").permitAll())
@@ -52,7 +53,7 @@ public class SecurityConfig {
 						"/insertModule", "/saveForm", "/schedule/**", "/qna", "/fixed", "/saveSubDetail",
 						"/saveSubDetail", "/saveSuber", "/savePaymentDetails", "/saveUser", "/insertBoardPost",
 						"/selectBoardPost", "/updateBoardPost", "/basket/**", "/api/**", "/alerts/**", "/insertAlarm",
-						"/bookUpdate"));
+						"/bookUpdate","/uploadImage","/comment/**"));
 		return http.build();
 	}
 
@@ -70,10 +71,17 @@ public class SecurityConfig {
 				+ ") WHERE username = ?");
 
 		manager.setAuthoritiesByUsernameQuery("SELECT username, authority FROM ( "
-				+ "  SELECT MANAGER_ID AS username, 'ROLE_MANAGER' AS authority FROM MANAGER_LOGIN " + "  UNION ALL "
-				+ "  SELECT EMPLOYEE_ID AS username, 'ROLE_MANAGERUSER' AS authority FROM EMPLOYEES WHERE RANK_ID = 7"
-				+ "  UNION ALL " + "  SELECT EMPLOYEE_ID AS username, 'ROLE_USER' AS authority FROM EMPLOYEES "
-				+ ") WHERE username = ?");
+			    + "  SELECT MANAGER_ID AS username, 'ROLE_MANAGER' AS authority FROM MANAGER_LOGIN "
+			    + "  UNION ALL "
+			    + "  SELECT EMPLOYEE_ID AS username, 'ROLE_MANAGERUSER' AS authority FROM EMPLOYEES WHERE RANK_ID = 7 "
+			    + "  UNION ALL "
+			    + "  SELECT EMPLOYEE_ID AS username, 'ROLE_HR' AS authority FROM EMPLOYEES WHERE RIGHTS_ID = 2 "
+			    + "  UNION ALL "
+			    + "  SELECT EMPLOYEE_ID AS username, 'ROLE_BOARD_ADMIN' AS authority FROM EMPLOYEES WHERE RIGHTS_ID = 5 "
+			    + "  UNION ALL "
+			    + "  SELECT EMPLOYEE_ID AS username, 'ROLE_USER' AS authority FROM EMPLOYEES "
+			    + ") WHERE username = ?");
+
 		return manager;
 
 	}

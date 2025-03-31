@@ -22,4 +22,5 @@ public class BoardPostVO {
     private int employeeNo;         // 사원 번호
     private String employeeName;         // 사원 이름
     private String childYn;
+    private int views;
 }

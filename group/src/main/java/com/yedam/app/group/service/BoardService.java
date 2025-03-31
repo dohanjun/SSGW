@@ -26,5 +26,14 @@ public interface BoardService {
     
     // 게시글 등록 (게시글 + 첨부파일)
     void insertBoardPost(BoardPostVO postVO, String boardType, EmpVO loginUser, List<MultipartFile> files);
-
+    
+    BoardPostVO getPostDetail(int postId);
+    
+    List<BoardAttachmentVO> getAttachments(int postId);
+    
+    void updateBoardPost(BoardPostVO postVO, List<MultipartFile> files, List<Integer> deleteFileIds);
+    
+    // 게시글 삭제
+    void deleteBoard(int postId);
+    
 }

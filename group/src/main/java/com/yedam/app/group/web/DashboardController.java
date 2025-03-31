@@ -22,34 +22,34 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DashboardController {
 
-    private final DashboardService dashboardService;
-    private final EmpService empService;
+	private final DashboardService dashboardService;
+	private final EmpService empService;
 
-    @GetMapping("/MainPage")
-    public String dashboardPage(Model model, Principal principal) {
-        EmpVO loginEmployee = empService.getLoggedInUserInfo();
-        model.addAttribute("loginEmployee", loginEmployee);
+	@GetMapping("/MainPage")
+	public String dashboardPage(Model model, Principal principal) {
+		EmpVO loginEmployee = empService.getLoggedInUserInfo();
+		model.addAttribute("loginEmployee", loginEmployee);
 
-        if (loginEmployee != null) {
-            List<ScheduleVO> scheduleList = dashboardService.getTodaySchedule(loginEmployee.getEmployeeNo());
-            List<RepositoryPostVO> repositoryList = dashboardService.getRecentRepositoryPosts();
-            List<ApprovalVO> approvalList = dashboardService.getRecentApprovalList(loginEmployee.getEmployeeNo());
-            List<BoardVO> boardList = dashboardService.getRecentBoardList(loginEmployee.getSuberNo());
-            List<MailVO> mailList = dashboardService.getRecentMailList(loginEmployee.getEmployeeId()); // 메일 추가
+		if (loginEmployee != null) {
+			List<ScheduleVO> scheduleList = dashboardService.getTodaySchedule(loginEmployee.getEmployeeNo());
+			List<RepositoryPostVO> repositoryList = dashboardService.getRecentRepositoryPosts();
+			List<ApprovalVO> approvalList = dashboardService.getRecentApprovalList(loginEmployee.getEmployeeNo());
+			List<BoardVO> boardList = dashboardService.getRecentBoardList(loginEmployee.getSuberNo());
+			List<MailVO> mailList = dashboardService.getRecentMailList(loginEmployee.getEmployeeId()); // 메일 추가
 
-            
+			model.addAttribute("userInfo", loginEmployee);
+			model.addAttribute("repositoryList", dashboardService.getRecentRepositoryPosts());
+			model.addAttribute("recentBoardList", dashboardService.getRecentBoardList(loginEmployee.getSuberNo()));
+			model.addAttribute("recentMailList", dashboardService.getRecentMailList(loginEmployee.getEmployeeId()));
+			model.addAttribute("todaySchedule", dashboardService.getTodaySchedule(loginEmployee.getEmployeeNo()));
+			model.addAttribute("recentApprovalList",
+					dashboardService.getRecentApprovalList(loginEmployee.getEmployeeNo()));
+			// ✅ 디버깅
+			System.out.println("✅ 로그인 사원: " + loginEmployee);
+			System.out.println("✅ 오늘 일정 수: " + scheduleList.size());
+			System.out.println("✅ 최근 자료실 게시글 수: " + repositoryList.size());
+		}
 
-            model.addAttribute("todaySchedule", scheduleList);
-            model.addAttribute("repositoryList", repositoryList);
-            model.addAttribute("recentApprovalList", approvalList);
-            model.addAttribute("recentBoardList", boardList);
-            model.addAttribute("recentMailList", mailList);
-            // ✅ 디버깅
-            System.out.println("✅ 로그인 사원: " + loginEmployee);
-            System.out.println("✅ 오늘 일정 수: " + scheduleList.size());
-            System.out.println("✅ 최근 자료실 게시글 수: " + repositoryList.size());
-        }
-
-        return "group/mainPage";
-    }
+		return "group/mainPage";
+	}
 }

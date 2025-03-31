@@ -48,7 +48,6 @@
 
 <body>
 
-<!-- ✅ 출퇴근 기록 테이블 -->
 <div class="row">
     <div class="col">
         <div class="card shadow mb-4">
@@ -78,7 +77,6 @@
     </div>
 </div>
 
-<!-- ✅ 차트 영역 -->
 <div class="row">
     <div class="col-xl-8 col-lg-7">
         <div class="card shadow mb-4">
@@ -92,16 +90,6 @@
     </div>
 </div>
 
-<!-- ✅ 관리자 접근 제어 -->
-<script th:inline="javascript">
-    const rankId = [[${loginEmployee.rankId}]]; // 🔥 현재 사용자 직급 정보
-    if (rankId !== 7) {
-        alert("관리자 권한이 없습니다. 사원 근태관리 페이지로 이동합니다.");
-        location.href = "/blank";
-    }
-</script>
-
-<!-- ✅ JS -->
 <script src="/vendor/jquery/jquery.min.js"></script>
 <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -116,7 +104,7 @@
     });
 
     function loadChartData() {
-        fetch("/chartsManager")
+        fetch("/chartsManagerData")
             .then(res => res.json())
             .then(data => {
                 chartData = data;
@@ -191,35 +179,11 @@
             .catch(err => console.error("❌ 오늘 출결 로딩 실패:", err));
     }
 
-    function loadEmployeeTable(empNo) {
-        fetch(`/employeeRecord/${empNo}`)
-            .then(res => res.json())
-            .then(records => {
-                const tbody = document.getElementById("employeeTableBody");
-                tbody.innerHTML = '';
-                records.forEach(emp => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${emp.departmentName || '-'}</td>
-                        <td>${emp.employeeNo}</td>
-                        <td>${emp.employeeName}</td>
-                        <td>${formatTime(emp.clockInTime)}</td>
-                        <td>${formatTime(emp.clockOutTime)}</td>
-                        <td>${emp.totalWorkingHours ?? '-'}</td>
-                        <td>${emp.totalOvertimeTime ?? 0}</td>
-                    `;
-                    tbody.appendChild(row);
-                });
-            })
-            .catch(err => console.error('❌ 사원 기록 로딩 오류:', err));
-    }
-
     function formatTime(datetimeStr) {
         if (!datetimeStr) return '-';
         const date = new Date(datetimeStr);
         return date.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
     }
-    
 </script>
 
 </body>

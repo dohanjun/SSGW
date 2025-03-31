@@ -23,8 +23,6 @@ public interface ScheduleMapper {
 	// 일정 공유
 	public void insertScheduleSharing(ScheduleVO scheduleVO);
 	
-	// 메인페이지
-	List<ScheduleVO> selectTodaySchedule(String employeeId);
 
 	
 	// 통합 일정 조회

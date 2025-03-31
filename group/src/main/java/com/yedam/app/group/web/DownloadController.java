@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestTemplate;
 
+import com.yedam.app.group.service.BoardAttachmentVO;
 import com.yedam.app.group.service.DownloadVO;
 import com.yedam.app.group.service.EmpService;
 import com.yedam.app.group.service.EmpVO;
@@ -157,18 +158,14 @@ public class DownloadController {
 
                     Path path = Paths.get(decryptedPath);
                     if (!Files.exists(path)) {
-                        System.out.println("❌ 파일 없음: " + decryptedPath);
                         continue;
                     }
 
                     long fileSize = Files.size(path);
-                    System.out.println("📁 파일명: " + originalFileName);
-                    System.out.println("📏 파일 크기: " + fileSize + " bytes");
 
                     zos.putNextEntry(new ZipEntry(originalFileName));
                     Files.copy(path, zos);
                     zos.closeEntry();
-                    System.out.println("✅ 압축 성공");
 
                     // 다운로드 로그 저장
                     DownloadVO log = new DownloadVO();
@@ -178,9 +175,7 @@ public class DownloadController {
                     log.setIp(clientIp);
 
                     fileService.insertDownloadLog(log);
-                    System.out.println("✅ 로그 저장 완료 - 파일 ID: " + file.getFileId());
                 } catch (Exception e) {
-                    System.out.println("🚨 예외 발생 - 파일 ID: " + file.getFileId());
                     e.printStackTrace(); // 디버깅 로그
                 }
             }
@@ -203,5 +198,134 @@ public class DownloadController {
             .contentType(MediaType.APPLICATION_OCTET_STREAM)
             .body(zipResource);
     }
+    
+    @GetMapping("/boardFile/{attachmentId}")
+    public ResponseEntity<Resource> downloadBoardFile(@PathVariable int attachmentId) {
+        // 게시판 파일은 암호화 안되어있으므로 그대로 사용
+        BoardAttachmentVO attach = fileService.getBoardAttachmentById(attachmentId); // 새로 만들기
+        
+        String uploadRoot = "D:/upload_files";
+        Path path = Paths.get(attach.getFilePath());
+        
+        Resource resource = new FileSystemResource(path);
+        if (!resource.exists()) {
+            throw new RuntimeException("파일이 존재하지 않습니다.");
+        }
 
+        String encodedFileName;
+        try {
+            encodedFileName = URLEncoder.encode(attach.getFileTitle(), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            encodedFileName = attach.getFileTitle();
+        }
+
+        return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + encodedFileName)
+            .contentType(MediaType.APPLICATION_OCTET_STREAM)
+            .body(resource);
+    }
+    
+    @GetMapping("/boardFile/zip/{postId}")
+    public ResponseEntity<Resource> downloadBoardFilesAsZip(@PathVariable int postId) {
+        EmpVO loginUser = empService.getLoggedInUserInfo();
+        String clientIp = getClientPublicIp();
+
+        // IP 인증
+        String firstIp = empService.getFirstIpByEmployeeNo(loginUser.getSuberNo());
+        String secondIp = empService.getSecondIpByEmployeeNo(loginUser.getSuberNo());
+        String tempIp = loginUser.getTempIp();
+        if (!(clientIp != null &&
+              (clientIp.equals(firstIp) || clientIp.equals(secondIp) || clientIp.equals(tempIp)))) {
+            throw new AccessDeniedException("허용되지 않은 IP입니다.");
+        }
+
+        List<BoardAttachmentVO> fileList = fileService.getBoardAttachmentsByPostId(postId);
+        if (fileList == null || fileList.isEmpty()) {
+            throw new RuntimeException("첨부파일이 없습니다.");
+        }
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (ZipOutputStream zos = new ZipOutputStream(baos)) {
+            for (BoardAttachmentVO file : fileList) {
+                try {
+                    Path path = Paths.get(file.getFilePath());
+                    if (!Files.exists(path)) continue;
+
+                    // 💡 중복 방지를 위해 파일명 앞에 ID 추가
+                    String safeFileName = file.getAttachmentId() + "_" + file.getFileTitle();
+                    zos.putNextEntry(new ZipEntry(safeFileName));
+                    Files.copy(path, zos);
+                    zos.closeEntry();
+
+                    // 로그 저장 (에러 나도 무시하고 계속 진행)
+                    try {
+                        DownloadVO log = new DownloadVO();
+                        log.setFileId((long) file.getAttachmentId());
+                        log.setEmployeeNo(loginUser.getEmployeeNo());
+                        log.setDownloadDate(new Timestamp(System.currentTimeMillis()));
+                        log.setIp(clientIp);
+                        fileService.insertDownloadLog(log);
+                    } catch (Exception logEx) {
+                        System.out.println("다운로드 로그 저장 실패: " + logEx.getMessage());
+                    }
+
+                } catch (Exception fileEx) {
+                    System.out.println("파일 압축 실패: " + fileEx.getMessage());
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("ZIP 파일 생성 실패", e);
+        }
+
+        ByteArrayResource zipResource = new ByteArrayResource(baos.toByteArray());
+        String zipName = "게시글파일_" + postId + ".zip";
+
+        String encodedZipName;
+        try {
+            encodedZipName = URLEncoder.encode(zipName, "UTF-8").replaceAll("\\+", "%20");
+        } catch (UnsupportedEncodingException e) {
+            encodedZipName = "download.zip";
+        }
+
+        return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + encodedZipName)
+            .contentType(MediaType.APPLICATION_OCTET_STREAM)
+            .body(zipResource);
+    }
+    
+    @GetMapping("/view/pdf/{attachmentId}")
+    public ResponseEntity<Resource> previewPdf(@PathVariable int attachmentId) {
+        // 첨부파일 정보 조회
+        BoardAttachmentVO file = fileService.getBoardAttachmentById(attachmentId);
+
+        // 파일 경로 확인
+        if (file == null || file.getFilePath() == null) {
+            throw new RuntimeException("파일 정보가 존재하지 않습니다.");
+        }
+
+        Path path = Paths.get(file.getFilePath());
+        Resource resource = new FileSystemResource(path);
+
+        if (!resource.exists()) {
+            throw new RuntimeException("파일이 존재하지 않습니다.");
+        }
+
+        // 파일명이 .pdf가 아닐 경우 예외처리 (보안/UX용)
+        String fileName = file.getFileTitle();
+        if (!fileName.toLowerCase().endsWith(".pdf")) {
+            throw new RuntimeException("PDF 파일만 미리보기가 가능합니다.");
+        }
+
+        String encodedName;
+        try {
+            encodedName = URLEncoder.encode(fileName, "UTF-8").replaceAll("\\+", "%20");
+        } catch (UnsupportedEncodingException e) {
+            encodedName = fileName;
+        }
+
+        return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename*=UTF-8''" + encodedName)
+            .contentType(MediaType.APPLICATION_PDF)
+            .body(resource);
+    }
 }
