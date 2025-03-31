@@ -1,138 +1,156 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org"
-	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	  layout:decorate="~{common/layouts/default_layout}"
-	  layout:fragment="content">
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{common/layouts/default_layout}"
+	layout:fragment="content">
 <head>
 <meta charset="UTF-8">
 <title>mail</title>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+<script
+	src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+	integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+	crossorigin="anonymous"></script>
+<script
+	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
+	integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
+	crossorigin="anonymous"></script>
 </head>
 <style>
-
-	#flo{
+#flo {
 	float: right;
 	display: flex;
 	justify-content: center;
 	padding-left: 30px;
-	}
+}
 
-	.left{
-		position: relative;
-		left: 1430px;
-		bottom: 10px;
-	}
-    .p{
-    	clear: left;
-    	padding-left: 30px;
-    	text-align: center;
-    }
-    #se{
- 	margin-right: 10px;
-    }
-	#bar{
-		position: static;
-		text-align: center;
-		padding: 20px;
-		padding-left: 600px;
-	}
-	
+.left {
+	position: relative;
+	left: 1430px;
+	bottom: 10px;
+}
+
+.p {
+	clear: left;
+	padding-left: 30px;
+	text-align: center;
+}
+
+#se {
+	margin-right: 10px;
+}
+
+#bar {
+	position: static;
+	text-align: center;
+	padding: 20px;
+	padding-left: 600px;
+}
 </style>
 
 <body>
-<h3>메일메인화면</h3>
+	<h3>메일메인화면</h3>
 
-<!-- 검색기능 -->
-<form role="search" name="frmSearch">
-  <div class="left" id="se">
-	  <input type="hidden" name="page" value="1">
-      <input name="search" type="search" placeholder="Search" th:value="${pageListVO.search}">
-      <button class="btn btn-outline-success" type="submit">검색</button>
+	<!-- 검색기능 -->
+	<form role="search" name="frmSearch">
+		<div class="left" id="se">
+			<input type="hidden" name="page" value="1"> <input
+				name="search" type="search" placeholder="Search"
+				th:value="${pageListVO.search}">
+			<button class="btn btn-outline-success" type="submit">검색</button>
 
-  </div>
-<!-- 검색기능 마침 -->
+		</div>
+		<!-- 검색기능 마침 -->
 
-<div>
-	<h5 th:text="'전체글: '+${paging.totalRecord}+'개'"></h5>
-</div>
-<div id="flo">
-<button>삭제</button>
+		<div>
+			<h5 th:text="'전체글: '+${paging.totalRecord}+'개'"></h5>
+		</div>
+		<div id="flo">
+			<button type="button" class="btn btn-danger" onclick="deleteSelected()">삭제</button>
 
-<!-- 정렬기능 -->
-    <div class="sort-options">
-        <h3>정렬</h3>
-        <select name="sortKey" onchange="submitForm()">
-            <option value="list" th:selected="${pageListVO.sortKey == 'list'}">안읽은메일</option>
-            <option value="file" th:selected="${pageListVO.sortKey == 'file'}">첨부메일</option>
-            <option value="desc" th:selected="${pageListVO.sortKey == 'desc'}">최신순</option>
-            <option value="asc" th:selected="${pageListVO.sortKey == 'asc'}">오래된순</option>
-        </select>
-    </div>
-</div>
-</form>
-<!-- 정렬기능 마침 -->
-
-<!-- 메일목록 창 -->
-<div class="p">
-	<form name="form" method="post">
-	<table border="1" class="table">
-	<thead>
-		<tr class="text-center">
-			<td><input onchange="selectAllcheck(this)" type="checkbox" name="selectall" id="selectall"></td>
-			<td scope="col">이미지</td>
-			<td scope="col">작성자</td>
-			<td scope="col">제목</td>
-			<td scope="col">날짜</td>
-		</tr>
-	</thead>
-	<tbody>
-	<th:block th:each="info : ${mails}">
-		<tr>
-		    <td><input type="checkbox" name="checkMenu" class="checkbox" onchange="checkMenuHandler(this)"/></td>
-			<td th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[ ${info.mailId} ]]</td>
-			<td th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[ ${info.getUser} ]]</td>
-			<td th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[ ${info.title} ]]</td>
-		  	<td th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[ ${ #dates.format(info.sentDate, "yyyy년MM월dd일") } ]]</td>
-		</tr>
- 	  </th:block>
- 	  </tbody>
-	</table>
+			<!-- 정렬기능 -->
+			<div class="sort-options">
+				<h3>정렬</h3>
+				<select name="sortKey" onchange="submitForm()">
+					<option value="list" th:selected="${pageListVO.sortKey == 'list'}">안읽은메일</option>
+					<option value="file" th:selected="${pageListVO.sortKey == 'file'}">첨부메일</option>
+					<option value="desc" th:selected="${pageListVO.sortKey == 'desc'}">최신순</option>
+					<option value="asc" th:selected="${pageListVO.sortKey == 'asc'}">오래된순</option>
+				</select>
+			</div>
+		</div>
 	</form>
+	<!-- 정렬기능 마침 -->
+
+	<!-- 메일목록 창 -->
+	<div class="p">
+		<form name="form" method="post">
+			<table border="1" class="table">
+				<thead>
+					<tr class="text-center">
+						<td><input onchange="selectAllcheck(this)" type="checkbox"
+							name="selectall" id="selectall"></td>
+						<td scope="col">이미지</td>
+						<td scope="col">작성자</td>
+						<td scope="col">제목</td>
+						<td scope="col">날짜</td>
+					</tr>
+				</thead>
+				<tbody>
+					<th:block th:each="info : ${mails}">
+						<tr>
+							<td><input type="checkbox" name="checkMenu" class="checkbox"
+								onchange="checkMenuHandler(this)" /></td>
+							<td
+								th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[
+								${info.mailId} ]]</td>
+							<td
+								th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[
+								${info.getUser} ]]</td>
+							<td
+								th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[
+								${info.title} ]]</td>
+							<td
+								th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[
+								${ #dates.format(info.sentDate, "yyyy년MM월dd일") } ]]</td>
+						</tr>
+					</th:block>
+				</tbody>
+			</table>
+		</form>
 	</div>
-<!-- 메일목록 창 마침 -->
+	<!-- 메일목록 창 마침 -->
 
-<!-- 바기능 -->
-<div id="bar">
-	<nav>
-		<ul class="pagination">
-			<li class="page-item"
-				th:classappend="${paging.startPage} == 1 ? disabled"><a
-				class="page-link"
-				th:href="|javascript:gopage(${paging.startPage}-1)|">Previous</a></li>
-	
-			<li
-				th:each="num : *{#numbers.sequence(paging.startPage, paging.endPage)}"
-				class="page-item" th:classappend="${num} == ${paging.page} ? active">
-				<a class="page-link" th:href="|javascript:gopage(${num})|"
-				th:text="${num}">2</a>
-			</li>
-	
-			<li class="page-item"
-				th:classappend="${paging.endPage} >= ${paging.lastPage} ? disabled">
-				<a class="page-link"
-				th:href="|javascript:gopage(${paging.endPage}+1)|">Next</a>
-			</li>
-		</ul>
-	</nav>
-</div>
-<!-- 바기능 마침 -->
+	<!-- 바기능 -->
+	<div id="bar">
+		<nav>
+			<ul class="pagination">
+				<li class="page-item"
+					th:classappend="${paging.startPage} == 1 ? disabled"><a
+					class="page-link"
+					th:href="|javascript:gopage(${paging.startPage}-1)|">Previous</a></li>
 
+				<li
+					th:each="num : *{#numbers.sequence(paging.startPage, paging.endPage)}"
+					class="page-item"
+					th:classappend="${num} == ${paging.page} ? active"><a
+					class="page-link" th:href="|javascript:gopage(${num})|"
+					th:text="${num}">2</a></li>
 
+				<li class="page-item"
+					th:classappend="${paging.endPage} >= ${paging.lastPage} ? disabled">
+					<a class="page-link"
+					th:href="|javascript:gopage(${paging.endPage}+1)|">Next</a>
+				</li>
+			</ul>
+		</nav>
+	</div>
+	<!-- 바기능 마침 -->
 
 
 
-<script>
+
+
+	<script>
 
 	//버튼
 	const context = ''; //document.querySelector('meta[name="contextPath"]').getAttribute('value');
@@ -198,10 +216,41 @@
     function submitForm() {
     	frmSearch.submit();
     }
-	//정렬기능 구현
+
+ // 선택된 메일 삭제 함수
+    function deleteSelected() {
+        const selectedMails = [];
+        
+        // 체크된 모든 체크박스의 mailId를 수집
+        document.querySelectorAll('input[name="checkMenu"]:checked').forEach((checkbox) => {
+            selectedMails.push(checkbox.value);  // 각 체크박스의 value가 mailId라고 가정
+        });
+        
+        if (selectedMails.length === 0) {
+            alert("삭제할 메일을 선택하세요!");
+            return;
+        }
+        
+        // 선택된 메일들의 mailId를 서버로 전송하기 위해 폼을 생성
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/mail/mailDeletes';  // 삭제 요청을 보낼 URL
+        
+        // mailId를 hidden input으로 폼에 추가
+        selectedMails.forEach((mailId) => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'mailIds';  // 서버에서 받을 파라미터 이름
+            input.value = mailId;
+            form.appendChild(input);
+        });
+        
+        document.body.appendChild(form);
+        form.submit();  // 폼 제출하여 서버로 삭제 요청
+    }
 	
 
 </script>
 
-</body>  
+</body>
 </html>

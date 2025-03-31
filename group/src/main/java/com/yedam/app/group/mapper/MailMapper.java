@@ -33,8 +33,11 @@ public interface MailMapper {
 	//메일전달
 	public int MailVeryDate(MailVO mailVO);
 	
-	//메일삭제
+	//단건메일삭제
 	public int MailRemove(int mailId);
+	
+	//여러개의 메일삭제
+	public int MailRemoves(List<Integer> mailIds);
 	
 	//메일페이지네이션
 	public int getCount(PageListVO pagelistVO);

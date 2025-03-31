@@ -1,11 +1,10 @@
- package com.yedam.app.group.service.impl;
+package com.yedam.app.group.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
@@ -23,7 +22,6 @@ public class MailServiceImpl implements MailService {
 
 	private JavaMailSender javaMailSender;
 	private MailMapper mailMapper;
-
 
 	public MailServiceImpl(MailMapper mailMapper, JavaMailSender javaMailSender) {
 		this.mailMapper = mailMapper;
@@ -48,14 +46,14 @@ public class MailServiceImpl implements MailService {
 	public MailVO MailSelectInfo(MailVO mailVO) {
 		return mailMapper.MailFindInfo(mailVO.getMailId());
 	}
-	
+
 	// 메일등록
 	@Override
 	public int InsertMail(MailVO mailVO) {
 		int result = mailMapper.mailCreate(mailVO);
 		return result == 1 ? mailVO.getMailId() : -1;
 	}
-	
+
 	// 메일검색기록
 	@Override
 	public int MailRecodeInfo(MailVO mailVO) {
@@ -66,32 +64,17 @@ public class MailServiceImpl implements MailService {
 	@Override
 	public int MailPutInfo(MailVO mailVO) {
 		int result = mailMapper.MailPutDate(mailVO);
-
 		return result == 1 ? mailVO.getMailId() : -1;
 	}
 
 	// 메일전달
-
 	@Override
-	public Map<String, Object> MailVeryInfo(MailVO mailVO) {
-		Map<String, Object> map = new HashMap<>();
-		boolean isSuccessed = false;
-
+	public int MailVeryInfo(MailVO mailVO) {
 		int result = mailMapper.MailVeryDate(mailVO);
-
-		if (result == 1) {
-			isSuccessed = true;
-		}
-
-		map.put("result", isSuccessed);
-		map.put("target", mailVO);
-
-		MailVO findVO = (MailVO) map.get("target");
-
-		return map;
+		return result == 1 ? mailVO.getMailId() : -1;
 	}
 
-	// 메일삭제
+	// 메일단건삭제
 	@Override
 	public Map<String, Object> MailDelete(int mailId) {
 		Map<String, Object> map = new HashMap<>();
@@ -101,8 +84,22 @@ public class MailServiceImpl implements MailService {
 		if (result == 1) {
 			map.put("mailId", mailId);
 		}
-
 		return map;
+	}
+
+	// 여러개의 메일삭제
+	@Override
+	public int MailDeletes(List<Integer> mailIds) {
+
+		// mailIds 리스트에 있는 모든 메일을 삭제
+		int result = mailMapper.MailRemoves(mailIds);
+
+		// 결과가 0보다 크면 삭제가 성공한 것이므로 삭제된 개수 반환
+		if (result > 0) {
+			return result; // 삭제된 개수 반환
+		} else {
+			return 0; // 삭제 실패 시 0 반환
+		}
 	}
 
 	// 메일페이지네이션
@@ -141,10 +138,10 @@ public class MailServiceImpl implements MailService {
 
 	@Value("${spring.mail.username}")
 	private String ADMIN_SEND_EMAIL;
-	
+
 	public String sendMailToUser(MailVO vo) {
 
-		if(vo.getMailType().equals("보낸")) {
+		if (vo.getMailType().equals("보낸")) {
 			SimpleMailMessage message = new SimpleMailMessage();
 			message.setFrom(ADMIN_SEND_EMAIL); // 이메일을 보낼 송신자
 			message.setTo(vo.getGetUser()); // 이메일을 받을 수신자
@@ -152,44 +149,42 @@ public class MailServiceImpl implements MailService {
 			message.setText(vo.getContent()); // 이메일 본문
 			try {
 				javaMailSender.send(message);
-				
-				
-				
+
 			} catch (MailException e) {
 				e.printStackTrace();
 				return "전송 실패";
 			}
 		}
 		mailMapper.mailCreate(vo);
-		
+
 		return "전송성공";
 	}
 
 //기타
-	
-	//검색기능
+
+	// 검색기능
 	@Override
 	public List<MailVO> searchMails(MailVO mailVO) {
 		return mailMapper.searchMails(mailVO);
 	}
 
-	//임시메일 자동삭제 기능
+	// 임시메일 자동삭제 기능
 	public void deleteExpiredMails() {
-        LocalDateTime currentDateTime = LocalDateTime.now();  // 현재 시간
-        LocalDateTime expiryDate = currentDateTime.plusDays(7);
-        mailMapper.deleteExpiredMails(expiryDate);  // 만료된 메일 삭제
-    }
-	
-	//휴지통 자동삭제 기능
+		LocalDateTime currentDateTime = LocalDateTime.now(); // 현재 시간
+		LocalDateTime expiryDate = currentDateTime.plusDays(7);
+		mailMapper.deleteExpiredMails(expiryDate); // 만료된 메일 삭제
+	}
+
+	// 휴지통 자동삭제 기능
 	public void deleteCurrentMails() {
-		LocalDateTime currentDateTime = LocalDateTime.now();  // 현재 시간
+		LocalDateTime currentDateTime = LocalDateTime.now(); // 현재 시간
 		LocalDateTime expiryDate = currentDateTime.plusDays(30);
-		mailMapper.deleteExpiredMails(expiryDate);  // 만료된 메일 삭제
+		mailMapper.deleteExpiredMails(expiryDate); // 만료된 메일 삭제
 	}
 
 	@Scheduled(cron = "0 0/1 0 * * ?")
 	public void scheduledDeleteExpiredMails() {
-        deleteExpiredMails();
+		deleteExpiredMails();
 	}
-	
+
 }
