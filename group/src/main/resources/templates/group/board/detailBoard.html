@@ -10,7 +10,49 @@
 <link
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
 	rel="stylesheet">
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css"
+	rel="stylesheet">
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+	rel="stylesheet">
 <link href="/css/detailRepository.css" rel="stylesheet">
+<style>
+.file-info-table td img {
+	max-width: 100%; /* 테이블 셀 크기에 맞춰 최대 크기 설정 */
+	height: auto; /* 비율에 맞게 자동 크기 조정 */
+	display: block; /* 기본적으로 block으로 설정하여 가로 크기 맞춤 */
+	margin: 0 auto; /* 가운데 정렬 */
+}
+
+.ql-align-center {
+	text-align: center;
+}
+
+.ql-align-right {
+	text-align: right;
+}
+
+iframe.pdf-viewer {
+	width: 100%;
+	height: 600px;
+	border: 1px solid #ccc;
+}
+
+/* 이미지가 영역에 맞게 줄어들되, 넘치진 않게 */
+.content-area img {
+	max-width: 100%;
+	height: auto;
+	display: block;
+	margin: 10px auto;
+	object-fit: contain;
+	border-radius: 6px;
+}
+
+/* 클릭 시 확대효과를 줄 수도 있음 */
+.content-area img:hover {
+	transform: scale(1.02);
+}
+</style>
 </head>
 <body id="page-top">
 	<div id="wrapper">
@@ -19,41 +61,75 @@
 				<div class="container-fluid px-0">
 					<div class="card shadow mb-4"
 						style="width: 100%; margin-top: 20px; margin-bottom: auto;">
-						<div class="card-header py-3 d-flex align-items-center">
+						<div
+							class="card-header py-3 d-flex justify-content-between d-flex align-items-center">
 							<h6 class="m-0 font-weight-bold text-primary">게시글 정보</h6>
-							<i class="fa-solid fa-thumbtack text-primary ml-2"></i>
+							<div>
+								<a th:if="${hasPdf}"
+									th:href="@{/download/view/pdf/{id}(id=${firstPdfId})}"
+									class="btn btn-sm btn-outline-secondary mr-2" target="_blank">
+									<i class="fas fa-eye"></i> 미리보기
+								</a> <a
+									th:if="${attachments != null and !#lists.isEmpty(attachments)}"
+									th:href="@{/download/boardFile/zip/{postId}(postId=${post.postId})}"
+									class="btn btn-sm btn-info"> <i class="fas fa-file-archive"></i>
+									전체 다운로드
+								</a>
+							</div>
 						</div>
 						<div class="card-body">
 							<table class="table table-bordered file-info-table">
 								<tbody>
 									<tr>
 										<th>제목</th>
-										<td></td>
+										<td th:text="${post.postTitle}"></td>
 										<th>작성자</th>
-										<td></td>
+										<td th:text="${post.employeeName}"></td>
 									</tr>
 									<tr>
 										<th>등록일</th>
-										<td></td>
-										<th>첨부파일</th>
-										<td></td>
+										<td th:text="${#dates.format(post.postDate, 'yyyy-MM-dd')}"></td>
+										<th>조회수</th>
+										<td th:text="${post.views}"></td>
 									</tr>
 									<tr>
-										<td colspan="4"><textarea class="content-area" readonly></textarea>
+										<th>첨부파일</th>
+										<td colspan="3">
+											<div
+												th:if="${attachments != null and !#lists.isEmpty(attachments)}">
+												<div th:each="file : ${attachments}">
+													<a
+														th:href="@{/download/boardFile/{id}(id=${file.attachmentId})}"
+														th:text="${file.fileTitle}" target="_blank"></a><br />
+												</div>
+											</div> <span
+											th:if="${attachments == null or #lists.isEmpty(attachments)}">첨부파일
+												없음</span>
+										</td>
+									</tr>
+									<tr>
+										<td colspan="4">
+											<div class="content-area" th:utext="${post.postContent}"></div>
 										</td>
 									</tr>
 								</tbody>
 							</table>
 							<div class="text-center mb-3">
-								<button class="btn btn-secondary" onclick="">
+								<button class="btn btn-secondary" onclick="history.back()">
 									<i class="fas fa-arrow-left"></i>
 								</button>
-								<button class="btn btn-warning" onclick="">
-									<i class="fas fa-edit"></i>
-								</button>
-								<button class="btn btn-danger" onclick="">
-									<i class="fas fa-trash"></i>
-								</button>
+							  <th:block th:if="${isAdmin or isWriter or isDeptManager}">
+								<a th:href="@{/updateBoard/{postId}(postId=${post.postId})}"
+									class="btn btn-warning"> <i class="fas fa-edit"></i>
+								</a>
+								<form th:action="@{/deleteBoard/{postId}(postId=${post.postId})}" method="post"
+									  class="d-inline"
+									  onsubmit="return confirm('정말 삭제하시겠습니까?')">
+									<button type="submit" class="btn btn-danger">
+										<i class="fas fa-trash"></i>
+									</button>
+								</form>
+							  </th:block>	
 							</div>
 						</div>
 					</div>
@@ -64,10 +140,12 @@
 						<div class="card-body">
 							<!-- 댓글 입력창 -->
 							<div class="d-flex align-items-center">
-								<input type="text" id="commentInput" class="form-control"
+								<input type="hidden" id="boardType" th:value="${post.location}" />
+								<input type="hidden" id="postId" th:value="${post.postId}" /> <input
+									type="text" id="commentInput" class="form-control"
 									placeholder="댓글을 입력하세요">
-								 <button id="commentSubmitBtn" class="btn btn-primary ml-2"
-               						 style="width: 80px; height: 40px; font-size: 0.9rem; border-radius: 6px;">등록</button>
+								<button id="commentSubmitBtn" class="btn btn-primary ml-2"
+									style="width: 80px; height: 40px; font-size: 0.9rem; border-radius: 6px;">등록</button>
 							</div>
 
 							<!-- 댓글 목록 -->
@@ -80,6 +158,238 @@
 			</div>
 		</div>
 	</div>
-	<script src="/js/comment.js"></script>
+	<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const postId = document.getElementById("postId").value;
+
+    // 이미지 클릭 시 새 창
+    const images = document.querySelectorAll('.content-area img');
+    images.forEach(img => {
+      img.addEventListener('click', () => {
+        window.open(img.src, '_blank');
+      });
+    });
+});
+</script>
+	<script>
+  document.addEventListener('DOMContentLoaded', function () {
+	  let loginUser = null;
+	  let boardType = null;  
+	
+    const postIdElement = document.getElementById("postId");
+    if (!postIdElement) {
+      console.error("postId 요소를 찾을 수 없음");
+      return;
+    }
+
+    const postId = postIdElement.value;
+    console.log("postId 로드됨:", postId);
+
+    const commentInputElement = document.getElementById("commentInput");
+    const commentSubmitBtn = document.getElementById("commentSubmitBtn");
+    const commentListElement = document.getElementById("commentList");
+
+    // 댓글 등록
+    commentSubmitBtn.addEventListener('click', function () {
+      const comment = commentInputElement.value.trim();
+      
+      if (comment === '') {
+        alert('댓글 내용을 입력하세요.');
+        return;
+      }
+      
+   	  // 공지 게시판인데 관리자 아니면 막기
+      if (boardType === '공지' && !(loginUser.rightsId === 3 || loginUser.rightsLevel === 5)) {
+        alert('관리자만이 댓글 등록이 가능합니다.');
+        return;
+      }
+
+      const bodyData = new URLSearchParams({
+        postId: postId,
+        content: comment
+      });
+
+      fetch('/comment/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: bodyData
+      })
+        .then(response => response.text())
+        .then(data => {
+          console.log("서버 응답:", data);
+          commentInputElement.value = '';
+          loadComments();
+        })
+        .catch(error => {
+          console.error('댓글 등록 오류:', error);
+          alert('댓글 등록 중 오류가 발생했습니다.');
+        });
+    });
+
+  // 댓글 불러오기
+ function loadComments() {
+  fetch(`/comment/list/${postId}`)
+    .then(response => response.json())
+    .then(data => {
+      const comments = data.comments;
+      loginUser = data.loginUser;
+      boardType = document.getElementById("boardType").value;
+      commentListElement.innerHTML = '';
+
+      const parentComments = comments.filter(c => c.reComment == null);
+      const replyComments = comments.filter(c => c.reComment != null);
+
+      parentComments.forEach(parent => {
+        const canEditOrDelete =
+          loginUser.employeeNo === parent.employeeNo ||
+          loginUser.rightsId === 3 || loginUser.rightsLevel === 5 ||
+          (boardType === '부서' && loginUser.manager != null);
+
+        let replyBtnHtml = '';
+        // 공지 게시판이 아니거나 관리자일 경우에만 답글 달기 버튼 표시
+        if (boardType !== '공지' || loginUser.rightsId === 3 || loginUser.rightsLevel === 5) {
+          replyBtnHtml = `<button class="btn btn-sm btn-outline-primary" onclick="showReplyForm(${parent.commentId})">답글 달기</button>`;
+        }
+
+        const parentDiv = document.createElement('div');
+        parentDiv.classList.add('comment-item', 'mb-3');
+        parentDiv.innerHTML = `
+          <div class="comment-content">
+            <strong>[${parent.departmentName}] ${parent.employeeName}</strong><br>
+            ${parent.content}
+          </div>
+          <div class="mt-1">
+            ${replyBtnHtml}
+            ${canEditOrDelete ? `
+              <button class="btn btn-warning btn-sm" onclick="editComment(${parent.commentId})">수정</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteComment(${parent.commentId})">삭제</button>
+            ` : ''}
+          </div>
+          <div class="reply-form mt-2" id="reply-form-${parent.commentId}" style="display: none;">
+            <input type="text" id="reply-input-${parent.commentId}" class="form-control mb-1" placeholder="답글을 입력하세요">
+            <button class="btn btn-sm btn-success" onclick="submitReply(${parent.commentId})">등록</button>
+          </div>
+        `;
+
+        const replies = replyComments.filter(r => r.reComment === parent.commentId);
+        replies.forEach(reply => {
+          const canEditOrDeleteReply =
+            loginUser.employeeNo === reply.employeeNo ||
+            loginUser.rightsId === 3 || loginUser.rightsLevel === 5 ||
+            (boardType === '부서' && loginUser.manager != null);
+
+          const replyDiv = document.createElement('div');
+          replyDiv.classList.add('ml-4', 'border-left', 'pl-3', 'mt-2');
+          replyDiv.innerHTML = `
+            <div class="comment-content">
+              <strong>[${reply.departmentName}] ${reply.employeeName}</strong><br>
+              ${reply.content}
+            </div>
+            <div class="mt-1">
+              ${canEditOrDeleteReply ? `
+                <button class="btn btn-warning btn-sm" onclick="editComment(${reply.commentId})">수정</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteComment(${reply.commentId})">삭제</button>
+              ` : ''}
+            </div>
+          `;
+          parentDiv.appendChild(replyDiv);
+        });
+
+        commentListElement.appendChild(parentDiv);
+      });
+    })
+    .catch(error => {
+      console.error('댓글 불러오기 오류:', error);
+    });
+}
+
+
+    // 댓글 삭제
+    window.deleteComment = function (commentId) {
+      fetch(`/comment/delete`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({ commentId })
+      })
+        .then(response => response.text())
+        .then(data => {
+          loadComments();
+        })
+        .catch(error => {
+          console.error('댓글 삭제 오류:', error);
+          alert('댓글 삭제 중 오류가 발생했습니다.');
+        });
+    };
+
+    // 댓글 수정
+    window.editComment = function (commentId) {
+      const newContent = prompt("수정할 내용을 입력하세요.");
+      if (newContent) {
+        fetch(`/comment/edit`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: new URLSearchParams({
+            commentId,
+            content: newContent
+          })
+        })
+          .then(response => response.text())
+          .then(data => {
+            loadComments();
+          })
+          .catch(error => {
+            console.error('댓글 수정 오류:', error);
+            alert('댓글 수정 중 오류가 발생했습니다.');
+          });
+      }
+    };
+
+    window.showReplyForm = function (commentId) {
+      const replyForm = document.getElementById(`reply-form-${commentId}`);
+      replyForm.style.display = replyForm.style.display === 'none' ? 'block' : 'none';
+    };
+
+    window.submitReply = function (parentCommentId) {
+      const input = document.getElementById(`reply-input-${parentCommentId}`);
+      const content = input.value.trim();
+
+      if (content === '') {
+        alert("답글 내용을 입력하세요.");
+        return;
+      }
+
+      fetch('/comment/reply', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({
+          postId: postId,
+          content: content,
+          parentCommentId: parentCommentId
+        })
+      })
+        .then(response => response.text())
+        .then(data => {
+          input.value = '';
+          document.getElementById(`reply-form-${parentCommentId}`).style.display = 'none';
+          loadComments();
+        })
+        .catch(error => {
+          console.error('답글 등록 오류:', error);
+          alert('답글 등록 중 오류가 발생했습니다.');
+        });
+    };
+
+    loadComments();
+  });
+</script>
+
 </body>
 </html>

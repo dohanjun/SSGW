@@ -27,4 +27,6 @@ public interface FileMapper {
     void deleteFilesByWritingId(Long writingId);
     
     void deleteDownloadLogByWritingId(Long writingId);
+    
+    void deleteFileById(Long fileId);
 }

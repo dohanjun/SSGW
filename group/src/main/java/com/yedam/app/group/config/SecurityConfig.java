@@ -10,7 +10,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -37,6 +36,8 @@ public class SecurityConfig {
 						"/savePaymentDetails", "/saveUser", "/insertBoardPost", "/selectBoardPost", "/updateBoardPost")
 				.permitAll().requestMatchers("/insertPost", "/basket/**", "/api/**", "/alerts/**", "/insertAlarm")
 				.permitAll()
+        .requestMatchers("/uploadImage").permitAll()
+	      .requestMatchers("/comment/**").permitAll()
 				// 관리자만 접근 가능
 				.requestMatchers("/module", "/insertModule", "/updateModule", "/deleteModule/*", "/updateModuleBasic/*",
 						"/updateModuleActive/*", "/qna", "/fixed")
@@ -52,7 +53,7 @@ public class SecurityConfig {
 						"/insertModule", "/saveForm", "/schedule/**", "/qna", "/fixed", "/saveSubDetail",
 						"/saveSubDetail", "/saveSuber", "/savePaymentDetails", "/saveUser", "/insertBoardPost",
 						"/selectBoardPost", "/updateBoardPost", "/basket/**", "/api/**", "/alerts/**", "/insertAlarm",
-						"/bookUpdate"));
+						"/bookUpdate","/uploadImage","/comment/**"));
 		return http.build();
 	}
 

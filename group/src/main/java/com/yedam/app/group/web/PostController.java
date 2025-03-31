@@ -1,6 +1,7 @@
 package com.yedam.app.group.web;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,6 +15,7 @@ import com.yedam.app.group.service.EmpService;
 import com.yedam.app.group.service.EmpVO;
 import com.yedam.app.group.service.FileService;
 import com.yedam.app.group.service.PostService;
+import com.yedam.app.group.service.RepositoryFileVO;
 import com.yedam.app.group.service.RepositoryPostVO;
 import com.yedam.app.group.service.RepositoryVO;
 
@@ -96,13 +98,17 @@ public class PostController {
     @GetMapping("/editPost")
     public String editPostForm(@RequestParam("writingId") Long writingId, Model model) {
         RepositoryPostVO post = postService.getPostDetail(writingId);
+        List<RepositoryFileVO> files = fileService.getFilesByWritingId(writingId);
+        
         model.addAttribute("post", post);
+        model.addAttribute("files", files);
         return "group/repository/editPost";
     }
     
     @PostMapping("/editPost")
     public String updatePost(@ModelAttribute RepositoryPostVO postVO,
-                             @RequestParam(value = "files", required = false) MultipartFile[] files) {
+                             @RequestParam(value = "files", required = false) MultipartFile[] files,
+                             @RequestParam(value = "deleteFileIds", required = false) List<Long> deleteFileIds) {
 
         // 게시글 제목/내용 수정
         postService.updatePost(postVO);
@@ -110,12 +116,15 @@ public class PostController {
         // 기존 파일 삭제 전 다운로드 로그 먼저 삭제!
         fileService.deleteDownloadLogByWritingId(postVO.getWritingId());
 
-        // 새 파일 저장
+        // 체크된 파일만 삭제
+        if (deleteFileIds != null && !deleteFileIds.isEmpty()) {
+            for (Long fileId : deleteFileIds) {
+                fileService.deleteFileById(fileId);
+            }
+        }
+
+        // 새 파일 업로드
         if (files != null && files.length > 0) {
-        	
-        	// 기존 파일 삭제
-            fileService.deleteFilesByWritingId(postVO.getWritingId());
-            
             for (MultipartFile file : files) {
                 if (!file.isEmpty()) {
                     fileService.insertFile(postVO.getWritingId(), file);

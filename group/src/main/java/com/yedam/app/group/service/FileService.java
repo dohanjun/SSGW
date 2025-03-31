@@ -22,4 +22,12 @@ public interface FileService {
     void backupFilesByWritingId(Long writingId);
     
     void restoreFilesByWritingId(Long writingId);
+    
+    void deleteFileById(Long fileId);
+    
+    // 게사판 파일 각각 다운로드
+    BoardAttachmentVO getBoardAttachmentById(int attachmentId);
+    
+    // 게시판 파일 전체 다운로드
+    List<BoardAttachmentVO> getBoardAttachmentsByPostId(int postId);
 }
