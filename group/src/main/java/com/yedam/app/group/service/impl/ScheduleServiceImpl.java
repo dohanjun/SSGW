@@ -47,9 +47,6 @@ public class ScheduleServiceImpl implements ScheduleService {
 		return scheduleMapper.deleteSchedule(scheduleVO);
 	}
 	
-    @Override
-    public List<ScheduleVO> getAllSchedules() {
-        return scheduleMapper.selectAllSchedules();
-    }
+
 
 }
