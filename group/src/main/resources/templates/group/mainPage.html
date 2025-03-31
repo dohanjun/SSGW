@@ -20,7 +20,7 @@
 .main-grid {
 	display: grid;
 	grid-template-columns: 1fr 2fr 1fr 1fr;
-	grid-template-rows: 100px 300px 300px;
+	grid-template-rows: 120px 300px 300px; /* ✅ 높이 살짝 증가 */
 	gap: 20px;
 	grid-template-areas: "userinfo userinfo userinfo userinfo"
 		"datetime 자료실 공지 approval"
@@ -47,11 +47,12 @@ body {
 	grid-area: userinfo;
 	background: #ffffff;
 	border-radius: 12px;
-	padding: 20px;
+	padding: 40px 20px; /* ✅ 패딩 증가 */
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
 	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+	min-height: 120px; /* ✅ 최소 높이 추가 */
 }
 
 .userinfo-box img {
@@ -196,6 +197,7 @@ body {
 	color: #333;
 	margin-bottom: 12px;
 }
+
 .clickable-card:hover {
 	transform: translateY(-2px);
 	transition: all 0.2s ease-in-out;
@@ -219,7 +221,7 @@ body {
 						<div class="userinfo-box">
 							<div>
 								<h5 class="mb-1 fw-bold">
-									👋 환영합니다, <span th:text="${#authentication.name}">홍길동</span> 님
+									👋 환영합니다, <span th:text="${userInfo.employeeName}">홍길동</span> 님
 								</h5>
 								<p class="mb-0 text-muted">오늘도 좋은 하루 되세요!</p>
 							</div>
