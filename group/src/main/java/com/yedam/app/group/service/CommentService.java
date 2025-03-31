@@ -19,4 +19,10 @@ public interface CommentService {
     void deleteComment(int commentId);
     
     CommentVO getCommentById(int commentId);
+    
+    List<CommentVO> getParentComments(int postId, int offset, int limit);
+    
+    List<CommentVO> getReplyComments(int postId);
+    
+    int countParentComments(int postId);
 }

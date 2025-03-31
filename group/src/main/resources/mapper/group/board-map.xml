@@ -245,4 +245,93 @@
 	DELETE FROM board_post WHERE post_id = #{postId}
 </delete>
 
+<update id="updateFixStatus">
+  UPDATE board_post
+  SET fixed = #{fixed}
+  WHERE post_id = #{postId}
+</update>
+
+<select id="getFixedNoticeBoardPosts" resultType="BoardPostVO">
+    SELECT 
+        p.*,
+        b.suber_no,
+        e.employee_name AS employeeName
+    FROM board_post p
+    JOIN board b ON p.board_id = b.board_id
+    JOIN employees e ON p.employee_no = e.employee_no
+    WHERE b.board_type = '공지'
+      AND b.suber_no = #{suberNo}
+      AND p.fixed = 'Y'
+    ORDER BY p.post_date DESC
+</select>
+
+    <select id="getNoticeBoardPostsPaged" resultType="BoardPostVO">
+    SELECT * FROM (
+        SELECT ROWNUM AS rn, inner.* FROM (
+            SELECT 
+                p.*, 
+                b.suber_no, 
+                e.employee_name AS employeeName 
+            FROM board_post p
+            JOIN board b ON p.board_id = b.board_id
+            JOIN employees e ON p.employee_no = e.employee_no
+            WHERE b.board_type = '공지'
+              AND b.suber_no = #{suberNo}
+              AND p.fixed = 'N'
+              <if test="keyword != null and keyword != ''">
+                  AND (
+                    LOWER(p.post_title) LIKE '%' || LOWER(#{keyword}) || '%' OR
+                    LOWER(p.post_content) LIKE '%' || LOWER(#{keyword}) || '%' OR
+                    LOWER(e.employee_name) LIKE '%' || LOWER(#{keyword}) || '%'
+                  )
+              </if>
+            ORDER BY p.post_date DESC
+        ) inner
+        WHERE ROWNUM &lt;= #{offset} + #{pageSize}
+    )
+    WHERE rn &gt; #{offset}
+</select>
+
+   <select id="getFixedDepartmentBoardPosts" resultType="BoardPostVO">
+    SELECT 
+        p.*, 
+        b.suber_no, 
+        e.employee_name AS employeeName
+    FROM board_post p
+    JOIN board b ON p.board_id = b.board_id
+    JOIN employees e ON p.employee_no = e.employee_no
+    WHERE b.board_type = '부서'
+      AND b.suber_no = #{suberNo}
+      AND b.department_no = #{departmentNo}
+      AND p.fixed = 'Y'
+    ORDER BY p.post_date DESC
+</select>
+
+ <select id="getDepartmentBoardPostsPaged" resultType="BoardPostVO">
+    SELECT * FROM (
+        SELECT ROWNUM AS rn, inner.* FROM (
+            SELECT 
+                p.*, 
+                b.suber_no, 
+                e.employee_name AS employeeName
+            FROM board_post p
+            JOIN board b ON p.board_id = b.board_id
+            JOIN employees e ON p.employee_no = e.employee_no
+            WHERE b.board_type = '부서'
+              AND b.suber_no = #{suberNo}
+              AND b.department_no = #{departmentNo}
+              AND p.fixed = 'N'
+              <if test="keyword != null and keyword != ''">
+                  AND (
+                    LOWER(p.post_title) LIKE '%' || LOWER(#{keyword}) || '%' OR
+                    LOWER(p.post_content) LIKE '%' || LOWER(#{keyword}) || '%' OR
+                    LOWER(e.employee_name) LIKE '%' || LOWER(#{keyword}) || '%'
+                  )
+              </if>
+            ORDER BY p.post_date DESC
+        ) inner
+        WHERE ROWNUM &lt;= #{offset} + #{pageSize}
+    )
+    WHERE rn &gt; #{offset}
+</select>
 </mapper>
