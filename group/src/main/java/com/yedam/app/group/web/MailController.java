@@ -2,6 +2,7 @@ package com.yedam.app.group.web;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -10,7 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,13 +35,13 @@ import com.yedam.app.group.service.MailVO;
 import com.yedam.app.group.service.PageListVO;
 import com.yedam.app.group.service.Paging;
 
-import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class MailController {
-
-    private static final String UPLOAD_DIR = "uploads/"; // 업로드 디렉토리
+    @Value("${file.upload-dir}")  
+    private String uploadDir;
+    // 업로드 디렉토리
     private final MailService mailService;
     private final EmpService empService;
 
@@ -85,31 +88,12 @@ public class MailController {
 	    return "group/mail/mailSelect";
 	}
 
-	// 내 메일상세보기
-	@GetMapping("/myMailSelect")
-	public String myMailSelect(MailVO mailVO, Model model) {
-	    try {
-	        // 로그인된 사용자 정보 가져오기
-	        EmpVO loggedInUser = empService.getLoggedInUserInfo();
-	        mailVO.setEmployeeId(loggedInUser.getEmployeeId());
-
-	        // 메일 정보 조회
-	        MailVO findVO = mailService.MyMailSelectInfo(mailVO);
-	        model.addAttribute("mail", findVO);
-
-	        return "group/mail/myMailSelect";  // 메일 상세 페이지로 이동
-	    } catch (Exception e) {
-	        model.addAttribute("error", "메일 상세 정보를 가져오는 중 오류가 발생했습니다.");
-	        return "group/mail/myMailSelect";  // 오류 발생 시 메일 상세 화면으로 이동
-	    }
-	}
-
 	// 파일 다운로드 처리
 	@GetMapping("/download-mail/{filename}")
 	public ResponseEntity<Resource> downloadFile(@PathVariable String filename) {
 	    try {
 	        // 다운로드할 파일의 경로 설정
-	        Path filePath = Paths.get(UPLOAD_DIR).resolve(filename).normalize();
+	        Path filePath = Paths.get(uploadDir).resolve(filename).normalize();
 	        File file = filePath.toFile();
 
 	        // 파일이 존재하지 않으면 404 반환
@@ -119,12 +103,13 @@ public class MailController {
 
 	        // 파일을 Resource로 변환 (FileSystemResource로 생성)
 	        Resource resource = (Resource) new FileSystemResource(file);
-
+	        filename = URLEncoder.encode(filename, "UTF-8");
 	        // 파일을 다운로드하도록 헤더 설정
 	        return ResponseEntity.ok()
 	                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
 	                .body(resource);
 	    } catch (Exception e) {
+	    	e.printStackTrace();
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 	    }
 	}
@@ -144,10 +129,10 @@ public class MailController {
 	    try {
 	        // 파일 업로드 처리
 	        String filename = StringUtils.cleanPath(file.getOriginalFilename()); // 파일 이름 정리
-	        Path targetLocation = Paths.get(UPLOAD_DIR + filename); // 저장할 경로
+	        Path targetLocation = Paths.get(uploadDir +"/" + filename); // 저장할 경로
 
 	        // 디렉토리가 없으면 생성
-	        File dir = new File(UPLOAD_DIR);
+	        File dir = new File(uploadDir);
 	        if (!dir.exists()) {
 	            dir.mkdirs();
 	        }
@@ -175,59 +160,24 @@ public class MailController {
 	}
 
 
-	// 수정 - 페이지
-	@GetMapping("/mailUpdate")
-	public String mailUpdate(MailVO mailVO, Model model) {
-	    // 메일 정보 조회
-	    MailVO findVO = mailService.MailSelectInfo(mailVO);
-	    model.addAttribute("mail", findVO);
-	    return "group/mail/mailUpdate"; // 메일 수정 화면으로 이동
-	}
-
-	// 메일 수정 처리 (AJAX 방식)
-	@PostMapping("/mailUpdate")
-	@ResponseBody
-	public Map<String, Object> mailUpdateAJAXJSON(@RequestBody MailVO mailVO) {
-	    // 응답 데이터를 담을 Map 객체 생성
-	    Map<String, Object> response = new HashMap<>();
-
-	    try {
-	        // 메일 수정 서비스 호출
-	        Map<String, Object> result = mailService.MailUpdate(mailVO);
-
-	        // 수정 성공 시
-	        response.put("status", "success"); // 상태 코드
-	        response.put("message", "메일이 성공적으로 수정되었습니다."); // 성공 메시지
-	        response.put("data", result); // 수정된 데이터를 포함
-
-	    } catch (Exception e) {
-	        // 예외 발생 시
-	        response.put("status", "error"); // 상태 코드
-	        response.put("message", "메일 수정 중 오류가 발생했습니다."); // 오류 메시지
-	    }
-
-	    // 응답을 클라이언트로 반환
-	    return response;
-	}
-
-
-
-	// 메일답장 페이지
+	// 메일답장 페이지 로딩
 	@GetMapping("/mailReply")
 	public String mailReplyForm(MailVO mailVO, Model model) {
-		MailVO findVO = mailService.MailSelectInfo(mailVO);
-		model.addAttribute("mail", findVO);
-		return "group/mail/mailReply";
+	    MailVO findVO = mailService.MailSelectInfo(mailVO); // 메일 정보 가져오기
+	    model.addAttribute("mail", findVO); // 메일 데이터를 model에 추가하여 Thymeleaf 템플릿에서 사용할 수 있도록 함
+	    return "group/mail/mailReply"; // 해당 뷰로 이동
 	}
 
-	// 메일답장처리
-	@PostMapping("mailReply")
+	// 메일답장 처리
+	@PostMapping("/mailReply")
 	public String mailReplyProcess(MailVO vo) {
-		// 메일 발송
+	    // 메일 발송
 	    mailService.sendMailToUser(vo);
 	    
-	    return "redirect:mail";
+	    // 메일 목록 페이지로 리다이렉트
+	    return "redirect:/mail";
 	}
+
 
 	// 전달 - 페이지
 	@GetMapping("/mailVery")

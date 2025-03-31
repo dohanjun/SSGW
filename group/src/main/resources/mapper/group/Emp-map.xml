@@ -4,7 +4,7 @@
 
       <!-- 사원 등록 -->
       <insert id="insertEmpInfo"
-              parameterType="EmpVO">
+              parameterType="EmpVO" >
               <selectKey keyProperty="employeeNo"
                          resultType="Integer"
                          order="BEFORE">
@@ -42,7 +42,7 @@
                            ,#{rightsId}
                            ,#{departmentNo}
                            ,#{profileImageBLOB,jdbcType=BLOB}
-                         ) <!-- MyBatis가 데이터 타입을 정확히 인식하도록 jdbcType=BLOB을 추가해야 함 -->
+                         )
       </insert>
 
       

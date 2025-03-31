@@ -17,24 +17,29 @@
             width: 100%;
             overflow-x: auto;
         }
+
         .work-info table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
+
         .work-info th, .work-info td {
             border: 1px solid #ddd;
             padding: 12px;
             text-align: center;
             white-space: nowrap;
         }
+
         .work-info th {
             background-color: #f8f9fc;
             font-weight: bold;
         }
+
         .work-info tbody tr:nth-child(even) {
             background-color: #f2f2f2;
         }
+
         .work-info tbody tr:hover {
             background-color: #e2e6ea;
         }
@@ -54,18 +59,18 @@
                 <div class="work-info">
                     <table>
                         <thead>
-                            <tr>
-                                <th>부서명</th>
-                                <th>사원번호</th>
-                                <th>사원이름</th>
-                                <th>출근시간</th>
-                                <th>퇴근시간</th>
-                                <th>총 근무시간</th>
-                                <th>초과 근무시간</th>
-                            </tr>
+                        <tr>
+                            <th>부서명</th>
+                            <th>사원번호</th>
+                            <th>사원이름</th>
+                            <th>출근시간</th>
+                            <th>퇴근시간</th>
+                            <th>총 근무시간</th>
+                            <th>초과 근무시간</th>
+                        </tr>
                         </thead>
                         <tbody id="employeeTableBody">
-                            <!-- JS로 오늘자 출결 동적 삽입 -->
+                        <!-- JS로 오늘자 출결 동적 삽입 -->
                         </tbody>
                     </table>
                 </div>
@@ -94,42 +99,27 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    // ✅ 글로벌 변수 선언
-    let chartData = [];  // 서버에서 받아온 전체 차트용 데이터 (사원별 근무 정보)
-    let chart = null;    // Chart.js 인스턴스 저장용 (차트 재생성 시 사용)
+    let chartData = [];
+    let chart = null;
 
-    // ✅ 페이지 로드 완료 시 초기 데이터 로딩
     document.addEventListener("DOMContentLoaded", function () {
-        loadChartData();        // 차트 데이터 로딩 (그래프 생성)
-        loadTodayAttendance();  // 오늘 출근한 사원 리스트 로딩
+        loadChartData();
+        loadTodayAttendance();
     });
 
-    // ✅ 1. 부서원 근무 시간 비교 차트 불러오기
+    // ✅ 차트 데이터 로딩 및 표시
     function loadChartData() {
-        fetch("/chartsManager") // 서버에서 JSON 데이터 받아오기
-            .then(response => {
-                if (!response.ok) throw new Error("네트워크 응답 오류");
-                return response.json();
-            })
+        fetch("/chartsManager")
+            .then(res => res.json())
             .then(data => {
                 chartData = data;
-                console.log("✅ 차트 데이터:", data);
-
-                // x축 레이블: 사원 이름 리스트
                 const labels = data.map(item => item.employeeName);
-                // y축 데이터: 총 근무 시간
-                const totalWorkingHours = data.map(item => typeof item.totalWorkingHours === 'number' ? item.totalWorkingHours : 0);
-                // y축 데이터: 초과 근무 시간
-                const overtimeHours = data.map(item => typeof item.overtimeHours === 'number' ? item.overtimeHours : 0);
+                const totalHours = data.map(item => item.totalWorkingHours || 0);
+                const overtime = data.map(item => item.overtimeHours || 0);
 
                 const ctx = document.getElementById('attendanceChart').getContext('2d');
 
-                // 기존 차트가 있으면 파괴 후 새로 생성
-                if (chart) {
-                    chart.destroy();
-                }
-
-                // ✅ Chart.js - 막대차트 생성
+                if (chart) chart.destroy(); // ✅ 기존 차트 제거
                 chart = new Chart(ctx, {
                     type: 'bar',
                     data: {
@@ -137,32 +127,23 @@
                         datasets: [
                             {
                                 label: '총 근무 시간',
-                                data: totalWorkingHours,
-                                backgroundColor: '#f1c40f'
+                                data: totalHours,
+                                backgroundColor: '#f1c40f' // ✅ 노란색
                             },
                             {
                                 label: '초과 근무 시간',
-                                data: overtimeHours,
-                                backgroundColor: '#e74c3c'
+                                data: overtime,
+                                backgroundColor: '#e74c3c' // ✅ 빨간색
                             }
                         ]
                     },
                     options: {
-                        responsive: true, // 반응형 지원
+                        responsive: true,
                         plugins: {
-                            legend: { position: 'top' }, // 범례 위치
+                            legend: { position: 'top' },
                             title: {
                                 display: true,
                                 text: '이달의 부서원 근무시간 비교'
-                            }
-                        },
-                        // ✅ 막대 클릭 시 해당 사원의 상세 출결 리스트 테이블에 표시
-                        onClick: (evt, activeEls) => {
-                            if (activeEls.length > 0) {
-                                const index = activeEls[0].index;
-                                const empNo = chartData[index].employeeNo;
-                                console.log("✅ 그래프 클릭 - 사원번호:", empNo);
-                                loadEmployeeTable(empNo);
                             }
                         },
                         scales: {
@@ -170,30 +151,23 @@
                                 beginAtZero: true,
                                 title: {
                                     display: true,
-                                    text: '시간 (Hours)' // y축 레이블
+                                    text: '시간 (Hours)'
                                 }
-                            },
-                            x: {
-                                stacked: false
                             }
                         }
                     }
                 });
             })
-            .catch(error => {
-                console.error('❌ 차트 데이터 로딩 오류:', error);
-            });
+            .catch(err => console.error('❌ 차트 데이터 오류:', err));
     }
 
-    // ✅ 2. 오늘 부서원 출결 리스트 로딩 (초기 테이블 표시용)
+    // ✅ 오늘 출결 데이터 테이블
     function loadTodayAttendance() {
         fetch("/todayAttendance")
             .then(res => res.json())
             .then(data => {
                 const tbody = document.getElementById("employeeTableBody");
-                tbody.innerHTML = ''; // 기존 내용 초기화
-
-                // 각 사원의 출근 데이터 테이블에 행 추가
+                tbody.innerHTML = '';
                 data.forEach(emp => {
                     const row = document.createElement("tr");
                     row.innerHTML = `
@@ -208,20 +182,16 @@
                     tbody.appendChild(row);
                 });
             })
-            .catch(err => {
-                console.error("❌ 오늘 출결 로딩 실패:", err);
-            });
+            .catch(err => console.error("❌ 오늘 출결 로딩 실패:", err));
     }
 
-    // ✅ 3. 그래프 클릭 시, 해당 사원의 출결 상세 테이블 로딩
+    // ✅ 특정 사원 테이블 (차트 클릭용)
     function loadEmployeeTable(empNo) {
         fetch(`/employeeRecord/${empNo}`)
             .then(res => res.json())
             .then(records => {
                 const tbody = document.getElementById("employeeTableBody");
-                tbody.innerHTML = ''; // 기존 내용 초기화
-
-                // 선택된 사원의 출결 리스트 렌더링
+                tbody.innerHTML = '';
                 records.forEach(emp => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
@@ -236,19 +206,16 @@
                     tbody.appendChild(row);
                 });
             })
-            .catch(err => {
-                console.error('❌ 사원 기록 로딩 오류:', err);
-            });
+            .catch(err => console.error('❌ 사원 기록 로딩 오류:', err));
     }
 
-    // ✅ 시간 포맷 함수 (HH:MM 형식으로 변환)
+    // ✅ 시간 포맷
     function formatTime(datetimeStr) {
         if (!datetimeStr) return '-';
         const date = new Date(datetimeStr);
         return date.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
     }
 </script>
-
 
 </body>
 </html>

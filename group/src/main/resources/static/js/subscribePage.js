@@ -226,7 +226,8 @@ function payment(type) {
 					contentType: "application/json"
 				})
 
-
+				console.log(response)
+				
 				let subDetailsNoList = response.map(detail => ({
 					subDetailsNo: detail.subDetailsNo,
 					discountPrice: detail.discountPrice
@@ -276,9 +277,9 @@ function payment(type) {
 					contentType: "application/json"
 				})
 
-
+				;
 				//6 대표 정보 저장
-				await $.ajax({
+				let empnum = await $.ajax({
 					type: "POST",
 					url: "/saveUser",
 					data: JSON.stringify({
@@ -300,16 +301,22 @@ function payment(type) {
 						departmentNo: response3,                    // DEPARTMENT_NO: 부서 미지정 상태
 						profileImageBlob: null                 // PROFILE_IMAGE_BLOB: 이미지 파일의 blob 데이터 (필요시 할당)
 					}),
+					contentType: "application/json"
+				});
+				
+				await $.ajax({
+					type: "POST",
+					url: "/api/updateDepartMent",
+					data: data = JSON.stringify({
+						manager: empnum,
+						suberNo: suberNo
+					}),
 					contentType: "application/json",
 					success: function() {
 						alert("구독성공")
-						//location.href = "login";
+						location.href = "login";
 					},
-					error: function(xhr, status, error) {
-						alert("❌ 결제 상세 정보 저장 중 오류 발생.");
-						console.error(xhr.responseText);
-					}
-				});
+				})
 
 
 			} else {

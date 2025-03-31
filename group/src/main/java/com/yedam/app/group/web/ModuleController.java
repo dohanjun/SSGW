@@ -63,8 +63,8 @@ public class ModuleController {
 	@PostMapping("/saveUser")
 	public ResponseEntity<?> saveUser(@RequestBody EmpVO employee) {   
 	    employee.setEmployeePw(encoder.encode(employee.getEmployeePw()));
-	    int savedEmployee = empService.createEmpInfo(employee);
-	    return ResponseEntity.ok(savedEmployee);
+	    empService.createEmpInfo(employee);
+	    return ResponseEntity.ok(employee.getEmployeeNo());
 	}
 
 

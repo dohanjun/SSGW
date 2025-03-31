@@ -227,5 +227,13 @@
      WHERE EMPLOYEE_NO = #{employeeNo}
        AND YEAR = TO_CHAR(SYSDATE, 'YYYY')
 </update>
+   
+        <!-- 잔여일 계산 -->
+		<select id="getLeaveHistory" parameterType="map" resultType="VacationVO">
+		    SELECT GRANTED_VACATION, USED_VACATION, REMAINING_VACATION
+		    FROM LEAVE_HISTORY
+		    WHERE EMPLOYEE_NO = #{employeeNo}
+		      AND YEAR = #{year}
+		</select>
 
 </mapper>

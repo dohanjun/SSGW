@@ -22,5 +22,10 @@ public class ScheduleVO {
 	private String departmentName;    // 부서명
 	private String employeeName;      // 사원명
 	
+
+	private boolean todayOnly;
+	private String divisionName;
+
 	private List<Integer> sharedEmployees; // 공유 사원번호 리스트
+
 }

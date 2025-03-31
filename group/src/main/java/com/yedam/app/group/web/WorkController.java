@@ -54,8 +54,9 @@ public class WorkController {
             // ✅ 각 출결 레코드에 초과근무 시간(시간 단위) 계산하여 셋팅
             for (AttendanceManagementVO vo : attendanceList) {
                 if (vo.getTotalOvertimeTime() != null) {
-                    double overtimeHours = vo.getTotalOvertimeTime() / 60.0; // 분 ➝ 시간
-                    vo.setOvertimeHours(overtimeHours);
+                	double overtimeHours = vo.getTotalOvertimeTime() / 60;
+                    vo.setOvertimeHours(overtimeHours); // 이거 없으면 템플릿에서 null
+
                 } else {
                     vo.setOvertimeHours(0.0);
                 }
@@ -65,7 +66,8 @@ public class WorkController {
             model.addAttribute("attendanceList", attendanceList);
             model.addAttribute("monthlyTotalWorkHours", monthlyTotalWorkHours);
             model.addAttribute("totalWorkedHours", totalWorkedHours);
-            model.addAttribute("overtimeHoursCalculated", totalOvertimeMinutes / 60.0); // 차트용 초과근무 시간(시간 단위)
+            model.addAttribute("overtimeHoursCalculated", totalOvertimeMinutes / 60); // 🟡 그래프용도 시간단위
+
         }
 
         return "group/workPage/blank"; // 템플릿 반환
@@ -89,6 +91,7 @@ public class WorkController {
     }
 
     // ✅ 부서 출결 요약 차트 데이터 (JSON 반환)
+    // ✅ 차트 데이터 조회 API
     @GetMapping("/chartsManager")
     @ResponseBody
     public List<AttendanceSummaryDTO> getChartData() {

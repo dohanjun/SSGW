@@ -2,6 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yedam.app.group.mapper.MailMapper">
 
+	  <select id="findByEmployeeId" parameterType="String" resultType="EmpVO">
+	  		 SELECT * 
+	  		 FROM employees 
+	  		 WHERE employee_no = #{employeeNo}
+	  </select>
+
 <!-- 단건조회 -->
 	<select id="getPageList" parameterType="PageListVO" resultType="PageListVO">
 		SELECT  *
@@ -12,25 +18,31 @@
 
 <sql id="mailCondition">
 		  <where>
+
 		  	<if test="search != null and search != ''">
 		  		( TITLE LIKE '%' || #{search} || '%'
 		  		OR GET_USER LIKE '%' || #{search} || '%'
 		  		OR RECODE LIKE '%' || #{search} || '%' )
 		  	</if>	
-		  	   <if test="mailType != null">
-		  	    and mail_type = #{mailType}  
-		  	   <if test= "mailType == '받은'">
-     			and get_user = #{getUser}	  	   
-		  	   </if>
-		  	   <if test= "mailType == '보낸'">
-     			and employee_id = #{employeeId}   
-		  	   </if>
-		  	   <if test= "mailType == '임시'">
-     			and employee_id = #{employeeId}   
-		  	   </if>
-		  	   <if test= "mailType == '휴지통'">
-     			and employee_id = #{employeeId}   
-		  	   </if>
+		  	<if test="mailType != null">
+			  	    and mail_type = #{mailType}  
+			  	   <if test= "mailType == '받은'">
+	     			and get_user = #{getUser}	  	   
+			  	   </if>
+			  	   <if test= "mailType == '보낸'">
+	     			and employee_id = #{employeeId}   
+			  	   </if>
+			  	   <if test= "mailType == '임시'">
+	     			and employee_id = #{employeeId}   
+			  	   </if>
+			  	   <if test= "mailType == '휴지통'">
+	     			(mail_type = '받은' and get_user = #{getUser}
+   			 		or mail_type = '보낸' and employee_id = #{employeeId})  
+			  	   </if>
+   			 <if test="mailType == null">
+   			 	(mail_type = '받은' and get_user = #{getUser}
+   			 	or mail_type = '보낸' and employee_id = #{employeeId})
+   			 </if>
    			 </if>
 		  </where>
 </sql>
@@ -75,23 +87,6 @@
 
 	<!-- 메일단건조회 -->
 	<select id="MailFindInfo" resultType="MailVO">
-	SELECT   mail_id
-	        ,title
-	        ,content
-	        ,sent_state
-	        ,sent_date
-	        ,employee_id
-	        ,attached_file_name
-	        ,get_user
-	        ,cc
-	        ,recode
-	        ,mail_type
-	FROM Mail
-	WHERE mail_id = #{mailId}
-	</select>
-	
-	<!-- 나의메일단건조회 -->
-	<select id="MyMailFindInfo" resultType="MailVO">
 	SELECT   mail_id
 	        ,title
 	        ,content
@@ -152,17 +147,6 @@
 	INSERT INTO Mail recode
     VALUES      #{recode}
 	</insert>
-	
-	<!-- 메일수정 -->
-	<update id="MailModify" parameterType="MailVO">
-	UPDATE  Mail
-	   SET  get_user = #{getUser}
-	       ,cc = #{cc}
-	       ,title = #{title}
-	       ,attached_file_name = #{attachedFileName}
-	       ,content = #{content}
-    WHERE   mail_id = #{mailId}
-	</update>
 	
 	<!-- 메일답장 -->
 	<update id="MailPutDate" parameterType="MailVO">

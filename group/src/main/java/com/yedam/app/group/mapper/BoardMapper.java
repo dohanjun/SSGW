@@ -37,4 +37,20 @@ public interface BoardMapper {
     // 자유 게시판
     int countFreeBoardPosts(int suberNo, String keyword);
     List<BoardPostVO> selectFreeBoardPostsPaged(int suberNo, String keyword, int offset, int limit);
+    
+    void increaseViewCount(int postId);
+    
+    BoardPostVO selectPostById(int postId);
+    
+    List<BoardAttachmentVO> getAttachments(int postId);
+    
+    BoardAttachmentVO getBoardAttachmentById(int attachmentId);
+    
+    List<BoardAttachmentVO> selectBoardAttachmentsByPostId(int postId);
+    
+    void updateBoardPost(BoardPostVO postVO);
+    
+    void deleteAttachmentById(int attachmentId);
+    
+    void deleteBoard(int postId);
 }

@@ -48,12 +48,6 @@ public class MailServiceImpl implements MailService {
 	public MailVO MailSelectInfo(MailVO mailVO) {
 		return mailMapper.MailFindInfo(mailVO.getMailId());
 	}
-
-	// 나의메일상세조회
-	@Override
-	public MailVO MyMailSelectInfo(MailVO mailVO) {
-		return mailMapper.MyMailFindInfo(mailVO.getMailId());
-	}
 	
 	// 메일등록
 	@Override
@@ -66,26 +60,6 @@ public class MailServiceImpl implements MailService {
 	@Override
 	public int MailRecodeInfo(MailVO mailVO) {
 		return mailMapper.MailRecode(mailVO);
-	}
-
-	// 메일수정
-	@Override
-	public Map<String, Object> MailUpdate(MailVO mailVO) {
-		Map<String, Object> map = new HashMap<>();
-		boolean isSuccessed = false;
-
-		int result = mailMapper.MailModify(mailVO);
-
-		if (result == 1) {
-			isSuccessed = true;
-		}
-
-		map.put("result", isSuccessed);
-		map.put("target", mailVO);
-
-		MailVO findVO = (MailVO) map.get("target");
-
-		return map;
 	}
 
 	// 메일답장
@@ -170,19 +144,24 @@ public class MailServiceImpl implements MailService {
 	
 	public String sendMailToUser(MailVO vo) {
 
-		SimpleMailMessage message = new SimpleMailMessage();
-		message.setFrom(ADMIN_SEND_EMAIL); // 이메일을 보낼 송신자
-		message.setTo(vo.getGetUser()); // 이메일을 받을 수신자
-		message.setSubject(vo.getTitle()); // 이메일 제목
-		message.setText(vo.getContent()); // 이메일 본문
-		try {
-			javaMailSender.send(message);
-			
-			mailMapper.mailCreate(vo);
-		} catch (MailException e) {
-			e.printStackTrace();
-			return "전송 실패";
+		if(vo.getMailType().equals("보낸")) {
+			SimpleMailMessage message = new SimpleMailMessage();
+			message.setFrom(ADMIN_SEND_EMAIL); // 이메일을 보낼 송신자
+			message.setTo(vo.getGetUser()); // 이메일을 받을 수신자
+			message.setSubject(vo.getTitle()); // 이메일 제목
+			message.setText(vo.getContent()); // 이메일 본문
+			try {
+				javaMailSender.send(message);
+				
+				
+				
+			} catch (MailException e) {
+				e.printStackTrace();
+				return "전송 실패";
+			}
 		}
+		mailMapper.mailCreate(vo);
+		
 		return "전송성공";
 	}
 

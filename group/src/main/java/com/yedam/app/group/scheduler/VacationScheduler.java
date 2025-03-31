@@ -20,7 +20,7 @@ public class VacationScheduler {
         this.vacationMapper = vacationMapper;
     }
 
-    //  자동 연차 부여 스케줄링 - 1시간마다 실행
+//      자동 연차 부여 스케줄링 - 1시간마다 실행
     @Scheduled(cron = "0 0 * * * ?")
 //    @Scheduled(cron = "*/5 * * * * ?") // 테스트용: 5초마다
     public void autoGrantAnnualLeaveForAllEmployees() {

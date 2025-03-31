@@ -1,10 +1,8 @@
 package com.yedam.app.group.service.impl;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import com.yedam.app.group.mapper.ScheduleMapper;
 import com.yedam.app.group.service.ScheduleService;
@@ -48,5 +46,10 @@ public class ScheduleServiceImpl implements ScheduleService {
 	public int removeSchedule(ScheduleVO scheduleVO) {
 		return scheduleMapper.deleteSchedule(scheduleVO);
 	}
+	
+    @Override
+    public List<ScheduleVO> getAllSchedules() {
+        return scheduleMapper.selectAllSchedules();
+    }
 
 }

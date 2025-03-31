@@ -7,6 +7,21 @@
 <meta charset="UTF-8">
 <title>결재 페이지</title>
 <link th:href="@{/css/approval.css}" rel="stylesheet">
+<style>
+.stamp-placeholder {
+    width: 150px;
+    height: 150px;
+    border: 3px solid red;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: red;
+    font-size: 18px;
+    margin: 0 auto;
+}
+</style>
 </head>
 <body>
 	<div class="container mt-5">
@@ -44,7 +59,7 @@
             <td style="height: 150px;">
                 <div th:each="r : ${aprvroutes}" th:if="${r.aprvOrder eq '1'}">
                     <button th:if="${r.employeeNo.toString() eq loggedInEmpNo.toString() and r.stampId == null}"
-                            th:data-draftno="${r.draftNo}" th:data-empno="${r.employeeNo}"
+                            th:data-draftno="${r.draftNo}" th:data-empno="${r.employeeNo}" th:data-empname="${r.employeeName}"
                             class="btn btn-sm btn-outline-primary insert-stamp-btn">도장등록</button>
                     <img th:if="${r.stampImgPath != null and r.stampId != null}"
                          th:src="@{${r.stampImgPath}}" width="150" height="150" class="d-block mx-auto">
@@ -53,7 +68,7 @@
             <td style="height: 150px;">
                 <div th:each="r : ${aprvroutes}" th:if="${r.aprvOrder eq '2'}">
                     <button th:if="${r.employeeNo.toString() eq loggedInEmpNo.toString() and r.stampId == null}"
-                            th:data-draftno="${r.draftNo}" th:data-empno="${r.employeeNo}"
+                            th:data-draftno="${r.draftNo}" th:data-empno="${r.employeeNo}" th:data-empname="${r.employeeName}"
                             class="btn btn-sm btn-outline-primary insert-stamp-btn">도장등록</button>
                     <img th:if="${r.stampImgPath != null and r.stampId != null}"
                          th:src="@{${r.stampImgPath}}" width="150" height="150" class="d-block mx-auto">
@@ -62,7 +77,7 @@
             <td style="height: 150px;">
                 <div th:each="r : ${aprvroutes}" th:if="${r.aprvOrder eq '3'}">
                     <button th:if="${r.employeeNo.toString() eq loggedInEmpNo.toString() and r.stampId == null}"
-                            th:data-draftno="${r.draftNo}" th:data-empno="${r.employeeNo}"
+                            th:data-draftno="${r.draftNo}" th:data-empno="${r.employeeNo}" th:data-empname="${r.employeeName}"
                             class="btn btn-sm btn-outline-primary insert-stamp-btn">도장등록</button>
                     <img th:if="${r.stampImgPath != null and r.stampId != null}"
                          th:src="@{${r.stampImgPath}}" width="150" height="150" class="d-block mx-auto">
@@ -151,27 +166,45 @@
 document.addEventListener("DOMContentLoaded", function () {
     // 도장등록 버튼
     document.querySelectorAll(".insert-stamp-btn").forEach(btn => {
-        btn.addEventListener("click", function () {
-            const draftNo = this.getAttribute("data-draftno");
-            const employeeNo = this.getAttribute("data-empno");
+    btn.addEventListener("click", function () {
+        const draftNo = this.getAttribute("data-draftno");
+        const employeeNo = this.getAttribute("data-empno");
+        const employeeName = this.getAttribute("data-empname") || "이름없음";
+        const parentDiv = this.parentElement;
 
-            fetch('/aprv/stampsave', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ draftNo: draftNo, employeeNo: employeeNo })
-            })
-            .then(res => res.json())
-            .then(result => {
-                if (result.success) {
-                    alert("도장이 등록되었습니다!");
-                    location.reload();
+        fetch('/aprv/stampsave', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ draftNo: draftNo, employeeNo: employeeNo })
+        })
+        .then(res => res.json())
+        .then(result => {
+            if (result.success) {
+                parentDiv.innerHTML = ""; // 기존 버튼 제거
+
+                if (result.stampImgPath) {
+                    // 도장이 실제 등록된 경우 이미지로 표시
+                    const img = document.createElement("img");
+                    img.src = result.stampImgPath;
+                    img.width = 150;
+                    img.height = 150;
+                    img.classList.add("d-block", "mx-auto");
+                    parentDiv.appendChild(img);
                 } else {
-                    alert("도장 등록 실패: " + result.message);
+                    // 도장이 없으면 이름으로 가짜 도장 표시
+                    const placeholder = document.createElement("div");
+                    placeholder.className = "stamp-placeholder";
+                    placeholder.textContent = employeeName;
+                    parentDiv.appendChild(placeholder);
                 }
-            })
-            .catch(err => console.error("에러 발생:", err));
-        });
+            } else {
+                alert("도장 등록 실패: " + result.message);
+            }
+        })
+        .catch(err => console.error("에러 발생:", err));
     });
+});
+
 
     // 승인 버튼
     document.getElementById("approvebtn").addEventListener("click", function () {

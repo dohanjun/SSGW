@@ -18,21 +18,14 @@ public interface MailMapper {
 	//메일단건조회
 	public MailVO MailFindInfo(int mailId);
 	
-	//나의 메일단건조회
-	public MailVO MyMailFindInfo(int mailId);
-	
 	//메일등록
-	public int mailCreate(MailVO mailVO);
-	
+	public int mailCreate(MailVO mailVO);	
 	
 	//메일받기
 	public void receiveEmails(MailVO vo);
 	
 	//메일검색기록
 	public int MailRecode(MailVO mailVO);
-	
-	//메일수정
-	public int MailModify(MailVO mailVO);
 	
 	//메일답장
 	public int MailPutDate(MailVO mailVO);

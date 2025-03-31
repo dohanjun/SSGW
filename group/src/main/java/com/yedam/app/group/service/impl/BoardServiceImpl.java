@@ -89,7 +89,7 @@ public class BoardServiceImpl implements BoardService {
 
                     BoardAttachmentVO attach = new BoardAttachmentVO();
                     attach.setPostId(postVO.getPostId());
-                    attach.setFilePath("/uploads/" + uuid); // 웹 접근 경로
+                    attach.setFilePath(savePath); // 웹 접근 경로
                     attach.setFileTitle(originalName);
                     attach.setFileRetentionPeriod(new Date());
 
@@ -101,5 +101,47 @@ public class BoardServiceImpl implements BoardService {
             }
         }
     }
+    
+    @Override
+    public BoardPostVO getPostDetail(int postId) {
+    	boardMapper.increaseViewCount(postId);
+        return boardMapper.selectPostById(postId);
+    }
+    
+    @Override
+    public List<BoardAttachmentVO> getAttachments(int postId) {
+        return boardMapper.getAttachments(postId);
+    }
+    
+    @Override
+    public void updateBoardPost(BoardPostVO postVO, List<MultipartFile> files, List<Integer> deleteFileIds) {
+        boardMapper.updateBoardPost(postVO);
 
+        // 예시로 기존 파일 삭제 처리
+        if (deleteFileIds != null && !deleteFileIds.isEmpty()) {
+            for (Integer fileId : deleteFileIds) {
+                boardMapper.deleteAttachmentById(fileId);
+            }
+        }
+
+        // ✅ 새 파일 업로드
+        if (files != null && !files.isEmpty()) {
+            for (MultipartFile file : files) {
+                if (!file.isEmpty()) {
+                    String fileName = file.getOriginalFilename();
+                    BoardAttachmentVO attachment = new BoardAttachmentVO();
+                    attachment.setPostId(postVO.getPostId());
+                    attachment.setFileTitle(fileName);
+                    attachment.setFilePath("/your_upload_path/" + fileName); // 네 파일 경로에 맞게 수정
+                    attachment.setFileRetentionPeriod(new Date());
+                    boardMapper.insertAttachment(attachment);
+                }
+            }
+        }
+    }
+    
+    @Override
+    public void deleteBoard(int postId) {
+        boardMapper.deleteBoard(postId);  // 게시글 삭제
+    }
 }

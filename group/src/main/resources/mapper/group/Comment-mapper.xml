@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yedam.app.group.mapper.CommentMapper">
+
+<!-- 게시글에 해당하는 댓글 조회 -->
+    <!-- 게시글에 해당하는 댓글 조회 -->
+    <select id="selectCommentsByPostId" resultType="CommentVO">
+        SELECT 
+        c.comment_id       AS commentId,
+        c.re_comment       AS reComment,
+        c.content          AS content,
+        c.board_date       AS boardDate,
+        c.employee_no      AS employeeNo,
+        c.post_id          AS postId,
+        e.employee_name    AS employeeName,     <!-- 사원이름 추가 -->
+        d.department_name  AS departmentName    <!-- 부서이름 추가 -->
+    FROM board_comment c
+    JOIN employees e ON c.employee_no = e.employee_no
+    JOIN department d ON e.department_no = d.department_no
+    WHERE c.post_id = #{postId}
+    ORDER BY c.board_date DESC
+    </select>
+
+    <!-- 댓글 추가 -->
+    <insert id="insertComment" parameterType="CommentVO">
+    INSERT INTO board_comment (
+        comment_id, re_comment, content, board_date, employee_no, post_id
+    ) VALUES (
+        board_cmt_seq.nextval,
+        #{reComment},
+        #{content},
+        #{boardDate},
+        #{employeeNo},
+        #{postId}
+    )
+	</insert>
+
+    <!-- 대댓글 추가 -->
+    <insert id="insertReplyComment" parameterType="CommentVO">
+    INSERT INTO board_comment (
+        comment_id, content, board_date, employee_no, post_id, re_comment
+    )
+    VALUES (
+        board_cmt_seq.nextval,
+        #{content},
+        #{boardDate},
+        #{employeeNo},
+        #{postId},
+        #{reComment}
+    )
+	</insert>
+
+    <!-- 댓글 수정 -->
+    <update id="updateComment" parameterType="CommentVO">
+        UPDATE board_comment
+        SET content = #{content}
+        WHERE comment_id = #{commentId}
+    </update>
+
+    <!-- 댓글 삭제 -->
+    <delete id="deleteComment" parameterType="int">
+        DELETE FROM board_comment
+        WHERE comment_id = #{commentId}
+    </delete>
+	
+	<select id="selectCommentById" resultType="CommentVO">
+    SELECT 
+        comment_id AS commentId,
+        content,
+        board_date AS boardDate,
+        employee_no AS employeeNo,
+        post_id AS postId,
+        re_comment AS reComment
+    FROM board_comment
+    WHERE comment_id = #{commentId}
+</select>
+	
+</mapper>
