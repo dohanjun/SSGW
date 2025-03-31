@@ -70,10 +70,17 @@ public class SecurityConfig {
 				+ ") WHERE username = ?");
 
 		manager.setAuthoritiesByUsernameQuery("SELECT username, authority FROM ( "
-				+ "  SELECT MANAGER_ID AS username, 'ROLE_MANAGER' AS authority FROM MANAGER_LOGIN " + "  UNION ALL "
-				+ "  SELECT EMPLOYEE_ID AS username, 'ROLE_MANAGERUSER' AS authority FROM EMPLOYEES WHERE RANK_ID = 7"
-				+ "  UNION ALL " + "  SELECT EMPLOYEE_ID AS username, 'ROLE_USER' AS authority FROM EMPLOYEES "
-				+ ") WHERE username = ?");
+			    + "  SELECT MANAGER_ID AS username, 'ROLE_MANAGER' AS authority FROM MANAGER_LOGIN "
+			    + "  UNION ALL "
+			    + "  SELECT EMPLOYEE_ID AS username, 'ROLE_MANAGERUSER' AS authority FROM EMPLOYEES WHERE RANK_ID = 7 "
+			    + "  UNION ALL "
+			    + "  SELECT EMPLOYEE_ID AS username, 'ROLE_HR' AS authority FROM EMPLOYEES WHERE RIGHTS_ID = 2 "
+			    + "  UNION ALL "
+			    + "  SELECT EMPLOYEE_ID AS username, 'ROLE_BOARD_ADMIN' AS authority FROM EMPLOYEES WHERE RIGHTS_ID = 5 "
+			    + "  UNION ALL "
+			    + "  SELECT EMPLOYEE_ID AS username, 'ROLE_USER' AS authority FROM EMPLOYEES "
+			    + ") WHERE username = ?");
+
 		return manager;
 
 	}
