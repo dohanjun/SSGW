@@ -103,7 +103,6 @@ public class ApprovalController {
             if (totalPages == 0) {
                 totalPages = 1;
             }
-            System.out.println(totalPages);
             
             List<ApprovalVO> list = approvalService.findAprvListByStatus(aprvVO);
 
@@ -601,44 +600,54 @@ public class ApprovalController {
 	 */
 	@GetMapping("aprv/info")
 	public String aprvInfo(AprvRoutesVO routVO, Model model) {
-		EmpVO loggedInUser = empService.getLoggedInUserInfo();
-		model.addAttribute("loggedInEmpNo", loggedInUser.getEmployeeNo());
-		ApprovalVO infoVO = new ApprovalVO();
+	    EmpVO loggedInUser = empService.getLoggedInUserInfo();
+	    int loggedInEmpNo = loggedInUser.getEmployeeNo();
+	    model.addAttribute("loggedInEmpNo", loggedInEmpNo);
+
+	    ApprovalVO infoVO = new ApprovalVO();
 	    infoVO.setDraftNo(routVO.getDraftNo());
-		
-		ApprovalVO aprvVO = approvalService.findAprvInfo(infoVO);
-		
-		routVO.setSuberNo(loggedInUser.getSuberNo());
-		int draftNo = routVO.getDraftNo();
-		
-		
-		List<AprvRoutesVO> routList = approvalService.findRoutes(routVO);
-		List<AprvFileVO> fileList = aprvFileService.findFilesByDraftNo(draftNo);
-		
-		model.addAttribute("files", fileList);
-		
-		// 로그인한 사용자의 aprvOrder 찾기
+	    ApprovalVO aprvVO = approvalService.findAprvInfo(infoVO);
+
+	    routVO.setSuberNo(loggedInUser.getSuberNo());
+	    int draftNo = routVO.getDraftNo();
+
+	    List<AprvRoutesVO> routList = approvalService.findRoutes(routVO);
+	    List<AprvFileVO> fileList = aprvFileService.findFilesByDraftNo(draftNo);
+	    
+	    
+	    // aprvOrder, aprvRole 설정
 	    String aprvOrder = routList.stream()
-	            .filter(r -> r.getEmployeeNo() == (loggedInUser.getEmployeeNo()))
+	            .filter(r -> r.getEmployeeNo() == loggedInEmpNo)
 	            .map(AprvRoutesVO::getAprvOrder)
 	            .findFirst()
-	            .orElse("0"); // 일치하는 aprvOrder가 없으면 기본값 0
-		
-	    // 사용자의 aprvRole 찾기
-	    String aprvRole = routList.stream()
-	    	    .filter(r -> r.getEmployeeNo() == (loggedInUser.getEmployeeNo()))
-	    	    .map(AprvRoutesVO::getAprvRole)
-	    	    .findFirst()
-	    	    .orElse("결재");
-	    
-		model.addAttribute("aprv", aprvVO);
-		model.addAttribute("aprvroutes", routList);
-		model.addAttribute("aprvOrder", aprvOrder);
-		model.addAttribute("files", fileList);
-		model.addAttribute("aprvRole", aprvRole);
+	            .orElse("0");
 
-		return "group/approval/approval";
+	    String aprvRole = routList.stream()
+	            .filter(r -> r.getEmployeeNo() == loggedInEmpNo)
+	            .map(AprvRoutesVO::getAprvRole)
+	            .findFirst()
+	            .orElse("결재");
+
+	    // 현재 결재 순서인지 판단
+	    boolean isMyTurn = routList.stream()
+	    	    .anyMatch(r -> r.getEmployeeNo() == loggedInEmpNo);
+
+	    // 모델에 담기
+	    model.addAttribute("aprv", aprvVO);
+	    model.addAttribute("aprvroutes", routList);
+	    model.addAttribute("files", fileList);
+	    model.addAttribute("aprvOrder", aprvOrder);
+	    model.addAttribute("aprvRole", aprvRole);
+	    model.addAttribute("isMyTurn", isMyTurn);
+	    model.addAttribute("aprv1", routList.stream().filter(r -> "1".equals(r.getAprvOrder())).findFirst().orElse(null));
+	    model.addAttribute("aprv2", routList.stream().filter(r -> "2".equals(r.getAprvOrder())).findFirst().orElse(null));
+	    model.addAttribute("aprv3", routList.stream().filter(r -> "3".equals(r.getAprvOrder())).findFirst().orElse(null));
+
+
+	    
+	    return "group/approval/approval";
 	}
+
 	
 	// 완료함 상세 페이지
     @GetMapping("aprv/done")

@@ -92,4 +92,5 @@ public interface ApprovalMapper {
 	
 	//
 	public int countReferenceList(ApprovalVO aprvVO);
+	
 }

@@ -11,60 +11,139 @@
     <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/google-calendar@6.1.8/index.global.min.js"></script>
     <script src="https://kit.fontawesome.com/a4d9e872af.js" crossorigin="anonymous"></script>
     <style>
-    /* 공휴일 이벤트 배경 제거 및 글자만 표시 */
-    .gcal-event {
-        background: none !important;
-        border: none !important;
-        color: black !important;
-        font-size: 12px !important;
-        font-weight: bold !important;
-        display: block !important;
-        padding: 0 !important;
-        text-align: right !important;
-        pointer-events: none !important;
-    }
+/* 공휴일 이벤트 스타일 */
+.gcal-event {
+    background: none !important;
+    border: none !important;
+    text-align: right !important;
+    pointer-events: none !important;
+    padding-right: 4px;
+}
 
-    /* FullCalendar 내부의 이벤트 글자만 남기고 다른 스타일 제거 */
-    .fc-event-main {
-        white-space: nowrap !important;
-        overflow: visible !important; /* 글자가 숨겨지는 문제 해결 */
-    }
+.gcal-event .fc-event-title,
+.gcal-event .fc-event-main {
+    background: none !important;
+    border: none !important;
+    color: red !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    display: block !important;
+    text-align: right !important;
+    padding-right: 4px;
+}
 
-    /* 토요일 날짜 스타일 (파란색) */
-    .fc-day-sat .fc-daygrid-day-number {
-        color: blue !important;
-    }
+/* 일정 이벤트 텍스트 개선 */
+.fc-event-main {
+    white-space: nowrap !important;
+    overflow: visible !important;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 2px 4px;
+}
 
-    /* 일요일 날짜 스타일 (빨간색) */
-    .fc-day-sun .fc-daygrid-day-number {
-        color: red !important;
-    }
+/* 전체 캘린더 배경 */
+#calendar {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    padding: 10px;
+}
 
-    #addScheduleBtn {
-        display: block;
-        margin-bottom: 10px;
-        padding: 10px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        cursor: pointer;
-    }
-    
-    .modal-header {
-    	text-align: center;
-    }
-    .fa-square-full span {
-    	color: black;
-    }
-    </style>
+/* 헤더 툴바 버튼 스타일 */
+.fc .fc-button {
+    background-color: #007bff;
+    border: none;
+    color: #fff;
+    font-size: 13px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    margin: 0 2px;
+    transition: background-color 0.2s ease;
+}
+
+.fc .fc-button:hover {
+    background-color: #0056b3;
+}
+
+.fc .fc-button:disabled {
+    background-color: #ccc;
+    color: #666;
+}
+
+/* 헤더 툴바 타이틀 스타일 */
+.fc-toolbar-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* 요일 헤더 */
+.fc-col-header-cell {
+    background-color: #f8f9fa;
+    color: #333;
+    font-weight: 600;
+    padding: 8px 0;
+    border: 1px solid #dee2e6;
+}
+
+/* 날짜 셀 */
+.fc-daygrid-day {
+    border: 1px solid #e9ecef;
+    background-color: #ffffff;
+    transition: background-color 0.2s ease;
+}
+
+.fc-daygrid-day:hover {
+    background-color: #f1f3f5;
+}
+
+/* 날짜 숫자 */
+.fc-daygrid-day-number {
+    padding: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+}
+
+/* 토/일 색 유지 */
+.fc-day-sat .fc-daygrid-day-number {
+    color: #007bff !important;
+}
+
+.fc-day-sun .fc-daygrid-day-number {
+    color: #dc3545 !important;
+}
+
+/* 오늘 날짜 강조 */
+.fc-day-today {
+    background-color: #e8f4ff !important;
+    border: 2px solid #007bff !important;
+}
+
+/* 이벤트 박스 스타일 */
+.fc-event {
+    background-color: #f1f3f5;
+    border-left: 5px solid #007bff;
+    border-radius: 4px;
+    padding: 2px 4px;
+    color: #333;
+    font-size: 13px;
+    margin-bottom: 2px;
+}
+.fc .fc-button {
+        font-size: 12px;
+        padding: 4px 8px;
+}
+</style>
+
 </head>
 <body>
 
     <div class="form-group">
-        <button id="addScheduleBtn">일정 추가</button>
-        	<i class="fa-solid fa-square-full" style="color: #00ff00;"><span>개인일정</span></i>
-        	<i class="fa-solid fa-square-full" style="color: #0000ff;"><span>부서일정</span></i>
-        	<i class="fa-solid fa-square-full" style="color: #FFD43B;"><span>회사일정</span></i>
+        <button id="addScheduleBtn" class="btn btn-primary">일정 추가</button>
+        	<i class="fa-solid fa-square-full" style="color: #28a745; margin-right: 10px;" ><span>개인일정</span></i>
+        	<i class="fa-solid fa-square-full" style="color: #0000ff; margin-right: 10px;"><span>부서일정</span></i>
+        	<i class="fa-solid fa-square-full" style="color: #ffc107; margin-right: 10px;"><span>회사일정</span></i>
         <div id='calendar-container'>
             <div id="calendar"></div>
         </div>
@@ -72,7 +151,7 @@
 
     <!-- 일정 등록 모달 -->
 <div id="scheduleModal" class="modal" tabindex="-1">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title w-100 text-center">일정 추가</h5>
@@ -83,42 +162,53 @@
       <div class="modal-body">
     <div class="d-flex align-items-center mb-2">
         <label class="col-sm-3">일정 유형:</label>
-        <div class="form-check">
+        <div class="form-check mr-3">
             <input type="radio" name="scheduleType" value="개인" id="personal" class="form-check-input" checked>
             <label for="personal" class="form-check-label">개인</label>
         </div>
-        <div class="form-check">
+        <div class="form-check mr-3">
             <input type="radio" name="scheduleType" value="부서" id="department" class="form-check-input">
             <label for="department" class="form-check-label">부서</label>
         </div>
-        <div class="form-check">
+        <div class="form-check mr-3">
             <input type="radio" name="scheduleType" value="회사" id="company" class="form-check-input">
             <label for="company" class="form-check-label">회사</label>
         </div>
     </div>
     <!-- 공유 대상자 선택 영역 (개인일정일 때만 보임) -->
-	<div class="form-group" id="shareTargetGroup" style="display: none;">
-	  	<label>공유 대상자</label>
-		<button type="button" class="btn btn-sm btn-outline-primary" data-toggle="modal" data-target="#shareModal">공유자 선택</button>
-		<ul id="selectedShareList" class="list-group mt-2"></ul>
-		<input type="hidden" id="sharedEmployeeNos">
-	</div>
-    <div class="d-flex align-items-center mb-2">
-        <label class="col-sm-2">제목:</label>
-        <input type="text" id="scheduleTitle" class="form-control w-100">
+	<!-- 공유 대상자 -->
+<div id="shareTargetGroup" class="form-group d-flex align-items-center mb-2" style="display: none;">
+    <label class="col-sm-3">공유 대상자:</label>
+    <div class="w-100">
+        <button type="button" class="btn btn-sm btn-outline-primary" data-toggle="modal" data-target="#shareModal">공유자 선택</button>
+        <ul id="selectedShareList" class="list-group mt-2"></ul>
+        <input type="hidden" id="sharedEmployeeNos">
     </div>
-    <div class="d-flex align-items-center mb-2">
-        <label class="col-sm-2">내용:</label>
-        <textarea id="scheduleContent" class="form-control w-100" rows="5"></textarea>
-    </div>
-    <div class="d-flex align-items-center mb-2">
-        <label class="col-sm-3">시작일시:</label>
-        <input type="datetime-local" id="scheduleStart" class="form-control">
-    </div>
-    <div class="d-flex align-items-center mb-2">
-        <label class="col-sm-3">종료일시:</label>
-        <input type="datetime-local" id="scheduleEnd" class="form-control">
-    </div>
+</div>
+
+<!-- 제목 -->
+<div class="form-group d-flex align-items-center mb-2">
+    <label class="col-sm-3">제목:</label>
+    <input type="text" id="scheduleTitle" class="form-control w-100">
+</div>
+
+<!-- 내용 -->
+<div class="form-group d-flex align-items-center mb-2">
+    <label class="col-sm-3">내용:</label>
+    <textarea id="scheduleContent" class="form-control w-100" rows="5"></textarea>
+</div>
+
+<!-- 시작일시 -->
+<div class="form-group d-flex align-items-center mb-2">
+    <label class="col-sm-3">시작일시:</label>
+    <input type="datetime-local" id="scheduleStart" class="form-control">
+</div>
+
+<!-- 종료일시 -->
+<div class="form-group d-flex align-items-center mb-2">
+    <label class="col-sm-3">종료일시:</label>
+    <input type="datetime-local" id="scheduleEnd" class="form-control">
+</div>
 </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" onclick="saveSchedule()">저장</button>
@@ -132,7 +222,7 @@
 	
 	<!-- 일정 상세 정보 모달 -->
 <div id="scheduleInfoModal" class="modal" tabindex="-1">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">일정 제목</h5>
@@ -183,7 +273,7 @@
             headerToolbar: {
                 left: 'prevYear,prev,next,nextYear today',
                 center: 'title',
-                right: 'dayGridMonth,timeGridWeek,timeGridDay, listWeek'
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
             },
             initialView: 'dayGridMonth',
 			
@@ -293,15 +383,9 @@ eventClick: function (info) {
             // 공휴일 이벤트 수정 (배경 없애고 텍스트만 남기기 + "쉬는 날" → "대체 휴무"로 변경)
             eventDidMount: function(info) {
                 let eventEl = info.el;
-
-                // FullCalendar 기본 스타일 제거
-                //eventEl.style.background = 'none';
-                //eventEl.style.border = 'none';
-                //eventEl.style.padding = '0';
-                //eventEl.style.margin = '0';
-                //eventEl.style.textAlign = 'left';
-                //eventEl.style.pointerEvents = 'none'; // 클릭 방지
-
+                
+                eventEl.style.cursor = 'pointer';
+                
                 // 이벤트 제목 변경 (쉬는 날 → 대체 휴무)
                 if (info.event.title.includes("쉬는 날")) {
                     info.event.setProp("title", info.event.title.replace("쉬는 날", "대체 휴무"));
@@ -320,17 +404,44 @@ eventClick: function (info) {
         // 캘린더 랜더링
         calendar.render();
 
-        // 일정 추가 버튼 클릭 시 일정 추가 모달 표시
+        const shareTargetGroup = document.getElementById('shareTargetGroup');
+
+        //  페이지 로딩 시 현재 선택된 유형에 따라 공유자 영역 초기 표시
+        const initialType = document.querySelector('input[name="scheduleType"]:checked').value;
+        if (initialType === '개인') {
+            shareTargetGroup.style.setProperty('display', 'flex', 'important');
+        } else {
+            shareTargetGroup.style.setProperty('display', 'none', 'important');
+        }
+
+        //  일정 유형 변경 시 공유자 영역 토글
+        document.querySelectorAll('input[name="scheduleType"]').forEach(input => {
+            input.addEventListener('change', function () {
+                const selectedShareList = document.getElementById('selectedShareList');
+                const sharedEmployeeNos = document.getElementById('sharedEmployeeNos');
+
+                if (this.value === '개인') {
+                    shareTargetGroup.style.setProperty('display', 'flex', 'important');
+                } else {
+                    shareTargetGroup.style.setProperty('display', 'none', 'important');
+                    selectedShareList.innerHTML = '';
+                    sharedEmployeeNos.value = '';
+                }
+            });
+        });
+
+        //  일정 추가 버튼 클릭 시 모달 열고 공유자 영역 재확인
         document.getElementById('addScheduleBtn').addEventListener('click', function () {
             document.getElementById('scheduleModal').style.display = 'block';
             const selectedType = document.querySelector('input[name="scheduleType"]:checked').value;
             if (selectedType === '개인') {
-              $('#shareTargetGroup').show();
+                shareTargetGroup.style.setProperty('display', 'flex', 'important');
             } else {
-              $('#shareTargetGroup').hide();
+                shareTargetGroup.style.setProperty('display', 'none', 'important');
             }
         });
 
+        
         // 일정 등록 모달 닫기 버튼
         document.querySelector('.close').addEventListener('click', function () {
             document.getElementById('scheduleModal').style.display = 'none';        
@@ -453,22 +564,7 @@ eventClick: function (info) {
         });
     }
  
-// 일정 유형 변경 시 공유자 선택 영역 토글
-document.querySelectorAll('input[name="scheduleType"]').forEach(input => {
-  input.addEventListener('change', function () {
-    const shareTargetGroup = document.getElementById('shareTargetGroup');
-    const selectedShareList = document.getElementById('selectedShareList');
-    const sharedEmployeeNos = document.getElementById('sharedEmployeeNos');
 
-    if (this.value === '개인') {
-      shareTargetGroup.style.display = 'block';
-    } else {
-      shareTargetGroup.style.display = 'none';
-      selectedShareList.innerHTML = '';
-      sharedEmployeeNos.value = '';
-    }
-  });
-});
 
 // 공유자 선택 버튼 클릭 시 모달 열기 + 조직도 fetch
 document.querySelector('[data-target="#shareModal"]').addEventListener('click', function () {
