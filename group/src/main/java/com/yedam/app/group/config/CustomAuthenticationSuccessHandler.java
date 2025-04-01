@@ -30,6 +30,18 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         String username = authentication.getName();
         String currentIp = request.getParameter("clientIp");
 
+        // 권한 확인 및 로그인 정보 저장
+        String query = "SELECT * FROM ( " +
+            "SELECT MANAGER_ID AS username, MANAGER_PW AS password,'ROLE_MANAGER' AS role FROM MANAGER_LOGIN " +
+            "UNION ALL " +
+            "SELECT EMPLOYEE_ID AS username, EMPLOYEE_PW AS password, 'ROLE_MANAGERUSER' AS role FROM EMPLOYEES WHERE RANK_ID = 7 and RESIGNATION_STATUS ='N'" +
+            "UNION ALL " +
+            "SELECT EMPLOYEE_ID AS username, EMPLOYEE_PW AS password, 'ROLE_USER' AS role FROM EMPLOYEES WHERE RANK_ID != 7 and RESIGNATION_STATUS ='N'" +
+            ") WHERE username = ?";
+
+        Map<String, Object> userInfo = jdbcTemplate.queryForMap(query, username);
+        session.setAttribute("loginUser", userInfo);
+        
         try {
             // ROLE_MANAGER면 IP 검사 생략
             if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_MANAGER"))) {
@@ -37,17 +49,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 return;
             }
 
-            // 권한 확인 및 로그인 정보 저장
-            String query = "SELECT * FROM ( " +
-                "SELECT MANAGER_ID AS username, MANAGER_PW AS password,'ROLE_MANAGER' AS role FROM MANAGER_LOGIN " +
-                "UNION ALL " +
-                "SELECT EMPLOYEE_ID AS username, EMPLOYEE_PW AS password, 'ROLE_MANAGERUSER' AS role FROM EMPLOYEES WHERE RANK_ID = 7 and RESIGNATION_STATUS ='N'" +
-                "UNION ALL " +
-                "SELECT EMPLOYEE_ID AS username, EMPLOYEE_PW AS password, 'ROLE_USER' AS role FROM EMPLOYEES WHERE RANK_ID != 7 and RESIGNATION_STATUS ='N'" +
-                ") WHERE username = ?";
 
-            Map<String, Object> userInfo = jdbcTemplate.queryForMap(query, username);
-            session.setAttribute("loginUser", userInfo);
 
             // IP 정보 조회
             String companyInfoQuery = "SELECT s.first_ip, s.second_ip, e.temp_ip, s.suber_no " +

@@ -86,7 +86,8 @@ public class mainController {
 	 * 메인페이지로 이동
 	 * @return group/mainPage
 	 */
-	@GetMapping("main")
+
+	@GetMapping("/main")
 	public String mainPage() {
 		return "group/mainPage";
 	}

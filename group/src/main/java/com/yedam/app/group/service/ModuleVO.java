@@ -11,4 +11,5 @@ public class ModuleVO {
     private char basicModule;   // 기본 모듈 여부 (Y/N)
     private char activate;      // 활성화 여부 (Y/N)
     private String explanation; // 모듈 설명
+    private String icon;
 }

@@ -1,153 +1,210 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{common/layouts/main_layout}"
-      layout:fragment="content">
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{common/layouts/main_layout}"
+	layout:fragment="content">
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+	rel="stylesheet">
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css"
+	rel="stylesheet">
 <head>
-    <style>
-        .table-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 40px;
-        }
+<style>
+.table-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-top: 40px;
+}
 
-        table {
-            width: 70%;
-            border-collapse: collapse;
-            background-color: #ffffff;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-        }
+table {
+	width: 70%;
+	border-collapse: collapse;
+	background-color: #ffffff;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
 
-        th, td {
-            padding: 15px;
-            text-align: center;
-            border-bottom: 1px solid #ddd;
-        }
+th, td {
+	padding: 15px;
+	text-align: center;
+	border-bottom: 1px solid #ddd;
+}
 
-        th {
-            background-color: #f4f4f4;
-        }
+th {
+	background-color: #f4f4f4;
+}
 
-        button {
-            padding: 5px 10px;
-            cursor: pointer;
-            border: none;
-            border-radius: 4px;
-        }
+button {
+	padding: 5px 10px;
+	cursor: pointer;
+	border: none;
+	border-radius: 4px;
+}
 
-        .edit-btn,.insertedit-btn {
-            background-color: #4CAF50;
-            color: white;
-        }
+.edit-btn, .insertedit-btn {
+	background-color: #4CAF50;
+	color: white;
+}
 
-        .delete-btn, .delete-modulebtn {
-            background-color: #f44336;
-            color: white;
-        }
+.delete-btn, .delete-modulebtn {
+	background-color: #f44336;
+	color: white;
+}
 
-        .add-btn {
-            margin: 20px 0;
-            padding: 10px 20px;
-            background-color: #008CBA;
-            color: white;
-            font-size: 1.2rem;
-        }
+.add-btn {
+	margin: 20px 0;
+	padding: 10px 20px;
+	background-color: #008CBA;
+	color: white;
+	font-size: 1.2rem;
+}
 
-        header {
-            text-align: center;
-            margin-top: 40px;
-        }
+header {
+	text-align: center;
+	margin-top: 40px;
+}
 
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-        }
+.modal {
+	display: none;
+	position: fixed;
+	z-index: 1000;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.5);
+	justify-content: center;
+	align-items: center;
+}
 
-        .modal-content {
-            background-color: #fefefe;
-            padding: 20px;
-            border-radius: 8px;
-            width: 600px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
+.modal-content {
+	background-color: #fefefe;
+	padding: 20px;
+	border-radius: 8px;
+	width: 600px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
 
-        .modal-content input,
-        .modal-content textarea {
-            width: 100%;
-            margin-bottom: 10px;
-            padding: 8px;
-            box-sizing: border-box;
-        }
+.modal-content input, .modal-content textarea {
+	width: 100%;
+	margin-bottom: 10px;
+	padding: 8px;
+	box-sizing: border-box;
+}
 
-        .modal-buttons {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
+.modal-buttons {
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+}
 
-        .modal-buttons button {
-            padding: 6px 12px;
-        }
-    </style>
+.modal-buttons button {
+	padding: 6px 12px;
+}
+
+#moduleDescription {
+	height: 300px;
+	max-height: 500px;
+	min-height: 250px;
+}
+
+.card-header {
+	background-color: #2C3E50 !important;
+	color: white;
+	font-weight: bold;
+}
+
+.card-body {
+	padding: 30px;
+}
+
+.table th, .table td {
+	text-align: center;
+	vertical-align: middle;
+}
+
+.add-btn {
+	font-size: 1rem;
+	padding: 10px 20px;
+}
+</style>
 </head>
 <body>
+	<div class="container my-4">
+		<div class="card p-4 shadow-sm">
+			<div class="card-header text-white"
+				style="background-color: rgb(44, 62, 80);">
+				<h4 class="mb-0">모듈 관리</h4>
+			</div>
+			<div class="card-body">
+				<div class="row" id="moduleContainer">
+					<div class="col-md-4 mb-4" th:each="module : ${modules}">
+						<div class="card h-100 shadow-sm">
+							<div class="card-body d-flex flex-column justify-content-between">
+								<h5 class="card-title" th:text="${module.moduleName}">모듈명</h5>
+								<p class="card-text fw-bold"
+									th:text="${#numbers.formatInteger(module.modulePrice, 0, 'COMMA')} + ' 원'">100,000원</p>
+								<div class="mt-auto d-flex justify-content-between">
+									<button class="btn btn-success btn-sm edit-btn">수정</button>
+									<button class="btn btn-danger btn-sm delete-modulebtn">삭제</button>
+								</div>
+								<input type="hidden" th:value="${module.moduleNo}"
+									class="module-no">
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="text-center mt-3">
+					<button class="btn btn-primary add-btn">추가</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
-<div class="table-container">
-    <table>
-        <thead>
-            <tr>
-                <th>서비스명</th>
-                <th>금액</th>
-                <th>수정</th>
-                <th>삭제</th>
-            </tr>
-        </thead>
-        <tbody>
-        <tr th:each="module : ${modules}">
-            <td th:text="${module.moduleNo}" style="display:none"></td>
-            <td th:text="${module.moduleName}">서비스명</td>
-            <td th:text="${#numbers.formatInteger(module.modulePrice, 0, 'COMMA')}">금액</td>
-            <td><button class="edit-btn">수정</button></td>
-            <td><button class="delete-modulebtn">삭제</button></td>
-        </tr>
-        </tbody>
-    </table>
-    <button class="add-btn">추가</button>
-</div>
 
-<!-- Modal -->
-<div id="modal" class="modal">
-    <div class="modal-content">
-        <h3>모듈 추가/수정</h3>
-        <input type="hidden" id="moduleNo">
-        <input type="text" id="moduleTitle" placeholder="제목">
-        <input type="number" id="modulePrice" placeholder="가격">
-        <textarea id="moduleDescription" placeholder="내용"></textarea>
-        <div class="modal-buttons">
-        	<button class="basic-btn">기본모듈</button>
-        	<button class="active-btn">활성화</button>
-            <button class="insertedit-btn">저장/수정</button>
-            <button class="delete-btn" onclick="closeModal()">취소</button>
-        </div>
-    </div>
-</div>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
-<script th:inline="javascript">
+	<!-- Modal -->
+	<div id="modal" class="modal">
+		<div class="modal-content">
+			<h3>모듈 추가/수정</h3>
+			<input type="hidden" id="moduleNo"> <input type="text"
+				id="moduleTitle" placeholder="제목"> <input type="number"
+				id="modulePrice" placeholder="가격">
+
+			<div id="moduleDescription"></div>
+
+			<div class="modal-buttons">
+				<button class="basic-btn">기본모듈</button>
+				<button class="active-btn">활성화</button>
+				<button class="insertedit-btn">저장/수정</button>
+				<button class="delete-btn" onclick="closeModal()">취소</button>
+			</div>
+		</div>
+	</div>
+	<script
+		src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+	<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+	<script th:inline="javascript">
 	var modules = /*[[${modules}]]*/[];
 
+	var quill = new Quill('#moduleDescription', {
+		theme: 'snow',
+		placeholder: '여기에 내용을 입력하세요...',
+		modules: {
+			toolbar: [
+				[{ 'list': 'ordered' }, { 'list': 'bullet' }],
+				['clean'] 
+			]
+		}
+	});
+	
+	document.querySelector('.ql-editor').style.minHeight = "250px";
+	document.querySelector('.ql-editor').style.height = "300px";
+	document.querySelector('.ql-editor').style.maxHeight = "500px";
+	
 function closeModal(){
     document.getElementById('moduleTitle').value ='';
     document.getElementById('modulePrice').value = '';
-    document.getElementById('moduleDescription').value ='';  
+    quill.root.innerHTML ='';  
     document.getElementById('modal').style.display = 'none';
 	}
 
@@ -159,6 +216,7 @@ window.onclick = function(event) {
 }
 
 document.querySelector('.add-btn').addEventListener('click', event => {
+	console.log('click')
 	document.getElementById('moduleNo').value = '';
     document.getElementById('moduleTitle').value ='';
     document.getElementById('modulePrice').value = '';
@@ -171,7 +229,7 @@ document.querySelector(".insertedit-btn").addEventListener("click", function(eve
     let moduleData = {
         moduleName: document.getElementById("moduleTitle").value,
         modulePrice: Number(document.getElementById("modulePrice").value),
-        explanation: document.getElementById("moduleDescription").value
+        explanation:  quill.root.innerHTML
     };
 
     if (moduleNo) {
@@ -214,18 +272,25 @@ document.querySelector(".insertedit-btn").addEventListener("click", function(eve
                 alert("등록 완료.");
                 console.log(response);
 
-                let tbody = document.querySelector("tbody");
-                let newRow = document.createElement("tr");
+                let container = document.getElementById("moduleContainer");
 
-                newRow.innerHTML = `
-                    <td style="display:none">${response.moduleNo}</td>
-                    <td>${response.moduleName}</td>
-                    <td>${parseInt(response.modulePrice).toLocaleString()}</td>
-                    <td><button class="edit-btn">수정</button></td>
-                    <td><button class="delete-modulebtn">삭제</button></td>
+                let newCard = document.createElement("div");
+                newCard.classList.add("col-md-4", "mb-4");
+                newCard.innerHTML = `
+                  <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex flex-column justify-content-between">
+                      <h5 class="card-title">${response.moduleName}</h5>
+                      <p class="card-text fw-bold">${parseInt(response.modulePrice).toLocaleString()} 원</p>
+                      <div class="mt-auto d-flex justify-content-between">
+                        <button class="btn btn-success btn-sm edit-btn">수정</button>
+                        <button class="btn btn-danger btn-sm delete-modulebtn">삭제</button>
+                      </div>
+                      <input type="hidden" value="${response.moduleNo}" class="module-no">
+                    </div>
+                  </div>
                 `;
 
-                tbody.appendChild(newRow);
+                container.appendChild(newCard);
                 modules.push(response);
                 closeModal();
             },
@@ -237,39 +302,25 @@ document.querySelector(".insertedit-btn").addEventListener("click", function(eve
     }
 });
 
-document.querySelector("tbody").addEventListener("click", function(event) {
+document.querySelector(".container").addEventListener("click", function(event) {
     if (event.target.classList.contains("edit-btn")) {
-        console.log("수정 버튼 클릭됨:", event.target);
-
-        const row = event.target.closest('tr');
-        const cells = row.querySelectorAll('td');
-        const moduleNo = cells[0].textContent;
+        const cardBody = event.target.closest('.card-body');
+        const moduleNo = cardBody.querySelector('.module-no').value;
 
         const module = modules.find(m => m.moduleNo == moduleNo);
         if (module) {
             document.getElementById("moduleNo").value = module.moduleNo;
             document.getElementById("moduleTitle").value = module.moduleName;
             document.getElementById("modulePrice").value = module.modulePrice;
-            document.getElementById("moduleDescription").value = module.explanation;
+            quill.root.innerHTML = module.explanation || "";
 
             const basicBtn = document.querySelector(".basic-btn");
-            if (module.basicModule === "Y") {
-                basicBtn.textContent = "기본 모듈";
-                basicBtn.style.backgroundColor = "gray";
-            } else {
-                basicBtn.textContent = "결제 모듈";
-                basicBtn.style.backgroundColor = "blue";
-            }
+            basicBtn.textContent = module.basicModule === "Y" ? "기본 모듈" : "결제 모듈";
+            basicBtn.style.backgroundColor = module.basicModule === "Y" ? "gray" : "blue";
 
-            const activeBtns = document.querySelectorAll(".active-btn");
-            if (module.activate === "Y") {
-                activeBtns[0].style.backgroundColor = "green";
-                activeBtns[0].textContent = "활성화";
-
-            } else {
-                activeBtns[0].style.backgroundColor = "red";
-                activeBtns[0].textContent = "비활성화";
-            }
+            const activeBtn = document.querySelector(".active-btn");
+            activeBtn.textContent = module.activate === "Y" ? "활성화" : "비활성화";
+            activeBtn.style.backgroundColor = module.activate === "Y" ? "green" : "red";
 
             document.getElementById("modal").style.display = "flex";
         }
@@ -277,7 +328,8 @@ document.querySelector("tbody").addEventListener("click", function(event) {
 });
 
 
-document.querySelector("tbody").addEventListener("click", function(event) {
+
+document.querySelector(".container").addEventListener("click", function(event) {
     if (event.target.classList.contains("delete-modulebtn")) {
         const row = event.target.closest('tr');
         const moduleNo = row.cells[0].textContent;
