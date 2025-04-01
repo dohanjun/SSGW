@@ -73,14 +73,14 @@
     <div class="card-wrapper" th:each="module : ${modules}">
         <div class="card" onclick="toggleCard(this)">
             <div class="card-title">
-                <i class="fa-solid fa-cube"></i>
+                <span th:text="${module.icon}"></span>
                 <span th:text="${module.moduleName}">모듈 이름</span>
             </div>
             <div class="card-content">
                 <ul>
                 	<li th:each="detail : ${module}" th:text="${#numbers.formatInteger(detail.modulePrice, 0, 'COMMA')} + '원'"></li>
-                    <li th:each="detail : ${module}" th:text="${detail.explanation}"></li>
                 </ul>
+                <div th:each="detail : ${module}" th:utext="${detail.explanation}">></div>
             </div>
         </div>
     </div>

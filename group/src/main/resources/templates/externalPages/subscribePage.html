@@ -4,176 +4,208 @@
 	layout:decorate="~{common/layouts/main_layout}"
 	layout:fragment="content">
 <link rel="stylesheet" type="text/css" href="/css/subscribePage.css">
-<style></style>
+<style>
+.card-header {
+	background-color: #2C3E50;
+	text-align: left;
+}
+</style>
 <div class="container">
-	<form id="subscribeForm">
-		<div class="form-floating mb-3">
-			<input class="form-control" id="subName" name="subName" type="text"
-				placeholder="Enter your name..." data-sb-validations="required" />
-			<label for="subName">이름</label>
-		</div>
 
-		<div class="form-floating mb-3">
-			<input class="form-control" id="companyName" name="companyName"
-				type="text" placeholder="Enter your name..."
-				data-sb-validations="required" /> <label for="companyName">회사명</label>
+	<div class="card">
+		<div class="card-header text-white">
+			<h4 class="mb-0">SUBSCRIBE</h4>
 		</div>
-
-		<div class="form-floating mb-3">
-			<input class="form-control" id="phoneNo" name="phoneNo" type="text"
-				placeholder="Enter your phone number..."
-				data-sb-validations="required" /> <label for="phoneNo">전화번호</label>
+		<div class="titleSection">
+			<h2>📝 정보를 등록하세요</h2>
+			<p>정확한 정보를 입력해 주세요. 구독 서비스 제공에 사용됩니다.</p>
 		</div>
-
-		<div class="form-floating mb-3">
-			<input class="form-control" id="subEmail" name="subEmail" type="text"
-				placeholder="Enter your name..." data-sb-validations="required" />
-			<label for="subEmail">이메일</label>
-		</div>
-
-		<div class="form-floating mb-3">
-			<div class="form-floating mb-3 position-relative">
-				<input class="form-control" id="subId" name="subId" type="text"
+		<form id="subscribeForm">
+			<div class="form-floating mb-3" style="width: 80%; margin: 0 auto;">
+				<input class="form-control" id="subName" name="subName" type="text"
 					placeholder="Enter your name..." data-sb-validations="required" />
-				<label for="subId">아이디</label>
-				<button type="button" id="checkDuplicateBtn"
-					class="btn btn-sm btn-secondary"
-					style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); z-index: 10;">
-					중복 확인</button>
+				<label for="subName">이름</label>
 			</div>
-			<div id="idCheckMessage"
-				style="font-size: 13px; color: red; margin-top: -10px;"></div>
 
-		</div>
+			<div class="form-floating mb-3" style="width: 80%; margin: 0 auto;">
+				<input class="form-control" id="companyName" name="companyName"
+					type="text" placeholder="Enter your name..."
+					data-sb-validations="required" /> <label for="companyName">회사명</label>
+			</div>
 
-		<div class="form-floating mb-3">
-			<input class="form-control" id="subPw" name="subPw" type="text"
-				placeholder="Enter your name..." data-sb-validations="required" />
-			<label for="subPw">비밀번호</label>
-		</div>
-		<div class="form-floating mb-3">
-			<input class="form-control" id="subBnisNo" name="subBnisNo"
-				type="text" placeholder="Enter your name..."
-				data-sb-validations="required" /> <label for="subBnisNo">사업자
-				번호</label>
-		</div>
-		<div class="moduleContainer">
-			<div class="basicModule">
-				<div class="selectItem" th:each="item : ${modules}"
-					th:if="${#strings.equals(item.basicModule, 'Y')}">
-					<div th:for="'check-' + ${item}" th:text="${item.moduleName}"></div>
+
+			<div class="form-floating mb-3" style="width: 80%; margin: 0 auto;">
+				<input class="form-control" id="phoneNo" name="phoneNo" type="text"
+					placeholder="Enter your phone number..."
+					data-sb-validations="required" /> <label for="phoneNo">전화번호</label>
+			</div>
+
+			<div class="form-floating mb-3" style="width: 80%; margin: 0 auto;">
+				<input class="form-control" id="subEmail" name="subEmail"
+					type="text" placeholder="Enter your name..."
+					data-sb-validations="required" /> <label for="subEmail">이메일</label>
+			</div>
+
+			<div class="form-floating mb-3" style="width: 80%; margin: 0 auto;">
+				<div class="form-floating mb-3 position-relative">
+					<input class="form-control" id="subId" name="subId" type="text"
+						placeholder="Enter your name..." data-sb-validations="required" />
+					<label for="subId">아이디</label>
+					<button type="button" id="checkDuplicateBtn"
+						class="btn btn-sm btn-secondary"
+						style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); z-index: 10;">
+						중복 확인</button>
+				</div>
+				<div id="idCheckMessage"
+					style="font-size: 13px; color: red; margin-top: -10px;"></div>
+
+			</div>
+
+			<div class="form-floating mb-3" style="width: 80%; margin: 0 auto;">
+				<input class="form-control" id="subPw" name="subPw" type="text"
+					placeholder="Enter your name..." data-sb-validations="required" />
+				<label for="subPw">비밀번호</label>
+			</div>
+			<div class="form-floating mb-3" style="width: 80%; margin: 0 auto;">
+				<input class="form-control" id="subBnisNo" name="subBnisNo"
+					type="text" placeholder="Enter your name..."
+					data-sb-validations="required" /> <label for="subBnisNo">사업자
+					번호</label>
+			</div>
+
+			<div class="titleSection">
+				<h2>📦 사용할 모듈을 선택하세요</h2>
+				<p>원하는 모듈을 선택하여 구독 구성을 완성해보세요.</p>
+			</div>
+
+			<div class="moduleContainer">
+				<div class="modules">
+					<div class="selectItem" th:each="item : ${modules}"
+						th:data-module-no='${item.moduleNo}'
+						th:data-module-price='${item.modulePrice}'>
+						<div class="moduleCard">
+							<div class="moduleTitle" th:text="${item.moduleName}">모듈명</div>
+							<div class="moduleBottom">
+								<div class="moduleIcon" th:text="${item.icon}">📁</div>
+								<div class="moduleDescription" th:utext="${item.explanation}">설명</div>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 
-			<div class="selectModule">
-				<div class="selectItem" th:each="item : ${modules}"
-					th:if="${#strings.equals(item.basicModule, 'N')}">
-					<div th:for="'check-' + ${item}" th:text="${item.moduleName}"></div>
+			<div class="titleSection">
+				<h2>🏢 회사 정보를 입력하세요</h2>
+				<p>인원, 업로드/저장소 용량, 구독기간 등을 설정해 주세요.</p>
+			</div>
+
+
+			<div class="infoContainer">
+				<div class="info top">
+					<div>
+						<h3>인원</h3>
+						<div class="countInputContainer">
+							<button class="minusButton">-</button>
+							<input class="countInput" value="50" readonly>
+							<button class="plusButton">+</button>
+						</div>
+					</div>
+
+					<div style="position: relative;">
+						<h3>업로드 용량(MB)</h3>
+						<div class="countInputContainer uploadContainer">
+							<input class="countInput uploadInput" value="25" readonly>
+						</div>
+						<div class="uploadDropdown" style="display: none;">
+							<div class="uploadOption" data-value="10">10MB</div>
+							<div class="uploadOption" data-value="25">25MB</div>
+							<div class="uploadOption" data-value="50">50MB</div>
+							<div class="uploadOption" data-value="100">100MB</div>
+						</div>
+					</div>
+
+					<div style="position: relative;">
+						<h3>저장소 용량(TB)</h3>
+						<div class="countInputContainer storageContainer">
+							<input class="countInput storageInput" value="3" readonly>
+						</div>
+						<div class="storageDropdown" style="display: none;">
+							<div class="storageOption" data-value="1">1TB</div>
+							<div class="storageOption" data-value="2">2TB</div>
+							<div class="storageOption" data-value="3">3TB</div>
+							<div class="storageOption" data-value="4">4TB</div>
+							<div class="storageOption" data-value="5">5TB</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="info bottom">
+					<div style="position: relative;">
+						<h3>구독기간(월)</h3>
+						<div class="countInputContainer periodContainer">
+							<input class="countInput periodInput" value="1" readonly>
+						</div>
+						<div class="periodDropdown" style="display: none;">
+							<div class="periodOption" data-value="1">1개월</div>
+							<div class="periodOption" data-value="12">12개월</div>
+						</div>
+					</div>
+
+					<div style="position: relative;">
+						<h3>결제일</h3>
+						<div class="countInputContainer paymentContainer">
+							<input class="countInput paymentInput" value="20" readonly>
+						</div>
+						<div class="paymentDropdown" style="display: none;">
+							<div class="paymentOption" data-value="10">10일</div>
+							<div class="paymentOption" data-value="15">15일</div>
+							<div class="paymentOption" data-value="20">20일</div>
+						</div>
+					</div>
 				</div>
 			</div>
-		</div>
+			<div class="titleSection">
+				<h2>🧾 영수증</h2>
+				<p>선택한 옵션에 따라 계산된 구독 요금입니다.</p>
+			</div>
 
-		<div class="infoContainer">
-			<div class="info top">
+			<div class="receipt">
+				<div>-----------------------------</div>
 				<div>
-					<h3>인원</h3>
-					<div class="countInputContainer">
-						<button class="minusButton">-</button>
-						<input class="countInput" value="50" readonly>
-						<button class="plusButton">+</button>
-					</div>
+					모듈 구독 가격 : <span id="moculePrice"></span>
 				</div>
-
 				<div>
-					<h3>업로드 용량(MB)</h3>
-					<div class="countInputContainer uploadContainer">
-						<input class="countInput uploadInput" value="25" readonly>
-					</div>
-					<div class="uploadDropdown" style="display: none;">
-						<div class="uploadOption" data-value="10">10MB</div>
-						<div class="uploadOption" data-value="25">25MB</div>
-						<div class="uploadOption" data-value="50">50MB</div>
-						<div class="uploadOption" data-value="100">100MB</div>
-					</div>
+					인원 당 가격 : <span id="peoplePrice"></span>
 				</div>
-
 				<div>
-					<h3>저장소 용량(TB)</h3>
-					<div class="countInputContainer storageContainer">
-						<input class="countInput storageInput" value="3" readonly>
-					</div>
-					<div class="storageDropdown" style="display: none;">
-						<div class="storageOption" data-value="1">1TB</div>
-						<div class="storageOption" data-value="2">2TB</div>
-						<div class="storageOption" data-value="3">3TB</div>
-						<div class="storageOption" data-value="4">4TB</div>
-						<div class="storageOption" data-value="5">5TB</div>
-					</div>
+					업로드 파일 제한(5MB) : <span id="fileUploadPrice"></span>
 				</div>
-			</div>
-
-			<div class="info bottom">
 				<div>
-					<h3>구독기간(월)</h3>
-					<div class="countInputContainer periodContainer">
-						<input class="countInput periodInput" value="1" readonly>
-					</div>
-					<div class="periodDropdown" style="display: none;">
-						<div class="periodOption" data-value="1">1개월</div>
-						<div class="periodOption" data-value="12">12개월</div>
-					</div>
+					저장소 용량(1TB) : <span id="fileRepositoryPrice"></span>
 				</div>
-
+				<div>-----------------------------</div>
 				<div>
-					<h3>결제일</h3>
-					<div class="countInputContainer paymentContainer">
-						<input class="countInput paymentInput" value="20" readonly>
-					</div>
-					<div class="paymentDropdown" style="display: none;">
-						<div class="paymentOption" data-value="10">10일</div>
-						<div class="paymentOption" data-value="15">15일</div>
-						<div class="paymentOption" data-value="20">20일</div>
-					</div>
+					할인전 금액 : <span id="tPrice"></span>
 				</div>
-			</div>
-		</div>
-
-		<div class="receipt">
-			<div>
-				모듈 구독 가격 : <span id="moculePrice"></span>
-			</div>
-			<div>
-				인원 당 가격 : <span id="peoplePrice"></span>
-			</div>
-			<div>
-				업로드 파일 제한(5MB) : <span id="fileUploadPrice"></span>
-			</div>
-			<div>
-				저장소 용량(1TB) : <span id="fileRepositoryPrice"></span>
-			</div>
-			<div>--------------------------------------------------</div>
-			<div>
-				할인전 금액 : <span id="tPrice"></span>
-			</div>
-			<div>
-				구독기간 할인(년) : <span id="ysale"></span>
-			</div>
-			<div>
-				총 금액 : <span id="endPrice"></span>
-			</div>
-			<button type="submit">결제</button>
-		</div>
-	</form>
-	<div id="paymentModal" class="modal">
-		<div class="modal-content">
-			<span class="close">&times;</span>
-			<div>
-				<h2>결제 진행</h2>
-				<div class="price">
-					결제금액 : <span id="modalPrice"></span>
+				<div>
+					구독기간 할인(년) : <span id="ysale"></span>
 				</div>
-				<div class="clause">이용약관</div>
-				<textarea class="clauseText">
+				<div>
+					총 금액 : <span id="endPrice"></span>
+				</div>
+				<button type="submit">결제</button>
+			</div>
+		</form>
+		<div id="paymentModal" class="modal">
+			<div class="modal-content">
+				<span class="close">&times;</span>
+				<div>
+					<h2>결제 진행</h2>
+					<div class="price">
+						결제금액 : <span id="modalPrice"></span>
+					</div>
+					<div class="clause">이용약관</div>
+					<textarea class="clauseText">
 			제1조 (목적)
 				본 약관은 [서비스명] (이하 "회사")가 제공하는 결제 서비스(이하 "서비스")를 이용하는 
 				고객(이하 "이용자")과 회사 간의 권리, 의무 및 책임사항을 규정함을 목적으로 합니다.
@@ -228,12 +260,13 @@
 			부칙
 				본 약관은 2020년 3월 13일부터 적용됩니다.
 			</textarea>
-				<div class="clauseCheck">
-					<input type="checkbox">동의
-				</div>
-				<div class="payMent">
-					<button id="card">카드결재</button>
-					<button id="trans">계좌이체</button>
+					<div class="clauseCheck">
+						<input type="checkbox">동의
+					</div>
+					<div class="payMent">
+						<button id="card">카드결재</button>
+						<button id="trans">계좌이체</button>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -241,12 +274,16 @@
 </div>
 
 
+
 <script type="application/javascript">
+	
 	
 	let first_ip;
   function getIP(json) {
 	  first_ip=json.ip;
   }
+
+
 
 </script>
 <script type="application/javascript"

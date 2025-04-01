@@ -33,8 +33,8 @@
                 <input type="hidden" name="formId" id="formIdInput">
                 <input type="hidden" name="basicsFormId" id="basicsFormIdInput">
                 <input type="hidden" name="aprvStatus" id="statusInput">
-                <input type="hidden" name="content" id="contentHidden">
                 <input type="hidden" name="vacationTypeId" id="vacationTypeIdInput">
+                <input type="hidden" name="content" id="contentHidden" th:value="${aprvVO != null} ? ${aprvVO.content} : ''" />
                 <div class="form-group">
                     <label>제목</label>
                     <input type="text" class="form-control" name="title"
@@ -49,7 +49,7 @@
 				</div>
                 <div class="form-group">
                     <label>내용</label>
-                    <div id="Content" class="p-3 border rounded"  style="min-height: 200px; background-color: #f8f9fc;"></div>
+                    <div id="Content" class="p-3 border rounded"  style="min-height: 200px; background-color: #f8f9fc;" contenteditable="true"></div>
                 </div>
                 <div class="form-group">
     				<label>첨부파일</label>
@@ -466,7 +466,19 @@ document.addEventListener("DOMContentLoaded", function () {
 // 전송
 $('#ajaxSubmitBtn').on('click', function () {
     const finalContent = prepareFinalContent();
-
+    const title = $('input[name="title"]').val().trim();
+	
+    if (!title && !finalContent) {
+        alert("제목과 내용을 입력해주세요.");
+        return;
+    } else if (!title) {
+        alert("제목을 입력해주세요.");
+        return;
+    } else if (!finalContent) {
+        alert("내용을 입력해주세요.");
+        return;
+    }
+    
     // FormData 생성
     const form = document.querySelector("form");
     const formData = new FormData(form);
@@ -581,7 +593,19 @@ function prepareFinalContent() {
 
 // 임시저장 버튼 클릭 시 status를 '임시'로 설정하고 폼 제출
 document.getElementById("tempSaveButton").addEventListener("click", function () {
-    const finalContent = prepareFinalContent();
+	const title = $('input[name="title"]').val().trim();
+    const finalContent = prepareFinalContent().trim();
+    
+    if (!title && !finalContent) {
+        alert("제목과 내용을 입력해주세요.");
+        return;
+    } else if (!title) {
+        alert("제목을 입력해주세요.");
+        return;
+    } else if (!finalContent) {
+        alert("내용을 입력해주세요.");
+        return;
+    }
     
     const form = document.querySelector("form");
     const formData = new FormData(form);
@@ -621,7 +645,7 @@ document.getElementById("tempSaveButton").addEventListener("click", function () 
             location.href = '/aprv/request?aprvStatus=임시';
         },
         error: function (xhr) {
-            alert('임시저장 중 오류 발생: ' + xhr.responseText);
+            alert('제목, 내용을 입력해주세요');
         }
     });
 });

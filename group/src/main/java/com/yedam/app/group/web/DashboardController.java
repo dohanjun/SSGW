@@ -1,6 +1,7 @@
 package com.yedam.app.group.web;
 
 import java.security.Principal;
+import java.util.Base64;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -36,7 +37,9 @@ public class DashboardController {
 			List<ApprovalVO> approvalList = dashboardService.getRecentApprovalList(loginEmployee.getEmployeeNo());
 			List<BoardVO> boardList = dashboardService.getRecentBoardList(loginEmployee.getSuberNo());
 			List<MailVO> mailList = dashboardService.getRecentMailList(loginEmployee.getEmployeeId()); // 메일 추가
-
+			String base64Image = Base64.getEncoder().encodeToString(loginEmployee.getProfileImageBLOB());
+		
+			model.addAttribute("profileImageBase64", base64Image);
 			model.addAttribute("userInfo", loginEmployee);
 			model.addAttribute("repositoryList", dashboardService.getRecentRepositoryPosts());
 			model.addAttribute("recentBoardList", dashboardService.getRecentBoardList(loginEmployee.getSuberNo()));

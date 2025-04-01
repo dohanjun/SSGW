@@ -74,25 +74,38 @@ public class AttendanceServiceImpl implements AttendanceService {
     // 퇴근 처리와 동시에 초과근무 계산 및 insert
     @Override
     public Integer modifyClockOut(AttendanceManagementVO vo) {
-        Integer result = attendanceMapper.updateClockOut(vo); // 퇴근 시간 업데이트
-
-        // 방금 처리된 출결 정보를 다시 조회 (최신값 확보)
+        // ✅ 출근 기록 확인
         AttendanceManagementVO latest = attendanceMapper.getAttendanceSummary(vo.getEmployeeNo());
 
-        // 근무 시간이 9시간 초과 시 초과근무로 판단
-        if (latest != null && latest.getTotalWorkingHours() > 9) {
-            OvertimeVO overtime = new OvertimeVO();
-            overtime.setWorkAttitudeId(latest.getWorkAttitudeId()); // 해당 출결 ID 매핑
-            overtime.setOvertimeTime((int) ((latest.getTotalWorkingHours() - 9) * 60)); // 시간 ➝ 분 변환
-            overtime.setOvertimeDate(latest.getAttendanceDate()); // 날짜 세팅
-            overtime.setOvertimeType("연장근무"); // 고정 값 사용
-            overtime.setDraftDocumentNumber(null); // 문서번호는 현재 미사용
+        if (latest == null || latest.getClockInTime() == null) {
+            return 0; // 출근 기록 없으면 퇴근 불가
+        }
 
-            attendanceMapper.insertOvertime(overtime); // 초과근무 INSERT
+        // ✅ 근무 시간 계산 (초 단위 → 시간 단위 변환)
+        long milliseconds = vo.getClockOutTime().getTime() - latest.getClockInTime().getTime();
+        int workingHours = (int) (milliseconds / (1000 * 60 * 60));
+
+        // ✅ VO에 세팅
+        vo.setTotalWorkingHours(workingHours);
+
+        // ✅ 퇴근 + 근무시간 업데이트 쿼리 호출
+        Integer result = attendanceMapper.updateClockOutAndWorkingHours(vo);
+
+        // ✅ 초과근무 자동 등록 (9시간 초과 시)
+        if (workingHours > 9) {
+            OvertimeVO overtime = new OvertimeVO();
+            overtime.setWorkAttitudeId(latest.getWorkAttitudeId());
+            overtime.setOvertimeTime((workingHours - 9) * 60); // 분 단위
+            overtime.setOvertimeDate(latest.getAttendanceDate());
+            overtime.setOvertimeType("연장근무");
+            overtime.setDraftDocumentNumber(null);
+
+            attendanceMapper.insertOvertime(overtime);
         }
 
         return result;
     }
+
 
     // ✅ 오늘 출근 여부 확인
     // 출근 버튼 중복 클릭 방지, 상태 판단에 사용

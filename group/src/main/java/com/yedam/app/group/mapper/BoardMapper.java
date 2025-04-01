@@ -53,4 +53,23 @@ public interface BoardMapper {
     void deleteAttachmentById(int attachmentId);
     
     void deleteBoard(int postId);
+    
+    void updateFixStatus(@Param("postId") int postId, @Param("fixed") String fixed);
+    
+    List<BoardPostVO> getFixedNoticeBoardPosts(int suberNo);
+
+    List<BoardPostVO> getNoticeBoardPostsPaged(@Param("suberNo") int suberNo,
+                                               @Param("keyword") String keyword,
+                                               @Param("offset") int offset,
+                                               @Param("pageSize") int pageSize);
+
+    List<BoardPostVO> getFixedDepartmentBoardPosts(@Param("suberNo") int suberNo,
+                                                   @Param("departmentNo") int departmentNo);
+
+    List<BoardPostVO> getDepartmentBoardPostsPaged(@Param("suberNo") int suberNo,
+                                                   @Param("departmentNo") int departmentNo,
+                                                   @Param("keyword") String keyword,
+                                                   @Param("offset") int offset,
+                                                   @Param("pageSize") int pageSize);
+
 }

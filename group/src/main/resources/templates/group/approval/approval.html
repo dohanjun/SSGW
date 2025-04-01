@@ -9,155 +9,177 @@
 <link th:href="@{/css/approval.css}" rel="stylesheet">
 <style>
 .stamp-placeholder {
-    width: 150px;
-    height: 150px;
-    border: 3px solid red;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    color: red;
-    font-size: 18px;
-    margin: 0 auto;
+	width: 150px;
+	height: 150px;
+	border: 3px solid red;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: bold;
+	color: red;
+	font-size: 18px;
+	margin: 0 auto;
 }
 </style>
 </head>
 <body>
 	<div class="container mt-5">
-    <div class="card shadow mb-4">
-        <div class="card-header py-3 d-flex justify-content-between align-items-center">
-            <h6 class="m-0 font-weight-bold text-primary">결재 상세</h6>
-        </div>
-
-        <div class="card-body">
-
-            <!-- 결재선 -->
-            <div th:if="${aprv.aprvStatus != '반려'}">
-            <h5 class="mb-3">결재선</h5>
-
-<!-- Hidden 값 유지 -->
-<input type="hidden" id="draftNo" th:value="${aprv.draftNo}">
-<input type="hidden" id="employeeNo" th:value="${loggedInEmpNo}">
-<input type="hidden" id="aprvOrder">
-<input type="hidden" id="aprvRole">
-
-<!-- 결재선 테이블 -->
-<table class="table table-bordered text-center" style="table-layout: fixed; width: 100%;">
-    <thead class="thead-light">
-        <tr>
-            <th th:each="r : ${aprvroutes}" th:if="${r.aprvOrder eq '1'}" th:data-aprvorder="${r.aprvOrder}"
-                th:data-empno="${r.employeeNo}" th:text="${r.jobTitleName}">1차</th>
-            <th th:each="r : ${aprvroutes}" th:if="${r.aprvOrder eq '2'}" th:data-aprvorder="${r.aprvOrder}"
-                th:data-empno="${r.employeeNo}" th:text="${r.jobTitleName}">2차</th>
-            <th th:each="r : ${aprvroutes}" th:if="${r.aprvOrder eq '3'}" th:data-aprvorder="${r.aprvOrder}"
-                th:data-empno="${r.employeeNo}" th:text="${r.jobTitleName}">3차</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td style="height: 150px;">
-                <div th:each="r : ${aprvroutes}" th:if="${r.aprvOrder eq '1'}">
-                    <button th:if="${r.employeeNo.toString() eq loggedInEmpNo.toString() and r.stampId == null}"
-                            th:data-draftno="${r.draftNo}" th:data-empno="${r.employeeNo}"
-                            class="btn btn-sm btn-outline-primary insert-stamp-btn">도장등록</button>
-                    <img th:if="${r.stampImgPath != null and r.stampId != null}"
-                         th:src="@{${r.stampImgPath}}" width="150" height="150" class="d-block mx-auto">
-                </div>
-            </td>
-            <td style="height: 150px;">
-                <div th:each="r : ${aprvroutes}" th:if="${r.aprvOrder eq '2'}">
-                    <button th:if="${r.employeeNo.toString() eq loggedInEmpNo.toString() and r.stampId == null}"
-                            th:data-draftno="${r.draftNo}" th:data-empno="${r.employeeNo}"
-                            class="btn btn-sm btn-outline-primary insert-stamp-btn">도장등록</button>
-                    <img th:if="${r.stampImgPath != null and r.stampId != null}"
-                         th:src="@{${r.stampImgPath}}" width="150" height="150" class="d-block mx-auto">
-                </div>
-            </td>
-            <td style="height: 150px;">
-                <div th:each="r : ${aprvroutes}" th:if="${r.aprvOrder eq '3'}">
-                    <button th:if="${r.employeeNo.toString() eq loggedInEmpNo.toString() and r.stampId == null}"
-                            th:data-draftno="${r.draftNo}" th:data-empno="${r.employeeNo}"
-                            class="btn btn-sm btn-outline-primary insert-stamp-btn">도장등록</button>
-                    <img th:if="${r.stampImgPath != null and r.stampId != null}"
-                         th:src="@{${r.stampImgPath}}" width="150" height="150" class="d-block mx-auto">
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <span th:each="r : ${aprvroutes}" th:if="${r.aprvOrder eq '1'}" th:text="${r.employeeName}"></span>
-            </td>
-            <td>
-                <span th:each="r : ${aprvroutes}" th:if="${r.aprvOrder eq '2'}" th:text="${r.employeeName}"></span>
-            </td>
-            <td>
-                <span th:each="r : ${aprvroutes}" th:if="${r.aprvOrder eq '3'}" th:text="${r.employeeName}"></span>
-            </td>
-        </tr>
-    </tbody>
-</table>
-</div>
-            <!-- 문서 정보 -->
-            <h5 class="mt-4">기안문 정보</h5>
-            <table class="table table-bordered">
-                <tr>
-                    <th style="width: 150px;">제목</th>
-                    <td th:text="${aprv.title}"></td>
-                </tr>
-                <tr>
-                    <th>내용</th>
-                    <td>
-                        <div class="p-3" style="pointer-events: none; background-color: #f8f9fc;"
-                             th:utext="${aprv.content}"></div>
-                    </td>
-                </tr>
-                <tr>
-                    <th>상신일</th>
-                    <td th:text="${#dates.format(aprv.draftDate, 'yyyy-MM-dd')}"></td>
-                </tr>
-            </table>
-
-            <!-- 첨부파일 -->
-            <h5 class="mt-4">첨부파일</h5>
-            <ul class="list-group mb-4">
-                <li class="list-group-item" th:each="f : ${files}">
-                    <a th:href="@{/aprv/file/download/{id}(id=${f.fileId})}" th:text="${f.fileName}"></a>
-                </li>
-            </ul>
-			<div class="mt-4" th:if="${aprv.aprvStatus == '반려'}">
-    			<h5 class="text-danger">반려 사유</h5>
-    			<div class="border p-3 bg-light" th:text="${aprv.rejectReason}">반려 사유 내용</div>
+		<div class="card shadow mb-4">
+			<div
+				class="card-header py-3 d-flex justify-content-between align-items-center">
+				<h6 class="m-0 font-weight-bold text-primary">결재 상세</h6>
 			</div>
-            <!-- 승인/반려 버튼 -->
-            <div class="text-right" th:if="${aprv.aprvStatus != '완료' and aprv.aprvStatus != '반려' and aprvRole != '참조'}">
-                <button id="approvebtn" class="btn btn-success">승인</button>
-                <button id="backbtn" class="btn btn-danger">반려</button>
-            </div>
 
-        </div>
-    </div>
-</div>
-<!-- 반려 사유 입력 모달 -->
-<div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="rejectModalLabel">반려 사유 입력</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="닫기">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <textarea id="rejectReasonInput" class="form-control" rows="5" placeholder="반려 사유를 입력해주세요."></textarea>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
-        <button type="button" class="btn btn-danger" id="confirmRejectBtn">반려 처리</button>
-      </div>
-    </div>
-  </div>
-</div>
+			<div class="card-body">
+
+				<!-- 결재선: 오른쪽 상단 배치 -->
+				<!-- 오른쪽 상단 배치용 컨테이너 -->
+				<div th:if="${aprv.aprvStatus != '반려'}"
+					class="d-flex justify-content-end mb-4">
+					<div style="width: 400px;">
+
+						<!-- Hidden 값 유지 -->
+						<input type="hidden" id="draftNo" th:value="${aprv.draftNo}">
+						<input type="hidden" id="employeeNo" th:value="${loggedInEmpNo}">
+						<input type="hidden" id="aprvOrder"> <input type="hidden"
+							id="aprvRole">
+
+						<!-- 결재선 테이블 -->
+						<table class="table table-bordered text-center small"
+							style="table-layout: fixed; width: 100%;">
+							<thead class="thead-light">
+								<tr>
+									<th th:if="${aprv1 != null}" th:text="${aprv1.jobTitleName}">1차</th>
+									<th th:if="${aprv2 != null}" th:text="${aprv2.jobTitleName}">2차</th>
+									<th th:if="${aprv3 != null}" th:text="${aprv3.jobTitleName}">3차</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td th:if="${aprv1 != null}" style="height: 120px;">
+										<div class="d-flex align-items-center justify-content-center"
+											style="height: 100%;">
+											<button
+												th:if="${aprv1.employeeNo == loggedInEmpNo and aprv1.stampId == null}"
+												th:data-draftno="${aprv1.draftNo}"
+												th:data-empno="${aprv1.employeeNo}"
+												class="btn btn-sm btn-outline-primary insert-stamp-btn">도장등록</button>
+
+											<img
+												th:if="${aprv1.stampImgPath != null and aprv1.stampId != null}"
+												th:src="@{${aprv1.stampImgPath}}" width="80" height="80">
+										</div>
+									</td>
+									<td th:if="${aprv2 != null}" style="height: 120px;">
+										<div class="d-flex align-items-center justify-content-center"
+											style="height: 100%;">
+											<button
+												th:if="${aprv2.employeeNo == loggedInEmpNo and aprv2.stampId == null}"
+												th:data-draftno="${aprv2.draftNo}"
+												th:data-empno="${aprv2.employeeNo}"
+												class="btn btn-sm btn-outline-primary insert-stamp-btn">도장등록</button>
+
+											<img
+												th:if="${aprv2.stampImgPath != null and aprv2.stampId != null}"
+												th:src="@{${aprv2.stampImgPath}}" width="80" height="80">
+										</div>
+									</td>
+									<td th:if="${aprv3 != null}" style="height: 120px;">
+										<div class="d-flex align-items-center justify-content-center"
+											style="height: 100%;">
+											<button
+												th:if="${aprv3.employeeNo == loggedInEmpNo and aprv3.stampId == null}"
+												th:data-draftno="${aprv3.draftNo}"
+												th:data-empno="${aprv3.employeeNo}"
+												class="btn btn-sm btn-outline-primary insert-stamp-btn">도장등록</button>
+
+											<img
+												th:if="${aprv3.stampImgPath != null and aprv3.stampId != null}"
+												th:src="@{${aprv3.stampImgPath}}" width="80" height="80">
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td th:if="${aprv1 != null}" th:text="${aprv1.employeeName}"></td>
+									<td th:if="${aprv2 != null}" th:text="${aprv2.employeeName}"></td>
+									<td th:if="${aprv3 != null}" th:text="${aprv3.employeeName}"></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+
+
+				<!-- 문서 정보 -->
+				<h5 class="mt-4">기안문 정보</h5>
+				<table class="table table-bordered">
+					<tr>
+						<th style="width: 150px;">제목</th>
+						<td th:text="${aprv.title}"></td>
+					</tr>
+					<tr>
+						<th>내용</th>
+						<td>
+							<div class="p-3"
+								style="pointer-events: none; background-color: #f8f9fc;"
+								th:utext="${aprv.content}"></div>
+						</td>
+					</tr>
+					<tr>
+						<th>상신일</th>
+						<td th:text="${#dates.format(aprv.draftDate, 'yyyy-MM-dd')}"></td>
+					</tr>
+				</table>
+
+				<!-- 첨부파일 -->
+				<h5 class="mt-4">첨부파일</h5>
+				<ul class="list-group mb-4">
+					<li class="list-group-item" th:each="f : ${files}"><a
+						th:href="@{/aprv/file/download/{id}(id=${f.fileId})}"
+						th:text="${f.fileName}"></a></li>
+				</ul>
+				<div class="mt-4" th:if="${aprv.aprvStatus == '반려'}">
+					<h5 class="text-danger">반려 사유</h5>
+					<div class="border p-3 bg-light" th:text="${aprv.rejectReason}">반려
+						사유 내용</div>
+				</div>
+				<!-- 승인/반려 버튼 -->
+				<div class="text-right"
+					th:if="${aprv.aprvStatus != '완료' and aprv.aprvStatus != '반려' and aprvRole != '참조' and isMyTurn}">
+					<button id="approvebtn" class="btn btn-success">승인</button>
+					<button id="backbtn" class="btn btn-danger">반려</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
+	<!-- 반려 사유 입력 모달 -->
+	<div class="modal fade" id="rejectModal" tabindex="-1" role="dialog"
+		aria-labelledby="rejectModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="rejectModalLabel">반려 사유 입력</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="닫기">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<textarea id="rejectReasonInput" class="form-control" rows="5"
+						placeholder="반려 사유를 입력해주세요."></textarea>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">취소</button>
+					<button type="button" class="btn btn-danger" id="confirmRejectBtn">반려
+						처리</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
 
 

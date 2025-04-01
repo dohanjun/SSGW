@@ -9,7 +9,8 @@
 	        VERSION,
 	        BASIC_MODULE,
 	        ACTIVATE,
-	        EXPLANATION
+	        EXPLANATION,
+	        icon
 	    FROM MODULE
     </select>
     

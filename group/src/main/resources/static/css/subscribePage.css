@@ -1,170 +1,47 @@
-.moduleContainer {
-	margin-bottom: 200px;
-}
-
-.selectModule {
-	color: #6c757d;
-	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	justify-content: center;
-	gap: 100px;
-	margin: 5%;
-}
-
-.selectItem {
-	justify-content: center;
-	display: flex;
-	gap: 20px;
-}
-
-.selectItem div {
-	border: 1px solid #ced4da;
-	border-radius: 10px;
-	width: 300px;
-	line-height: 100px;
-	display: flex;
-	justify-content: center;
-	box-sizing: border-box;
-	font-size: 56px;
-}
-
-.basicModule {
-	color: black;
-	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	justify-content: center;
-	gap: 100px;
-	margin: 5%;
-}
-
-.selectModule .check {
-	color: black;
-	border: 1px solid #ced4da;
-	text-decoration: line-through;
-	border: 1px solid #ced4da;
-}
-
-.infoContainer {
-	margin: 5%;
-}
-
-.infoContainer .top {
-	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	text-align: center;
-	margin: 5%;
-	justify-items: center;
-}
-
-.infoContainer .bottom {
-	display: grid;
-	grid-template-columns: repeat(2, 1fr);
-	text-align: center;
-	margin: 5%;
-	justify-items: center;
-}
-
-.infoContainer .info {
-	margin: 5%;
-}
-
-.infoContainer input {
-	border: 0.125rem solid #ced4da;
-	border-radius: 10px;
-	width: 300px;
-	line-height: 100px;
-}
-
-.countInputContainer {
-	position: relative;
-	display: flex;
-}
-
-.countInput {
-	text-align: center;
-	font-size: 56px;
-}
-
-.countInputContainer button {
-	position: absolute;
-	top: 5px;
-	bottom: 5px;
-	border-radius: 15px;
-	border: none;
-	background: none;
-	font-size: 60px;
-}
-
-.countInputContainer .plusButton {
-	right: 15px;
-}
-
-.countInputContainer .minusButton {
-	left: 15px;
-}
-
-.uploadDropdown,.storageDropdown,.periodDropdown,.paymentDropdown{
-	border: 1px solid #ced4da;
-	border-radius: 10px;
-	width: 300px;
-	background: white;
-	position: absolute;
-	z-index: 10;
-	margin-top: 5px;
-}
-
-.uploadDropdown,.storageDropdown,.periodDropdown,.paymentDropdown{
-	padding: 10px;
-	cursor: pointer;
-	text-align: center;
-}
-
-.uploadOption:hover,.storageOption:hover,.periodOption:hover,.paymentOption:hover{
-	background: #f1f1f1;
-}
-
-.receipt{
+.receipt {
 	text-align: right;
 	font-size: 1.75rem;
 }
 
-.receipt div{
+.receipt div {
 	margin: 5px;
 }
 
 .receipt button {
-    width: 250px;
-    height: 80px;
-    margin: 20px 5px;
-    border: none;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #6c757d, #495057);
-    color: white;
-    font-size: 45px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s ease-in-out;
-    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+	width: 250px;
+	height: 80px;
+	margin: 20px 5px;
+	border: none;
+	border-radius: 12px;
+	background: linear-gradient(135deg, #6c757d, #495057);
+	color: white;
+	font-size: 45px;
+	font-weight: bold;
+	cursor: pointer;
+	transition: all 0.3s ease-in-out;
+	box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
 }
+
 .receipt button:hover {
-    background: linear-gradient(135deg, #495057, #343a40); 
-    transform: scale(1.05); /* 약간 확대 */
-    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
-    }
+	background: linear-gradient(135deg, #495057, #343a40);
+	transform: scale(1.05); /* 약간 확대 */
+	box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+}
 
 .receipt button:active {
-    transform: scale(0.98); 
-   }
-  .modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    justify-content: center;
-    align-items: center;
+	transform: scale(0.98);
+}
+
+.modal {
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.5);
+	justify-content: center;
+	align-items: center;
 }
 
 .modal-content {
@@ -224,7 +101,7 @@
 .clauseText {
 	margin: 1% 3%;
 	height: 300px;
-    width: 80%;
+	width: 80%;
 }
 
 .payMent button {
@@ -234,24 +111,264 @@
 	background-color: black;
 	color: white;
 }
+
 .close {
-        position: absolute;
-        top: 10px;
-        right: 35px;
-        font-size: 35px;
-        cursor: pointer;
-    }
+	position: absolute;
+	top: 10px;
+	right: 35px;
+	font-size: 35px;
+	cursor: pointer;
+}
 
 .form-floating label {
-  font-size: 1.1rem;
-  color: #6c757d;
-  font-weight: bold;
-  
+	font-size: 1.1rem;
+	color: #6c757d;
+	font-weight: bold;
 }
 
 .container {
 	width: 80%
 }
-#mainNav{
-	margin-bottom: 5%;
+
+#mainNav {
+	margin-bottom: 3%;
+}
+
+.moduleContainer {
+	display: flex;
+	justify-content: center;
+	padding: 20px;
+}
+
+.modules {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr); /* 3개씩 정렬 */
+	gap: 20px;
+	max-width: 900px; /* 필요 시 조정 */
+	width: 100%;
+}
+
+.moduleCard {
+	height: 200px;
+	background-color: #f9f9f9;
+	border-radius: 12px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	padding: 15px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	box-sizing: border-box;
+}
+
+.moduleTitle {
+	font-size: 18px;
+	font-weight: bold;
+	text-align: center;
+}
+
+.moduleBottom {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 10px;
+	margin-top: auto;
+}
+
+.moduleIcon {
+	font-size: 48px;
+}
+
+.moduleDescription {
+	font-size: 14px;
+	color: #555;
+	text-align: center;
+}
+
+.titleSection {
+	text-align: center;
+	margin: 40px 0 20px;
+}
+
+.titleSection h2 {
+	font-size: 28px;
+	font-weight: 700;
+	color: #343a40;
+	margin-bottom: 10px;
+}
+
+.titleSection p {
+	font-size: 16px;
+	color: #6c757d;
+}
+
+/* 선택된 모듈 카드에 회색 배경 */
+.selectItem.check .moduleCard {
+	background-color: #e0e0e0; /* 연회색 */
+	border: 1px solid #999;
+}
+
+.infoContainer {
+	display: flex;
+	flex-direction: column;
+	gap: 30px;
+	margin-top: 30px;
+	padding: 20px;
+	background-color: #f8f9fa;
+	border-radius: 12px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.info {
+	display: flex;
+	justify-content: space-around;
+
+	flex-wrap: wrap;
+}
+
+.info>div {
+	width: 300px;
+	background-color: #fff;
+	padding: 20px;
+	border-radius: 10px;
+	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+	text-align: center;
+}
+
+.info h3 {
+	font-size: 16px;
+	font-weight: bold;
+	margin-bottom: 15px;
+	color: #2C3E50;
+}
+
+.countInputContainer {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 10px;
+}
+
+.countInput {
+	width: 100px;
+	height: 40px;
+	text-align: center;
+	border: none;
+	font-size: 25px;
+}
+
+button.minusButton, button.plusButton {
+	width: 35px;
+	height: 35px;
+	border: none;
+	background-color: #2C3E50;
+	color: white;
+	font-size: 18px;
+	border-radius: 5px;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+}
+
+button.minusButton:hover, button.plusButton:hover {
+	background-color: #1A252F;
+}
+
+.uploadDropdown, .storageDropdown, .periodDropdown, .paymentDropdown {
+	position: absolute;
+	background: white;
+	border: 1px solid #ddd;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	border-radius: 6px;
+	z-index: 100;
+	margin-top: 10px;
+}
+
+.uploadOption, .storageOption, .periodOption, .paymentOption {
+	padding: 10px 15px;
+	cursor: pointer;
+	transition: background-color 0.2s;
+}
+
+.uploadOption:hover, .storageOption:hover, .periodOption:hover,
+	.paymentOption:hover {
+	background-color: #f1f1f1;
+}
+
+/* ✅ 기준 부모: position만 설정 */
+.uploadContainer,
+.storageContainer,
+.periodContainer,
+.paymentContainer {
+	position: relative;
+}
+
+.uploadDropdown,
+.storageDropdown,
+.periodDropdown,
+.paymentDropdown {
+	position: absolute;
+left: 50%;
+transform: translateX(-50%);
+	background-color: white;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	padding: 8px 0;
+	min-width: 120px;
+	z-index: 1000;
+	text-align: center;
+}
+
+.receipt {
+	width: 300px;
+	padding: 20px;
+	background-color: #fdfdfd;
+	border-radius: 8px;
+	font-family: 'Courier New', Courier, monospace;
+	font-size: 14px;
+	color: #333;
+	margin-left: auto; 
+	box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.receipt div {
+	display: flex;
+
+	margin-bottom: 8px;
+}
+
+.receipt div.separator {
+	border-top: 1px dashed #aaa;
+	margin: 12px 0;
+}
+
+.receipt span {
+	font-weight: bold;
+}
+
+.receipt button {
+	width: 100%;
+	margin-top: 15px;
+	padding: 10px;
+	background-color: #2C3E50;
+	color: white;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	font-weight: bold;
+	transition: background-color 0.2s ease;
+}
+
+.receipt button:hover {
+	background-color: #1a252f;
+}
+
+
+.receipt div {
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 6px;
+}
+
+.receipt span {
+	text-align: right;
 }

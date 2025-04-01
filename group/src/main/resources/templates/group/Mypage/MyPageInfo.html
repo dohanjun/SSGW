@@ -1,176 +1,221 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="~{common/layouts/default_layout}"
-	layout:fragment="content">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/layouts/default_layout}"
+      layout:fragment="content">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>마이페이지</title>
-<style>
-/* 메인 컨테이너를 가운데 정렬하고 화면에 맞게 조정 */
-.content-wrapper {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	height: calc(100vh - 100px); /* 상단 네비게이션 제외한 높이 */
-	width: 100%;
-	padding: 20px;
-	box-sizing: border-box;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 정보 상세</title>
+    <style>
+        body {
+            background-color: #f4f6f9;
+        }
 
-/* 사원 상세정보 박스 크기 조정 */
-.employee-container {
-	width: 600px; /* 기존 900px → 600px로 축소 */
-	background: white;
-	padding: 20px;
-	border-radius: 10px;
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-	text-align: center;
-}
+        .content-wrapper {
+            width: 90%;
+            max-width: 1100px;
+            margin: 30px auto;
+            display: flex;
+            justify-content: center;
+        }
 
-.emph2 {
-	margin-bottom: 15px;
-	font-size: 20px;
-}
+        .employee-card {
+            width: 100%;
+            background: #fff;
+            padding: 20px 30px;
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
 
-.profile-img {
-	width: 100px;
-	height: 100px;
-	object-fit: cover; /* 원본 비율을 유지하면서 박스 크기에 맞춤 */
-	border: 1px solid #ddd; /* 테두리 추가 */
-	display: block;
-	margin: 0 auto;
-}
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
 
-.profile-img img {
-	width: 100px;
-	height: 100px;
-	object-fit: cover; /* 비율을 유지하면서 크기에 맞게 자름 */
-	display: block;
-	margin: 0 auto;
-}
+        .employee-container {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+        }
 
-.form-group {
-	margin-bottom: 10px;
-	text-align: left;
-}
+        /* 프로필 카드 */
+        .profile-card {
+            width: 250px;
+            height: 320px;
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid #ddd;
+            box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
 
-.form-group label {
-	font-weight: bold;
-	display: block;
-	margin-bottom: 5px;
-	font-size: 14px;
-}
+        .profile-img {
+            width: 180px;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 50%;
+            display: block;
+            border: 1px solid #ddd;
+        }
 
-.form-group input {
-	width: 100%;
-	padding: 6px;
-	border: 1px solid #ccc;
-	border-radius: 5px;
-	background-color: #f8f9fa;
-	font-size: 14px;
-}
+        /* 폼 */
+        .form-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
 
-.btn-group {
-	display: flex;
-	justify-content: space-between;
-	margin-top: 15px;
-}
+        .form-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-.btn {
-	padding: 8px 12px;
-	border: none;
-	border-radius: 5px;
-	cursor: pointer;
-	font-size: 14px;
-	width: 48%;
-}
+        .form-group label {
+            width: 100px;
+            font-size: 14px;
+            color: #555;
+        }
 
-.btn-update {
-	background: #007bff;
-	color: white;
-}
+        .form-group input {
+            flex: 1;
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background-color: #f9f9f9;
+            font-size: 14px;
+            color: #333;
+        }
 
-.btn-cancel {
-	background: #dc3545;
-	color: white;
-}
-</style>
+        .form-group-flex {
+            display: flex;
+            gap: 10px;
+        }
+
+        .form-group-flex > div {
+            flex: 1;
+        }
+
+        /* 버튼 */
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .btn-update {
+            padding: 6px 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+            background-color: #4e73df;
+            color: white;
+        }
+
+        .btn-update:hover {
+            background-color: #375ac7;
+        }
+    </style>
 </head>
+
 <body>
-	<div class="content-wrapper">
-		<div class="employee-container">
-			<h2 class="emph2">내정보 상세</h2>
-			<div class="profile-img">
-				<img th:if="${profileImageBase64}"
-					th:src="'data:image/png;base64,' + ${profileImageBase64}"
-					alt="프로필 이미지">
-			</div>
+    <div class="content-wrapper">
+        <div class="employee-card">
 
-			<div class="form-group">
-				<label for="empid">사원번호</label> <input type="text" id="empid"
-					th:value="${emp.employeeNo}" readonly>
-			</div>
+            <div class="card-title">내 정보 상세</div>
 
-			<div class="form-group">
-				<label for="name">이름</label> <input type="text" id="name"
-					th:value="${emp.employeeName}" readonly>
-			</div>
+            <div class="employee-container">
+                <!-- 프로필 카드 -->
+                <div class="profile-card">
+                    <img class="profile-img"
+                         th:if="${profileImageBase64}"
+                         th:src="'data:image/png;base64,' + ${profileImageBase64}"
+                         alt="프로필 이미지">
+                </div>
 
-			<div class="form-group">
-				<label for="department">부서</label> <input type="text"
-					id="department" th:value="${emp.departmentName}" readonly>
-			</div>
+                <!-- 정보 -->
+                <div class="form-container">
+                    <div class="form-group">
+                        <label>사원번호</label>
+                        <input type="text" th:value="${emp.employeeNo}" readonly>
+                    </div>
 
-			<div class="form-group">
-				<label for="position">직급</label> <input type="text" id="jobTitleName"
-					th:value="${emp.jobTitleName}" readonly>
-			</div>
+                    <div class="form-group">
+                        <label>이름</label>
+                        <input type="text" th:value="${emp.employeeName}" readonly>
+                    </div>
 
-			<div class="form-group">
-				<label for="role">권한</label> <input type="text" id="role"
-					th:value="${emp.rightsName}" readonly>
-			</div>
+                    <div class="form-group">
+                        <label>부서</label>
+                        <input type="text" name="departmentName" th:value="${emp.departmentName}" readonly>
+                    </div>
 
-			<div class="form-group">
-				<label for="contact">연락처</label> <input type="text" id="contact"
-					th:value="${emp.phoneNumber}" readonly>
-			</div>
+                    <div class="form-group">
+                        <label>직급</label>
+                        <input type="text" th:value="${emp.jobTitleName}" readonly>
+                    </div>
 
-			<div class="form-group" style="display: flex; gap: 10px;">
-			    <div style="flex: 1;">
-			        <label for="address">주소</label>
-			        <input type="text" id="address" th:value="${emp.address}" readonly>
-			    </div>
-			    <div style="flex: 1;">
-			        <label for="resign">재직상태</label>
-			        <input type="text" id="resign" th:value="${emp.resignationStatus == 'N' ? '재직' : '퇴사'}" readonly>
-			    </div>
-			</div>
+                    <div class="form-group">
+                        <label>권한</label>
+                        <input type="text" th:value="${emp.rightsName}" readonly>
+                    </div>
 
-			<div class="form-group" style="display: flex; gap: 10px;">
-			    <div style="flex: 1;">
-			        <label for="hire-date">입사일</label>
-			        <input type="date" id="hire-date" th:value="${#dates.format(emp.hireDate, 'yyyy-MM-dd')}" readonly>
-			    </div>
-			    <div style="flex: 1;">
-			        <label for="exit-date">퇴사일</label>
-			        <input type="date" id="exit-date" th:value="${#dates.format(emp.exitDate, 'yyyy-MM-dd')}" readonly>
-			    </div>
-			</div>
+                    <div class="form-group">
+                        <label>연락처</label>
+                        <input type="text" th:value="${emp.phoneNumber}" readonly>
+                    </div>
 
-			<div class="form-group">
-				<label for="tempIp">IP</label> <input type="text" id="tempIp"
-					th:value="${emp.tempIp}" readonly>
-			</div>
+                    <div class="form-group-flex">
+                        <div class="form-group">
+                            <label>주소</label>
+                            <input type="text" th:value="${emp.address}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>재직상태</label>
+                            <input type="text" th:value="${emp.resignationStatus == 'N' ? '재직' : '퇴사'}" readonly>
+                        </div>
+                    </div>
 
-			<div class="btn-group">
-				<button type="button" class="btn btn-primary"
-					th:onclick="|location.href = '@{ /MyPageUpdate(employeeNo=${emp.employeeNo}) }'|">수정</button>
-			</div>
-		</div>
-	</div>
+                    <div class="form-group-flex">
+                        <div class="form-group">
+                            <label>입사일</label>
+                            <input type="text" th:value="${#dates.format(emp.hireDate, 'yyyy-MM-dd')}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>퇴사일</label>
+                            <input type="text" th:value="${#dates.format(emp.exitDate, 'yyyy-MM-dd')}" readonly>
+                        </div>
+                    </div>
 
+                    <div class="form-group">
+                        <label>IP</label>
+                        <input type="text" th:value="${emp.tempIp}" readonly>
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="button" class="btn-update"
+                                th:onclick="|location.href='@{/MyPageUpdate(employeeNo=${emp.employeeNo})}'|">내정보 수정</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
 </body>
 </html>

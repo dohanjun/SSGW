@@ -7,25 +7,43 @@
 <meta charset="UTF-8">
 <title>결재 진행함</title>
 <link rel="stylesheet" th:href="@{/css/approval.css}">
+<style>
+	tr:hover {
+        background-color: #f1f1f1;
+        cursor: pointer; 
+    }
+</style>
 </head>
 <body>
 	<div class="container-fluid">
 		<div class="h555">
 			<h1 class="h3 mb-2 text-gray-800">결재진행함</h1>
-			<button id="stampInsertButton">도장등록</button>
+			<button id="stampInsertButton" class="btn btn-secondary">도장등록</button>
 		</div>
 		<div class="card shadow mb-4">
 			<div class="card-header py-3">
 				<!-- 검색부분 -->
 				<form th:action="@{/aprv/list}" method="GET">
-					<input type="hidden" name="aprvStatus" value="진행">
-					<p>
-						기안자 <input type="text" name="employeeName"> 문서제목 <input
-							type="text" name="title"> 상신일 <input type="date" th:value="${#dates.format(approvalVO.draftDate,'yyyy-MM-dd')}"
-							name="draftDate">
-						<button type="submit" class="float-right">검색</button>
-					</p>
-				</form>
+    <input type="hidden" name="aprvStatus" th:value='진행'>
+
+    <div class="form-row align-items-center">
+        <div class="col-auto">
+            <label class="sr-only">기안자</label>
+            <input class="form-control mb-2" type="text" name="employeeName" placeholder="기안자" th:value="${searchEmployeeName}">
+        </div>
+        <div class="col-auto">
+            <label class="sr-only">문서제목</label>
+            <input class="form-control mb-2" type="text" name="title" placeholder="문서제목" th:value="${searchTitle}">
+        </div>
+        <div class="col-auto">
+            <label class="sr-only">상신일</label>
+            <input class="form-control mb-2" type="date" name="draftDate" th:value="${searchDraftDate != null} ? ${#dates.format(searchDraftDate, 'yyyy-MM-dd')} : ''">
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary mb-2">검색</button>
+        </div>
+    </div>
+</form>
 			</div>
 			<div class="card-body">
 				<div class="table-responsive">
@@ -38,6 +56,7 @@
 								<th>문서제목</th>
 								<th>상신일</th>
 								<th>결재상태</th>
+								<th>첨부파일</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -48,6 +67,7 @@
 								<td>[[${aprv.title}]]</td>
 								<td>[[${#dates.format(aprv.draftDate, "yyyy년 MM월 dd일")}]]</td>
 								<td>[[${aprv.aprvStatus}]]</td>
+								<td><span th:if="${aprv.hasFile}" title="첨부파일 있음"><i class="fa-regular fa-file-lines fa-lg"></i></span></td>
 							</tr>
 						</tbody>
 					</table>

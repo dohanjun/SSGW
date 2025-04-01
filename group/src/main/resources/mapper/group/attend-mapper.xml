@@ -50,9 +50,11 @@
 	<update id="updateClockOut"
 		parameterType="AttendanceManagementVO">
 		UPDATE attendance_management
-		SET clock_out_time =	#{clockOutTime}
+		SET clock_out_time =
+		#{clockOutTime}
 		WHERE employee_no = #{employeeNo}
-		AND		TRUNC(attendance_date) = TRUNC(SYSDATE)
+		AND
+		TRUNC(attendance_date) = TRUNC(SYSDATE)
 		AND clock_out_time IS NULL
 	</update>
 
@@ -148,12 +150,12 @@
 		e.employee_no,
 		e.employee_name,
 		d.department_name,  <!-- 여기부분 수정 -->
-		ROUND(SUM(	CASE
-					WHEN a.clock_in_time IS NOT NULL AND a.clock_out_time IS	NOT NULL THEN
-					(a.clock_out_time - a.clock_in_time) * 24
-					ELSE 0
-					END
-					), 2)
+		ROUND(SUM( CASE
+		WHEN a.clock_in_time IS NOT NULL AND a.clock_out_time IS NOT NULL THEN
+		(a.clock_out_time - a.clock_in_time) * 24
+		ELSE 0
+		END
+		), 2)
 		AS totalWorkingHours,
 		ROUND(NVL(SUM(o.overtime_time), 0) / 60, 2) AS
 		overtimeHours
@@ -205,12 +207,13 @@
 		resultType="AttendanceManagementVO">
 		SELECT *
 		FROM (
-		SELECT am.*, 
-		       d.department_name,
-		       e.employee_name
+		SELECT am.*,
+		d.department_name,
+		e.employee_name
 		FROM attendance_management am
-		JOIN employees e ON am.employee_no = e.employee_no
-		JOIN department d ON e.department_no =	d.department_no
+		JOIN employees e ON am.employee_no =
+		e.employee_no
+		JOIN department d ON e.department_no = d.department_no
 		WHERE am.employee_no = #{employeeNo}
 		ORDER BY am.attendance_date DESC
 		)
@@ -227,5 +230,16 @@
 		WHERE employee_no = #{employeeNo}
 		AND TRUNC(attendance_date) = TRUNC(SYSDATE)
 	</update>
+
+
+	<select id="getTodayTotalWorkingHoursByDept" parameterType="int"
+		resultType="double">
+		SELECT
+		COALESCE(SUM(a.total_working_hours), 0)
+		FROM attendance_management a
+		JOIN employees e ON a.employee_no = e.employee_no
+		WHERE e.department_no = #{departmentNo}
+		AND TRUNC(a.attendance_date) = TRUNC(SYSDATE)
+	</select>
 
 </mapper>
