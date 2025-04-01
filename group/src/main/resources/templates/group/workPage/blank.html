@@ -20,102 +20,160 @@
 <link href="css/sb-admin-2.css" rel="stylesheet">
 
 <style>
-body {
-	margin-left: 220px; /* ✅ 사이드바와 겹치지 않게 여백 추가 */
+  body {
+    margin-left: 220px;
 }
 
 .container-flex {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
 .chart-container {
-	width: 40%;
-	display: flex;
-	justify-content: center;
-	align-items: center;
+    width: 40%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .info-container {
-	width: 25%;
-	text-align: center;
-	background: #f8f9fc;
-	padding: 15px;
-	border-radius: 10px;
-	box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    width: 25%;
+    text-align: center;
+    background: #f8f9fc;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .info-container h6 {
-	font-weight: bold;
-	margin-bottom: 5px;
+    font-weight: bold;
+    margin-bottom: 5px;
 }
 
 .info-container p {
-	font-size: 18px;
-	font-weight: bold;
-	color: #007bff;
-	margin: 0;
+    font-size: 18px;
+    font-weight: bold;
+    color: #007bff;
+    margin: 0;
 }
 
 .work-info {
-	width: 100%;
-	overflow-x: auto;
+    width: 100%;
+    overflow-x: auto;
 }
 
 .work-info table {
-	width: 100%;
-	border-collapse: collapse;
-	margin-top: 20px;
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
 }
 
 .work-info th, .work-info td {
-	border: 1px solid #ddd;
-	padding: 12px;
-	text-align: center;
-	white-space: nowrap;
-	vertical-align: middle;
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
 }
 
 .work-info th {
-	background-color: #f8f9fc;
-	font-weight: bold;
+    background-color: #f8f9fc;
+    font-weight: bold;
 }
 
 .work-info tbody tr:nth-child(even) {
-	background-color: #f2f2f2;
+    background-color: #f2f2f2;
 }
 
 .work-info tbody tr:hover {
-	background-color: #e2e6ea;
+    background-color: #e2e6ea;
 }
 
+/* 페이징 스타일 */
 .pagination-container {
-	display: flex;
-	justify-content: center;
-	margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
 }
 
 .page-item {
-	list-style: none;
-	margin: 0 5px;
+    list-style: none;
+
 }
 
 .page-link {
-	display: block;
-	padding: 6px 12px;
-	background-color: #fff;
-	border: 1px solid #ddd;
-	color: #007bff;
-	cursor: pointer;
+    display: block;
+    padding: 6px 12px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    color: #007bff;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.page-link:hover {
+    background-color: #e2e6ea;
 }
 
 .page-link.active {
-	background-color: #4e73df;
-	color: white;
+    background-color: #4e73df;
+    color: white;
 }
+
+.page-item.disabled .page-link {
+    color: #ccc;
+    cursor: not-allowed;
+}
+
+/* 셀렉트박스 스타일 */
+select {
+    padding: 6px 12px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    appearance: none;
+    background-color: #fff;
+    color: #333;
+    cursor: pointer;
+    width: 220px;
+    transition: border-color 0.3s ease;
+}
+
+select:focus {
+    border-color: #4e73df;
+    outline: none;
+}
+
+label {
+    margin-right: 10px;
+    font-size: 14px;
+}
+
+/* Option hover effect */
+option:hover {
+    background-color: #f0f0f0;
+}
+
+/* Optional: Style for Select box arrows */
+select::-ms-expand {
+    display: none;
+}
+
+/* Style for the pagination buttons with arrows */
+.page-item:first-child .page-link {
+    border-radius: 4px 0 0 4px; /* Left arrow rounded */
+}
+
+.page-item:last-child .page-link {
+    border-radius: 0 4px 4px 0; /* Right arrow rounded */
+}
+
+
 </style>
+
 </head>
 
 <body id="page-top">
@@ -133,9 +191,28 @@ body {
 			</div>
 		</div>
 
+		<!-- ✅ 월 선택 -->
+		<div class="select-container">
+			<form id="monthSelectForm" method="get" action="/blank">
+				<label for="yearMonth">월 선택:</label>
+				<select id="yearMonth" name="yearMonth"
+					onchange="document.getElementById('monthSelectForm').submit()">
+					<option th:value="${T(java.time.YearMonth).now().minusMonths(2)}"
+						th:text="${T(java.time.YearMonth).now().minusMonths(2)}"
+						th:selected="${selectedYearMonth == T(java.time.YearMonth).now().minusMonths(2).toString()}">2달 전</option>
+					<option th:value="${T(java.time.YearMonth).now().minusMonths(1)}"
+						th:text="${T(java.time.YearMonth).now().minusMonths(1)}"
+						th:selected="${selectedYearMonth == T(java.time.YearMonth).now().minusMonths(1).toString()}">1달 전</option>
+					<option th:value="${T(java.time.YearMonth).now()}"
+						th:text="${T(java.time.YearMonth).now()}"
+						th:selected="${selectedYearMonth == T(java.time.YearMonth).now().toString()}">이번 달</option>
+				</select>
+			</form>
+		</div>
+
 		<div class="card shadow mb-4">
 			<div class="card-header py-3">
-				<h5 class="m-0 font-weight-bold">출퇴근 기록</h5>
+				<h5 class="m-0 font-weight-bold">출퇴근 기록 (<span th:text="${selectedYearMonth}"></span>)</h5>
 			</div>
 			<div class="card-body">
 				<div class="work-info">
@@ -176,7 +253,6 @@ body {
 		</div>
 	</div>
 
-	<!-- ✅ 여기 수정 -->
 	<span id="workHoursData"
 		th:data-monthly-total-work-hours="${monthlyTotalWorkHours}"
 		th:data-total-worked-hours="${totalWorkedHours}"
@@ -220,7 +296,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // ✅ 페이지네이션
     const rowsPerPage = 5;
     const tableBody = document.getElementById('attendanceTableBody');
     const rows = tableBody.querySelectorAll('tr');

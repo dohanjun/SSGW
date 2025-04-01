@@ -28,7 +28,13 @@ public class AttendanceSummaryDTO {
     private Integer workDayCount;
 
     // 🔸 Getter & Setter 명시적 정의
-    // Lombok이 자동 생성하지만 명확하게 정의되어 있음
+    // Lombok이 자동 생성하지만 명확하게 정의되어 있음\
+    
+    public AttendanceSummaryDTO(String employeeName, double totalWorkingHours, double overtimeHours) {
+    	this.employeeName = employeeName;
+    	this.totalWorkingHours = totalWorkingHours;
+    	this.overtimeHours = overtimeHours;
+    }
 
 
 }

@@ -47,7 +47,11 @@ public interface AttendanceService {
     // 사용처: 관리자 대시보드의 "오늘 출근한 사원" 표시
     List<AttendanceManagementVO> getTodayAttendanceByDept(int deptNo);
 
+
     // ✅ [상세 모달용] 특정 출결 ID에 대한 초과근무 상세 정보 조회
-    // 사용처: 모달 팝업 등에서 상세 확인
     OvertimeVO getOvertimeByWorkAttitudeId(int workAttitudeId);
+
+    // ✅ (추가) [관리자 페이지] 부서원 전체 출결 상세 조회
+    List<AttendanceManagementVO> getDepartmentAttendanceDetail(Integer departmentNo);
+
 }
