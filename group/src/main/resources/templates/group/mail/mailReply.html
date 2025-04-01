@@ -6,7 +6,7 @@
 
 <head>
 <meta charset="UTF-8">
-<title>mail Reply</title>
+<title>메일 답장하기</title>
 <script
 	src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
 	integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
@@ -18,112 +18,176 @@
 </head>
 
 <style>
-#flo {
-	float: left;
-	display: flex;
-	justify-content: center;
-}
-
-/* 메인 컨테이너를 가운데 정렬하고 화면에 맞게 조정 */
+/* 전체 페이지 레이아웃 */
 .content-wrapper {
 	display: flex;
 	justify-content: center;
-	align-items: center;
-	height: calc(100vh - 100px); /* 상단 네비게이션 제외한 높이 */
+	align-items: flex-start;
+	min-height: 100vh;
 	width: 100%;
-	padding: 20px;
+	background-color: #f7f9fc;
+	padding: 40px 20px;
 	box-sizing: border-box;
 }
 
-/* 사원 상세정보 박스 크기 조정 */
-.employee-container {
-	width: 600px; /* 기존 900px → 600px로 축소 */
-	height: 600px;
-	background: white;
-	padding: 20px;
-	border-radius: 10px;
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-	text-align: center;
-}
-
-#center {
+/* 메일 답장 박스 */
+.email-container {
 	width: 100%;
-	height: 100%;
-	padding: 6px;
-	border: 1px solid #ccc;
-	border-radius: 5px;
-	background-color: #f8f9fa;
-	font-size: 14px;
-	margin-bottom: 15px;
-	font-size: 20px;
+	max-width: 900px;
+	background-color: white;
+	border-radius: 10px;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+	padding: 30px;
+	margin: 0 auto;
 }
 
-/* 버튼 컨테이너 스타일을 수정하여 버튼을 위로 배치 */
-.btn-container {
-	display: flex;
-	justify-content: center;
-	margin-bottom: 20px;
+/* 메일 제목, 보낸 사람 등의 정보 스타일 */
+.email-header {
+	font-size: 24px;
+	font-weight: bold;
+	color: #333;
+	text-align: center;
+	margin-bottom: 30px;
+}
+
+.email-info p {
+	font-size: 18px;
+	line-height: 1.6;
+	margin-bottom: 15px;
+}
+
+.email-info strong {
+	font-weight: bold;
+}
+
+/* 폼 스타일 */
+table {
+	width: 100%;
+	margin: 20px 0;
+	border-collapse: collapse;
+}
+
+th, td {
+	padding: 12px;
+	text-align: left;
+}
+
+th {
+	background-color: #f8f9fc;
+	font-size: 16px;
+}
+
+td input, textarea {
+	width: 100%;
+	padding: 10px;
+	border: 1px solid #ddd;
+	border-radius: 5px;
+	font-size: 16px;
+}
+
+textarea {
+	font-size: 16px;
+}
+
+/* 답장하기 버튼 */
+button {
+	width: 100%;
+	padding: 12px;
+	background-color: #4e73df;
+	color: white;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	font-size: 16px;
+	font-weight: bold;
+	margin-top: 20px;
+}
+
+button:hover {
+	background-color: #2e59d9;
+}
+
+/* 여백을 주기 위한 스타일 */
+.form-container {
+	margin-top: 30px;
+}
+
+/* 전체 테이블의 스타일 */
+.file-info-table {
+	width: 100%;
+	border-spacing: 0;
+	border-collapse: collapse;
 }
 </style>
 
-<!-- 메일답장 페이지-->
 <body>
-	<div id="content-wrapper" class="d-flex flex-column">
-		<div id="container-fluid px-0">
-			<div class="card shadow mb-4">
-				<!-- "자료 등록" 왼쪽 정렬 유지 -->
-				<div class="card-header py-3">
-					<h6 class="m-0 font-weight-bold text-primary">메일답장하기</h6>
-					<button type="button" class="btn btn-primary"
-						onclick="submitForm()">답장하기</button>
-				</div>
-
-				<div class="email-container">
-					<h2>이메일</h2>
-					<p><strong>보낸 사람:</strong><span th:text="${mail.employeeId}"></span></p>
-					<p><strong>제목:</strong><span th:text="${mail.title}"></span></p>
-					<p><strong>파일첨부:</strong><span th:text="${mail.attachedFileName}"></span></p>
-					<p><strong>본문:</strong><span th:text="${mail.content}"></span></p>
-				</div>
-
-				<div class="card-body" id="replyForm">
-					<!-- 답장하기 버튼을 상단으로 이동 -->
-
-					<form th:action="@{mailReply}" method="post" class="user" id="emailForm">
-						<input type="hidden" name="title" th:value="${mail.title}">
-						<input type="hidden" name="employeeId" th:value="${mail.employeeId}">
-						<input type="hidden" name="getUser" th:value="${mail.getUser}">
-						<input type="hidden" name="sentState" value="1">
-						<input type="hidden" name="mailType" value="받은">
-						<table class="table file-info-table">
-							<tbody>
-								<tr>
-									<th>제목</th>
-									<td><input type="text" id="title" th:value="${mail.title}" readonly></td>
-									<th>보낸사람</th>
-									<td><input type="text" id="employeeId" th:value="${mail.employeeId}" readonly></td>
-								</tr>	
-								<tr>
-									<th>받는사람</th>
-									<td><input type="text" id="getUser" th:value="${mail.getUser}" readonly></td>
-									<th>파일</th>
-									<td><input type="text" id="attachedFileName" th:value="${mail.attachedFileName}" readonly></td>
-								</tr>	
-								<tr>
-									<th>내용</th>
-									<td><input type="text" id="content" th:value="${mail.content}" readonly></td>	
-									<th>답장</th>
-									<td><textarea id="recode" name="recode" rows="4" cols="50"></textarea></td>
-								</tr>
-							</tbody>
-						</table>
-					</form>
-				</div>
+	<div class="content-wrapper">
+		<div class="email-container">
+			<!-- 메일 정보 -->
+			<div class="btn-container">
+				<a class="btn btn-primary" th:onclick="|location.href='@{/mailSelect(mailId=${mail.mailId})}'|">이전으로
+				</a>
 			</div>
+			<div class="email-header">메일 답장하기</div>
+			<div class="email-info">
+				<p>
+					<strong>보낸 사람:</strong> <span th:text="${mail.employeeId}"></span>
+				</p>
+				<p>
+					<strong>제목:</strong> <span th:text="${mail.title}"></span>
+				</p>
+				<p>
+					<strong>파일 첨부:</strong> <span th:text="${mail.attachedFileName}"></span>
+				</p>
+				<p>
+					<strong>본문:</strong> <span th:text="${mail.content}"></span>
+				</p>
+			</div>
+
+			<!-- 답장 폼 -->
+			<form th:action="@{mailReply}" method="post" class="user"
+				id="emailForm">
+				<input type="hidden" name="title" th:value="${mail.title}">
+				<input type="hidden" name="employeeId" th:value="${mail.employeeId}">
+				<input type="hidden" name="getUser" th:value="${mail.getUser}">
+				<input type="hidden" name="sentState" value="1"> <input
+					type="hidden" name="mailType" value="받은">
+
+				<table class="file-info-table">
+					<tbody>
+						<tr>
+							<th>제목</th>
+							<td><input type="text" id="title" th:value="${mail.title}"
+								readonly></td>
+							<th>보낸 사람</th>
+							<td><input type="text" id="employeeId"
+								th:value="${mail.employeeId}" readonly></td>
+						</tr>
+						<tr>
+							<th>받는 사람</th>
+							<td><input type="text" id="getUser"
+								th:value="${mail.getUser}" readonly></td>
+							<th>파일</th>
+							<td><input type="text" id="attachedFileName"
+								th:value="${mail.attachedFileName}" readonly></td>
+						</tr>
+						<tr>
+							<th>내용</th>
+							<td><textarea id="content" name="content" rows="4"
+									th:value="${mail.content}" readonly></textarea></td>
+							<th>답장</th>
+							<td><textarea id="recode" name="recode" rows="4"></textarea></td>
+						</tr>
+					</tbody>
+				</table>
+
+				<button type="button" onclick="submitForm()">답장하기</button>
+			</form>
 		</div>
 	</div>
+
 	<script>
-		// form 제출을 처리하는 자바스크립트 함수
+		// 폼 제출을 처리하는 자바스크립트 함수
 		function submitForm() {
 			document.getElementById('emailForm').submit(); // 'emailForm' 아이디를 가진 폼을 제출
 		}

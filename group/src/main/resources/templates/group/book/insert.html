@@ -1,93 +1,148 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org"
-	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	  layout:decorate="~{common/layouts/default_layout}"
-	  layout:fragment="content">
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{common/layouts/default_layout}"
+	layout:fragment="content">
 <head>
 <meta charset="UTF-8">
-<title>Book Insert</title>
+<title>주소록 등록하기</title>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
 
-</head>
-
 <style>
-		     /* 메인 컨테이너를 가운데 정렬하고 화면에 맞게 조정 */
-        .content-wrapper {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: calc(100vh - 100px); /* 상단 네비게이션 제외한 높이 */
-            width: 100%;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        
-         /* 사원 상세정보 박스 크기 조정 */
-        .employee-container {
-            width: 600px; /* 기존 900px → 600px로 축소 */
-            height: 600px;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            text-align: center;
-        }
-        
-        #center{
-        	width: 100%;
-        	height: 100%;
-            padding: 6px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #f8f9fa;
-            font-size: 14px;
-            margin-bottom: 15px;
-            font-size: 20px;
-        }
+/* 페이지 전체 레이아웃 */
+.content-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    width: 100%;
+    background-color: #f7f9fc;
+    padding: 40px 20px;
+    box-sizing: border-box;
+}
+
+/* 입력 폼의 스타일 */
+.form-container {
+    width: 100%;
+    max-width: 800px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    margin: 0 auto;
+}
+
+/* 폼 제목 */
+.form-container h2 {
+    font-size: 28px;
+    font-weight: 700;
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+/* 테이블 스타일 */
+.table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+}
+
+/* 테이블 헤더 스타일 */
+.table th {
+    background-color: #f8f9fc;
+    font-size: 16px;
+    padding: 12px;
+    text-align: left;
+    color: #333;
+}
+
+/* 테이블 데이터 스타일 */
+.table td {
+    padding: 12px;
+    text-align: left;
+}
+
+/* 입력 필드 및 텍스트 박스 */
+input[type="text"], input[type="email"], textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+}
+
+/* 저장하기 버튼 스타일 */
+button {
+    width: 100%;
+    padding: 12px;
+    background-color: #4e73df;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #2e59d9;
+}
+
+/* 테이블 입력을 구분하기 위한 작은 간격 */
+input[type="text"]:focus, input[type="email"]:focus, textarea:focus {
+    outline: none;
+    border-color: #4e73df;
+}
 </style>
 
-<!-- 메일쓰기 페이지-->
-<body>
-<div id="content-wrapper" class="d-flex flex-column">
-  <div id="container-fluid px-0">
-	<div class="card shadow mb-4">
-	<!-- "자료 등록" 왼쪽 정렬 유지 -->
-	<div class="card-header py-3">
-	  <h6 class="m-0 font-weight-bold text-primary">주소록 등록하기</h6>
-	</div>
+</head>
 
-<div class="card-body">
-  <form th:action="@{/bookInsert}" method="post" class="user">
-  	  <div class="btn-container">
-	     <button class="btn btn-primary">
-      		저장하기
-        </button>
-      </div>
-     <input type="hidden" name="employeeId" value="test3">
-     <input type="hidden" name="addressBookType" value="개인">
-   <table class="table file-info-table">	  
-   <tbody>
-		<tr>
-			<th>이름</th>
-			<td><input type="text" class="form-control" id="addressBookName" name="addressBookName"></td>
-			<th>전화번호(개인)</th>
-			<td><input type="text" class="form-control" id="addressBookNumber" name="addressBookNumber"></td>
-			<th>이메일주소</th>
-			<td><input type="text" class="form-control" id="addressBookEmail" name="addressBookEmail"></td>
-			<th>회사명</th>
-			<td><input type="text" class="form-control" id="addressBookCompanyName" name="addressBookCompanyName"></td>
-			<th>전화번호(회사)</th>
-			<td><input type="text" class="form-control" id="addressBookCompanyNumber" name="addressBookCompanyNumber"></td>
-			<th>담당부서</th>
-			<td><input type="text" class="form-control" id="bookDepartmentType" name="bookDepartmentType"></td>
-		</tr>
-	</tbody>
-   </table>
-  </form>		
-	</div>
-  </div>
- </div>
+<body>
+<div class="content-wrapper">
+    <div class="form-container">
+        <h2>주소록 등록하기</h2>
+
+        <!-- 폼 시작 -->
+        <form th:action="@{/bookInsert}" method="post" class="user">
+            <input type="hidden" name="employeeId" value="test3">
+            <input type="hidden" name="addressBookType" value="개인">
+            
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <th>이름</th>
+                        <td><input type="text" class="form-control" id="addressBookName" name="addressBookName" placeholder="이름을 입력하세요"></td>
+                    </tr>
+                    <tr>
+                        <th>전화번호(개인)</th>
+                        <td><input type="text" class="form-control" id="addressBookNumber" name="addressBookNumber" placeholder="전화번호를 입력하세요"></td>
+                    </tr>
+                    <tr>
+                        <th>이메일주소</th>
+                        <td><input type="email" class="form-control" id="addressBookEmail" name="addressBookEmail" placeholder="이메일을 입력하세요"></td>
+                    </tr>
+                    <tr>
+                        <th>회사명</th>
+                        <td><input type="text" class="form-control" id="addressBookCompanyName" name="addressBookCompanyName" placeholder="회사명을 입력하세요"></td>
+                    </tr>
+                    <tr>
+                        <th>전화번호(회사)</th>
+                        <td><input type="text" class="form-control" id="addressBookCompanyNumber" name="addressBookCompanyNumber" placeholder="회사 전화번호를 입력하세요"></td>
+                    </tr>
+                    <tr>
+                        <th>담당부서</th>
+                        <td><input type="text" class="form-control" id="bookDepartmentType" name="bookDepartmentType" placeholder="담당 부서를 입력하세요"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <button type="submit" class="btn btn-primary">저장하기</button>
+        </form>
+    </div>
 </div>
-  </body>
+</body>
 </html>

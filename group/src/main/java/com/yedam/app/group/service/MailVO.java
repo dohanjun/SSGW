@@ -32,4 +32,6 @@ public class MailVO {
     private String isSent;
     
     private Integer employeeNo;
+    
+    private int fileCount;
 }

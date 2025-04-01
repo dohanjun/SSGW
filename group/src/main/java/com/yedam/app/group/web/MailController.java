@@ -8,7 +8,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
@@ -16,16 +15,13 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.yedam.app.group.service.EmpService;
@@ -54,7 +50,8 @@ public class MailController {
 	// 메일목록
 	@GetMapping("/mail")
 	public String mail(Model model, PageListVO vo, Paging paging) {
-
+		EmpVO loggedInUser = empService.getLoggedInUserInfo();
+		vo.setEmployeeNo(loggedInUser.getEmployeeNo());
 		// 페이징처리
 		vo.setStart(paging.getFirst());
 		vo.setEnd(paging.getLast());
@@ -72,11 +69,15 @@ public class MailController {
 	public String mailSelect(MailVO mailVO, Model model) {
 		// 로그인한 사용자 정보 가져오기
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
-		mailVO.setEmployeeId(loggedInUser.getEmployeeId());
+		mailVO.setEmployeeNo(loggedInUser.getEmployeeNo());
 
 		// 메일 조회
 		MailVO findVO = mailService.MailSelectInfo(mailVO);
 		model.addAttribute("mail", findVO);
+
+		// 첨부파일 수량 가져오기
+		MailVO fileCount = mailService.FileCount(mailVO.getMailId()); // mailId를 전달하여 파일 수량을 가져옴
+		model.addAttribute("fileCount", fileCount);
 
 		// 첨부파일 다운로드 URL 생성 (첨부파일이 있을 경우)
 		if (findVO.getAttachedFileName() != null && !findVO.getAttachedFileName().isEmpty()) {
@@ -146,7 +147,7 @@ public class MailController {
 
 		// 로그인한 사용자 정보 가져오기
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
-		vo.setEmployeeId(loggedInUser.getEmployeeId());
+		vo.setEmployeeNo(loggedInUser.getEmployeeNo());
 
 		// 메일 발송
 		mailService.sendMailToUser(vo);
@@ -158,8 +159,13 @@ public class MailController {
 	// 메일답장 페이지
 	@GetMapping("/mailReply")
 	public String mailReplyForm(MailVO mailVO, Model model) {
+		
+		EmpVO loggedInUser = empService.getLoggedInUserInfo();
+		mailVO.setEmployeeNo(loggedInUser.getEmployeeNo());
+		
 		MailVO findVO = mailService.MailSelectInfo(mailVO);
 		model.addAttribute("mail", findVO);
+		
 		return "group/mail/mailReply";
 	}
 
@@ -168,7 +174,7 @@ public class MailController {
 	public String mailReplyProcess(MailVO vo) {
 		// 로그인한 사용자 정보 가져오기
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
-		vo.setEmployeeId(loggedInUser.getEmployeeId());
+		vo.setEmployeeNo(loggedInUser.getEmployeeNo());
 
 		mailService.sendMailToUser(vo);
 
@@ -178,8 +184,13 @@ public class MailController {
 	// 전달 - 페이지
 	@GetMapping("/mailVery")
 	public String mailVeryForm(MailVO mailVO, Model model) {
+		
+		EmpVO loggedInUser = empService.getLoggedInUserInfo();
+		mailVO.setEmployeeNo(loggedInUser.getEmployeeNo());
+		
 		MailVO findVO = mailService.MailSelectInfo(mailVO);
 		model.addAttribute("mail", findVO);
+		
 		return "group/mail/mailVery";
 	}
 
@@ -188,7 +199,7 @@ public class MailController {
 	public String mailVeryProcess(MailVO vo) {
 		// 로그인한 사용자 정보 가져오기
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
-		vo.setEmployeeId(loggedInUser.getEmployeeId());
+		vo.setEmployeeNo(loggedInUser.getEmployeeNo());
 
 		mailService.sendMailToUser(vo);
 
@@ -197,7 +208,11 @@ public class MailController {
 
 	// 단건메일삭제
 	@GetMapping("mailDelete")
-	public String mailDelete(Integer mailId) {
+	public String mailDelete(Integer mailId, MailVO mailVO) {
+		
+		EmpVO loggedInUser = empService.getLoggedInUserInfo();
+		mailVO.setEmployeeNo(loggedInUser.getEmployeeNo());
+		
 		mailService.MailDelete(mailId);
 		return "redirect:mail";
 	}
@@ -216,9 +231,11 @@ public class MailController {
 	// 받은메일함
 	@GetMapping("getMail")
 	public String getMail(Model model, PageListVO vo, Paging paging) {
+		
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 		vo.setMailType("받은");
-		vo.setGetUser(loggedInUser.getEmployeeId());
+		vo.setEmployeeNo(loggedInUser.getEmployeeNo());
+		
 		// 페이징처리
 		vo.setStart(paging.getFirst());
 		vo.setEnd(paging.getLast());
@@ -233,10 +250,12 @@ public class MailController {
 	// 보낸메일함
 	@GetMapping("putMail")
 	public String putMail(Model model, PageListVO vo, Paging paging) {
+		
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 		vo.setMailType("보낸");
-		vo.setEmployeeId(loggedInUser.getEmployeeId());
-		// 페이징처리loggedInUser
+		vo.setEmployeeNo(loggedInUser.getEmployeeNo());
+
+		// 페이징처리
 		vo.setStart(paging.getFirst());
 		vo.setEnd(paging.getLast());
 		paging.setTotalRecord(mailService.pageGetCount(vo));
@@ -250,9 +269,11 @@ public class MailController {
 	// 임시메일함 -> 7일뒤 삭제
 	@GetMapping("temporaryMail")
 	public String temporaryMail(Model model, PageListVO vo, Paging paging) {
+		
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 		vo.setMailType("임시");
-		vo.setEmployeeId(loggedInUser.getEmployeeId());
+		vo.setEmployeeNo(loggedInUser.getEmployeeNo());
+		
 		// 페이징처리
 		vo.setStart(paging.getFirst());
 		vo.setEnd(paging.getLast());
@@ -267,9 +288,11 @@ public class MailController {
 	// 휴지통 -> 30일 뒤 삭제
 	@GetMapping("deleteMail")
 	public String deleteMail(Model model, PageListVO vo, Paging paging) {
+		
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 		vo.setMailType("휴지통");
-		vo.setEmployeeId(loggedInUser.getEmployeeId());
+		vo.setEmployeeNo(loggedInUser.getEmployeeNo());
+
 		// 페이징처리
 		vo.setStart(paging.getFirst());
 		vo.setEnd(paging.getLast());
