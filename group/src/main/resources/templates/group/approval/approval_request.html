@@ -7,6 +7,12 @@
 <meta charset="UTF-8">
 <title>결재요청함</title>
 <link rel="stylesheet" th:href="@{/css/approval.css}">
+<style>
+	tr:hover {
+        background-color: #f1f1f1;
+        cursor: pointer; 
+    }
+</style>
 </head>
 <body>
 	<div class="container-fluid">
@@ -34,6 +40,7 @@
 								<th>기안자</th>
 								<th>문서제목</th>
 								<th>상신일</th>
+								<th>첨부파일</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -44,6 +51,7 @@
 								<td>[[${aprv.employeeName}]]</td>
 								<td>[[${aprv.title}]]</td>
 								<td>[[${#dates.format(aprv.draftDate, "yyyy년 MM월 dd일")}]]</td>
+								<td><span th:if="${aprv.hasFile}" title="첨부파일 있음"><i class="fa-regular fa-file-lines fa-lg"></i></span></td>
 							</tr>
 						</tbody>
 					</table>
