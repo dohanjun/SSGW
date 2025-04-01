@@ -23,8 +23,7 @@
 	grid-template-rows: 120px 300px 300px; /* ✅ 높이 살짝 증가 */
 	gap: 20px;
 	grid-template-areas: "userinfo userinfo userinfo userinfo"
-		"datetime 자료실 공지 approval"
-		"일정 자료실 공지 recentApproval";
+		"datetime 자료실 공지 approval" "일정 자료실 공지 recentApproval";
 }
 
 body {
@@ -226,7 +225,8 @@ body {
 								<p class="mb-0 text-muted">오늘도 좋은 하루 되세요!</p>
 							</div>
 							<div>
-								<img id="profilePreview" src="img/default-profile.png"
+								<img th:if="${profileImageBase64}"
+									th:src="'data:image/png;base64,' + ${profileImageBase64}"
 									alt="프로필 이미지">
 							</div>
 						</div>
@@ -263,8 +263,7 @@ body {
 						</div>
 
 						<!-- 📨 받은 메일함 -->
-						<div
-							class="board-box approval shadow-sm border clickable-card"
+						<div class="board-box approval shadow-sm border clickable-card"
 							data-url="/mailBox">
 							<div class="board-title">📨 받은 메일함</div>
 							<ul class="board-list">
@@ -303,9 +302,9 @@ body {
 			<footer class="sticky-footer bg-white">
 				<div class="container my-auto">
 					<div class="text-center my-auto copyright">
-						<span>Copyright &copy; Your Company 2025 | 
-							<a href="/privacy-policy" class="text-muted">개인정보처리방침</a> | 
-							<a href="/terms" class="text-muted">이용약관</a>
+						<span>Copyright &copy; Your Company 2025 | <a
+							href="/privacy-policy" class="text-muted">개인정보처리방침</a> | <a
+							href="/terms" class="text-muted">이용약관</a>
 						</span>
 					</div>
 				</div>

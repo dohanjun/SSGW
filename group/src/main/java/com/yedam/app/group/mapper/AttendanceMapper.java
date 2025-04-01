@@ -64,4 +64,6 @@ public interface AttendanceMapper {
     // ✅ 초과근무 기록 삽입
     // 사용처: 퇴근 시 자동으로 초과근무 기록 insert
     int insertOvertime(OvertimeVO vo);
+    
+    int updateClockOutAndWorkingHours(AttendanceManagementVO vo);
 }
