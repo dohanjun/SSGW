@@ -15,4 +15,8 @@ public class CommentVO {
     
     private String employeeName;     // 작성자 이름
     private String departmentName;   // 부서명
+    private String profileImage;
+    
+    private byte[] profileImageBLOB;
+    private String profileImageBase64;
 }

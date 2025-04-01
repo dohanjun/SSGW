@@ -144,4 +144,20 @@ public class BoardServiceImpl implements BoardService {
     public void deleteBoard(int postId) {
         boardMapper.deleteBoard(postId);  // 게시글 삭제
     }
+    
+    @Override
+    public void updateFixStatus(int postId, String fixed) {
+        boardMapper.updateFixStatus(postId, fixed);
+    }
+    
+    @Override
+    public List<BoardPostVO> getFixedNoticeBoardPosts(int suberNo) {
+        return boardMapper.getFixedNoticeBoardPosts(suberNo);
+    }
+
+    @Override
+    public List<BoardPostVO> getFixedDepartmentBoardPosts(int suberNo, int departmentNo) {
+        return boardMapper.getFixedDepartmentBoardPosts(suberNo, departmentNo);
+    }
+
 }

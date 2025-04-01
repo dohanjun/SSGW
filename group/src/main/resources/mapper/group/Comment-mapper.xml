@@ -74,5 +74,46 @@
     FROM board_comment
     WHERE comment_id = #{commentId}
 </select>
+
+<!-- 부모 댓글 페이징 -->
+<select id="getParentComments" resultType="CommentVO">
+  SELECT * FROM (
+    SELECT ROWNUM AS rn, inner.*
+    FROM (
+      SELECT 
+        c.*, 
+        e.employee_name AS employeeName, 
+        e.profile_image_blob AS profileImageBLOB,
+        d.department_name AS departmentName
+      FROM board_comment c
+      JOIN employees e ON c.employee_no = e.employee_no
+      JOIN department d ON e.department_no = d.department_no
+      WHERE c.post_id = #{postId} AND c.re_comment IS NULL
+      ORDER BY c.comment_id ASC
+    ) inner
+    WHERE ROWNUM &lt;= #{offset} + #{limit}
+  )
+  WHERE rn &gt; #{offset}
+</select>
+
+<!-- 대댓글 전체 조회 -->
+<select id="getReplyComments" resultType="CommentVO">
+  SELECT 
+    c.*, 
+    e.employee_name AS employeeName, 
+    e.profile_image_blob AS profileImageBLOB,
+    d.department_name AS departmentName
+  FROM board_comment c
+  JOIN employees e ON c.employee_no = e.employee_no
+  JOIN department d ON e.department_no = d.department_no
+  WHERE c.post_id = #{postId} AND c.re_comment IS NOT NULL
+  ORDER BY c.comment_id ASC
+</select>
+
+    <!-- 부모 댓글 수 -->
+    <select id="countParentComments" resultType="int">
+        SELECT COUNT(*) FROM board_comment
+        WHERE post_id = #{postId} AND re_comment IS NULL
+    </select>
 	
 </mapper>

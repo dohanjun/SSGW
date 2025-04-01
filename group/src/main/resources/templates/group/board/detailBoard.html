@@ -52,7 +52,6 @@ iframe.pdf-viewer {
 .content-area img:hover {
 	transform: scale(1.02);
 }
-
 </style>
 </head>
 <body id="page-top">
@@ -66,6 +65,23 @@ iframe.pdf-viewer {
 							class="card-header py-3 d-flex justify-content-between d-flex align-items-center">
 							<h6 class="m-0 font-weight-bold text-primary">게시글 정보</h6>
 							<div>
+								<th:block th:if="${post.location == '공지' and isAdmin}">
+									<button class="btn btn-sm btn-outline-secondary"
+										th:onclick="'toggleFix(' + ${post.postId} + ')'">
+										<i class="fas fa-thumbtack"></i> <span
+											th:text="${post.fixed == 'Y' ? '고정 해제' : '고정'}"></span>
+									</button>
+								</th:block>
+
+								<!-- 부서 게시판: 부서장 또는 작성자만 -->
+								<th:block
+									th:if="${post.location == '부서' and (isDeptManager or isWriter)}">
+									<button class="btn btn-sm btn-outline-secondary"
+										th:onclick="'toggleFix(' + ${post.postId} + ')'">
+										<i class="fas fa-thumbtack"></i> <span
+											th:text="${post.fixed == 'Y' ? '고정 해제' : '고정'}"></span>
+									</button>
+								</th:block>
 								<a th:if="${hasPdf}"
 									th:href="@{/download/view/pdf/{id}(id=${firstPdfId})}"
 									class="btn btn-sm btn-outline-secondary mr-2" target="_blank">
@@ -119,18 +135,19 @@ iframe.pdf-viewer {
 								<button class="btn btn-secondary" onclick="history.back()">
 									<i class="fas fa-arrow-left"></i>
 								</button>
-							  <th:block th:if="${isAdmin or isWriter or isDeptManager}">
-								<a th:href="@{/updateBoard/{postId}(postId=${post.postId})}"
-									class="btn btn-warning"> <i class="fas fa-edit"></i>
-								</a>
-								<form th:action="@{/deleteBoard/{postId}(postId=${post.postId})}" method="post"
-									  class="d-inline"
-									  onsubmit="return confirm('정말 삭제하시겠습니까?')">
-									<button type="submit" class="btn btn-danger">
-										<i class="fas fa-trash"></i>
-									</button>
-								</form>
-							  </th:block>	
+								<th:block th:if="${isAdmin or isWriter or isDeptManager}">
+									<a th:href="@{/updateBoard/{postId}(postId=${post.postId})}"
+										class="btn btn-warning"> <i class="fas fa-edit"></i>
+									</a>
+									<form
+										th:action="@{/deleteBoard/{postId}(postId=${post.postId})}"
+										method="post" class="d-inline"
+										onsubmit="return confirm('정말 삭제하시겠습니까?')">
+										<button type="submit" class="btn btn-danger">
+											<i class="fas fa-trash"></i>
+										</button>
+									</form>
+								</th:block>
 							</div>
 						</div>
 					</div>
@@ -153,6 +170,11 @@ iframe.pdf-viewer {
 							<div class="mt-3" id="commentList">
 								<!-- 동적으로 추가될 댓글 카드 -->
 							</div>
+							<!-- 페이지네이션은 commentList 바깥에 둬야 유지됨 -->
+							<nav aria-label="댓글 페이지네이션">
+								<ul class="pagination justify-content-center mt-4"
+									id="commentPagination"></ul>
+							</nav>
 						</div>
 					</div>
 				</div>
@@ -173,19 +195,30 @@ iframe.pdf-viewer {
 });
 </script>
 <script>
+function toggleFix(postId) {
+	  fetch('/board/toggleFix', {
+	    method: 'POST',
+	    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+	    body: new URLSearchParams({ postId: postId })
+	  })
+	    .then(response => response.text())
+	    .then(result => {
+	      console.log("서버 응답:", result);
+	      location.reload(); // 새로고침해서 반영
+	    })
+	    .catch(error => {
+	      alert("고정 상태 변경 실패");
+	      console.error(error);
+	    });
+	}
+</script>
+<!-- 페이징 적용된 댓글 처리용 수정 코드 -->
+<script>
   document.addEventListener('DOMContentLoaded', function () {
-	  let loginUser = null;
-	  let boardType = null;  
-	
+    let loginUser = null;
+    let boardType = null;
     const postIdElement = document.getElementById("postId");
-    if (!postIdElement) {
-      console.error("postId 요소를 찾을 수 없음");
-      return;
-    }
-
     const postId = postIdElement.value;
-    console.log("postId 로드됨:", postId);
-
     const commentInputElement = document.getElementById("commentInput");
     const commentSubmitBtn = document.getElementById("commentSubmitBtn");
     const commentListElement = document.getElementById("commentList");
@@ -193,33 +226,22 @@ iframe.pdf-viewer {
     // 댓글 등록
     commentSubmitBtn.addEventListener('click', function () {
       const comment = commentInputElement.value.trim();
-      
       if (comment === '') {
         alert('댓글 내용을 입력하세요.');
         return;
       }
-      
-   	  // 공지 게시판인데 관리자 아니면 막기
       if (boardType === '공지' && !(loginUser.rightsId === 3 || loginUser.rightsLevel === 5)) {
         alert('관리자만이 댓글 등록이 가능합니다.');
         return;
       }
-
-      const bodyData = new URLSearchParams({
-        postId: postId,
-        content: comment
-      });
-
+      const bodyData = new URLSearchParams({ postId: postId, content: comment });
       fetch('/comment/add', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: bodyData
       })
         .then(response => response.text())
         .then(data => {
-          console.log("서버 응답:", data);
           commentInputElement.value = '';
           loadComments();
         })
@@ -229,18 +251,16 @@ iframe.pdf-viewer {
         });
     });
 
-  // 댓글 불러오기
- function loadComments() {
-  fetch(`/comment/list/${postId}`)
+    // 댓글 불러오기 + 페이징
+    function loadComments(page = 1) {
+  fetch(`/comment/list/${postId}?page=${page}`)
     .then(response => response.json())
     .then(data => {
-      const comments = data.comments;
+      const parentComments = data.parentComments;
+      const replyComments = data.replyComments;
       loginUser = data.loginUser;
       boardType = document.getElementById("boardType").value;
       commentListElement.innerHTML = '';
-
-      const parentComments = comments.filter(c => c.reComment == null);
-      const replyComments = comments.filter(c => c.reComment != null);
 
       parentComments.forEach(parent => {
         const canEditOrDelete =
@@ -249,21 +269,25 @@ iframe.pdf-viewer {
           (boardType === '부서' && loginUser.manager != null);
 
         let replyBtnHtml = '';
-        // 공지 게시판이 아니거나 관리자일 경우에만 답글 달기 버튼 표시
         if (boardType !== '공지' || loginUser.rightsId === 3 || loginUser.rightsLevel === 5) {
           replyBtnHtml = `<button class="btn btn-sm btn-outline-primary" onclick="showReplyForm(${parent.commentId})">답글</button>`;
         }
 
+        const imgSrc = parent.profileImageBase64
+        ? `data:image/png;base64,${parent.profileImageBase64}`
+        : '/images/default.png';
+
         const parentDiv = document.createElement('div');
         parentDiv.classList.add('comment-item', 'mb-3');
-        
         parentDiv.style.marginBottom = '1.5rem';
         parentDiv.style.lineHeight = '2';
-        
         parentDiv.innerHTML = `
-          <div class="comment-content">
-            <strong>[${parent.departmentName}] ${parent.employeeName}</strong><br>
-            ${parent.content}
+          <div class="d-flex align-items-start mb-2">
+        	<img src="${imgSrc}" class="rounded-circle mr-2" width="40" height="40" alt="프로필">
+            <div>
+              <strong>[${parent.departmentName}] ${parent.employeeName}</strong><br>
+              ${parent.content}
+            </div>
           </div>
           <div class="mt-1">
             ${replyBtnHtml}
@@ -284,17 +308,22 @@ iframe.pdf-viewer {
             loginUser.employeeNo === reply.employeeNo ||
             loginUser.rightsId === 3 || loginUser.rightsLevel === 5 ||
             (boardType === '부서' && loginUser.manager != null);
-
+          
+          const replyImgSrc = reply.profileImageBase64
+          ? `data:image/png;base64,${reply.profileImageBase64}`
+          : '/images/default.png';
+          
           const replyDiv = document.createElement('div');
           replyDiv.classList.add('ml-4', 'border-left', 'pl-3', 'mt-2');
-          
           replyDiv.style.marginTop = '1.5rem';
           replyDiv.style.lineHeight = '2';
-          
           replyDiv.innerHTML = `
-            <div class="comment-content">
-              <strong>[${reply.departmentName}] ${reply.employeeName}</strong><br>
-              ${reply.content}
+            <div class="d-flex align-items-start mb-2">
+        	  <img src="${replyImgSrc}" class="rounded-circle mr-2" width="36" height="36" alt="프로필">
+        	    <div>
+        	      <strong>[${reply.departmentName}] ${reply.employeeName}</strong><br>
+        	      ${reply.content}
+        	    </div>
             </div>
             <div class="mt-1">
               ${canEditOrDeleteReply ? `
@@ -307,20 +336,50 @@ iframe.pdf-viewer {
         });
 
         commentListElement.appendChild(parentDiv);
-        
-     	// 댓글 간 간격을 위한 여백 div 추가
         const gapDiv = document.createElement('div');
         gapDiv.style.height = '1.5rem';
         commentListElement.appendChild(gapDiv);
       });
+
+      renderCommentPagination(data.currentPage, data.totalPages);
     })
     .catch(error => {
       console.error('댓글 불러오기 오류:', error);
     });
 }
 
+    function renderCommentPagination(currentPage, totalPages) {
+    	  const paginationDiv = document.getElementById('commentPagination');
+    	  paginationDiv.innerHTML = '';
 
-    // 댓글 삭제
+    	  // 이전 버튼
+    	  const prevBtn = document.createElement('li');
+    	  prevBtn.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+    	  prevBtn.innerHTML = `<a class="page-link" href="#">«</a>`;
+    	  prevBtn.onclick = () => {
+    	    if (currentPage > 1) loadComments(currentPage - 1);
+    	  };
+    	  paginationDiv.appendChild(prevBtn);
+
+    	  // 숫자 버튼
+    	  for (let i = 1; i <= totalPages; i++) {
+    	    const pageBtn = document.createElement('li');
+    	    pageBtn.className = `page-item ${i === currentPage ? 'active' : ''}`;
+    	    pageBtn.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+    	    pageBtn.onclick = () => loadComments(i);
+    	    paginationDiv.appendChild(pageBtn);
+    	  }
+
+    	  // 다음 버튼
+    	  const nextBtn = document.createElement('li');
+    	  nextBtn.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+    	  nextBtn.innerHTML = `<a class="page-link" href="#">»</a>`;
+    	  nextBtn.onclick = () => {
+    	    if (currentPage < totalPages) loadComments(currentPage + 1);
+    	  };
+    	  paginationDiv.appendChild(nextBtn);
+    	}
+
     window.deleteComment = function (commentId) {
       fetch(`/comment/delete`, {
         method: 'POST',
@@ -339,7 +398,6 @@ iframe.pdf-viewer {
         });
     };
 
-    // 댓글 수정
     window.editComment = function (commentId) {
       const newContent = prompt("수정할 내용을 입력하세요.");
       if (newContent) {
@@ -372,12 +430,10 @@ iframe.pdf-viewer {
     window.submitReply = function (parentCommentId) {
       const input = document.getElementById(`reply-input-${parentCommentId}`);
       const content = input.value.trim();
-
       if (content === '') {
         alert("답글 내용을 입력하세요.");
         return;
       }
-
       fetch('/comment/reply', {
         method: 'POST',
         headers: {
@@ -404,6 +460,5 @@ iframe.pdf-viewer {
     loadComments();
   });
 </script>
-
 </body>
 </html>
