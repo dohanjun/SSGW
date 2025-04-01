@@ -50,10 +50,23 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr th:each="post, stat : ${postList}"
+					<!-- 고정 글 목록 -->
+					<tr th:each="post : ${fixedList}"
+    th:class="${'table-warning'}"
+    th:data-url="@{'/detailBoard/' + ${post.postId}}"
+    onclick="location.href=this.dataset.url" style="cursor: pointer;">
+						<td><i class="fas fa-thumbtack text-warning mr-1"></i></td>
+						<td th:text="${post.postTitle}"></td>
+						<td th:text="${post.employeeName}"></td>
+						<td th:text="${#dates.format(post.postDate, 'yyyy-MM-dd')}"></td>
+						<td th:text="${post.views}"></td>
+					</tr>
+
+					<!-- 일반글 -->
+					<tr th:each="post, iterStat : ${postList}"
 						th:data-url="@{'/detailBoard/' + ${post.postId}}"
 						onclick="location.href=this.dataset.url" style="cursor: pointer;">
-						<td th:text="${totalCount - ((page - 1) * 10 + stat.index)}"></td>
+						<td th:text="${totalCount - ((page - 1) * 10 + iterStat.index)}"></td>
 						<td th:text="${post.postTitle}"></td>
 						<td th:text="${post.employeeName}"></td>
 						<td th:text="${#dates.format(post.postDate, 'yyyy-MM-dd')}"></td>
@@ -91,4 +104,15 @@
 	</div>
 
 </body>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+	const rows = document.querySelectorAll(".clickable-row");
+	rows.forEach(row => {
+		row.addEventListener("click", function () {
+			const postId = this.getAttribute("data-id");
+			window.location.href = `/detailBoard/${postId}`;
+		});
+	});
+});
+</script>
 </html>

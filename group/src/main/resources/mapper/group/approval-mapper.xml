@@ -18,6 +18,9 @@
            d.SUBER_NO,
            r.EMPLOYEE_NO,
            r.APRV_ROLE,
+           CASE WHEN EXISTS (
+            SELECT 1 FROM aprv_files f WHERE f.draft_no = d.draft_no
+        ) THEN 1 ELSE 0 END AS has_file,
            ROW_NUMBER() OVER (ORDER BY d.draft_no DESC) AS rnum
     FROM aprv_documents d
     JOIN employees e ON d.EMPLOYEE_NO = e.EMPLOYEE_NO
@@ -56,6 +59,9 @@
                d.SUBER_NO,
                r.EMPLOYEE_NO,
                r.APRV_ROLE,
+               CASE WHEN EXISTS (
+            SELECT 1 FROM aprv_files f WHERE f.draft_no = d.draft_no
+        ) THEN 1 ELSE 0 END AS has_file,
                ROW_NUMBER() OVER (ORDER BY d.DRAFT_NO DESC) AS rnum
         FROM aprv_documents d
         JOIN employees e ON d.EMPLOYEE_NO = e.EMPLOYEE_NO
@@ -70,7 +76,7 @@
               AND d.TITLE LIKE '%' || #{title} || '%'
           </if>
           <if test="draftDate != null">
-              AND d.DRAFT_DATE = #{draftDate}
+              AND d.DRAFT_DATE >= #{draftDate} AND d.DRAFT_DATE <![CDATA[ < ]]> #{draftDate} +1
           </if>
     )
     WHERE rnum BETWEEN (#{page} - 1) * 10 + 1 AND #{page} * 10
@@ -247,7 +253,10 @@
             d.BASICS_FORM_ID,
             d.SUBER_NO,
             d.EMPLOYEE_NO,
-            ROW_NUMBER() OVER (ORDER BY d.DRAFT_NO DESC) AS rnum
+            CASE WHEN EXISTS (
+            SELECT 1 FROM aprv_files f WHERE f.draft_no = d.draft_no
+        ) THEN 1 ELSE 0 END AS has_file,
+            ROW_NUMBER() OVER (ORDER BY d.DRAFT_NO) AS rnum
         FROM aprv_documents d
         JOIN employees e ON d.EMPLOYEE_NO = e.EMPLOYEE_NO
         WHERE d.EMPLOYEE_NO = #{employeeNo}

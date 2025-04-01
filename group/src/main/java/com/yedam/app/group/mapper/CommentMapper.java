@@ -25,4 +25,10 @@ public interface CommentMapper {
     void deleteComment(int commentId);
     
     CommentVO selectCommentById(int commentId);
+    
+    List<CommentVO> getParentComments(@Param("postId") int postId, @Param("offset") int offset, @Param("limit") int limit);
+    
+    List<CommentVO> getReplyComments(@Param("postId") int postId);
+    
+    int countParentComments(@Param("postId") int postId);
 }
