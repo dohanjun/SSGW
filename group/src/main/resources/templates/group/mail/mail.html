@@ -4,8 +4,8 @@
 	layout:decorate="~{common/layouts/default_layout}"
 	layout:fragment="content">
 <head>
-<meta charset="UTF-8">
-<title>mail</title>
+    <meta charset="UTF-8">
+    <title>메일</title>
 <script
 	src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
 	integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
@@ -14,243 +14,298 @@
 	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
 	integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
 	crossorigin="anonymous"></script>
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7fc;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        h3 {
+            color: #495057;
+            font-size: 30px;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+
+        .search-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .search-container input[type="search"] {
+            width: 250px;
+            padding: 8px 15px;
+            border-radius: 30px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+        }
+
+        .btn-outline-success {
+            border-radius: 30px;
+            padding: 8px 20px;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-outline-success:hover {
+            background-color: #28a745;
+            color: #fff;
+        }
+
+        .sort-options {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .sort-options h5 {
+            margin: 0;
+            font-size: 16px;
+            color: #495057;
+        }
+
+        .sort-options select {
+            padding: 8px 15px;
+            border-radius: 30px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-group {
+            margin-bottom: 20px;
+        }
+
+        .btn-group .btn {
+            border-radius: 30px;
+            padding: 8px 20px;
+            font-size: 14px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .btn-group .btn-danger {
+            background-color: #dc3545;
+            border: none;
+            color: white;
+        }
+
+        .btn-group .btn-danger:hover {
+            background-color: #c82333;
+            transform: scale(1.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        table th, table td {
+            padding: 15px;
+            text-align: center;
+            font-size: 14px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #f7f7f7;
+            color: #495057;
+            font-weight: bold;
+        }
+
+        table td:hover {
+            background-color: #f1f1f1;
+            cursor: pointer;
+        }
+
+        table td input[type="checkbox"] {
+            margin: 0;
+        }
+
+        .pagination {
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .pagination .page-item {
+            margin: 0 5px;
+        }
+
+        .pagination .page-item a {
+            padding: 8px 15px;
+            border-radius: 30px;
+            background-color: #f7f7f7;
+            color: #333;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .pagination .page-item a:hover {
+            background-color: #ddd;
+        }
+
+        .pagination .page-item.active a {
+            background-color: #007bff;
+            color: white;
+        }
+    </style>
 </head>
-<style>
-#flo {
-	float: right;
-	display: flex;
-	justify-content: center;
-	padding-left: 30px;
-}
-
-.left {
-	position: relative;
-	left: 1430px;
-	bottom: 10px;
-}
-
-.p {
-	clear: left;
-	padding-left: 30px;
-	text-align: center;
-}
-
-#se {
-	margin-right: 10px;
-}
-
-#bar {
-	position: static;
-	text-align: center;
-	padding: 20px;
-	padding-left: 600px;
-}
-</style>
 
 <body>
-	<h3>메일메인화면</h3>
 
-	<!-- 검색기능 -->
-	<form role="search" name="frmSearch">
-		<div class="left" id="se">
-			<input type="hidden" name="page" value="1"> <input
-				name="search" type="search" placeholder="Search"
-				th:value="${pageListVO.search}">
-			<button class="btn btn-outline-success" type="submit">검색</button>
+    <h3>메일메인화면</h3>
 
-		</div>
-		<!-- 검색기능 마침 -->
+    <!-- Search Form -->
+    <form role="search" name="frmSearch">
+        <div class="search-container">
+            <input type="hidden" name="page" value="1">
+            <input name="search" type="search" placeholder="Search" th:value="${pageListVO.search}">
+            <button class="btn btn-outline-success" type="submit">검색</button>
 
-		<div>
-			<h5 th:text="'전체글: '+${paging.totalRecord}+'개'"></h5>
-		</div>
-		<div id="flo">
-			<button type="button" class="btn btn-danger" onclick="deleteSelected()">삭제</button>
+            <!-- Sort Dropdown -->
+            <div class="sort-options">
+                <h5>정렬</h5>
+                <select name="sortKey" onchange="submitForm()">
+                    <option value="list" th:selected="${pageListVO.sortKey == 'list'}">안읽은메일</option>
+                    <option value="file" th:selected="${pageListVO.sortKey == 'file'}">첨부메일</option>
+                    <option value="desc" th:selected="${pageListVO.sortKey == 'desc'}">최신순</option>
+                    <option value="asc" th:selected="${pageListVO.sortKey == 'asc'}">오래된순</option>
+                </select>
+            </div>
+        </div>
+    </form>
 
-			<!-- 정렬기능 -->
-			<div class="sort-options">
-				<h3>정렬</h3>
-				<select name="sortKey" onchange="submitForm()">
-					<option value="list" th:selected="${pageListVO.sortKey == 'list'}">안읽은메일</option>
-					<option value="file" th:selected="${pageListVO.sortKey == 'file'}">첨부메일</option>
-					<option value="desc" th:selected="${pageListVO.sortKey == 'desc'}">최신순</option>
-					<option value="asc" th:selected="${pageListVO.sortKey == 'asc'}">오래된순</option>
-				</select>
-			</div>
-		</div>
-	</form>
-	<!-- 정렬기능 마침 -->
+    <h5 th:text="'전체글: '+${paging.totalRecord}+'개'"></h5>
 
-	<!-- 메일목록 창 -->
-	<div class="p">
-		<form name="form" method="post">
-			<table border="1" class="table">
-				<thead>
-					<tr class="text-center">
-						<td><input onchange="selectAllcheck(this)" type="checkbox"
-							name="selectall" id="selectall"></td>
-						<td scope="col">이미지</td>
-						<td scope="col">작성자</td>
-						<td scope="col">제목</td>
-						<td scope="col">날짜</td>
-					</tr>
-				</thead>
-				<tbody>
-					<th:block th:each="info : ${mails}">
-						<tr>
-							<td><input type="checkbox" name="checkMenu" class="checkbox"
-								onchange="checkMenuHandler(this)" /></td>
-							<td
-								th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[
-								${info.mailId} ]]</td>
-							<td
-								th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[
-								${info.getUser} ]]</td>
-							<td
-								th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[
-								${info.title} ]]</td>
-							<td
-								th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[
-								${ #dates.format(info.sentDate, "yyyy년MM월dd일") } ]]</td>
-						</tr>
-					</th:block>
-				</tbody>
-			</table>
-		</form>
-	</div>
-	<!-- 메일목록 창 마침 -->
+    <!-- Button Group -->
+    <div class="btn-group">
+        <button type="button" class="btn btn-danger" onclick="deleteSelected()">삭제</button>
+    </div>
 
-	<!-- 바기능 -->
-	<div id="bar">
-		<nav>
-			<ul class="pagination">
-				<li class="page-item"
-					th:classappend="${paging.startPage} == 1 ? disabled"><a
-					class="page-link"
-					th:href="|javascript:gopage(${paging.startPage}-1)|">Previous</a></li>
+    <!-- Mail List Table -->
+    <div class="p">
+        <form name="form" method="post">
+            <table>
+                <thead>
+                    <tr class="text-center">
+                        <td><input onchange="selectAllcheck(this)" type="checkbox" name="selectall" id="selectall"></td>
+                        <td>제목</td>
+                        <td>작성자</td>
+                        <td>업로드 파일</td>
+                        <td>날짜</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <th:block th:each="info : ${mails}">
+                        <tr>
+                            <td><input type="checkbox" name="checkMenu" class="checkbox" onchange="checkMenuHandler(this)" /></td>
+                            <td th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[${info.title}]]</td>
+                            <td th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[${info.employeeId}]]</td>
+                            <td th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|" th:text="${info.fileCount > 1 ? (info.fileCount - 1) + '건' : info.attachedFileName}"></td>
+                            <td th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[${ #dates.format(info.sentDate, "yyyy년MM월dd일") }]]</td>
+                        </tr>
+                    </th:block>
+                </tbody>
+            </table>
+        </form>
+    </div>
 
-				<li
-					th:each="num : *{#numbers.sequence(paging.startPage, paging.endPage)}"
-					class="page-item"
-					th:classappend="${num} == ${paging.page} ? active"><a
-					class="page-link" th:href="|javascript:gopage(${num})|"
-					th:text="${num}">2</a></li>
+    <!-- Pagination -->
+    <div id="bar">
+        <nav>
+            <ul class="pagination">
+                <li class="page-item" th:classappend="${paging.startPage} == 1 ? disabled">
+                    <a class="page-link" th:href="|javascript:gopage(${paging.startPage}-1)|">Previous</a>
+                </li>
 
-				<li class="page-item"
-					th:classappend="${paging.endPage} >= ${paging.lastPage} ? disabled">
-					<a class="page-link"
-					th:href="|javascript:gopage(${paging.endPage}+1)|">Next</a>
-				</li>
-			</ul>
-		</nav>
-	</div>
-	<!-- 바기능 마침 -->
+                <li th:each="num : *{#numbers.sequence(paging.startPage, paging.endPage)}"
+                    class="page-item" th:classappend="${num} == ${paging.page} ? active">
+                    <a class="page-link" th:href="|javascript:gopage(${num})|"
+                       th:text="${num}">2</a>
+                </li>
 
+                <li class="page-item" th:classappend="${paging.endPage} >= ${paging.lastPage} ? disabled">
+                    <a class="page-link" th:href="|javascript:gopage(${paging.endPage}+1)|">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
 
-
-
-
-	<script>
-
-	//버튼
-	const context = ''; //document.querySelector('meta[name="contextPath"]').getAttribute('value');
-	
-	function moveInfoPage(event){
-		let selectedTr = event.currentTarget;
-		let mid = selectedTr.children[1].textContent;
-		let url = context + '/mailInfo?mailId=' + mid;
-	}
-	
-	//바 기능
-	function gopage(p){
-		frmSearch.page.value = p;
-		frmSearch.submit();		
-		//location.href = '/mail?page=' + p;
-	}
-	
-	
-	//체크박스 기능
-	function checkMenuHandler(checkbox) {
-	    menu = document.getElementsByName("checkMenu")
-	    menuArr = [];
-
-	    // 전체 체크 되어 있는 상태에서 자식데이터의 체크박스 해제시 전체 체크박스 해제
-	    const selectall = document.querySelector('input[name="selectall"]');
-	    if (checkbox != null && checkbox.checked === false) {
-	        selectall.checked = false;
-	    }
-
-	    
-  // 자식노드 체크가 한개라도 false일때 부모 전체체크 해제 자식노드 체크가 모두 true가 되면 부모 전체체크도 true
-	    let childMenuAll = document.querySelectorAll('[name="checkMenu"]').length;
-	    let childMenuCheckd = document.querySelectorAll('[name="checkMenu"]:checked').length;
-	    if (childMenuAll == childMenuCheckd){
-	        selectall.checked = true;
-	    }else{
-	    	selectall.checked = false;
-	    }
-	}
-
-	/**
-	 * 체크박스 모두 선택/해제
-	 * @param selectAll
-	 */
-	function selectAllcheck(selectAll) {
-	    const checkboxes = document.getElementsByName('checkMenu');
-
-	    checkboxes.forEach((checkbox) => {
-	        checkbox.checked = selectAll.checked
-	    })
-	    menu = document.getElementsByName("checkMenu")
-	    menuArr = [];
-
-	    // 체크되어 있는 데이터
-	    for (let i = 0; i < menu.length; i++) {
-	        if (menu[i].checked == true) {
-	            menuArr.push(menu[i].id);
-	        }
-	    }
-	}
-	
-	 // 폼을 제출하는 함수
-    function submitForm() {
-    	frmSearch.submit();
-    }
-
- // 선택된 메일 삭제 함수
-    function deleteSelected() {
-        const selectedMails = [];
-        
-        // 체크된 모든 체크박스의 mailId를 수집
-        document.querySelectorAll('input[name="checkMenu"]:checked').forEach((checkbox) => {
-            selectedMails.push(checkbox.value);  // 각 체크박스의 value가 mailId라고 가정
-        });
-        
-        if (selectedMails.length === 0) {
-            alert("삭제할 메일을 선택하세요!");
-            return;
+    <!-- Scripts -->
+    <script>
+        // Form submission
+        function submitForm() {
+            frmSearch.submit();
         }
-        
-        // 선택된 메일들의 mailId를 서버로 전송하기 위해 폼을 생성
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = '/mail/mailDeletes';  // 삭제 요청을 보낼 URL
-        
-        // mailId를 hidden input으로 폼에 추가
-        selectedMails.forEach((mailId) => {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'mailIds';  // 서버에서 받을 파라미터 이름
-            input.value = mailId;
-            form.appendChild(input);
-        });
-        
-        document.body.appendChild(form);
-        form.submit();  // 폼 제출하여 서버로 삭제 요청
-    }
-	
 
-</script>
+        // Checkbox handling
+        function checkMenuHandler(checkbox) {
+            const selectall = document.querySelector('input[name="selectall"]');
+            const checkboxes = document.getElementsByName("checkMenu");
+            const checkedCheckboxes = Array.from(checkboxes).filter(chk => chk.checked);
 
+            // Uncheck "select all" if any checkbox is unchecked
+            if (checkbox.checked === false) {
+                selectall.checked = false;
+            }
+
+            // If all checkboxes are checked, check "select all"
+            selectall.checked = checkedCheckboxes.length === checkboxes.length;
+        }
+
+        // Select all checkboxes
+        function selectAllcheck(selectAll) {
+            const checkboxes = document.getElementsByName('checkMenu');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+            });
+        }
+
+        // Delete selected emails
+        function deleteSelected() {
+            const selectedMails = Array.from(document.querySelectorAll('input[name="checkMenu"]:checked'))
+                .map(checkbox => checkbox.value);
+
+            if (selectedMails.length === 0) {
+                alert("삭제할 메일을 선택하세요!");
+                return;
+            }
+
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/mail/mailDeletes';
+
+            selectedMails.forEach(mailId => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'mailIds';
+                input.value = mailId;
+                form.appendChild(input);
+            });
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        // Navigate to page
+        function gopage(page) {
+            frmSearch.page.value = page;
+            frmSearch.submit();
+        }
+    </script>
 </body>
 </html>

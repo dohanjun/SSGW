@@ -46,6 +46,12 @@ public class MailServiceImpl implements MailService {
 	public MailVO MailSelectInfo(MailVO mailVO) {
 		return mailMapper.MailFindInfo(mailVO.getMailId());
 	}
+	
+
+	@Override
+	public MailVO FileCount(Integer mailId) {
+		return mailMapper.MailFindInfo(mailId);
+	}
 
 	// 메일등록
 	@Override
@@ -186,5 +192,7 @@ public class MailServiceImpl implements MailService {
 	public void scheduledDeleteExpiredMails() {
 		deleteExpiredMails();
 	}
+
+
 
 }

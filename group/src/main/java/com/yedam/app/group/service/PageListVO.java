@@ -37,4 +37,6 @@ public class PageListVO extends SearchVO{
 	private String zipCode;
 	private String streetAddress;
 	private String addressBookType;
+	
+	private Integer employeeNo;
 }
