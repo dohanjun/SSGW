@@ -45,7 +45,7 @@ public class SecurityConfig {
 				.hasAuthority("ROLE_MANAGER")
 				// 로그인시 접근 가능
 				.anyRequest().authenticated())
-				.formLogin(form -> form.loginPage("/login").loginProcessingUrl("/login").successHandler(successHandler).defaultSuccessUrl("/MainPage", true)
+				.formLogin(form -> form.loginPage("/login").loginProcessingUrl("/login").successHandler(successHandler)
 						.permitAll())
 				.logout(logout -> logout.logoutUrl("/logout").logoutSuccessUrl("/login?logout")
 						.invalidateHttpSession(true).deleteCookies("JSESSIONID").permitAll())
