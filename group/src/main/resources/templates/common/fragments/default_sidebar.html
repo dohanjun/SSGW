@@ -2,29 +2,71 @@
 <html xmlns:th="https://www.thymeleaf.org" th:fragment="sidebar">
 <head>
     <link th:href="@{/css/sb-admin-2.css}" rel="stylesheet">
+    <style>
+        /* ✅ 사이드바 고정 */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1030;
+            width: 220px;
+        }
+
+        /* ✅ 본문 컨텐츠 여백 */
+        body, .content-wrapper, .container, .main-content {
+            margin-left: 220px;
+        }
+
+        /* ✅ 아이콘과 텍스트 정렬 및 간격 추가 */
+        .nav-link {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-link i {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+
+        .collapse-inner .collapse-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .collapse-inner .collapse-item i {
+            margin-right: 6px;
+            font-size: 14px;
+        }
+    </style>
 </head>
 <body>
 <div th:fragment="sidebar">
     <!-- Sidebar -->
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
- 
+
         <!-- Sidebar - Brand -->
-        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="MainPage">
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" th:href="@{/MainPage}">
             <div class="sidebar-brand-icon rotate-n-15"> 
                 <i class="fas fa-laugh-wink"></i>
             </div>
         </a>
-		<!-- Nav Item - Dashboard -->
-		 <li class="nav-item active"><a class="nav-link" href="index.html">
-			 <i class="fas fa-fw fa-tachometer-alt"></i> <span>Dashboard</span>
-			 </a>
-			 </li>
-		 <!-- Divider -->
-		 <hr class="sidebar-divider">
+
+        <!-- Nav Item - Dashboard -->
+        <li class="nav-item active">
+            <a class="nav-link" href="index.html">
+                <i class="fas fa-fw fa-tachometer-alt"></i> <span>Dashboard</span>
+            </a>
+        </li>
+
+        <!-- Divider -->
+        <hr class="sidebar-divider">
+
         <!-- 일정 -->
         <li class="nav-item">
             <a class="nav-link" th:href="@{/schedulePage}">
-                <i class="fas fa-fw fa-cog"></i>
+                <i class="fas fa-fw fa-calendar-alt"></i>
                 <span>일정</span>
             </a>
         </li>
@@ -32,29 +74,26 @@
         <!-- 조직도 -->
         <li class="nav-item">
             <a class="nav-link collapsed" th:href="@{/orgChart}">
-                <i class="fas fa-fw fa-cog"></i>
+                <i class="fas fa-fw fa-sitemap"></i>
                 <span>조직도</span>
             </a>
         </li>
 
         <!-- 회사관리 -->
-		<th:block th:if="${#authorization.expression('hasAuthority(''ROLE_MANAGERUSER'')')}">
-		    <li class="nav-item">
-		        <a class="nav-link collapsed" th:href="@{/companyManagements}">
-		            <i class="fas fa-fw fa-wrench"></i>
-		            <span>회사관리</span>
-		        </a>
-		    </li>
-		</th:block>
-
+        <th:block th:if="${#authorization.expression('hasAuthority(''ROLE_MANAGERUSER'')')}">
+            <li class="nav-item">
+                <a class="nav-link collapsed" th:href="@{/companyManagements}">
+                    <i class="fas fa-fw fa-building"></i>
+                    <span>회사관리</span>
+                </a>
+            </li>
+        </th:block>
 
         <!-- Divider -->
         <hr class="sidebar-divider"/>
 
         <!-- Addons Heading -->
-        <div class="sidebar-heading">
-            Addons
-        </div>
+        <div class="sidebar-heading">Addons</div>
 
         <!-- QnA -->
         <li class="nav-item">
@@ -65,9 +104,15 @@
             </a>
             <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
-                    <a class="collapse-item" th:href="@{/qnaBoard}">QnA 목록</a>
-                    <a class="collapse-item" th:href="@{/myQna}">나의 QnA</a>
-                    <a class="collapse-item" th:href="@{/qnaInsertPage}">QnA 등록</a>
+                    <a class="collapse-item" th:href="@{/qnaBoard}">
+                        <i class="fas fa-fw fa-list"></i> QnA 목록
+                    </a>
+                    <a class="collapse-item" th:href="@{/myQna}">
+                        <i class="fas fa-fw fa-user"></i> 나의 QnA
+                    </a>
+                    <a class="collapse-item" th:href="@{/qnaInsertPage}">
+                        <i class="fas fa-fw fa-pen"></i> QnA 등록
+                    </a>
                 </div>
             </div>
         </li>
@@ -76,15 +121,19 @@
         <li class="nav-item">
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#work"
                aria-expanded="true" aria-controls="collapseTwo">
-                <i class="fas fa-fw fa-cog"></i>
+                <i class="fas fa-fw fa-clipboard-list"></i>
                 <span>근태관리</span>
             </a>
             <div id="work" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
-                <th:block th:if="${#authorization.expression('hasAnyAuthority(''ROLE_BOARD_ADMIN'', ''ROLE_MANAGER'', ''ROLE_HR'')')}">
-                    <a class="collapse-item" href="chartsManager">관리자 근태관리</a>
-                </th:block>
-                    <a class="collapse-item" href="blank">사원 근태관리</a>
+                    <th:block th:if="${#authorization.expression('hasAnyAuthority(''ROLE_BOARD_ADMIN'', ''ROLE_MANAGER'', ''ROLE_HR'')')}">
+                        <a class="collapse-item" th:href="@{/chartsManager}">
+                            <i class="fas fa-fw fa-user-cog"></i> 관리자 근태관리
+                        </a>
+                    </th:block>
+                    <a class="collapse-item" th:href="@{/blank}">
+                        <i class="fas fa-fw fa-user-clock"></i> 사원 근태관리
+                    </a>
                 </div>
             </div>
         </li>
@@ -93,46 +142,75 @@
         <li class="nav-item">
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#approval"
                aria-expanded="true" aria-controls="collapseTwo">
-                <i class="fas fa-fw fa-cog"></i>
+                <i class="fas fa-fw fa-file-signature"></i>
                 <span>전자결재</span>
             </a>
             <div id="approval" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <h6 class="collapse-header">기안</h6>
-                    <a class="collapse-item" th:href="@{/aprv/write}">기안문작성</a>
-                    <a class="collapse-item" th:href="@{/aprv/request}">결재요청함</a>
-                    <a class="collapse-item" th:href="@{/aprv/request?aprvStatus=임시}">임시저장함</a>
-                    <a class="collapse-item" th:href="@{/write}">전자결재양식추가</a>
+                    <a class="collapse-item" th:href="@{/aprv/write}">
+                        <i class="fas fa-fw fa-edit"></i> 기안문작성
+                    </a>
+                    <a class="collapse-item" th:href="@{/aprv/request}">
+                        <i class="fas fa-fw fa-paper-plane"></i> 결재요청함
+                    </a>
+                    <a class="collapse-item" th:href="@{/aprv/request?aprvStatus=임시}">
+                        <i class="fas fa-fw fa-save"></i> 임시저장함
+                    </a>
+                    <a class="collapse-item" th:href="@{/write}">
+                        <i class="fas fa-fw fa-plus-square"></i> 양식추가
+                    </a>
                     <h6 class="collapse-header">결재</h6>
-                    <a class="collapse-item" th:href="@{/aprv/list?aprvStatus=대기}">결재대기함</a>
-                    <a class="collapse-item" th:href="@{/aprv/list?aprvStatus=진행}">결재진행함</a>
-                    <a class="collapse-item" th:href="@{/aprv/list?aprvStatus=완료}">완료문서함</a>
-                    <a class="collapse-item" th:href="@{/aprv/list?aprvStatus=반려}">반려문서함</a>
-                    <a class="collapse-item" th:href="@{/aprv/reference}">참조열람함</a>
+                    <a class="collapse-item" th:href="@{/aprv/list?aprvStatus=대기}">
+                        <i class="fas fa-fw fa-clock"></i> 결재대기함
+                    </a>
+                    <a class="collapse-item" th:href="@{/aprv/list?aprvStatus=진행}">
+                        <i class="fas fa-fw fa-sync"></i> 결재진행함
+                    </a>
+                    <a class="collapse-item" th:href="@{/aprv/list?aprvStatus=완료}">
+                        <i class="fas fa-fw fa-check"></i> 완료문서함
+                    </a>
+                    <a class="collapse-item" th:href="@{/aprv/list?aprvStatus=반려}">
+                        <i class="fas fa-fw fa-times"></i> 반려문서함
+                    </a>
+                    <a class="collapse-item" th:href="@{/aprv/reference}">
+                        <i class="fas fa-fw fa-book-open"></i> 참조열람함
+                    </a>
                 </div>
             </div>
         </li>
 
-			<!-- 인사관리자 또는 최고관리자만 접근 가능 -->
-			<th:block th:if="${#authorization.expression('hasAnyAuthority(''ROLE_MANAGER'', ''ROLE_HR'')')}">
+        <!-- 인사관리 -->
+        <th:block th:if="${#authorization.expression('hasAnyAuthority(''ROLE_MANAGER'', ''ROLE_HR'')')}">
             <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseT"
                    aria-expanded="true" aria-controls="collapseT">
-                    <i class="fas fa-fw fa-cog"></i>
+                    <i class="fas fa-fw fa-users-cog"></i>
                     <span>인사관리</span>
                 </a>
                 <div id="collapseT" class="collapse" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">인사관리</h6>
-                        <a class="collapse-item" th:href="@{/empinsert}">사원등록</a>
-                        <a class="collapse-item" th:href="@{/empMgmt}">사원관리</a>
+                        <a class="collapse-item" th:href="@{/empinsert}">
+                            <i class="fas fa-fw fa-user-plus"></i> 사원등록
+                        </a>
+                        <a class="collapse-item" th:href="@{/empMgmt}">
+                            <i class="fas fa-fw fa-user-friends"></i> 사원관리
+                        </a>
                         <h6 class="collapse-header">부서관리</h6>
-                        <a class="collapse-item" th:href="@{/deptMgmt}">부서조회</a>
-                        <a class="collapse-item" th:href="@{/deptInsert}">부서추가</a>
+                        <a class="collapse-item" th:href="@{/deptMgmt}">
+                            <i class="fas fa-fw fa-building"></i> 부서조회
+                        </a>
+                        <a class="collapse-item" th:href="@{/deptInsert}">
+                            <i class="fas fa-fw fa-plus"></i> 부서추가
+                        </a>
                         <h6 class="collapse-header">휴가관리</h6>
-                        <a class="collapse-item" th:href="@{/vacaList}">휴가조회</a>
-                        <a class="collapse-item" th:href="@{/vacationList}">휴가유형목록</a>
-                       <!--   <a class="collapse-item" th:href="@{/vacaInsert}">휴가유형등록</a>-->
+                        <a class="collapse-item" th:href="@{/vacaList}">
+                            <i class="fas fa-fw fa-calendar-check"></i> 휴가조회
+                        </a>
+                        <a class="collapse-item" th:href="@{/vacationList}">
+                            <i class="fas fa-fw fa-list"></i> 휴가유형목록
+                        </a>
                     </div>
                 </div>
             </li>
@@ -142,33 +220,50 @@
         <li class="nav-item">
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#mailT"
                aria-expanded="true" aria-controls="mailT">
-                <i class="fas fa-fw fa-cog"></i>
+                <i class="fas fa-fw fa-envelope"></i>
                 <span>메일</span>
             </a>
             <div id="mailT" class="collapse" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <h6 class="collapse-header">메일</h6>
-                    <a class="collapse-item" th:href="@{/mail}">메일메인화면</a>
-                    <a class="collapse-item" th:href="@{/mailInsert}">메일쓰기</a>
-                    <h6 class="collapse-header">메일세부항목</h6>
-                    <a class="collapse-item" th:href="@{/getMail?mailType=받은}">받은메일함</a>
-                    <a class="collapse-item" th:href="@{/putMail?mailType=보낸}">보낸메일함</a>
-                    <a class="collapse-item" th:href="@{/temporaryMail?mailType=임시}">임시메일함</a>
-                    <a class="collapse-item" th:href="@{/deleteMail?mailType=휴지통}">휴지통</a>
+                    <a class="collapse-item" th:href="@{/mail}">
+                        <i class="fas fa-fw fa-inbox"></i> 메일메인
+                    </a>
+                    <a class="collapse-item" th:href="@{/mailInsert}">
+                        <i class="fas fa-fw fa-edit"></i> 메일쓰기
+                    </a>
+                    <h6 class="collapse-header">메일함</h6>
+                    <a class="collapse-item" th:href="@{/getMail?mailType=받은}">
+                        <i class="fas fa-fw fa-download"></i> 받은메일함
+                    </a>
+                    <a class="collapse-item" th:href="@{/putMail?mailType=보낸}">
+                        <i class="fas fa-fw fa-upload"></i> 보낸메일함
+                    </a>
+                    <a class="collapse-item" th:href="@{/temporaryMail?mailType=임시}">
+                        <i class="fas fa-fw fa-save"></i> 임시메일함
+                    </a>
+                    <a class="collapse-item" th:href="@{/deleteMail?mailType=휴지통}">
+                        <i class="fas fa-fw fa-trash"></i> 휴지통
+                    </a>
                 </div>
             </div>
         </li>
+
         <!-- 주소록 -->
         <li class="nav-item">
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#bookT"
                aria-expanded="true" aria-controls="bookT">
-                <i class="fas fa-fw fa-cog"></i>
+                <i class="fas fa-fw fa-address-book"></i>
                 <span>주소록</span>
             </a>
             <div id="bookT" class="collapse" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
-                    <a class="collapse-item" th:href="@{/bookList}">주소록</a>
-                    <a class="collapse-item" th:href="@{/bookInsert}">주소록 등록</a>
+                    <a class="collapse-item" th:href="@{/bookList}">
+                        <i class="fas fa-fw fa-book"></i> 주소록
+                    </a>
+                    <a class="collapse-item" th:href="@{/bookInsert}">
+                        <i class="fas fa-fw fa-plus"></i> 등록
+                    </a>
                 </div>
             </div>
         </li>
@@ -177,14 +272,20 @@
         <li class="nav-item">
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#board"
                aria-expanded="true" aria-controls="board">
-                <i class="fas fa-fw fa-cog"></i>
+                <i class="fas fa-fw fa-clipboard"></i>
                 <span>게시판</span>
             </a>
             <div id="board" class="collapse" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
-                    <a class="collapse-item" th:href="@{/noticeBoard}">공지 게시판</a>
-                    <a class="collapse-item" th:href="@{/departmentBoard}">부서 게시판</a>
-                    <a class="collapse-item" th:href="@{/freeBoard}">자유 게시판</a>
+                    <a class="collapse-item" th:href="@{/noticeBoard}">
+                        <i class="fas fa-fw fa-bullhorn"></i> 공지 게시판
+                    </a>
+                    <a class="collapse-item" th:href="@{/departmentBoard}">
+                        <i class="fas fa-fw fa-users"></i> 부서 게시판
+                    </a>
+                    <a class="collapse-item" th:href="@{/freeBoard}">
+                        <i class="fas fa-fw fa-comments"></i> 자유 게시판
+                    </a>
                 </div>
             </div>
         </li>
@@ -193,15 +294,23 @@
         <li class="nav-item">
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#repository"
                aria-expanded="true" aria-controls="repository">
-                <i class="fas fa-fw fa-cog"></i>
+                <i class="fas fa-fw fa-folder-open"></i>
                 <span>자료실</span>
             </a>
             <div id="repository" class="collapse" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
-                    <a class="collapse-item" th:href="@{/totalRepository}">전체 자료실</a>
-                    <a class="collapse-item" th:href="@{/departmentRepository}">부서 자료실</a>
-                    <a class="collapse-item" th:href="@{/individualRepository}">개인 자료실</a>
-                    <a class="collapse-item" th:href="@{/basket}">휴지통</a>
+                    <a class="collapse-item" th:href="@{/totalRepository}">
+                        <i class="fas fa-fw fa-archive"></i> 전체 자료실
+                    </a>
+                    <a class="collapse-item" th:href="@{/departmentRepository}">
+                        <i class="fas fa-fw fa-building"></i> 부서 자료실
+                    </a>
+                    <a class="collapse-item" th:href="@{/individualRepository}">
+                        <i class="fas fa-fw fa-user"></i> 개인 자료실
+                    </a>
+                    <a class="collapse-item" th:href="@{/basket}">
+                        <i class="fas fa-fw fa-trash-alt"></i> 휴지통
+                    </a>
                 </div>
             </div>
         </li>
