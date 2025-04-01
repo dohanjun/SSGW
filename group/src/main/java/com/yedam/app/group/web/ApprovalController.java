@@ -216,6 +216,9 @@ public class ApprovalController {
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("aprvStatus", aprvVO.getAprvStatus());
+        model.addAttribute("searchTitle", aprvVO.getTitle());
+        model.addAttribute("searchAprvStatus", aprvVO.getAprvStatus());
+        model.addAttribute("searchDraftDate", aprvVO.getDraftDate());
 
         //  뷰 분기
         return "임시".equals(aprvVO.getAprvStatus())
