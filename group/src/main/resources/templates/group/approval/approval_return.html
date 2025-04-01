@@ -18,19 +18,32 @@
 	<div class="container-fluid">
 		<div class="h555">
 			<h1 class="h3 mb-2 text-gray-800">반려문서함</h1>
-			<button id="stampInsertButton">도장등록</button>
+			<button id="stampInsertButton" class="btn btn-secondary">도장등록</button>
 		</div>
 		<div class="card shadow mb-4">
 			<div class="card-header py-3">
 				<!-- 검색부분 -->
 				<form th:action="@{/aprv/list}" method="GET">
-					<input type="hidden" name="aprvStatus" th:value="${aprvStatus}">
-					<p>기안자 <input type="text" name="employeeName"> 문서제목 <input
-							type="text" name="title"> 상신일 <input type="date"
-							name="draftDate">
-						<button type="submit" class="float-right">검색</button>
-					</p>
-				</form>
+    <input type="hidden" name="aprvStatus" th:value='반려'>
+
+    <div class="form-row align-items-center">
+        <div class="col-auto">
+            <label class="sr-only">기안자</label>
+            <input class="form-control mb-2" type="text" name="employeeName" placeholder="기안자" th:value="${searchEmployeeName}">
+        </div>
+        <div class="col-auto">
+            <label class="sr-only">문서제목</label>
+            <input class="form-control mb-2" type="text" name="title" placeholder="문서제목" th:value="${searchTitle}">
+        </div>
+        <div class="col-auto">
+            <label class="sr-only">상신일</label>
+            <input class="form-control mb-2" type="date" name="draftDate" th:value="${searchDraftDate != null} ? ${#dates.format(searchDraftDate, 'yyyy-MM-dd')} : ''">
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary mb-2">검색</button>
+        </div>
+    </div>
+</form>
 			</div>
 			<div class="card-body">
 				<div class="table-responsive">
