@@ -7,113 +7,193 @@
     <meta charset="UTF-8">
     <title>휴가현황</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.6.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-size: 15px;
+        }
+
+        .container {
+            max-width: 1200px;
+        }
+
+        /* 공통 카드 박스 */
+        .card-box {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background: #fff;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        /* 검색 영역 */
+        .search-box {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .search-box select,
+        .search-box input {
+            padding: 7px 14px;
+            font-size: 15px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        .search-box button {
+            min-width: 90px;
+            font-size: 15px;
+        }
+
+        /* 테이블 */
+        .table thead th {
+            background-color: #f8f9fa;
+            text-align: center;
+            font-size: 15px;
+        }
+
+        .table tbody td {
+            text-align: center;
+            font-size: 15px;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f1f1f1;
+            cursor: pointer;
+        }
+
+        /* 페이지네이션 */
+        .pagination .page-link {
+            color: #007bff;
+            font-size: 14px;
+        }
+
+        .pagination .active .page-link {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: white;
+        }
+    </style>
 </head>
 <body>
-<div class="container text-center">
-    <h3>휴가현황</h3>
+<div class="container">
+    <div class="card-box">
+        <div class="card-title">휴가현황</div>
 
-    <!-- 검색 영역 -->
-    <form name="frmSearch" action="/vacaList" method="get">
-        <input type="hidden" name="page" value="1">
-        <input type="hidden" name="resignationStatus" id="resignationStatus" th:value="${vacationVO.resignationStatus}">
-        <select name="size" onchange="gopage(1)">
-            <option value="10" th:selected="${vacationVO.size == 10}">10</option>
-            <option value="15" th:selected="${vacationVO.size == 15}">15</option>
-            <option value="20" th:selected="${vacationVO.size == 20}">20</option>
-        </select>
+        <!-- 검색 폼 -->
+        <form name="frmSearch" action="/vacaList" method="get">
+            <input type="hidden" name="page" value="1">
+            <input type="hidden" name="resignationStatus" id="resignationStatus" th:value="${vacationVO.resignationStatus}">
 
-		<div class="search-box mt-3">
-		    <select id="depa" name="departmentNo">
-		        <option value="">부서를 선택하세요</option>
-		    </select>
-		
-		    <select id="rankId" name="rankId">
-		        <option value="">직급을 선택하세요</option>
-		    </select>
-		
-		    <input type="text" id="keyemp" placeholder="이름 검색" th:value="${vacationVO.employeeName}" name="employeeName">
-		
-		    <!-- 버튼 묶음 -->
-		    <div style="display: inline-block;">
-		        <button type="submit" class="btn btn-primary">검색</button>
-		        <button type="button" class="btn btn-secondary" onclick="init()">초기화</button>
-		        <button type="button" class="btn btn-outline-primary" onclick="filterStatus('N')">재직자</button>
-		        <button type="button" class="btn btn-outline-danger" onclick="filterStatus('Y')">퇴사자</button>
-		    </div>
-		</div>
-    </form>
+            <div class="search-box">
+                <select name="size" onchange="gopage(1)">
+                    <option value="10" th:selected="${vacationVO.size == 10}">10</option>
+                    <option value="15" th:selected="${vacationVO.size == 15}">15</option>
+                    <option value="20" th:selected="${vacationVO.size == 20}">20</option>
+                </select>
 
-    <!-- 테이블 -->
-    <table class="table table-bordered mt-3">
-        <thead>
-        <tr>
-            <th>사원번호</th>
-            <th>부서</th>
-            <th>직급</th>
-            <th>이름</th>
-            <th>입사일</th>
-            <th>연차 부여일</th>
-            <th>잔여일</th>
-            <th>사용일</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="v : ${vacations}">
-            <td th:text="${v.employeeNo}"></td>
-            <td th:text="${v.departmentName}"></td>
-            <td th:text="${v.jobTitleName}"></td>
-            <td th:text="${v.employeeName}"></td>
-            <td th:text="${#dates.format(v.hireDate, 'yyyy-MM-dd')}"></td>
-            <!--  <td th:text="${#dates.format(v.year, 'yyyy-MM-dd')}"></td>-->
-            <td th:text="${v.grantedVacation}"></td>
-            <td th:text="${v.remainingVacation}"></td>
-            <td th:text="${v.usedVacation}"></td>
-        </tr>
-        </tbody>
-    </table>
+                <select id="depa" name="departmentNo">
+                    <option value="">부서를 선택하세요</option>
+                </select>
 
-    <!-- 페이징 -->
-    <nav aria-label="Page navigation">
-        <ul class="pagination justify-content-center">
-            <li class="page-item" th:if="${currentPage > 1}">
-                <a class="page-link" th:href="|javascript:gopage(${currentPage - 1})|">이전</a>
-            </li>
-            <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}"
-                th:classappend="${i == currentPage} ? 'active'">
-                <a class="page-link" th:href="|javascript:gopage(${i})|" th:text="${i}"></a>
-            </li>
-            <li class="page-item" th:if="${currentPage < totalPages}">
-                <a class="page-link" th:href="|javascript:gopage(${currentPage + 1})|">다음</a>
-            </li>
-        </ul>
-    </nav>
+                <select id="rankId" name="rankId">
+                    <option value="">직급을 선택하세요</option>
+                </select>
+
+                <input type="text" id="keyemp" name="employeeName" placeholder="이름 검색" th:value="${vacationVO.employeeName}">
+
+                <button type="submit" class="btn btn-primary">검색</button>
+                <button type="button" class="btn btn-secondary" onclick="init()">초기화</button>
+                <button type="button" class="btn btn-outline-primary" onclick="filterStatus('N')">재직자</button>
+                <button type="button" class="btn btn-outline-danger" onclick="filterStatus('Y')">퇴사자</button>
+            </div>
+        </form>
+
+        <!-- 휴가 테이블 -->
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>사원번호</th>
+                    <th>부서</th>
+                    <th>직급</th>
+                    <th>이름</th>
+                    <th>입사일</th>
+                    <th>연차 부여일</th>
+                    <th>잔여일</th>
+                    <th>사용일</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="v : ${vacations}">
+                    <td th:text="${v.employeeNo}"></td>
+                    <td th:text="${v.departmentName}"></td>
+                    <td th:text="${v.jobTitleName}"></td>
+                    <td th:text="${v.employeeName}"></td>
+                    <td th:text="${#dates.format(v.hireDate, 'yyyy년 MM월 dd일')}"></td>
+                    <td th:text="${v.grantedVacation}"></td>
+                    <td th:text="${v.remainingVacation}"></td>
+                    <td th:text="${v.usedVacation}"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- 페이징 -->
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:if="${currentPage > 1}">
+                    <a class="page-link" th:href="|javascript:gopage(${currentPage - 1})|">이전</a>
+                </li>
+                <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}"
+                    th:classappend="${i == currentPage} ? 'active'">
+                    <a class="page-link" th:href="|javascript:gopage(${i})|" th:text="${i}"></a>
+                </li>
+                <li class="page-item" th:if="${currentPage < totalPages}">
+                    <a class="page-link" th:href="|javascript:gopage(${currentPage + 1})|">다음</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
 </div>
 
-<!-- 부트스트랩 + 공통 스크립트 -->
+<!-- JS: 드롭다운 및 필터링 처리 -->
 <script src="/js/emp.js"></script>
 <script th:inline="javascript">
+    // 선택된 부서/직급 정보 백엔드에서 받아옴
     const dept = [[${vacationVO.departmentNo}]];
     const rank = [[${vacationVO.rankId}]];
 
-    function init(){
+    // 초기화 함수
+    function init() {
         depa.value = "";
         rankId.value = "";
         keyemp.value = "";
         resignationStatus.value = "";
     }
 
-    function gopage(p){
+    // 페이지 이동 처리 함수
+    function gopage(p) {
         frmSearch.page.value = p;
-        frmSearch.submit();		
+        frmSearch.submit();
     }
-    
-    function filterStatus(status){
+
+    // 재직/퇴사 필터 처리
+    function filterStatus(status) {
         document.getElementById("resignationStatus").value = status;
         gopage(1);
     }
 
-    // 부서, 직급 불러오기
-    document.addEventListener("DOMContentLoaded", function() {
+    // 부서, 직급 드롭다운 자동 로딩
+    document.addEventListener("DOMContentLoaded", function () {
         loadData("/api/departments", "depa", dept);
         loadData("/api/ranks", "rankId", rank);
     });

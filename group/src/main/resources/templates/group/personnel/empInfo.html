@@ -5,168 +5,204 @@
       layout:fragment="content">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>사원 상세정보</title>
     <style>
-        /* 메인 컨테이너를 가운데 정렬하고 화면에 맞게 조정 */
+        body { font-size: 14px; }
+
         .content-wrapper {
             display: flex;
             justify-content: center;
-            align-items: center;
-            height: calc(100vh - 100px); /* 상단 네비게이션 제외한 높이 */
-            width: 100%;
-            padding: 20px;
-            box-sizing: border-box;
+            padding: 40px 20px;
         }
 
-        /* 사원 상세정보 박스 크기 조정 */
-        .employee-container {
-            width: 600px; /* 기존 900px → 600px로 축소 */
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        .card-box {
+            width: 100%;
+            max-width: 980px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-header {
+            background-color: #f8f9fa;
+            padding: 12px 20px;
+            border-bottom: 1px solid #dee2e6;
             text-align: center;
         }
 
-        .emph2 {
-            margin-bottom: 15px;
-            font-size: 20px;
+        .card-header h5 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
         }
 
-        .profile-img {
-		    width: 100px;
-		    height: 100px;
-		    object-fit: cover; /* 원본 비율을 유지하면서 박스 크기에 맞춤 */
-		    border: 1px solid #ddd; /* 테두리 추가 */
-		    display: block;
-		    margin: 0 auto;
-       }
-       .profile-img img {
-		    width: 100px;
-		    height: 100px;
-		    object-fit: cover; /* 비율을 유지하면서 크기에 맞게 자름 */
+        .employee-container {
+            display: flex;
+            gap: 30px;
+            padding: 30px 40px;
+        }
 
-		    display: block;
-		    margin: 0 auto;
-	  }
-        
+        .left-panel {
+            flex: 0 0 240px;
+            border-right: 1px solid #eee;
+            padding-right: 20px;
+        }
+
+        .left-panel h5 {
+            text-align: center;
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .profile-img-box {
+            width: 140px;
+            height: 140px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin: 0 auto 15px;
+            overflow: hidden;
+        }
+
+        .profile-img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
         .form-group {
-            margin-bottom: 10px;
-            text-align: left;
+            margin-bottom: 15px;
         }
 
-        .form-group label {
+        .info-label {
             font-weight: bold;
-            display: block;
             margin-bottom: 5px;
-            font-size: 14px;
+            display: block;
         }
 
-        .form-group input {
+        .form-control {
             width: 100%;
-            padding: 6px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #f8f9fa;
+            padding: 6px 10px;
             font-size: 14px;
+            background-color: #f8f9fa;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
         }
 
-        .btn-group {
+        /* 오른쪽 패널: 한 줄에 하나씩 */
+        .right-panel {
+            flex: 1;
+            display: block;
+        }
+
+        .form-buttons {
             display: flex;
-            justify-content: space-between;
-            margin-top: 15px;
+            justify-content: flex-start;
+            gap: 10px;
+            margin-top: 5px;
         }
 
         .btn {
-            padding: 8px 12px;
+            padding: 6px 16px;
+            font-size: 14px;
+            min-width: 100px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 14px;
-            width: 48%;
         }
 
-        .btn-update {
-            background: #007bff;
-            color: white;
-        }
-
-        .btn-cancel {
-            background: #dc3545;
-            color: white;
-        }
+        .btn-primary { background-color: #007bff; color: white; }
+        .btn-danger { background-color: #dc3545; color: white; }
     </style>
 </head>
 <body>
-    <div class="content-wrapper">
+
+<div class="content-wrapper">
+    <div class="card-box">
+        <div class="card-header">
+            <h5>사원 상세정보</h5>
+        </div>
+
         <div class="employee-container">
-            <h2 class="emph2">사원 상세정보</h2>
-            <div class="profile-img">
-                       <img th:if="${profileImageBase64}" 
-				         th:src="'data:image/png;base64,' + ${profileImageBase64}" 
-				         alt="프로필 이미지">  	
-            </div>
-            
-            <div class="form-group">
-                <label for="empid">사원번호</label>
-                <input type="text" id="empid" th:value="${emp.employeeNo}" readonly>
-            </div>
+            <!-- 왼쪽 프로필 + 부서/직책/권한 -->
+            <div class="left-panel">
+                <h5>프로필</h5>
+                <div class="profile-img-box">
+                    <img th:if="${profileImageBase64}"
+                         th:src="'data:image/png;base64,' + ${profileImageBase64}"
+                         alt="프로필 이미지">
+                </div>
 
-            <div class="form-group">
-                <label for="name">이름</label>
-                <input type="text" id="name" th:value="${emp.employeeName}" readonly>
-            </div>
+                <div class="form-group">
+                    <label class="info-label">부서</label>
+                    <input type="text" class="form-control" th:value="${emp.departmentName}" readonly>
+                </div>
 
-            <div class="form-group">
-                <label for="department">부서</label>
-                <input type="text" id="department" th:value="${emp.departmentName}" readonly>
-            </div>
+                <div class="form-group">
+                    <label class="info-label">직책</label>
+                    <input type="text" class="form-control" th:value="${emp.jobTitleName}" readonly>
+                </div>
 
-            <div class="form-group">
-                <label for="position">직급</label>
-                <input type="text" id="position" th:value="${emp.jobTitleName}" readonly>
+                <div class="form-group">
+                    <label class="info-label">권한</label>
+                    <input type="text" class="form-control" th:value="${emp.rightsName}" readonly>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="role">권한</label>
-                <input type="text" id="role" th:value="${emp.rightsName}" readonly>
-            </div>
+            <!-- 오른쪽 영역: 한 줄에 하나씩 -->
+            <div class="right-panel">
+                <div class="form-group">
+                    <label class="info-label">사원번호</label>
+                    <input type="text" class="form-control" th:value="${emp.employeeNo}" readonly>
+                </div>
 
-            <div class="form-group">
-                <label for="contact">연락처</label>
-                <input type="text" id="contact" th:value="${emp.phoneNumber}" readonly>
-            </div>
+                <div class="form-group">
+                    <label class="info-label">이름</label>
+                    <input type="text" class="form-control" th:value="${emp.employeeName}" readonly>
+                </div>
 
-			<div class="form-group" style="display: flex; gap: 10px;">
-			    <div style="flex: 1;">
-			        <label for="address">주소</label>
-			        <input type="text" id="address" th:value="${emp.address}" readonly>
-			    </div>
-			    <div style="flex: 1;">
-			        <label for="resign">재직상태</label>
-			        <input type="text" id="resign" th:value="${emp.resignationStatus == 'N' ? '재직' : '퇴사'}" readonly>
-			    </div>
-			</div>
+                <div class="form-group">
+                    <label class="info-label">연락처</label>
+                    <input type="text" class="form-control" th:value="${emp.phoneNumber}" readonly>
+                </div>
 
-			<div class="form-group" style="display: flex; gap: 10px;">
-			    <div style="flex: 1;">
-			        <label for="hire-date">입사일</label>
-			        <input type="date" id="hire-date" th:value="${#dates.format(emp.hireDate, 'yyyy-MM-dd')}" readonly>
-			    </div>
-			    <div style="flex: 1;">
-			        <label for="exit-date">퇴사일</label>
-			        <input type="date" id="exit-date" th:value="${#dates.format(emp.exitDate, 'yyyy-MM-dd')}" readonly>
-			    </div>
-			</div>
+                <div class="form-group">
+                    <label class="info-label">주소</label>
+                    <input type="text" class="form-control" th:value="${emp.address}" readonly>
+                </div>
 
-            <div class="btn-group">
-                <button type="button" class="btn btn-primary" 
-                th:onclick="|location.href = '@{ /empUpdate(employeeNo=${emp.employeeNo}) }'|">수정</button>
-                <button type="button" class="btn btn-danger" th:onclick="|location.href = '@{ /empMgmt }'|">취소</button>
+                <div class="form-group">
+                    <label class="info-label">입사일</label>
+                    <input type="date" class="form-control"
+                           th:value="${#dates.format(emp.hireDate, 'yyyy-MM-dd')}" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label class="info-label">퇴사일</label>
+                    <input type="date" class="form-control"
+                           th:value="${#dates.format(emp.exitDate, 'yyyy-MM-dd')}" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label class="info-label">재직상태</label>
+                    <input type="text" class="form-control"
+                           th:value="${emp.resignationStatus == 'N' ? '재직' : '퇴사'}" readonly>
+                </div>
+
+                <!-- 버튼: 왼쪽 하단 -->
+                <div class="form-buttons">
+                    <button type="button" class="btn btn-primary"
+                            th:onclick="|location.href='@{/empUpdate(employeeNo=${emp.employeeNo})}'|">수정</button>
+                    <button type="button" class="btn btn-danger"
+                            th:onclick="|location.href='@{/empMgmt}'|">취소</button>
+                </div>
             </div>
         </div>
     </div>
+</div>
+
 </body>
 </html>

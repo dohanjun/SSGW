@@ -41,6 +41,24 @@
             width: 500px;
             z-index: 999;
         }
+        /* 직원 정보 줄 정렬 스타일 */
+		.emp-info-group {
+		    display: flex;
+		    justify-content: center;
+		    margin-bottom: 6px;
+		}
+		
+		.emp-info-label {
+		    width: 60px;
+		    text-align: right;
+		    font-weight: bold;
+		    margin-right: 8px;
+		}
+		
+		.emp-info-value {
+		    text-align: left;
+		    min-width: 200px;
+		}
     </style>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.6.2/css/bootstrap.min.css">
@@ -63,21 +81,32 @@
             </div>
         </div>
 
-        <!-- 직원 상세 정보 -->
-        <div class="col-md-6">
-            <div class="card fixed-sidebar">
-                <div class="card-body text-center">
-                    <h5>직원 정보</h5>
-                    <hr>
-                    <p><strong>이름:</strong> <span id="empName">-</span></p>
-                    <p><strong>부서:</strong> <span id="empDept">-</span></p>
-                    <p><strong>직급:</strong> <span id="empTitle">-</span></p>
-                    <p><strong>연락처:</strong> <span id="empPhone">-</span></p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+		<!-- 직원 상세 정보 -->
+		<div class="col-md-6">
+		    <div class="card fixed-sidebar">
+		        <div class="card-body text-center">
+		            <h5 class="font-weight-bold mb-3">직원 정보</h5>
+		            <hr>
+		
+		            <div class="emp-info-group">
+		                <div class="emp-info-label">이름:</div>
+		                <div class="emp-info-value" id="empName">-</div>
+		            </div>
+		            <div class="emp-info-group">
+		                <div class="emp-info-label">부서:</div>
+		                <div class="emp-info-value" id="empDept">-</div>
+		            </div>
+		            <div class="emp-info-group">
+		                <div class="emp-info-label">직급:</div>
+		                <div class="emp-info-value" id="empTitle">-</div>
+		            </div>
+		            <div class="emp-info-group">
+		                <div class="emp-info-label">연락처:</div>
+		                <div class="emp-info-value" id="empPhone">-</div>
+		            </div>
+		        </div>
+		    </div>
+		</div>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {

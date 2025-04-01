@@ -17,6 +17,34 @@
         #orgTree, #orgTree ul { list-style: none; padding-left: 20px; }
         #orgTree li { cursor: pointer; margin-bottom: 4px; }
         .toggle-icon { margin-right: 5px; cursor: pointer; }
+        
+    /* 부서명 + 부서장 수평 정렬 유지하면서 간격 줄이기 */
+    .dept-info {
+        display: flex;
+        align-items: center;
+        padding: 2px 0;  /* 위아래 여백 최소화 */
+    }
+
+    .dept-name-fixed {
+        width: 130px;
+        font-weight: bold;
+        font-size: 14px;
+        line-height: 1.2;
+        margin: 0;
+    }
+
+    .manager-name {
+        font-size: 13.3px;
+        line-height: 1.2;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* 리스트 항목 높이 줄이기 */
+    .list-group-item {
+        padding-top: 6px;
+        padding-bottom: 6px;
+    }
     </style>
 </head>
 
@@ -43,7 +71,7 @@
 				    <div class="form-group">
 				        <label>상위 부서</label>
 				        <select class="form-control" th:field="*{upperDepNo}">
-				            <option value="0">최상위 부서</option>
+				            <option value="0">-- 부서를 선택하세요 --</option>
 				            <option th:each="dept : ${deptList}" th:value="${dept.departmentNo}" th:text="${dept.departmentName}"></option>
 				        </select>
 				    </div>
@@ -60,21 +88,25 @@
         </div>
 
         <!--  오른쪽: 부서장 추가 -->
-<!-- 오른쪽: 부서장 추가 -->
-<div class="col-md-6">
-    <div class="card h-100">
-        <div class="card-header font-weight-bold text-center">부서장 추가</div>
-        <div class="card-body">
-            <ul class="list-group">
-                <li class="list-group-item d-flex align-items-center justify-content-between"
-                    th:each="dept : ${deptList}">
-                    
-                    <!-- 부서명 + 부서장 정보 클릭 시 조직도 모달 -->
-                    <div class="d-flex align-items-center" style="cursor: pointer;" th:onclick="|openOrgModal(${dept.departmentNo})|">
-                        <strong th:text="${dept.departmentName}" class="mr-3"></strong>
-                        <span th:if="${dept.employeeName != null}" th:text="'부서장 : ' + ${dept.employeeName}" class="text-success small"></span>
-                        <span th:if="${dept.employeeName == null}" class="text-danger small">(부서장 미지정)</span>
-                    </div>
+		<div class="col-md-6">
+		    <div class="card h-100">
+		        <div class="card-header font-weight-bold text-center">부서장 추가</div>
+		        <div class="card-body">
+		            <ul class="list-group">
+		                <li class="list-group-item d-flex align-items-center justify-content-between"
+		                    th:each="dept : ${deptList}">
+		                    
+		                    <!-- 부서명 + 부서장 정보 클릭 시 조직도 모달 -->
+							<div class="dept-info" style="cursor: pointer;" th:onclick="|openOrgModal(${dept.departmentNo})|">
+							    <div class="dept-name-fixed" th:text="${dept.departmentName}"></div>
+							
+							    <span th:if="${dept.employeeName != null}"
+							          th:text="'부서장 : ' + ${dept.employeeName}"
+							          class="text-success small manager-name"></span>
+							
+							    <span th:if="${dept.employeeName == null}"
+							          class="text-danger small manager-name">(부서장 미지정)</span>
+							</div>
 
                     <!-- 삭제 버튼 -->
 					<button type="button" class="btn btn-sm btn-danger"
