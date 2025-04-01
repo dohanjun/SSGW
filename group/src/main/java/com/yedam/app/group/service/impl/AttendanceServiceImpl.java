@@ -149,5 +149,10 @@ public class AttendanceServiceImpl implements AttendanceService {
         return attendanceMapper.selectTodayAttendanceByDept(deptNo);
     }
     
+    // ✅ (추가) 부서원 상세 출결 리스트 조회
+    @Override
+    public List<AttendanceManagementVO> getDepartmentAttendanceDetail(Integer departmentNo) {
+        return attendanceMapper.selectDepartmentAttendanceDetail(departmentNo);
+    }
     
 }

@@ -1,290 +1,354 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="~{common/layouts/default_layout}"
-	layout:fragment="content">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/layouts/default_layout}"
+      layout:fragment="content">
 
 <head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>관리자 근태 그래프</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>관리자 근태 그래프</title>
 
-	<link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
-	<link href="/css/sb-admin-2.css" rel="stylesheet">
+  <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+  <link href="/css/sb-admin-2.css" rel="stylesheet">
 
-	<style>
-	.work-info {
-		width: 100%;
-		overflow-x: auto;
-	}
-body {
-    margin-left: 220px;
-}
-	.work-info table {
-		width: 100%;
-		border-collapse: collapse;
-		margin-top: 20px;
-	}
+  <style>
+    body {
+      margin-left: 220px;
+    }
 
-	.work-info th, .work-info td {
-		border: 1px solid #ddd;
-		padding: 12px;
-		text-align: center;
-		white-space: nowrap;
-	}
+    .select-container {
+      margin-bottom: 20px;
+    }
 
-	.work-info th {
-		background-color: #f8f9fc;
-		font-weight: bold;
-	}
+    .work-info {
+      width: 100%;
+      overflow-x: auto;
+    }
 
-	.work-info tbody tr:nth-child(even) {
-		background-color: #f2f2f2;
-	}
+    .work-info table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
 
-	.work-info tbody tr:hover {
-		background-color: #e2e6ea;
-	}
+    .work-info th, .work-info td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: center;
+      white-space: nowrap;
+    }
 
-	.pagination-container {
-		display: flex;
-		justify-content: center;
-		margin-top: 15px;
-	}
+    .work-info th {
+      background-color: #f8f9fc;
+      font-weight: bold;
+    }
 
-	.page-item {
-		list-style: none;
-		margin: 0 5px;
-	}
+    .work-info tbody tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
 
-	.page-link {
-		display: block;
-		padding: 6px 12px;
-		background-color: #fff;
-		border: 1px solid #ddd;
-		color: #007bff;
-		cursor: pointer;
-	}
+    .work-info tbody tr:hover {
+      background-color: #e2e6ea;
+    }
 
-	.page-link.active {
-		background-color: #4e73df;
-		color: white;
-	}
-	</style>
+    /* 페이징 스타일 */
+    .pagination-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 15px;
+    }
+
+    .page-item {
+      list-style: none;
+
+    }
+
+    .page-link {
+      display: block;
+      padding: 6px 12px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      color: #007bff;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .page-link.active {
+      background-color: #4e73df;
+      color: white;
+    }
+
+    .page-item.disabled .page-link {
+      color: #ccc;
+      cursor: not-allowed;
+    }
+
+    /* 셀렉트박스 스타일 */
+    select {
+      padding: 6px 12px;
+      font-size: 14px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      appearance: none;
+      background-color: #fff;
+      color: #333;
+      cursor: pointer;
+      width: 200px;
+    }
+
+    select:focus {
+      border-color: #4e73df;
+      outline: none;
+    }
+
+    label {
+      margin-right: 10px;
+      font-size: 14px;
+    }
+
+    /* Optional: Style for Select box arrows */
+    select::-ms-expand {
+      display: none;
+    }
+
+    /* Style for the pagination buttons with arrows */
+    .page-link {
+      padding: 6px 12px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      color: #007bff;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .page-item:first-child .page-link {
+      border-radius: 4px 0 0 4px; /* Left arrow rounded */
+    }
+
+    .page-item:last-child .page-link {
+      border-radius: 0 4px 4px 0; /* Right arrow rounded */
+    }
+  </style>
 </head>
 
 <body>
-	<div class="container">
-		<div class="card shadow mb-4">
-			<div class="card-header py-3">
-				<h5 class="m-0 font-weight-bold">부서원 근태 현황</h5>
-			</div>
-			<div class="card-body">
-				<canvas id="attendanceChart" style="height: 300px;"></canvas>
-			</div>
-		</div>
+<div class="container">
 
-		<div class="card shadow mb-4">
-			<div class="card-header py-3">
-				<h5 class="m-0 font-weight-bold">부서원 출퇴근 기록 (오늘)</h5>
-			</div>
-			<div class="card-body">
-				<div class="work-info">
-					<table>
-						<thead>
-							<tr>
-								<th>부서명</th>
-								<th>사원번호</th>
-								<th>사원이름</th>
-								<th>출근시간</th>
-								<th>퇴근시간</th>
-								<th>오늘 근무시간</th>
-								<th>초과 근무시간</th>
-							</tr>
-						</thead>
-						<tbody id="employeeTableBody"></tbody>
-					</table>
-					<!-- ✅ 페이징 -->
-					<div class="pagination-container">
-						<ul id="todayPagination" style="display: flex; padding-left: 0;"></ul>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+  <!-- ✅ 월 + 부서원 선택 -->
+  <div class="select-container">
+    <form id="monthSelectForm" method="get" action="/chartsManager">
+      <label for="yearMonth">월 선택:</label>
+      <select id="yearMonth" name="yearMonth" onchange="document.getElementById('monthSelectForm').submit()">
+        <option th:value="${T(java.time.YearMonth).now().minusMonths(2)}"
+                th:text="${T(java.time.YearMonth).now().minusMonths(2)}"
+                th:selected="${selectedYearMonth == T(java.time.YearMonth).now().minusMonths(2).toString()}">2달 전</option>
+        <option th:value="${T(java.time.YearMonth).now().minusMonths(1)}"
+                th:text="${T(java.time.YearMonth).now().minusMonths(1)}"
+                th:selected="${selectedYearMonth == T(java.time.YearMonth).now().minusMonths(1).toString()}">1달 전</option>
+        <option th:value="${T(java.time.YearMonth).now()}"
+                th:text="${T(java.time.YearMonth).now()}"
+                th:selected="${selectedYearMonth == T(java.time.YearMonth).now().toString()}">이번 달</option>
+      </select>
 
-	<script src="/vendor/jquery/jquery.min.js"></script>
-	<script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      <label for="employeeName">사원 선택:</label>
+      <select id="employeeName" name="employeeName" onchange="document.getElementById('monthSelectForm').submit()">
+        <option value="">전체</option>
+        <option th:each="name : ${employeeNames}"
+                th:value="${name}"
+                th:text="${name}"
+                th:selected="${selectedEmployeeName == name}"></option>
+      </select>
+    </form>
+  </div>
 
-	<script>
-	let chartData = [];
-	let chart = null;
+  <!-- ✅ 그래프 -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h5 class="m-0 font-weight-bold">부서원 근태 현황 (<span th:text="${selectedYearMonth}"></span>)</h5>
+    </div>
+    <div class="card-body">
+      <canvas id="attendanceChart" style="height: 300px;"></canvas>
+    </div>
+  </div>
 
-	document.addEventListener("DOMContentLoaded", function () {
-		loadChartData();
-		loadTodayAttendance();
-	});
+  <!-- ✅ 테이블 -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h5 class="m-0 font-weight-bold">부서원 출퇴근 기록 (<span th:text="${selectedYearMonth}"></span>)</h5>
+    </div>
+    <div class="card-body">
+      <div class="work-info">
+        <table>
+          <thead>
+          <tr>
+            <th>부서명</th>
+            <th>사원번호</th>
+            <th>사원이름</th>
+            <th>출근시간</th>
+            <th>퇴근시간</th>
+            <th>오늘 근무시간</th>
+            <th>초과 근무시간</th>
+          </tr>
+          </thead>
+          <tbody id="employeeTableBody">
+          <tr th:each="attendance : ${attendanceList}">
+            <td th:text="${attendance.departmentName}"></td>
+            <td th:text="${attendance.employeeNo}"></td>
+            <td th:text="${attendance.employeeName}"></td>
+            <td th:text="${#dates.format(attendance.clockInTime, 'HH:mm')} ?: '-'"></td>
+            <td th:text="${#dates.format(attendance.clockOutTime, 'HH:mm')} ?: '-'"></td>
+            <td th:text="${attendance.totalWorkingHours} ?: '-'"></td>
+            <td th:text="${attendance.overtimeHours} ?: '0'"></td>
+          </tr>
+          </tbody>
+        </table>
 
-	function loadChartData() {
-		fetch("/chartsManagerData")
-			.then(res => res.json())
-			.then(data => {
-				chartData = data;
-				const labels = data.map(item => item.employeeName);
-				const totalHours = data.map(item => item.totalWorkingHours || 0);
-				const overtime = data.map(item => item.overtimeHours || 0);
+        <div class="pagination-container">
+          <ul id="todayPagination" style="display: flex; padding-left: 0;"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-				const ctx = document.getElementById('attendanceChart').getContext('2d');
+<script src="/vendor/jquery/jquery.min.js"></script>
+<script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-				if (chart) chart.destroy();
-				chart = new Chart(ctx, {
-					type: 'bar',
-					data: {
-						labels: labels,
-						datasets: [
-							{
-								label: '총 근무 시간',
-								data: totalHours,
-								backgroundColor: '#f1c40f'
-							},
-							{
-								label: '초과 근무 시간',
-								data: overtime,
-								backgroundColor: '#e74c3c'
-							}
-						]
-					},
-					options: {
-						maintainAspectRatio: false,
-						responsive: true,
-						plugins: {
-							legend: { position: 'top' },
-							title: {
-								display: true,
-								text: '이달의 부서원 근무시간 비교'
-							}
-						},
-						scales: {
-							y: {
-								beginAtZero: true,
-								title: {
-									display: true,
-									text: '시간 (Hours)'
-								}
-							}
-						}
-					}
-				});
-			})
-			.catch(err => console.error('❌ 차트 데이터 오류:', err));
-	}
+<script th:inline="javascript">
+  const summaryData = [[${summaryList}]];
 
-	function loadTodayAttendance() {
-		fetch("/todayAttendance")
-			.then(res => res.json())
-			.then(data => {
-				const tbody = document.getElementById("employeeTableBody");
-				tbody.innerHTML = '';
-				data.forEach(emp => {
-					const row = document.createElement("tr");
-					row.innerHTML = `
-						<td>${emp.departmentName || '-'}</td>
-						<td>${emp.employeeNo}</td>
-						<td>${emp.employeeName}</td>
-						<td>${formatTime(emp.clockInTime)}</td>
-						<td>${formatTime(emp.clockOutTime)}</td>
-						<td>${emp.totalWorkingHours ?? '-'}</td>
-						<td>${emp.totalOvertimeTime ?? 0}</td>
-					`;
-					tbody.appendChild(row);
-				});
-				setupTodayPagination();
-			})
-			.catch(err => console.error("❌ 오늘 출결 로딩 실패:", err));
-	}
+  document.addEventListener("DOMContentLoaded", function () {
+    setupChart();
+    setupTodayPagination();
+  });
 
-	function formatTime(datetimeStr) {
-		if (!datetimeStr) return '-';
-		const date = new Date(datetimeStr);
-		return date.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
-	}
+  function setupChart() {
+    const labels = [];
+    const totalHours = [];
+    const overtime = [];
 
-	// ✅ 페이징 기능 추가
-	function setupTodayPagination() {
-		const rowsPerPage = 5;
-		const tableBody = document.getElementById('employeeTableBody');
-		const rows = tableBody.querySelectorAll('tr');
-		const pagination = document.getElementById('todayPagination');
-		let currentPage = 1;
-		const totalPages = Math.ceil(rows.length / rowsPerPage);
+    summaryData.forEach(item => {
+      labels.push(item.employeeName);
+      totalHours.push(item.totalWorkingHours || 0);
+      overtime.push(item.overtimeHours || 0);
+    });
 
-		function displayRows(page) {
-			const start = (page - 1) * rowsPerPage;
-			const end = start + rowsPerPage;
-			rows.forEach((row, index) => {
-				row.style.display = (index >= start && index < end) ? '' : 'none';
-			});
-		}
+    const ctx = document.getElementById('attendanceChart').getContext('2d');
 
-		function update() {
-			displayRows(currentPage);
-			const pageLinks = pagination.querySelectorAll('.page-link');
-			pageLinks.forEach((link, index) => {
-				if (index === currentPage) {
-					link.classList.add('active');
-				} else {
-					link.classList.remove('active');
-				}
-			});
-		}
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: '총 근무 시간',
+            data: totalHours,
+            backgroundColor: '#f1c40f'
+          },
+          {
+            label: '초과 근무 시간',
+            data: overtime,
+            backgroundColor: '#e74c3c'
+          }
+        ]
+      },
+      options: {
+        maintainAspectRatio: false,
+        responsive: true,
+        plugins: {
+          legend: {position: 'top'},
+          title: {
+            display: true,
+            text: '부서원 근무시간 비교'
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: '시간 (Hours)'
+            }
+          }
+        }
+      }
+    });
+  }
 
-		function setupPagination() {
-			pagination.innerHTML = '';
+  // ✅ 페이징
+  function setupTodayPagination() {
+    const rowsPerPage = 5;
+    const tableBody = document.getElementById('employeeTableBody');
+    const rows = tableBody.querySelectorAll('tr');
+    const pagination = document.getElementById('todayPagination');
+    let currentPage = 1;
+    const totalPages = Math.ceil(rows.length / rowsPerPage);
 
-			// Prev
-			const prev = document.createElement('li');
-			prev.classList.add('page-item');
-			prev.innerHTML = `<span class="page-link">&laquo;</span>`;
-			prev.addEventListener('click', () => {
-				if (currentPage > 1) {
-					currentPage--;
-					update();
-				}
-			});
-			pagination.appendChild(prev);
+    function displayRows(page) {
+      const start = (page - 1) * rowsPerPage;
+      const end = start + rowsPerPage;
+      rows.forEach((row, index) => {
+        row.style.display = (index >= start && index < end) ? '' : 'none';
+      });
+    }
 
-			// Pages
-			for (let i = 1; i <= totalPages; i++) {
-				const pageItem = document.createElement('li');
-				pageItem.classList.add('page-item');
-				pageItem.innerHTML = `<span class="page-link">${i}</span>`;
-				pageItem.addEventListener('click', () => {
-					currentPage = i;
-					update();
-				});
-				pagination.appendChild(pageItem);
-			}
+    function update() {
+      displayRows(currentPage);
+      const pageLinks = pagination.querySelectorAll('.page-link');
+      pageLinks.forEach((link, index) => {
+        if (index === currentPage) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
+      });
+    }
 
-			// Next
-			const next = document.createElement('li');
-			next.classList.add('page-item');
-			next.innerHTML = `<span class="page-link">&raquo;</span>`;
-			next.addEventListener('click', () => {
-				if (currentPage < totalPages) {
-					currentPage++;
-					update();
-				}
-			});
-			pagination.appendChild(next);
-		}
+    function setupPagination() {
+      pagination.innerHTML = '';
 
-		if (rows.length > 0) {
-			setupPagination();
-			update();
-		}
-	}
-	</script>
+      const prev = document.createElement('li');
+      prev.classList.add('page-item');
+      prev.innerHTML = `<span class="page-link">&laquo;</span>`;
+      prev.addEventListener('click', () => {
+        if (currentPage > 1) {
+          currentPage--;
+          update();
+        }
+      });
+      pagination.appendChild(prev);
+
+      for (let i = 1; i <= totalPages; i++) {
+        const pageItem = document.createElement('li');
+        pageItem.classList.add('page-item');
+        pageItem.innerHTML = `<span class="page-link">${i}</span>`;
+        pageItem.addEventListener('click', () => {
+          currentPage = i;
+          update();
+        });
+        pagination.appendChild(pageItem);
+      }
+
+      const next = document.createElement('li');
+      next.classList.add('page-item');
+      next.innerHTML = `<span class="page-link">&raquo;</span>`;
+      next.addEventListener('click', () => {
+        if (currentPage < totalPages) {
+          currentPage++;
+          update();
+        }
+      });
+      pagination.appendChild(next);
+    }
+
+    if (rows.length > 0) {
+      setupPagination();
+      update();
+    }
+  } 
+</script>
 
 </body>
 </html>
