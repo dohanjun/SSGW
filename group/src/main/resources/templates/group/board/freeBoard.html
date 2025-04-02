@@ -5,90 +5,342 @@
 	layout:fragment="content">
 
 <head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>SSGW - Dashboard</title>
+
+<link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
 <link
-	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+	href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap"
 	rel="stylesheet">
-<meta charset="UTF-8">
-<title>자유 게시판</title>
+
+<style>
+.main-grid {
+	display: grid;
+	grid-template-columns: 1fr 2fr 1fr 1fr;
+	grid-template-rows: 120px 300px 300px;
+	gap: 20px;
+	grid-template-areas: "userinfo userinfo userinfo userinfo"
+		"datetime 자료실 공지 approval" "일정 자료실 공지 recentApproval";
+}
+
+body {
+	background: url('/image/image.png') no-repeat right bottom;
+	background-size: contain;
+	background-attachment: fixed;
+	background-color: #f8f9fc;
+	font-family: 'Noto Sans KR', sans-serif;
+	user-select: none;
+}
+
+.card, .datetime-box {
+	height: 100%;
+	border-radius: 12px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	background-color: #ffffff;
+}
+
+.userinfo-box {
+	grid-area: userinfo;
+	background: #ffffff;
+	border-radius: 12px;
+	padding: 40px 20px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+	min-height: 120px;
+	flex-direction: column;
+	text-align: center;
+}
+
+.userinfo-box img {
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+}
+
+.datetime-box {
+	grid-area: datetime;
+	background: #f1f2f6;
+	padding: 20px;
+	text-align: center;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.datetime-box .date {
+	font-size: 1.2rem;
+	color: #333;
+}
+
+.datetime-box .time {
+	font-size: 1.8rem;
+	color: #007bff;
+	font-weight: bold;
+	margin-top: 10px;
+}
+
+.weather-box {
+	margin-top: 10px;
+	font-size: 0.9rem;
+	color: #555;
+}
+
+.approval {
+	grid-area: approval;
+}
+
+.recentApproval {
+	grid-area: recentApproval;
+}
+
+.board-section1 {
+	grid-area: 자료실;
+}
+
+.board-section2 {
+	grid-area: 공지;
+}
+
+.schedule-box {
+	grid-area: 일정;
+}
+
+.board-box {
+	padding: 20px;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	min-height: 300px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	border-radius: 12px;
+}
+
+.board-section1 .board-title {
+	background-color: #3498db;
+	color: #fff;
+	padding: 8px 12px;
+	border-radius: 6px;
+}
+
+.board-section2 .board-title {
+	background-color: #e67e22;
+	color: #fff;
+	padding: 8px 12px;
+	border-radius: 6px;
+}
+
+.approval .board-title {
+	background-color: #17a2b8;
+	color: #fff;
+	padding: 8px 12px;
+	border-radius: 6px;
+}
+
+.schedule-box .board-title {
+	background-color: #007bff;
+	color: #fff;
+	padding: 8px 12px;
+	border-radius: 6px;
+}
+
+.recentApproval .board-title {
+	background-color: #28a745;
+	color: #fff;
+	padding: 8px 12px;
+	border-radius: 6px;
+}
+
+.card-body ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.card-body ul li, .board-list li {
+	background-color: rgba(0, 123, 255, 0.05);
+	border-radius: 8px;
+	padding: 8px 12px;
+	margin-bottom: 8px;
+	font-size: 0.95rem;
+	color: #555;
+	display: flex;
+	align-items: center;
+	transition: background-color 0.2s ease-in-out;
+}
+
+.card-body ul li:hover, .board-list li:hover {
+	background-color: rgba(0, 123, 255, 0.1);
+}
+
+.card-body ul li::before, .board-list li::before {
+	content: "📄";
+	margin-right: 8px;
+	color: #007bff;
+}
+
+.card-body ul li a, .board-list li a {
+	color: #2c3e50;
+	font-weight: 500;
+	text-decoration: none;
+}
+
+.card-body ul li a:hover, .board-list li a:hover {
+	color: #0056b3;
+	text-decoration: underline;
+}
+
+.board-title {
+	font-size: 1.2rem;
+	font-weight: bold;
+	color: #333;
+	margin-bottom: 12px;
+}
+
+.clickable-card:hover {
+	transform: translateY(-2px);
+	transition: all 0.2s ease-in-out;
+	cursor: pointer;
+	box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+</style>
+
+<link href="/css/dashboard.css" rel="stylesheet">
 </head>
-<body>
-	<!-- 자유 게시판 -->
-	<div class="card shadow mb-4">
-		<div class="card-header py-3">
-			<h6 class="m-0 font-weight-bold text-primary">자유 게시판</h6>
-		</div>
-		<div class="card-body">
 
-			<!-- 검색 폼 -->
-			<div class="position-relative" style="width: 350px; margin: 0 auto;">
-				<form th:action="@{/freeBoard}" method="get"
-					class="position-relative mb-3" style="width: 300px;">
-					<input type="text" name="keyword" class="form-control pl-4"
-						placeholder="검색어 입력" th:value="${keyword}">
-					<button type="submit"
-						style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%); background: none; border: none;">
-						<i class="fas fa-search" style="color: #aaa;"></i>
-					</button>
-				</form>
-			</div>
-			<input type="hidden" name="boardType" value="자유" />
-			<!-- 등록 버튼 -->
-			<div class="text-right mb-3">
-				<a class="btn btn-primary" href='/insertBoard?boardType=자유'>등록</a>
-			</div>
+<body id="page-top">
+	<div id="wrapper">
+		<div id="content-wrapper" class="d-flex flex-column">
+			<div id="content">
+				<div class="container-fluid">
 
-			<!-- 게시글 리스트 -->
-			<table class="table table-bordered" id="dataTable" width="100%"
-				cellspacing="0">
-				<thead>
-					<tr>
-						<th>번호</th>
-						<th>제목</th>
-						<th>작성자</th>
-						<th>작성일</th>
-						<th>조회수</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr th:each="post, iterStat : ${postList}"
-						th:data-url="@{'/detailBoard/' + ${post.postId}}"
-						onclick="location.href=this.dataset.url" style="cursor: pointer;">
-						<td th:text="${totalCount - ((page - 1) * 10 + iterStat.index)}"></td>
-						<td th:text="${post.postTitle}"></td>
-						<td th:text="${post.employeeName}"></td>
-						<td th:text="${#dates.format(post.postDate, 'yyyy-MM-dd')}"></td>
-						<td th:text="${post.views}"></td>
-					</tr>
-				</tbody>
-			</table>
+					<div class="main-grid">
 
-			<!-- 페이징 -->
-			<div class="d-flex align-items-center justify-content-between mt-3">
-				<div class="flex-grow-1 d-flex justify-content-center">
-					<nav aria-label="페이지네이션">
-						<ul class="pagination mb-0">
-							<li class="page-item" th:classappend="${page == 1} ? 'disabled'">
-								<a class="page-link"
-								th:href="@{/freeBoard(page=${page - 1}, keyword=${keyword})}">&laquo;</a>
-							</li>
-							<li class="page-item"
-								th:each="i : ${#numbers.sequence(1, totalPages)}"
-								th:classappend="${i == page} ? 'active'"><a
-								class="page-link"
-								th:href="@{/freeBoard(page=${i}, keyword=${keyword})}"
-								th:text="${i}"></a></li>
-							<li class="page-item"
-								th:classappend="${page == totalPages} ? 'disabled'"><a
-								class="page-link"
-								th:href="@{/freeBoard(page=${page + 1}, keyword=${keyword})}">&raquo;</a>
-							</li>
-						</ul>
-					</nav>
+						<!-- 사용자 정보 -->
+						<div class="userinfo-box col-lg-">
+							<div>
+								<h5 class="mb-1 fw-bold">
+									👋 환영합니다, <span th:text="${userInfo.employeeName}">홍길동</span> 님
+								</h5>
+								<p class="mb-0 text-muted">오늘도 좋은 하루 되세요!</p>
+							</div>
+							<div>
+								<img th:if="${profileImageBase64}"
+									th:src="'data:image/png;base64,' + ${profileImageBase64}"
+									alt="프로필 이미지">
+							</div>
+						</div>
+
+						<!-- 날짜 & 시간 -->
+						<div class="datetime-box datetime">
+							<div class="date" id="dateText"></div>
+							<div class="time" id="timeText"></div>
+							<div class="weather-box">
+								🌤️ 현재 날씨: <span id="weatherText">로딩 중...</span>
+							</div>
+						</div>
+
+						<!-- 📂 자료실 -->
+						<div
+							class="board-box board-section1 shadow-sm border clickable-card"
+							data-url="/totalRepository">
+							<div class="board-title">📂 자료실</div>
+							<ul class="board-list">
+								<li th:each="post : ${repositoryList}"><a
+									th:text="${post.title}" th:href="@{/totalRepository}"></a></li>
+							</ul>
+						</div>
+
+						<!-- 📢 공지 · 업무 -->
+						<div
+							class="board-box board-section2 shadow-sm border clickable-card"
+							data-url="/noticeBoard">
+							<div class="board-title">📢 게시판</div>
+							<ul class="board-list">
+								<li th:each="post, iterStat : ${postList}"
+									th:data-url="@{'/detailBoard/' + ${post.postId}}"
+									onclick="location.href=this.dataset.url"
+									style="cursor: pointer;" th:text="${post.postTitle}"></li>
+							</ul>
+						</div>
+
+						<!-- 📨 받은 메일함 -->
+						<div class="board-box approval shadow-sm border clickable-card"
+							data-url="/mailBox">
+							<div class="board-title">📨 받은 메일함</div>
+							<ul class="board-list">
+								<li th:each="mail : ${recentMailList}"><a
+									th:text="${mail.title}" th:href="@{/mailBox}"></a></li>
+							</ul>
+						</div>
+
+						<!-- 📅 오늘 내 일정 -->
+						<div
+							class="board-box schedule-box shadow-sm border clickable-card"
+							data-url="/schedulePage">
+							<div class="board-title">📅 오늘 내 일정</div>
+							<ul class="board-list">
+								<li th:each="schedule : ${todaySchedule}"><a
+									th:text="${schedule.scheduleTitle}" th:href="@{/schedulePage}"></a></li>
+							</ul>
+						</div>
+
+						<!-- 📌 최근 결재 문서 -->
+						<div
+							class="board-box recentApproval shadow-sm border clickable-card"
+							data-url="/aprv/request">
+							<div class="board-title">📌 최근 결재 문서</div>
+							<ul class="board-list">
+								<li th:each="aprv : ${recentApprovalList}"><a
+									th:text="${aprv.title} + ' - ' + ${aprv.aprvStatus}"
+									th:href="@{/aprv/request}"></a></li>
+							</ul>
+						</div>
+
+					</div>
 				</div>
 			</div>
 
+			<footer class="sticky-footer bg-white">
+				<div class="container my-auto">
+					<div class="text-center my-auto copyright">
+						<span>Copyright &copy; Your Company 2025 | <a
+							href="/privacy-policy" class="text-muted">개인정보처리방침</a> | <a
+							href="/terms" class="text-muted">이용약관</a>
+						</span>
+					</div>
+				</div>
+			</footer>
 		</div>
 	</div>
 
+	<script>
+    const days = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+    const dateElement = document.getElementById('dateText');
+    const timeElement = document.getElementById('timeText');
+
+    function updateTime() {
+      const now = new Date();
+      const date = now.toLocaleDateString('ko-KR');
+      const day = days[now.getDay()];
+      const time = now.toLocaleTimeString('ko-KR');
+      dateElement.innerText = `${date} (${day})`;
+      timeElement.innerText = time;
+    }
+
+    updateTime();
+    setInterval(updateTime, 1000);
+
+    fetch('https://api.open-meteo.com/v1/forecast?latitude=37.57&longitude=126.98&current_weather=true')
+      .then(response => response.json())
+      .then(data => {
+        const weather = data.current_weather;
+        document.getElementById('weatherText').innerText = `${weather.temperature}°C, 풍속 ${weather.windspeed} km/h`;
+      });
+  </script>
 </body>
 </html>

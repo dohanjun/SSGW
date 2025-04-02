@@ -20,10 +20,11 @@
 .main-grid {
 	display: grid;
 	grid-template-columns: 1fr 2fr 1fr 1fr;
-	grid-template-rows: 120px 300px 300px;
+	grid-template-rows: 120px 300px 300px; /* ✅ 높이 살짝 증가 */
 	gap: 20px;
 	grid-template-areas: "userinfo userinfo userinfo userinfo"
-		"datetime 자료실 공지 approval" "일정 자료실 공지 recentApproval";
+		"datetime 자료실 공지 approval"
+		"일정 자료실 공지 recentApproval";
 }
 
 body {
@@ -217,7 +218,7 @@ body {
 					<div class="main-grid">
 
 						<!-- 사용자 정보 -->
-						<div class="userinfo-box col-lg-">
+						<div class="userinfo-box">
 							<div>
 								<h5 class="mb-1 fw-bold">
 									👋 환영합니다, <span th:text="${userInfo.employeeName}">홍길동</span> 님
@@ -225,9 +226,8 @@ body {
 								<p class="mb-0 text-muted">오늘도 좋은 하루 되세요!</p>
 							</div>
 							<div>
-											<img th:if="${profileImageBase64}"
-										th:src="'data:image/png;base64,' + ${profileImageBase64}"
-										alt="프로필 이미지">
+								<img id="profilePreview" src="img/default-profile.png"
+									alt="프로필 이미지">
 							</div>
 						</div>
 
@@ -257,17 +257,19 @@ body {
 							data-url="/noticeBoard">
 							<div class="board-title">📢 공지 · 업무</div>
 							<ul class="board-list">
-								<li th:each="post, iterStat : ${postList}" th:data-url="@{'/detailBoard/' + ${post.postId}}"
-									onclick="location.href=this.dataset.url" style="cursor: pointer;" th:text="${post.postTitle}"></li>
+								<li th:each="board : ${recentBoardList}"><a
+									th:text="${board.boardName}" th:href="@{/noticeBoard}"></a></li>
 							</ul>
 						</div>
 
 						<!-- 📨 받은 메일함 -->
-						<div class="board-box approval shadow-sm border clickable-card"
+						<div
+							class="board-box approval shadow-sm border clickable-card"
 							data-url="/mailBox">
 							<div class="board-title">📨 받은 메일함</div>
 							<ul class="board-list">
-								<li th:each="mail : ${recentMailList}"><a th:text="${mail.title}" th:href="@{/mailBox}"></a></li>
+								<li th:each="mail : ${recentMailList}"><a
+									th:text="${mail.title}" th:href="@{/mailBox}"></a></li>
 							</ul>
 						</div>
 
@@ -277,7 +279,8 @@ body {
 							data-url="/schedulePage">
 							<div class="board-title">📅 오늘 내 일정</div>
 							<ul class="board-list">
-								<li th:each="schedule : ${todaySchedule}"><a th:text="${schedule.scheduleTitle}" th:href="@{/schedulePage}"></a></li>
+								<li th:each="schedule : ${todaySchedule}"><a
+									th:text="${schedule.scheduleTitle}" th:href="@{/schedulePage}"></a></li>
 							</ul>
 						</div>
 
@@ -287,8 +290,9 @@ body {
 							data-url="/aprv/request">
 							<div class="board-title">📌 최근 결재 문서</div>
 							<ul class="board-list">
-								<li th:each="post, iterStat : ${postList}" th:data-url="@{'/detailBoard/' + ${post.postId}}"
-									onclick="location.href=this.dataset.url" style="cursor: pointer;" th:text="${post.postTitle}"></li>
+								<li th:each="aprv : ${recentApprovalList}"><a
+									th:text="${aprv.title} + ' - ' + ${aprv.aprvStatus}"
+									th:href="@{/aprv/request}"></a></li>
 							</ul>
 						</div>
 
@@ -299,9 +303,9 @@ body {
 			<footer class="sticky-footer bg-white">
 				<div class="container my-auto">
 					<div class="text-center my-auto copyright">
-						<span>Copyright &copy; Your Company 2025 | <a
-							href="/privacy-policy" class="text-muted">개인정보처리방침</a> | <a
-							href="/terms" class="text-muted">이용약관</a>
+						<span>Copyright &copy; Your Company 2025 | 
+							<a href="/privacy-policy" class="text-muted">개인정보처리방침</a> | 
+							<a href="/terms" class="text-muted">이용약관</a>
 						</span>
 					</div>
 				</div>

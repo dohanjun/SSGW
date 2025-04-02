@@ -9,9 +9,8 @@
 		employee_no
 		FROM schedule
 		WHERE employee_no = #{employeeNo}
-		AND
-		TO_CHAR(schedule_start, 'YYYY-MM-DD') = TO_CHAR(SYSDATE,
-		'YYYY-MM-DD')
+		AND	TO_CHAR(schedule_start, 'YYYY-MM-DD') <![CDATA[ <= ]]> TO_CHAR(SYSDATE,	'YYYY-MM-DD')
+		AND	TO_CHAR(schedule_end, 'YYYY-MM-DD') <![CDATA[ >= ]]> TO_CHAR(SYSDATE,	'YYYY-MM-DD')
 	</select>
 
 	<!-- 최근 게시물 3개 -->
@@ -34,10 +33,10 @@
 		SELECT draft_no, title, aprv_status, draft_date,
 		employee_no
 		FROM (
-		SELECT draft_no, title, aprv_status, draft_date,
-		employee_no
-		FROM aprv_documents
-		WHERE employee_no = #{employeeNo}
+		SELECT d.draft_no, d.title, d.aprv_status, d.draft_date,
+		d.employee_no, r.aprv_id, r.aprv_date, r.reject_reason, r.stamp_id
+		FROM aprv_documents d join aprv_routes r on d.employee_no = r.employee_no 
+		WHERE d.employee_no = #{employeeNo}
 		ORDER
 		BY draft_date DESC
 		)

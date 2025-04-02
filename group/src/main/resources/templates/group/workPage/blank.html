@@ -22,88 +22,92 @@
 <style>
   body {
     margin-left: 220px;
-}
+  }
 
-.container-flex {
+  .container-flex {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start; /* 왼쪽 정렬 */
     align-items: center;
     margin-bottom: 20px;
-}
+    gap: 10px; /* 두 요소 간의 간격을 줄이기 위해 gap 추가 */
+  }
 
-.chart-container {
+  .chart-container {
     width: 40%;
     display: flex;
     justify-content: center;
     align-items: center;
-}
+    margin-left: 150px; /* 그래프를 왼쪽으로 옮기기 위해 margin-left 조정 */
+  }
 
-.info-container {
-    width: 25%;
+  .info-container {
+    width: 30%; /* 박스 크기 키우기 */
     text-align: center;
-    background: #f8f9fc;
-    padding: 15px;
+    background: #fff;
+    padding: 30px; /* 박스 안쪽 여백 키우기 */
     border-radius: 10px;
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-}
+    margin-right: 10px; /* 원형 그래프와 박스 사이 간격을 더 줄이기 */
+    margin-left: 100px;
+  }
 
-.info-container h6 {
+  .info-container h6 {
     font-weight: bold;
-    margin-bottom: 5px;
-}
+    margin-bottom: 10px; /* 상단 간격 키우기 */
+    font-size: 18px; /* 글씨 키우기 */
+  }
 
-.info-container p {
-    font-size: 18px;
+  .info-container p {
+    font-size: 24px; /* 글씨 크기 키우기 */
     font-weight: bold;
     color: #007bff;
     margin: 0;
-}
+  }
 
-.work-info {
+  .work-info {
     width: 100%;
     overflow-x: auto;
-}
+  }
 
-.work-info table {
+  .work-info table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
-}
+  }
 
-.work-info th, .work-info td {
+  .work-info th, .work-info td {
     border: 1px solid #ddd;
     padding: 12px;
     text-align: center;
     white-space: nowrap;
     vertical-align: middle;
-}
+  }
 
-.work-info th {
+  .work-info th {
     background-color: #f8f9fc;
     font-weight: bold;
-}
+  }
 
-.work-info tbody tr:nth-child(even) {
+  .work-info tbody tr:nth-child(even) {
     background-color: #f2f2f2;
-}
+  }
 
-.work-info tbody tr:hover {
+  .work-info tbody tr:hover {
     background-color: #e2e6ea;
-}
+  }
 
-/* 페이징 스타일 */
-.pagination-container {
+  /* 페이징 스타일 */
+  .pagination-container {
     display: flex;
     justify-content: center;
     margin-top: 15px;
-}
+  }
 
-.page-item {
+  .page-item {
     list-style: none;
+  }
 
-}
-
-.page-link {
+  .page-link {
     display: block;
     padding: 6px 12px;
     background-color: #fff;
@@ -112,24 +116,24 @@
     cursor: pointer;
     border-radius: 4px;
     transition: background-color 0.3s ease;
-}
+  }
 
-.page-link:hover {
+  .page-link:hover {
     background-color: #e2e6ea;
-}
+  }
 
-.page-link.active {
+  .page-link.active {
     background-color: #4e73df;
     color: white;
-}
+  }
 
-.page-item.disabled .page-link {
+  .page-item.disabled .page-link {
     color: #ccc;
     cursor: not-allowed;
-}
+  }
 
-/* 셀렉트박스 스타일 */
-select {
+  /* 셀렉트박스 스타일 */
+  select {
     padding: 6px 12px;
     font-size: 14px;
     border: 1px solid #ddd;
@@ -140,39 +144,40 @@ select {
     cursor: pointer;
     width: 220px;
     transition: border-color 0.3s ease;
-}
+  }
 
-select:focus {
+  select:focus {
     border-color: #4e73df;
     outline: none;
-}
+  }
 
-label {
+  label {
     margin-right: 10px;
     font-size: 14px;
-}
+  }
 
-/* Option hover effect */
-option:hover {
+  /* Option hover effect */
+  option:hover {
     background-color: #f0f0f0;
-}
+  }
 
-/* Optional: Style for Select box arrows */
-select::-ms-expand {
+  /* Optional: Style for Select box arrows */
+  select::-ms-expand {
     display: none;
-}
+  }
 
-/* Style for the pagination buttons with arrows */
-.page-item:first-child .page-link {
+  /* Style for the pagination buttons with arrows */
+  .page-item:first-child .page-link {
     border-radius: 4px 0 0 4px; /* Left arrow rounded */
-}
+  }
 
-.page-item:last-child .page-link {
+  .page-item:last-child .page-link {
     border-radius: 0 4px 4px 0; /* Right arrow rounded */
-}
-
-
+  }
 </style>
+
+
+
 
 </head>
 
@@ -193,7 +198,7 @@ select::-ms-expand {
 
 		<!-- ✅ 월 선택 -->
 		<div class="select-container">
-			<form id="monthSelectForm" method="get" action="/blank">
+			<form id="monthSelectForm" method="get" action="/attendance">
 				<label for="yearMonth">월 선택:</label>
 				<select id="yearMonth" name="yearMonth"
 					onchange="document.getElementById('monthSelectForm').submit()">
@@ -211,9 +216,7 @@ select::-ms-expand {
 		</div>
 
 		<div class="card shadow mb-4">
-			<div class="card-header py-3">
-				<h5 class="m-0 font-weight-bold">출퇴근 기록 (<span th:text="${selectedYearMonth}"></span>)</h5>
-			</div>
+
 			<div class="card-body">
 				<div class="work-info">
 					<table>
