@@ -27,25 +27,26 @@ public interface EmpMapper {
 	// 로그인한 정보 가져오기
 	public EmpVO findByEmployeeId(String employeeId);
 	
-    //  페이징 적용된 사원 목록 조회
+    // 페이징 적용된 사원 목록 조회
     public List<EmpVO> pageselectEmp(EmpserchVO empsVO);
 
-    //  전체 사원 수 조회
+    // 전체 사원 수 조회
     public int countEmp(EmpserchVO empsVO);
-    
-    
-    //  사원번호로 랜덤 비밀번호를 업데이트
+      
+    // 사원번호로 랜덤 비밀번호를 업데이트
     public void updatePassword(@Param("employeeNo") int employeeNo, @Param("employeePw") String employeePw);
     
-    // 첫번째 ip
+    // 회사 기준 비밀번호 업데이트
+    public void updateEmployeePasswordBySuberNo(EmpVO employee);
+    
+    // 아이디 중복 체크
+    public int isEmployeeIdDuplicate(String employeeId);
+    
+    // 회사 첫 번째 IP
     String getFirstIpByEmployeeNo(Integer employeeNo);
     
-    // 두번째 ip
+    // 회사 두 번째 IP
     String getSecondIpByEmployeeNo(Integer employeeNo);
-
-	public void updateEmployeePasswordBySuberNo(EmpVO employee);
-	
-	// 아이디 중복 체크
-	public int isEmployeeIdDuplicate(String employeeId);
+    
 
 }

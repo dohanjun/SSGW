@@ -7,8 +7,11 @@
     <meta charset="UTF-8">
     <title>부서/직책 이력 관리</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.6.2/css/bootstrap.min.css">
+
     <style>
-        .container { max-width: 1200px; }
+        body { font-size: 15px; }
+        .container { max-width: 1300px; }
+
         .card-box {
             border: 1px solid #dee2e6;
             border-radius: 8px;
@@ -17,12 +20,14 @@
             margin-bottom: 40px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
+
         .card-title {
             font-size: 20px;
             font-weight: bold;
             margin-bottom: 25px;
             color: #333;
         }
+
         .search-box {
             display: flex;
             flex-wrap: wrap;
@@ -30,33 +35,75 @@
             align-items: center;
             margin-bottom: 20px;
         }
-        .search-box select, .search-box input {
+
+        .search-box select,
+        .search-box input {
             padding: 7px 14px;
             font-size: 15px;
             border-radius: 4px;
             border: 1px solid #ccc;
         }
+
         .search-box button {
             min-width: 90px;
             font-size: 15px;
         }
+
         .table thead th {
             background-color: #f8f9fa;
             text-align: center;
             font-size: 15px;
         }
+
         .table tbody tr {
             font-size: 15px;
         }
+
         .pagination .page-link {
             color: #007bff;
             font-size: 14px;
         }
+
         .pagination .active .page-link {
             background-color: #007bff;
             border-color: #007bff;
             color: white;
         }
+
+        .th이동이력 {
+            background-color: #D7F3F7 !important;
+            color: #333 !important;
+        }
+        .badge-style {
+	    display: inline-block;
+	    padding: 4px 10px;
+	    font-size: 13px;
+	    font-weight: bold;
+	    border-radius: 12px;
+	    color: #333;
+	    text-align: center;
+		}
+		
+		.badge-new {
+		    background-color: #cce5ff;
+		    color: #004085;
+		}
+		
+		.badge-rank {
+		    background-color: #e2d9f3;
+		    color: #4b0082;
+		}
+		
+		.badge-dept {
+		    background-color: #ffe5b4;
+		    color: #7a4c00;
+		}
+		
+		.badge-both {
+		    background-color: #d4edda;
+		    color: #155724;
+		}
+	        
     </style>
 </head>
 <body>
@@ -64,10 +111,12 @@
     <div class="card-box">
         <div class="card-title">부서/직책 이동 이력</div>
 
-        <!-- 🔍 검색 폼 -->
+        <!--  검색 폼 -->
         <form id="searchForm" action="/deptHist" method="get">
             <input type="hidden" name="page" value="1">
             <input type="hidden" name="suberNo" th:value="${searchVO.suberNo}">
+            <input type="hidden" name="resignationStatus" id="resignationStatus" th:value="${searchVO.resignationStatus}">
+            
 
             <div class="search-box">
                 <select name="size" onchange="this.form.submit()">
@@ -83,25 +132,37 @@
                 <select name="rankId" id="rankId">
                     <option value="">직급 선택</option>
                 </select>
+                
+                <select name="content">
+				    <option value="">이력 유형</option>
+				    <option value="신규 등록" th:selected="${searchVO.content == '신규 등록'}">신규 등록</option>
+				    <option value="직책 변경" th:selected="${searchVO.content == '직책 변경'}">직책 변경</option>
+				    <option value="부서 이동" th:selected="${searchVO.content == '부서 이동'}">부서 이동</option>
+				    <option value="부서/직책 변경" th:selected="${searchVO.content == '부서/직책 변경'}">부서/직책 변경</option>
+				</select>
 
                 <input type="text" name="employeeName" placeholder="이름 검색" th:value="${searchVO.employeeName}">
-                <button type="submit">검색</button>
-                <button type="button" onclick="resetSearch()">초기화</button>
+                <button type="submit" class="btn btn-primary">검색</button>
+                <button type="button" class="btn btn-secondary" onclick="resetSearch()">초기화</button>
+                <button type="button" class="btn btn-outline-primary" onclick="filterStatus('N')">재직자</button>
+                <button type="button" class="btn btn-outline-danger" onclick="filterStatus('Y')">퇴사자</button>
             </div>
         </form>
 
-        <!-- 📋 이력 테이블 -->
+        <!--  이동 이력 테이블 -->
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th>사원번호</th>
-                    <th>사원명</th>
-                    <th>이전 부서</th>
-                    <th>이동 부서</th>
-                    <th>이전 직책</th>
-                    <th>이동 직책</th>
-                    <th>이동일</th>
-                    <th>비고</th>
+                    <th class="th이동이력">사원번호</th>
+                    <th class="th이동이력">사원명</th>
+                    <th class="th이동이력">이전 부서</th>
+                    <th class="th이동이력">이동 부서</th>
+                    <th class="th이동이력">이전 직책</th>
+                    <th class="th이동이력">이동 직책</th>
+                    <th class="th이동이력">부서 이동일</th>
+                    <th class="th이동이력">부서 종료일</th>
+                    <th class="th이동이력">직책 변경일</th>
+                    <th class="th이동이력">비고</th>
                 </tr>
             </thead>
             <tbody>
@@ -112,13 +173,24 @@
                     <td th:text="${hist.movedToDeptName}"></td>
                     <td th:text="${hist.previousRankName}"></td>
                     <td th:text="${hist.currentRankName}"></td>
-                    <td th:text="${#dates.format(hist.moveDate, 'yyyy-MM-dd')}"></td>
-                    <td th:text="${hist.content}"></td>
+
+                    <td th:text="${hist.content != null and (hist.content.contains('부서') or hist.content == '신규 등록')} ? ${#dates.format(hist.moveDate, 'yyyy-MM-dd')} : ''"></td>
+                    <td th:text="${hist.content != null and hist.content.contains('부서') and hist.deleteDate != null} ? ${#dates.format(hist.deleteDate, 'yyyy-MM-dd')} : ''"></td>
+                    <td th:text="${hist.content != null and hist.content.contains('직책')} ? ${#dates.format(hist.moveDate, 'yyyy-MM-dd')} : ''"></td>
+
+                    <!--  비고 -->
+                    <td>
+					    <span th:if="${hist.content == '신규 등록'}" class="badge-style badge-new">신규 등록</span>
+					    <span th:if="${hist.content == '직책 변경'}" class="badge-style badge-rank">직책 변경</span>
+					    <span th:if="${hist.content == '부서 이동'}" class="badge-style badge-dept">부서 이동</span>
+					    <span th:if="${hist.content == '부서/직책 변경'}" class="badge-style badge-both">부서/직책 변경</span>
+					</td>
+                    
                 </tr>
             </tbody>
         </table>
 
-        <!-- 📄 페이지네이션 -->
+        <!-- 페이지네이션 -->
         <nav aria-label="Page navigation">
             <ul class="pagination justify-content-center">
                 <li class="page-item" th:if="${currentPage > 1}">
@@ -136,34 +208,39 @@
     </div>
 </div>
 
-<!-- ✅ 스크립트 -->
+<!-- 스크립트 영역 -->
 <script th:inline="javascript">
-    // 서버에서 선택한 값 유지
     const dept = [[${searchVO.departmentNo}]];
     const rank = [[${searchVO.rankId}]];
 
-    // 페이지 이동
+    // 페이지 이동 함수
     function goPage(p) {
-        const form = document.getElementById('searchForm');
-        form.page.value = p;
-        form.submit();
+        document.getElementById("searchForm").page.value = p;
+        document.getElementById("searchForm").submit();
     }
 
     // 검색 초기화
     function resetSearch() {
-        document.querySelector('input[name="employeeName"]').value = '';
         document.getElementById("depa").value = '';
         document.getElementById("rankId").value = '';
+        document.querySelector('select[name="content"]').value = '';
+        document.querySelector('input[name="employeeName"]').value = '';
+        document.getElementById("resignationStatus").value = '';
         goPage(1);
     }
 
-    // API에서 부서/직급 불러오기
+    // 재직자/퇴사자 필터링
+    function filterStatus(status) {
+        document.getElementById("resignationStatus").value = status;
+        goPage(1);
+    }
+
+    // 부서 및 직급 드롭다운 비동기 로드
     async function loadData(url, selectId, selectedValue) {
         try {
             const res = await fetch(url);
             const data = await res.json();
             const select = document.getElementById(selectId);
-
             data.forEach(item => {
                 const option = document.createElement("option");
                 option.value = item.departmentNo || item.rankId;
@@ -178,7 +255,6 @@
         }
     }
 
-    // 로딩 시 자동 실행
     document.addEventListener("DOMContentLoaded", function () {
         loadData("/api/departments", "depa", dept);
         loadData("/api/ranks", "rankId", rank);

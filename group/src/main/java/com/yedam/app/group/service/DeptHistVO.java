@@ -33,6 +33,8 @@ public class DeptHistVO {
     private int start;
     private int amount;
     
+    private String resignationStatus;	// 재직 퇴직 구분
+    
     
 
 	
