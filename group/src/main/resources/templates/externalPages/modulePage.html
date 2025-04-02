@@ -10,30 +10,6 @@
 	rel="stylesheet">
 <head>
 <style>
-.table-container {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	margin-top: 40px;
-}
-
-table {
-	width: 70%;
-	border-collapse: collapse;
-	background-color: #ffffff;
-	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-}
-
-th, td {
-	padding: 15px;
-	text-align: center;
-	border-bottom: 1px solid #ddd;
-}
-
-th {
-	background-color: #f4f4f4;
-}
-
 button {
 	padding: 5px 10px;
 	cursor: pointer;
@@ -99,7 +75,11 @@ header {
 }
 
 .modal-buttons button {
+	width: 100px;
 	padding: 6px 12px;
+	text-align: center;
+	box-sizing: border-box;
+	white-space: nowrap;
 }
 
 #moduleDescription {
@@ -116,6 +96,21 @@ header {
 
 .card-body {
 	padding: 30px;
+	border: 1px solid #2C3E50;
+}
+
+.card-header {
+	background-color: #2C3E50;
+}
+
+.menu-container {
+	position: relative;
+	display: inline-block;
+}
+
+.menu-toggle {
+	cursor: pointer;
+	font-size: 18px;
 }
 
 .table th, .table td {
@@ -127,13 +122,78 @@ header {
 	font-size: 1rem;
 	padding: 10px 20px;
 }
+
+.form-group {
+	margin-bottom: 15px;
+}
+
+.form-group label {
+	display: block;
+	margin-bottom: 5px;
+	font-weight: bold;
+}
+
+.form-group input, .form-group select {
+	width: 100%;
+	padding: 8px;
+	font-size: 1rem;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	box-sizing: border-box;
+}
+
+#moduleDescription {
+	height: 300px;
+	max-height: 500px;
+	min-height: 250px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	padding: 5px;
+}
+
+.form-row {
+	display: flex;
+	gap: 15px;
+	margin-bottom: 20px;
+}
+
+.flex-emoji {
+	flex: 1;
+}
+
+.flex-title {
+	flex: 2;
+}
+
+.flex-price {
+	flex: 1;
+}
+
+.form-group label {
+	display: block;
+	margin-bottom: 5px;
+	font-weight: bold;
+}
+
+.form-group input, .form-group select {
+	width: 100%;
+	padding: 8px;
+	font-size: 1rem;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	box-sizing: border-box;
+}
+
+.ql-editor {
+	font-size: 32px;
+	line-height: 1.6;
+}
 </style>
 </head>
 <body>
-	<div class="container my-4">
-		<div class="card p-4 shadow-sm">
-			<div class="card-header text-white"
-				style="background-color: rgb(44, 62, 80);">
+	<div class="container my-4 mainContainer">
+		<div class="card">
+			<div class="card-header text-white">
 				<h4 class="mb-0">모듈 관리</h4>
 			</div>
 			<div class="card-body">
@@ -143,7 +203,9 @@ header {
 							<div class="card-body d-flex flex-column justify-content-between">
 								<h5 class="card-title" th:text="${module.moduleName}">모듈명</h5>
 								<p class="card-text fw-bold"
-									th:text="${#numbers.formatInteger(module.modulePrice, 0, 'COMMA')} + ' 원'">100,000원</p>
+									th:text="${#strings.equals(module.basicModule, 'Y')} ? '기본모듈' : ${#numbers.formatInteger(module.modulePrice, 0, 'COMMA')} + ' 원'">
+								</p>
+
 								<div class="mt-auto d-flex justify-content-between">
 									<button class="btn btn-success btn-sm edit-btn">수정</button>
 									<button class="btn btn-danger btn-sm delete-modulebtn">삭제</button>
@@ -166,20 +228,48 @@ header {
 	<div id="modal" class="modal">
 		<div class="modal-content">
 			<h3>모듈 추가/수정</h3>
-			<input type="hidden" id="moduleNo"> <input type="text"
-				id="moduleTitle" placeholder="제목"> <input type="number"
-				id="modulePrice" placeholder="가격">
 
-			<div id="moduleDescription"></div>
+			<input type="hidden" id="moduleNo">
+
+			<!-- 이모지 / 제목 / 가격 1줄 정렬 -->
+			<div class="form-row">
+				<div class="form-group flex-emoji">
+					<label for="moduleEmoji">이모지</label> <select id="moduleEmoji">
+						<option value="💡">💡 아이디어</option>
+						<option value="🛠️">🛠️ 도구</option>
+						<option value="📦">📦 패키지</option>
+						<option value="🔥">🔥 인기</option>
+						<option value="✅">✅ 완료</option>
+						<option value="❗">❗ 중요</option>
+					</select>
+				</div>
+
+				<div class="form-group flex-title">
+					<label for="moduleTitle">제목</label> <input type="text"
+						id="moduleTitle" placeholder="제목">
+				</div>
+
+				<div class="form-group flex-price">
+					<label for="modulePrice">가격</label> <input type="number"
+						id="modulePrice" placeholder="가격">
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label>모듈 설명</label>
+				<div id="moduleDescription"></div>
+			</div>
 
 			<div class="modal-buttons">
-				<button class="basic-btn">기본모듈</button>
+				<button class="basic-btn">기본 모듈</button>
 				<button class="active-btn">활성화</button>
 				<button class="insertedit-btn">저장/수정</button>
 				<button class="delete-btn" onclick="closeModal()">취소</button>
 			</div>
 		</div>
+
 	</div>
+
 	<script
 		src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 	<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
@@ -200,6 +290,8 @@ header {
 	document.querySelector('.ql-editor').style.minHeight = "250px";
 	document.querySelector('.ql-editor').style.height = "300px";
 	document.querySelector('.ql-editor').style.maxHeight = "500px";
+	document.querySelector('.ql-editor').style.fontSize = '20px';
+	document.querySelector('.ql-editor').style.lineHeight = '1.6';
 	
 function closeModal(){
     document.getElementById('moduleTitle').value ='';
@@ -216,7 +308,6 @@ window.onclick = function(event) {
 }
 
 document.querySelector('.add-btn').addEventListener('click', event => {
-	console.log('click')
 	document.getElementById('moduleNo').value = '';
     document.getElementById('moduleTitle').value ='';
     document.getElementById('modulePrice').value = '';
@@ -302,58 +393,76 @@ document.querySelector(".insertedit-btn").addEventListener("click", function(eve
     }
 });
 
-document.querySelector(".container").addEventListener("click", function(event) {
+// 페이지 로딩 완료 후 이벤트 바인딩
+document.addEventListener("DOMContentLoaded", function (e) {
+  const container = document.querySelector(".mainContainer");
+  container.addEventListener("click", function (event) {
+    
     if (event.target.classList.contains("edit-btn")) {
-        const cardBody = event.target.closest('.card-body');
-        const moduleNo = cardBody.querySelector('.module-no').value;
+      const cardBody = event.target.closest('.card-body');
+      const moduleNo = cardBody.querySelector('.module-no').value;
+      const module = modules.find(m => m.moduleNo == moduleNo);
 
-        const module = modules.find(m => m.moduleNo == moduleNo);
-        if (module) {
-            document.getElementById("moduleNo").value = module.moduleNo;
-            document.getElementById("moduleTitle").value = module.moduleName;
-            document.getElementById("modulePrice").value = module.modulePrice;
-            quill.root.innerHTML = module.explanation || "";
+      if (module) {
+        document.getElementById("moduleNo").value = module.moduleNo;
+        document.getElementById("moduleTitle").value = module.moduleName;
+        document.getElementById("modulePrice").value = module.modulePrice;
+        quill.root.innerHTML = module.explanation || "";
 
-            const basicBtn = document.querySelector(".basic-btn");
-            basicBtn.textContent = module.basicModule === "Y" ? "기본 모듈" : "결제 모듈";
-            basicBtn.style.backgroundColor = module.basicModule === "Y" ? "gray" : "blue";
+        const basicBtn = document.querySelector(".basic-btn");
+        const isBasic = module.basicModule === "Y";
+        basicBtn.textContent = isBasic ? "기본 모듈" : "결제 모듈";
+        basicBtn.style.backgroundColor = "transparent";
+        basicBtn.style.color = isBasic ? "gray" : "blue";
+        basicBtn.style.border = `2px solid ${isBasic ? "gray" : "blue"}`;
 
-            const activeBtn = document.querySelector(".active-btn");
-            activeBtn.textContent = module.activate === "Y" ? "활성화" : "비활성화";
-            activeBtn.style.backgroundColor = module.activate === "Y" ? "green" : "red";
 
-            document.getElementById("modal").style.display = "flex";
-        }
+        
+
+        const activeBtn = document.querySelector(".active-btn");
+        const isActive = module.activate === "Y";
+        activeBtn.textContent = isActive ? "활성화" : "비활성화";
+        activeBtn.style.backgroundColor = "transparent";
+        activeBtn.style.color = isActive ? "green" : "gray";
+        activeBtn.style.border = `2px solid ${isActive ? "green" : "gray"}`;
+
+        document.getElementById("modal").style.display = "flex";
+      }
     }
-});
 
-
-
-document.querySelector(".container").addEventListener("click", function(event) {
+    // 삭제 버튼
     if (event.target.classList.contains("delete-modulebtn")) {
-        const row = event.target.closest('tr');
-        const moduleNo = row.cells[0].textContent;
+      const cardBody = event.target.closest('.card-body');
+      const moduleNo = cardBody.querySelector('.module-no').value;
 
-        if (confirm("정말 삭제하시겠습니까?")) {
-            $.ajax({
-                type: "DELETE",
-                url: `/deleteModule/${moduleNo}`,
-                success: function(response) {
-                    alert("삭제 완료.");
-                    row.remove(); 
-                },
-                error: function(xhr, status, error) {
-                    alert("삭제 실패");
-                    console.error(xhr.responseText);
-                }
-            });
-        }
+      if (confirm("정말 삭제하시겠습니까?")) {
+        $.ajax({
+          type: "DELETE",
+          url: `/deleteModule/${moduleNo}`,
+          success: function () {
+            alert("삭제 완료.");
+            cardBody.closest('.col-md-4').remove();
+          },
+          error: function (xhr) {
+            alert("삭제 실패");
+            console.error(xhr.responseText);
+          }
+        });
+      }
     }
+  });
 });
 
 document.querySelector(".basic-btn").addEventListener("click", function(event) {
-    event.target.textContent = event.target.textContent === "기본 모듈" ? "결제 모듈" : "기본 모듈";
-    event.target.style.backgroundColor = event.target.style.backgroundColor === "gray" ? "blue" : "gray";
+    const isBasic = event.target.textContent === "기본 모듈";
+    const newIsBasic = !isBasic;
+
+    event.target.textContent = newIsBasic ? "기본 모듈" : "결제 모듈";
+
+    const color = newIsBasic ? "gray" : "blue";
+    event.target.style.backgroundColor = "transparent";
+    event.target.style.color = color;
+    event.target.style.border = `2px solid ${color}`;
 
     let moduleNo = document.getElementById("moduleNo").value;
     $.ajax({
@@ -361,25 +470,34 @@ document.querySelector(".basic-btn").addEventListener("click", function(event) {
         url: `/updateModuleBasic/${moduleNo}`,
         contentType: "application/json",
         error: function(xhr, status, error) {
+            console.error(xhr.responseText);
         }
     });
 });
 
-document.querySelectorAll(".active-btn").forEach(button => {
-    button.addEventListener("click", function(event) {
-        event.target.textContent = event.target.textContent === "활성화" ? "비활성화" : "활성화";
-        event.target.style.backgroundColor = event.target.style.backgroundColor === "green" ? "red" : "green";
 
-        let moduleNo = document.getElementById("moduleNo").value;
-        $.ajax({
-            type: "PATCH",
-            url: `/updateModuleActive/${moduleNo}`,
-            contentType: "application/json",
-            error: function(xhr, status, error) {
-            }
-        });
+document.querySelector(".active-btn").addEventListener("click", function(event) {
+    const isActive = event.target.textContent === "활성화";
+    const newIsActive = !isActive;
+
+    event.target.textContent = newIsActive ? "활성화" : "비활성화";
+
+    const color = newIsActive ? "green" : "gray";
+    event.target.style.backgroundColor = "transparent";
+    event.target.style.color = color;
+    event.target.style.border = `2px solid ${color}`;
+
+    let moduleNo = document.getElementById("moduleNo").value;
+    $.ajax({
+        type: "PATCH",
+        url: `/updateModuleActive/${moduleNo}`,
+        contentType: "application/json",
+        error: function(xhr, status, error) {
+            console.error(xhr.responseText);
+        }
     });
 });
+
 
 </script>
 

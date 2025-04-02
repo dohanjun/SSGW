@@ -12,6 +12,7 @@
 	        EXPLANATION,
 	        icon
 	    FROM MODULE
+	    ORDER BY basic_module DESC
     </select>
     
     <insert id="insertModule" parameterType="com.yedam.app.group.service.ModuleVO">
