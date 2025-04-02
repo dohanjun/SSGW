@@ -6,114 +6,162 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>휴가유형 관리</title>
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    <title> 휴가유형 관리</title>
+
+    <!-- Bootstrap CDN -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.6.2/css/bootstrap.min.css">
+
+    <style>
+        /* 전체 카드 스타일 */
+        .card-box {
+            border: 1px solid #dee2e6;
+            border-radius: 12px;
+            background: #fff;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
+
+        .card-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 25px;
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        .section-box {
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            background-color: #fdfdfd;
+            margin-bottom: 20px;
+        }
+
+        .table th, .table td {
+            vertical-align: middle;
+        }
+
+        .btn-emoji {
+            font-size: 14px;
+            padding: 4px 10px;
+        }
+    </style>
 </head>
 
 <body>
 <div class="container mt-4">
-    <h2 class="text-center mb-4">휴가유형 관리</h2>
 
-    <!-- 페이징용 form (name 수정: frmSearch) -->
+    <!--  숨겨진 폼: 페이징 & 보기 개수 -->
     <form name="frmSearch" th:action="@{/vacationList}" method="get">
         <input type="hidden" name="page" th:value="${currentPage}">
         <input type="hidden" name="size" th:value="${vacationVO.size}">
     </form>
 
-    <div class="row">
-        <!-- 목록 -->
-        <div class="col-md-8">
-            <div class="card h-100">
-                <div class="card-header font-weight-bold text-center">휴가유형 목록</div>
-                <div class="card-body p-3">
+    <div class="card-box">
+        <div class="card-title">🌴 휴가유형 관리</div>
+        <div class="row">
 
-                    <!-- 보기 개수 선택 -->
+            <!-- 👈 왼쪽: 휴가유형 목록 -->
+            <div class="col-md-8">
+                <div class="section-box">
+                    <h5 class="text-center mb-3">📋 휴가유형 목록</h5>
+
+                    <!-- 보기 개수 변경 -->
                     <div class="form-inline justify-content-end mb-2">
-                        <label class="mr-2">보기:</label>
+                        <label class="mr-2"> 보기:</label>
                         <select class="form-control form-control-sm" onchange="changeSize(this.value)">
-                            <option th:value="5" th:selected="${vacationVO.size == 5}">5</option>
-                            <option th:value="10" th:selected="${vacationVO.size == 10}">10</option>
-                            <option th:value="15" th:selected="${vacationVO.size == 15}">15</option>
-                            <option th:value="20" th:selected="${vacationVO.size == 20}">20</option>
+                            <option th:value="5" th:selected="${vacationVO.size == 5}">5개</option>
+                            <option th:value="10" th:selected="${vacationVO.size == 10}">10개</option>
+                            <option th:value="15" th:selected="${vacationVO.size == 15}">15개</option>
+                            <option th:value="20" th:selected="${vacationVO.size == 20}">20개</option>
                         </select>
                     </div>
 
-                    <!-- 테이블 -->
+                    <!-- 목록 테이블 -->
                     <table class="table table-bordered text-center">
                         <thead class="thead-light">
                             <tr>
-                                <th>휴가 이름</th>
-                                <th>휴가 일수</th>
-                                <th>증빙서류 여부</th>
+                                <th>📝 이름</th>
+                                <th>📅 일수</th>
+                                <th>📎 증빙</th>
+                                <th>🗑</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr th:each="v : ${vacations}">
                                 <td th:text="${v.vacationTypeName}"></td>
-                                <td th:text="${v.vacationDate} + ' 일'"></td>
+                                <td th:text="${v.vacationDate} + '일'"></td>
                                 <td th:text="${v.requiredProofDocumentFile == 'Y' ? '필요' : '불필요'}"></td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-outline-danger btn-emoji"
+                                            th:onclick="'deleteVacation(' + ${v.vacationTypeId} + ')'"> 삭제</button>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
 
-                    <!-- 페이징 -->
+                    <!-- 페이지네이션 -->
                     <nav>
                         <ul class="pagination justify-content-center">
                             <li class="page-item" th:if="${currentPage > 1}">
-                                <a class="page-link" th:href="|javascript:gopage(${currentPage - 1})|">이전</a>
+                                <a class="page-link" href="javascript:void(0);" th:onclick="'gopage(' + (${currentPage} - 1) + ')'"> 이전</a>
                             </li>
                             <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}"
                                 th:classappend="${i == currentPage} ? 'active'">
-                                <a class="page-link" th:href="|javascript:gopage(${i})|" th:text="${i}"></a>
+                                <a class="page-link" href="javascript:void(0);" th:onclick="'gopage(' + ${i} + ')'" th:text="${i}"></a>
                             </li>
                             <li class="page-item" th:if="${currentPage < totalPages}">
-                                <a class="page-link" th:href="|javascript:gopage(${currentPage + 1})|">다음</a>
+                                <a class="page-link" href="javascript:void(0);" th:onclick="'gopage(' + (${currentPage} + 1) + ')'">다음 </a>
                             </li>
                         </ul>
                     </nav>
                 </div>
             </div>
-        </div>
 
-        <!-- 등록 -->
-        <div class="col-md-4">
-            <div class="card h-100">
-                <div class="card-header font-weight-bold text-center">휴가유형 등록</div>
-                <div class="card-body">
+            <!-- 👉 오른쪽: 휴가유형 등록 -->
+            <div class="col-md-4">
+                <div class="section-box">
+                    <h5 class="text-center mb-3"> 휴가유형 등록</h5>
                     <form th:action="@{/vacaInsert}" th:object="${vacationVO}" method="post" onsubmit="return confirmInsert()">
                         <input type="hidden" th:field="*{vacationTypeId}" />
                         <input type="hidden" th:field="*{suberNo}" />
 
                         <div class="form-group">
-                            <label>휴가 이름</label>
+                            <label>📝 휴가 이름</label>
                             <input type="text" class="form-control" th:field="*{vacationTypeName}" required>
                         </div>
 
                         <div class="form-group">
-                            <label>휴가 일수</label>
+                            <label>📅 휴가 일수</label>
                             <input type="number" class="form-control" th:field="*{vacationDate}" min="1" required>
                         </div>
 
                         <div class="form-group form-check">
                             <input type="checkbox" class="form-check-input" th:field="*{requiredProofDocumentFile}" value="Y">
-                            <label class="form-check-label">증빙 서류 필요</label>
+                            <label class="form-check-label"> 증빙 서류 필요</label>
                         </div>
 
                         <div class="text-center">
-                            <button type="submit" class="btn btn-success btn-block">등록</button>
-                            <button type="button" class="btn btn-danger btn-block" onclick="window.history.back()">뒤로</button>
+                            <button type="submit" class="btn btn-success btn-block"> 등록</button>
+                            <button type="button" class="btn btn-secondary btn-block" th:onclick="|location.href='@{/vacaList}'|"> 뒤로</button>
                         </div>
                     </form>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
 
-<!-- 스크립트 -->
+<!--  기능 스크립트 -->
 <script th:inline="javascript">
+    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
     function confirmInsert() {
-        alert("등록이 완료되었습니다.");
+        alert("✅ 등록이 완료되었습니다.");
         return true;
     }
 
@@ -129,6 +177,33 @@
         form.page.value = 1;
         form.submit();
     }
+
+    function deleteVacation(vacationTypeId) {
+        if (!confirm("🗑 이 휴가 유형을 삭제하시겠습니까?")) return;
+
+        fetch("/vacaDelete", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                [csrfHeader]: csrfToken
+            },
+            body: "vacationTypeId=" + vacationTypeId
+        })
+        .then(res => res.text())
+        .then(result => {
+            if (result === "success") {
+                alert("🧹 삭제되었습니다!");
+                location.reload();
+            } else {
+                alert("❌ 삭제 실패!");
+            }
+        })
+        .catch(err => {
+            alert("🚨 오류 발생!");
+            console.error(err);
+        });
+    }
 </script>
+
 </body>
 </html>

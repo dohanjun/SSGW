@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yedam.app.group.mapper.DeptHistMapper">
+
+	  <!-- 부서이동 직책이동 내역 -->
+	  <insert id="insertDeptTransferHistory" parameterType="DeptHistVO">
+		    INSERT INTO DEPT_TRANSFER_HISTORY (
+		        MOVE_DATE,
+		        CONTENT,
+		        DELETE_DATE,
+		        EMPLOYEE_NO,
+		        DEPARTMENT_NO,
+		        MOVED_TO_DEPARTMENT,
+		        DEPARTMENT_TRANSFER_ID,
+		        CURRENT_RANK_ID,
+		        PREVIOUS_RANK_ID
+		    )
+		    VALUES (
+		        SYSDATE,
+		        #{content},
+		        #{deleteDate},
+		        #{employeeNo},
+		        #{departmentNo},
+		        #{movedToDepartment},
+		        SEQ_DEPT_TRANSFER_ID.NEXTVAL,
+		        #{currentRankId},
+		        #{previousRankId}
+		    )
+		</insert>
+	
+	
+		  <!-- 전체 부서/직책 이동 이력 조회 -->
+	  <select id="selectAllDeptHistList" resultType="DeptHistVO" parameterType="int">
+			  SELECT dth.*,
+			         e.employee_no,
+			         e.employee_name,
+			         r1.job_title_name AS previousRankName,
+			         r2.job_title_name AS currentRankName,
+			         d1.department_name AS previousDeptName,
+			         d2.department_name AS movedToDeptName
+			  FROM DEPT_TRANSFER_HISTORY dth
+			  JOIN EMPLOYEES e ON dth.employee_no = e.employee_no
+			  LEFT JOIN RANK r1 ON dth.previous_rank_id = r1.rank_id
+			  LEFT JOIN RANK r2 ON dth.current_rank_id = r2.rank_id
+			  LEFT JOIN DEPARTMENT d1 ON dth.department_no = d1.department_no
+			  LEFT JOIN DEPARTMENT d2 ON dth.moved_to_department = d2.department_no
+			  WHERE e.suber_no = #{suberNo}
+			  ORDER BY department_transfer_id ASC
+	  </select>
+  
+  
+	  <!-- 이동내역 날짜 업데이트  -->
+	  <update id="updateLastDeptHistory" parameterType="int">
+			  UPDATE DEPT_TRANSFER_HISTORY
+			  SET DELETE_DATE = SYSDATE
+			  WHERE EMPLOYEE_NO = #{employeeNo}
+			    AND DELETE_DATE IS NULL
+	  </update>
+	  
+	  
+	  <!-- 페이징된 부서/직책 이력 조회 -->
+	  <select id="selectDeptHistPaging" parameterType="DeptHistVO" resultType="DeptHistVO">
+				    SELECT * FROM (
+				        SELECT 
+				            dth.department_transfer_id,
+				            dth.employee_no,
+				            dth.department_no AS previous_dept_no,
+				            dth.previous_rank_id,
+				            dth.current_rank_id,
+				            dth.moved_to_department,
+				            dth.move_date,
+				
+				            e.employee_name,
+				            e.rank_id AS emp_rank_id,
+				            e.department_no AS emp_department_no,
+				
+				            r1.job_title_name AS previousRankName,
+				            r2.job_title_name AS currentRankName,
+				            d1.department_name AS previousDeptName,
+				            d2.department_name AS movedToDeptName,
+				
+				            ROW_NUMBER() OVER (ORDER BY dth.department_transfer_id DESC) AS rn
+				
+				        FROM DEPT_TRANSFER_HISTORY dth
+				        JOIN EMPLOYEES e ON dth.employee_no = e.employee_no
+				        LEFT JOIN RANK r1 ON dth.previous_rank_id = r1.rank_id
+				        LEFT JOIN RANK r2 ON dth.current_rank_id = r2.rank_id
+				        LEFT JOIN DEPARTMENT d1 ON dth.department_no = d1.department_no
+				        LEFT JOIN DEPARTMENT d2 ON dth.moved_to_department = d2.department_no
+				        WHERE e.suber_no = #{suberNo}
+				        <if test="employeeName != null and employeeName != ''">
+				            AND e.employee_name LIKE '%' || #{employeeName} || '%'
+				        </if>
+				        <if test="departmentNo != null and departmentNo != 0">
+				            AND e.department_no = #{departmentNo}
+				        </if>
+				        <if test="rankId != null and rankId != 0">
+				            AND e.rank_id = #{rankId}
+				        </if>
+				    )
+				    WHERE rn BETWEEN #{start} + 1 AND #{start} + #{amount}
+		</select>
+		
+		<!-- 전체 이력 개수 조회 -->
+		<select id="countDeptHist" parameterType="DeptHistVO" resultType="int">
+				  SELECT COUNT(*)
+				  FROM DEPT_TRANSFER_HISTORY dth
+				  JOIN EMPLOYEES e ON dth.employee_no = e.employee_no
+				  WHERE e.suber_no = #{suberNo}
+				    <if test="employeeName != null and employeeName != ''">
+				      AND e.employee_name LIKE '%' || #{employeeName} || '%'
+				    </if>
+				    <if test="departmentNo != null and departmentNo != 0">
+				      AND e.department_no = #{departmentNo}
+				    </if>
+				    <if test="rankId != null and rankId != 0">
+				      AND e.rank_id = #{rankId}
+				    </if>
+		</select>
+
+
+
+  
+
+</mapper>

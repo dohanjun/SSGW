@@ -7,6 +7,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.yedam.app.group.service.EmpService;
 import com.yedam.app.group.service.EmpVO;
@@ -49,7 +51,7 @@ public class VacationController {
     
     // 휴가유형 전체 리스트
     @GetMapping("/vacationList") 
-    public String showVacationTypes(@ModelAttribute VacationVO vo, Model model) {
+    public String vacationList(@ModelAttribute VacationVO vo, Model model) {
         EmpVO loginUser = empService.getLoggedInUserInfo();
         vo.setSuberNo(loginUser.getSuberNo());
 
@@ -73,7 +75,7 @@ public class VacationController {
     
     // 휴가 현황 조회
     @GetMapping("/vacaList")
-    public String leaveStatus(VacationVO vo, Model model) {
+    public String vacaList(VacationVO vo, Model model) {
         EmpVO loginUser = empService.getLoggedInUserInfo();
         vo.setSuberNo(loginUser.getSuberNo());
 
@@ -91,5 +93,18 @@ public class VacationController {
         model.addAttribute("vacationVO", vo);
 
         return "group/personnel/vacaList";
+    }
+    
+    // 휴가유형 삭제
+    
+    @PostMapping("/vacaDelete")
+    @ResponseBody
+    public String vacaDelete(@RequestParam("vacationTypeId") int vacationTypeId) {
+        try {
+            vacationService.deleteVacationType(vacationTypeId);
+            return "success";
+        } catch (Exception e) {
+            return "fail";
+        }
     }
 }

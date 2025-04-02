@@ -33,4 +33,7 @@ public interface VacationService {
 	
 	//
 	void findUsedVacation(VacationRequestVO vrVO);
+
+	// 휴가유형 삭제
+	void deleteVacationType(int vacationTypeId);
 }

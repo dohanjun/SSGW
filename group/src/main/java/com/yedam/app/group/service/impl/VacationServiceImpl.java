@@ -153,5 +153,11 @@ public class VacationServiceImpl implements VacationService {
             vacationMapper.updateLeaveHistoryRequest(vacationVO);
         }
 	}
+	
+    // 휴가유형 삭제
+    @Override
+    public void deleteVacationType(int vacationTypeId) {
+        vacationMapper.deleteVacationType(vacationTypeId);
+    }
 
 }
