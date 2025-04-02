@@ -69,6 +69,8 @@
 				            dth.current_rank_id,
 				            dth.moved_to_department,
 				            dth.move_date,
+				            dth.delete_date,
+				            dth.content,
 				
 				            e.employee_name,
 				            e.rank_id AS emp_rank_id,
@@ -97,6 +99,12 @@
 				        <if test="rankId != null and rankId != 0">
 				            AND e.rank_id = #{rankId}
 				        </if>
+				        <if test="resignationStatus != null and resignationStatus != ''">
+						    AND e.resignation_status = #{resignationStatus}
+						</if>
+						<if test="content != null and content != ''">
+						    AND dth.content = #{content}
+						</if>
 				    )
 				    WHERE rn BETWEEN #{start} + 1 AND #{start} + #{amount}
 		</select>
@@ -116,6 +124,12 @@
 				    <if test="rankId != null and rankId != 0">
 				      AND e.rank_id = #{rankId}
 				    </if>
+				    <if test="resignationStatus != null and resignationStatus != ''">
+					    AND e.resignation_status = #{resignationStatus}
+					</if>
+					<if test="content != null and content != ''">
+					    AND dth.content = #{content}
+					</if>
 		</select>
 
 
