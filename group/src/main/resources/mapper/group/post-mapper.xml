@@ -255,7 +255,7 @@
     WHERE rn BETWEEN #{offset} + 1 AND #{offset} + #{limit}
 </select>
 	
-	<select id="getPostDetail" parameterType="long" resultType="com.yedam.app.group.service.RepositoryPostVO">
+<select id="getPostDetail" parameterType="long" resultType="com.yedam.app.group.service.RepositoryPostVO">
         SELECT 
             p.writing_id,
             p.title,
@@ -270,18 +270,27 @@
         JOIN employees e ON p.employee_no = e.employee_no
         JOIN repository r ON p.file_repository_id = r.file_repository_id
         WHERE p.writing_id = #{writingId}
-    </select>
+</select>
     
-    <update id="updatePost" parameterType="com.yedam.app.group.service.RepositoryPostVO">
+<update id="updatePost" parameterType="com.yedam.app.group.service.RepositoryPostVO">
     	UPDATE repository_post
     	SET title = #{title},
         	content = #{content}
     	WHERE writing_id = #{writingId}
-	</update>
+</update>
 	
-	<update id="updateFixStatus">
+<update id="updateFixStatus">
     	UPDATE repository_post
     	SET fix = #{fix}
     	WHERE writing_id = #{writingId}
-	</update>
+</update>
+
+<select id="countFixedPosts" resultType="int">
+    SELECT COUNT(*)
+    FROM repository_post rp
+    JOIN repository r ON rp.FILE_REPOSITORY_ID = r.FILE_REPOSITORY_ID
+    WHERE rp.FIX = 'Y'
+      AND r.SUBER_NO = #{suberNo}
+      AND r.FILE_REPOSITORY_TYPE = #{repositoryType}
+</select>
 </mapper>

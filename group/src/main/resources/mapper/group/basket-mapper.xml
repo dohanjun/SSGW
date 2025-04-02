@@ -254,7 +254,7 @@ SELECT * FROM (
       COUNT(f.file_id) AS fileCount,
       p.creation_date,
       b.del_date,
-      ROW_NUMBER() OVER (ORDER BY p.creation_date DESC) AS rn
+      ROW_NUMBER() OVER (ORDER BY b.del_date DESC) AS rn
     FROM basket b
     JOIN repository_post p ON b.writing_id = p.writing_id
     JOIN employees e ON p.employee_no = e.employee_no
@@ -302,7 +302,7 @@ SELECT * FROM (
         COUNT(f.file_id) AS fileCount,
         p.creation_date,
         b.del_date,
-        ROW_NUMBER() OVER (ORDER BY p.creation_date DESC) AS rn
+        ROW_NUMBER() OVER (ORDER BY b.del_date DESC) AS rn
     FROM basket b
     JOIN repository_post p ON b.writing_id = p.writing_id
     JOIN employees e ON p.employee_no = e.employee_no
@@ -354,7 +354,7 @@ SELECT * FROM (
         COUNT(f.file_id) AS fileCount,
         p.creation_date,
         b.del_date,
-        ROW_NUMBER() OVER (ORDER BY p.creation_date DESC) AS rn
+        ROW_NUMBER() OVER (ORDER BY b.del_date DESC) AS rn
     FROM basket b
     JOIN repository_post p ON b.writing_id = p.writing_id
     JOIN employees e ON p.employee_no = e.employee_no
@@ -405,7 +405,7 @@ SELECT * FROM (
         COUNT(f.file_id) AS fileCount,
         p.creation_date,
         b.del_date,
-        ROW_NUMBER() OVER (ORDER BY p.creation_date DESC) AS rn
+        ROW_NUMBER() OVER (ORDER BY b.del_date DESC) AS rn
     FROM basket b
     JOIN repository_post p ON b.writing_id = p.writing_id
     JOIN employees e ON p.employee_no = e.employee_no

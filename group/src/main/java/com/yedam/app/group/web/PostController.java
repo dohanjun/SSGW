@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.yedam.app.group.service.EmpService;
 import com.yedam.app.group.service.EmpVO;
@@ -136,10 +137,36 @@ public class PostController {
     }
     
     @PostMapping("/toggleFix")
-    public String toggleFix(@RequestParam("writingId") Long writingId) {
+    public String toggleFix(@RequestParam("writingId") Long writingId, RedirectAttributes redirectAttributes) {
         RepositoryPostVO post = postService.getPostDetail(writingId);
+        String repoType = post.getRepositoryType();
+
+        // 개인 자료실은 고정 기능 없음
+        if ("개인".equals(repoType)) {
+            return "redirect:/individualRepository";
+        }
+
         char newFix = (post.getFix() == 'Y') ? 'N' : 'Y';
+
+        // 로그인한 유저에서 회사 번호 가져오기
+        EmpVO loggedInUser = empService.getLoggedInUserInfo();
+        Integer suberNo = loggedInUser.getSuberNo();
+
+        // 고정 시도일 경우 → 고정글 개수 검사
+        if (newFix == 'Y' && postService.countFixedPosts(suberNo, repoType) >= 5) {
+            redirectAttributes.addFlashAttribute("errorMessage", "고정글은 최대 5개까지만 가능합니다.");
+            return "redirect:/detailPost/" + writingId;  // 상세페이지로 redirect
+        }
+
         postService.updateFixStatus(writingId, newFix);
-        return "redirect:/detailPost/" + writingId;
+        return "redirect:" + getRepositoryRedirectUrl(repoType);
+    }
+
+    private String getRepositoryRedirectUrl(String repoType) {
+        switch (repoType) {
+            case "전체": return "/totalRepository";
+            case "부서": return "/departmentRepository";
+            default: return "/";
+        }
     }
 }

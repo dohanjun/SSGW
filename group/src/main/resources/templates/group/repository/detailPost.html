@@ -20,28 +20,26 @@
 				<div class="container-fluid px-0">
 					<div class="card shadow mb-4"
 						style="width: 100%; margin-top: 20px; margin-bottom: auto;">
-						<div
-							class="card-header py-3 d-flex d-flex justify-content-between align-items-center">
+						<div class="card-header py-3 d-flex d-flex justify-content-between align-items-center">
 							<div class="d-flex align-items-center">
 								<h6 class="m-0 font-weight-bold text-primary">자료 정보</h6>
 								<!-- 고정 상태일 때 뱃지처럼 표시 -->
-								<span th:if="${post.fix == 'Y'}"
-									class="badge badge-warning ml-2"> <i
-									class="fas fa-thumbtack"></i> 고정됨
+								<span th:if="${post.fix == 'Y' and (post.repositoryType == '전체' or post.repositoryType == '부서')}"
+      									class="badge badge-warning ml-2">
+  									<i class="fas fa-thumbtack"></i> 고정됨
 								</span>
 							</div>
 
 							<div class="d-flex gap-2">
 								<!-- 고정/해제 버튼 -->
-								<form th:if="${isEditable}" th:action="@{/toggleFix}"
-									method="post" class="mb-0 mr-2">
-									<input type="hidden" name="writingId"
-										th:value="${post.writingId}" />
-									<button type="submit" class="btn btn-sm"
-										th:classappend="${post.fix?.equals('Y')} ? 'btn-outline-danger' : 'btn-outline-primary'">
-										<i class="fas fa-thumbtack"></i> <span
-											th:text="${post.fix == 'Y' ? '고정 해제' : '고정'}"></span>
-									</button>
+								<form th:if="${isEditable and (post.repositoryType == '전체' or post.repositoryType == '부서')}"
+      								  th:action="@{/toggleFix}" method="post" class="mb-0 mr-2">
+  									<input type="hidden" name="writingId" th:value="${post.writingId}" />
+  										<button type="submit" class="btn btn-sm"
+          										th:classappend="${post.fix?.equals('Y')} ? 'btn-outline-danger' : 'btn-outline-primary'">
+    										<i class="fas fa-thumbtack"></i>
+    										<span th:text="${post.fix == 'Y' ? '고정 해제' : '고정'}"></span>
+  										</button>
 								</form>
 
 								<!-- 전체 다운로드 버튼 -->
@@ -76,9 +74,7 @@
 										</td>
 									</tr>
 									<tr>
-										<td colspan="4"><textarea class="content-area"
-												th:utext="${post.content}"></textarea></td>
-									</tr>
+										<td colspan="4"><textarea class="content-area auto-expand" th:utext="${post.content}" readonly></textarea></td>
 								</tbody>
 							</table>
 							<div class="text-center mb-3">
@@ -111,11 +107,25 @@
 	<script src="/static/vendor/jquery/jquery.min.js"></script>
 	<script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 	<script src="/static/js/sb-admin-2.min.js"></script>
-</body>
-</html>
 <script>
 	function goToDetail(writingId) {
 		window.location.href = '/detailPost/' + writingId;
 	}
 </script>
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    const textareas = document.querySelectorAll('.auto-expand');
+    textareas.forEach(textarea => {
+      textarea.style.height = textarea.scrollHeight + 'px';
+    });
+  });
+</script>
+<script th:inline="javascript">
+  let errorMessage = /*[[${errorMessage}]]*/ null;
+  if (errorMessage !== null && errorMessage !== 'null') {
+    alert(errorMessage);
+  }
+</script>
+</body>
+</html>
 
