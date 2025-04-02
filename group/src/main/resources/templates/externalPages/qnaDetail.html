@@ -29,102 +29,108 @@
 .fixed {
 	color: green;
 }
+
+.card-header {
+	background-color: #2C3E50;
+}
+
+.answer{
+	margin-top: 50px;
+}
 </style>
 </head>
 <body>
-	<div id="wrapper">
-		<div id="content-wrapper" class="d-flex flex-column">
-			<div id="content">
-				<div class="container-fluid px-0">
-					<div class="card shadow mb-4">
-						<!-- 게시글 정보 -->
-						<div
-							class="card-header py-3 d-flex align-items-center position-relative">
-							<h6 class="m-0 font-weight-bold text-primary">게시글 정보</h6>
-							<i class="fa-solid fa-thumbtack position-absolute fix"
-								th:classappend="${boardPost.faq} == 'Y'? 'fixed'"
-								style="right: 20px; top: 50%; transform: translateY(-50%);"></i>
-						</div>
-						<div class="card-body">
-							<table class="table table-bordered file-info-table">
-								<tbody>
-									<tr>
-										<th>제목</th>
-										<td>[[${boardPost.postTitle}]]</td>
-										<th>작성자</th>
-										<td>[[${boardPost.employeeName}]]</td>
-										<th>등록일</th>
-										<td
-											th:text="${#dates.format(boardPost.postDate, 'yyyy년 MM월 dd일')}"></td>
-									</tr>
-									<tr>
-										<td colspan="6">
-											<div id="postEditor-container"></div>
-										</td>
-									</tr>
-								</tbody>
-							</table>
-							<div class="text-center mb-3">
-								<a href="/qna">
-									<button class="btn btn-secondary">
-										<i class="fas fa-arrow-left"></i>
-									</button>
-								</a>
-								<button class="btn btn-danger delete-btn">
-									<i class="fas fa-trash"></i>
-								</button>
-							</div>
-						</div>
-					</div>
 
-					<!-- 답글 작성 -->
-					<div class="card shadow mb-4"
-						th:if="${#strings.equals(boardPost.childYn, 'N')}">
-						<div class="card-header py-3">
-							<h6 class="m-0 font-weight-bold text-primary">답글 작성</h6>
-						</div>
-						<div class="card-body">
-							<!-- Quill 에디터 (답글 입력) -->
-							<div id="commentEditor-container"></div>
-							<button id="commentSubmitBtn" class="btn btn-primary mt-2"
-								style="width: 80px; height: 40px; font-size: 0.9rem; border-radius: 6px;">
-								등록</button>
-						</div>
-					</div>
 
-					<div class="card shadow mb-4"
-						th:if="${#strings.equals(boardPost.childYn, 'Y')}">
-						<div class="card-header py-3">
-							<h6 class="m-0 font-weight-bold text-primary">답글</h6>
-						</div>
-						<div class="card-body">
-							<table class="table table-bordered file-info-table">
-								<tbody>
-									<tr>
-										<th>제목</th>
-										<td id="childPostTitle"></td>
-										<th>작성자</th>
-										<td id="childPostWriter">관리자</td>
-										<th>등록일</th>
-										<td id="childPostDate"></td>
-									</tr>
-									<tr>
-										<td colspan="6">
-											<div id="childPostEditor-container"></div>
-										</td>
-									</tr>
-								</tbody>
-							</table>
-							<button class="btn btn-danger answerdel">
-								<i class="fas fa-trash"></i>
-							</button>
-						</div>
 
-					</div>
+	<div class="container my-4">
+		<div class="card">
+			<div
+				class="card-header text-white d-flex align-items-center justify-content-between">
+				<div class="d-flex align-items-center gap-2">
+					<h4 class="mb-0" style="display: inline-block; margin: 0;">QnA</h4>
+					<i class="fa-solid fa-thumbtack fix"
+						th:classappend="${boardPost.faq} == 'Y' ? ' fixed' : ''"
+						style="cursor: pointer; font-size: 18px;"></i>
+				</div>
+			</div>
+
+
+
+			<div class="card-body">
+				<table class="table table-bordered file-info-table">
+					<tbody>
+						<tr>
+							<th>제목</th>
+
+							<td>[[${boardPost.postTitle}]]</td>
+							<th>작성자</th>
+							<td>[[${boardPost.employeeName}]]</td>
+							<th>등록일</th>
+							<td
+								th:text="${#dates.format(boardPost.postDate, 'yyyy년 MM월 dd일')}"></td>
+						</tr>
+						<tr>
+							<td colspan="6" id="postEditor-container"></td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="text-center mb-3">
+					<a href="/qna">
+						<button class="btn btn-secondary">
+							<i class="fas fa-arrow-left"></i>
+						</button>
+					</a>
+					<button class="btn btn-danger delete-btn">
+						<i class="fas fa-trash"></i>
+					</button>
 				</div>
 			</div>
 		</div>
+
+		<div class="card shadow mb-4 answer"
+			th:if="${#strings.equals(boardPost.childYn, 'N')}">
+			<div class="card-header text-white">
+				<h4 class="mb-0">답글작성</h4>
+			</div>
+			<div class="card-body">
+				<!-- Quill 에디터 (답글 입력) -->
+				<div id="commentEditor-container"></div>
+				<button id="commentSubmitBtn" class="btn btn-primary mt-2"
+					style="width: 80px; height: 40px; font-size: 0.9rem; border-radius: 6px;">
+					등록</button>
+			</div>
+		</div>
+		
+		<div class="card answer" th:if="${#strings.equals(boardPost.childYn, 'Y')}">
+			<div class="card-header text-white">
+				<h4 class="mb-0">답글출력</h4>
+			</div>
+			<div class="card-body">
+				<table class="table table-bordered file-info-table">
+					<tbody>
+						<tr>
+							<th>제목</th>
+							<td id="childPostTitle"></td>
+							<th>작성자</th>
+							<td id="childPostWriter">관리자</td>
+							<th>등록일</th>
+							<td id="childPostDate"></td>
+						</tr>
+						<tr>
+							<td colspan="6">
+								<div id="childPostEditor-container"></div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<button class="btn btn-danger answerdel">
+					<i class="fas fa-trash"></i>
+				</button>
+			</div>
+		</div>
 	</div>
+
 	<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
 	<script th:inline="javascript">
 		var post = /*[[${boardPost}]]*/[];
@@ -143,7 +149,7 @@
 			}
 		});
 		if(postPId == null){
-			postQuill.root.innerHTML = `[[${boardPost.postContent}]]`;
+			postQuill.root.innerHTML =post.postContent;
 			commentQuill = new Quill('#commentEditor-container', {
 				theme : 'snow',
 				placeholder : '여기에 내용을 입력하세요...',

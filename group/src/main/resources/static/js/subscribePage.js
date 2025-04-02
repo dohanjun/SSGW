@@ -42,6 +42,8 @@ function updatePrice() {
 
 document.querySelectorAll('.selectItem').forEach(item => {
 	item.addEventListener('click', function () {
+		if (this.classList.contains('basic-locked')) return;
+		
 		this.classList.toggle('check');
 
 		const moduleNo = this.getAttribute('data-module-no');
@@ -64,6 +66,21 @@ document.querySelectorAll('.selectItem').forEach(item => {
 	});
 });
 
+$(document).ready(function () {
+	updatePrice();
+
+	// 체크된 모듈만 초기 dataList에 담기 (기본 모듈 체크 상태)
+	$('.selectItem.check').each(function () {
+		const moduleNo = $(this).data('module-no');
+		const modulePrice = $(this).data('module-price');
+		dataList.push({
+			moduleNo: parseInt(moduleNo),
+			modulePrice: parseInt(modulePrice)
+		});
+	});
+
+	updatePrice(); // 가격 갱신
+});
 
 
 

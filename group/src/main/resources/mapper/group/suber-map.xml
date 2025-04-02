@@ -11,12 +11,15 @@
 		suber_no,
 		sub_uid,
 		sub_id,
-		sub_pw, sub_name, sub_email, sub_bnis_no,
+		sub_pw, sub_name, sub_email,
+		sub_bnis_no,
 		max_count, max_size, company_name,
-		first_ip, domain,max_up_size
+		first_ip,
+		domain,max_up_size
 		) VALUES (
 		#{suberNo}, #{subUid}, #{subId},
-		#{subPw}, #{subName}, #{subEmail}, #{subBnisNo},
+		#{subPw},
+		#{subName}, #{subEmail}, #{subBnisNo},
 		#{maxCount},
 		#{maxSize},
 		#{companyName},#{firstIp},#{domain},#{maxUpSize}
@@ -42,22 +45,28 @@
 
 	<select id="selectinfoSuber"
 		resultType="com.yedam.app.group.service.SubscriberVO">
-SELECT
-  m.module_name,
-  p.payment_start_date,
-  p.payment_end_date,
-  pd.payment_price,
-  pd.payment_state,
-  pd.payment_details_no
-FROM sub_details sd
-JOIN module m ON sd.module_no = m.module_no
-JOIN payment_details pd ON sd.sub_details_no = pd.sub_details_no
-JOIN payment p ON pd.payment_no = p.payment_no
-WHERE sd.suber_no = #{suberNo}
-  AND pd.payment_state = '완료'
-ORDER BY m.module_name
-
+		SELECT
+		m.module_name,
+		p.payment_start_date,
+		p.payment_end_date,
+		pd.payment_price,
+		pd.payment_state,
+		pd.payment_details_no,
+		s.max_count,
+		s.max_size,
+		s.max_up_size,
+		s.company_name,
+		s.suber_no
+		FROM suber s
+		LEFT JOIN sub_details sd ON s.suber_no = sd.suber_no
+		LEFT JOIN module m ON sd.module_no = m.module_no
+		LEFT JOIN payment_details pd ON sd.sub_details_no = pd.sub_details_no
+		LEFT JOIN payment p ON pd.payment_no = p.payment_no
+		WHERE s.suber_no = #{suberNo}
+		ORDER BY m.module_name
 	</select>
+
+
 	<select id="selectSuber"
 		resultType="com.yedam.app.group.service.SubscriberVO">
 		select *
@@ -73,29 +82,34 @@ ORDER BY m.module_name
 		sub_name = #{subName},
 		sub_email = #{subEmail},
 		sub_bnis_no = #{subBnisNo},
-		company_name = #{companyName},
+		company_name =
+		#{companyName},
 		first_ip = #{firstIp},
 		second_ip = #{secondIp},
 		max_count = #{maxCount},
 		max_size = #{maxSize},
-		max_up_size = #{maxUpSize}
+		max_up_size =
+		#{maxUpSize}
 		WHERE suber_no = #{suberNo}
 	</update>
 	<select id="checkedId" parameterType="String"
 		resultType="boolean">
 		SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
-		FROM employees
+		FROM
+		employees
 		WHERE EMPLOYEE_ID = #{subId}
 	</select>
 	<update id="updateSubscriberPassword"
 		parameterType="SubscriberVO">
 		UPDATE suber
 		SET sub_pw = #{subPw}
-		WHERE suber_no = #{suberNo}
+		WHERE suber_no =
+		#{suberNo}
 	</update>
 	<insert id="insertTempIp">
 		UPDATE employees
 		SET temp_ip = #{tempIp}
-		WHERE employee_id = #{employeeId}
+		WHERE
+		employee_id = #{employeeId}
 	</insert>
 </mapper>
