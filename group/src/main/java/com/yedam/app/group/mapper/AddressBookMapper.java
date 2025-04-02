@@ -11,8 +11,11 @@ public interface AddressBookMapper {
 	//주소록검색기능
 	public PageListVO getPageList(PageListVO vo);
 	
-	//주소록전체조회
+	//부서 주소록전체조회
 	public List<AddressBookVO> AddressBookFindAll(PageListVO vo);
+	
+	//개인 주소록전체조회
+	public List<AddressBookVO> MyAddressBookFindAll(PageListVO vo);
 	
 	//주소록단건조회
 	public AddressBookVO AddressBookFindInfo(int addressBookId);
