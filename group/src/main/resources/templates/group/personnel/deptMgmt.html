@@ -6,31 +6,95 @@
 <head>
     <meta charset="UTF-8">
     <title>부서 관리</title>
-    <!-- Bootstrap 4.6 CSS -->
+    <!-- Bootstrap + 커스텀 -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.6.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-size: 15px;
+        }
+
+        .container {
+            max-width: 1200px;
+        }
+
+        .card-box {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background: #fff;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 25px;
+            color: #333;
+            text-align: center;
+        }
+
+        .btn-add {
+            text-align: right;
+            margin-bottom: 15px;
+        }
+
+        .btn-add .btn {
+            font-size: 14px;
+            padding: 6px 14px;
+        }
+
+        .table thead th {
+            background-color: #f8f9fa;
+            text-align: center;
+            font-size: 15px;
+        }
+
+        .table tbody td {
+            text-align: center;
+            font-size: 15px;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: #f1f1f1;
+            cursor: pointer;
+        }
+
+        .text-bold {
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-<div class="container mt-5">
-    <h3 class="text-center mb-4">부서 목록</h3>
+<div class="container">
+    <div class="card-box">
+        <div class="card-title">부서 목록</div>
 
-    <table class="table table-bordered table-hover text-center">
-        <thead class="thead-light">
-            <tr>
-                <th>부서번호</th>
-                <th>부서이름</th>
-                <th>부서장</th>
-                <th>부서 총원</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="dept : ${deptList}">
-                <td th:text="${dept.departmentNo}">부서번호</td>
-                <td th:text="${dept.departmentName}">부서이름</td>
-                <td th:text="${dept.employeeName}">부서장</td>
-                <td th:text="${dept.employeeCount}">총원</td>
-            </tr>
-        </tbody>
-    </table>
+        <!-- 부서 등록 버튼 -->
+        <div class="btn-add">
+            <a href="/deptInsert" class="btn btn-outline-success">+ 부서 등록</a>
+        </div>
+
+        <!-- 부서 테이블 -->
+        <table class="table table-bordered table-hover">
+            <thead class="thead-light">
+                <tr>
+                    <th>부서번호</th>
+                    <th>부서이름</th>
+                    <th>부서장</th>
+                    <th>부서 총원</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="dept : ${deptList}">
+                    <td th:text="${dept.departmentNo}">부서번호</td>
+                    <td th:text="${dept.departmentName}">부서이름</td>
+                    <td th:text="${dept.employeeName}">부서장</td>
+                    <td class="text-bold" th:text="${dept.employeeCount}">총원</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 </body>
 </html>

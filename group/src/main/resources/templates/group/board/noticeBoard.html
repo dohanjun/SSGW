@@ -1,95 +1,127 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{common/layouts/default_layout}"
-      layout:fragment="content">
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{common/layouts/default_layout}"
+	layout:fragment="content">
 
 <head>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
-    <meta charset="UTF-8">
-    <title>공지 게시판</title>
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+	rel="stylesheet">
+<meta charset="UTF-8">
+<title>공지 게시판</title>
 </head>
 <body>
 
-<div class="card shadow mb-4" style="width: 100%; margin-top: 20px;">
-    <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">공지 게시판</h6>
-    </div>
-    <div class="card-body">
-        <!-- 검색 form -->
-        <div class="position-relative" style="width: 350px; margin: 0 auto;">
-            <form th:action="@{/noticeBoard}" method="get" class="position-relative mb-3" style="width: 300px;">
-                <input type="text" name="keyword" class="form-control pl-4" placeholder="검색어 입력" th:value="${keyword}">
-                <button type="submit"
-                        style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%); background: none; border: none;">
-                    <i class="fas fa-search" style="color: #aaa;"></i>
-                </button>
-            </form>
-        </div>
-		<input type="hidden" name="boardType" value="공지" />
-        <div class="text-right mb-3">
-            <a class="btn btn-primary" id="insertBtn" href='/insertBoard?boardType=공지'>등록</a>
-        </div>
+	<div class="card shadow mb-4" style="width: 100%; margin-top: 20px;">
+		<div class="card-header py-3">
+			<h6 class="m-0 font-weight-bold text-primary">공지 게시판</h6>
+		</div>
+		<div class="card-body">
+			<!-- 검색 form -->
+			<div class="position-relative" style="width: 350px; margin: 0 auto;">
+				<form th:action="@{/noticeBoard}" method="get"
+					class="position-relative mb-3" style="width: 300px;">
+					<input type="text" name="keyword" class="form-control pl-4"
+						placeholder="   검색어 입력" th:value="${keyword}">
+					<button type="submit"
+						style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%); background: none; border: none;">
+						<i class="fas fa-search" style="color: #aaa;"></i>
+					</button>
+				</form>
+			</div>
+			<input type="hidden" name="boardType" value="공지" />
+			<div class="text-right mb-3">
+				<a class="btn btn-primary" id="insertBtn"
+					href='/insertBoard?boardType=공지'>등록</a>
+			</div>
 
-        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-            <thead>
-            <tr>
-                <th>번호</th>
-                <th>제목</th>
-                <th>작성자</th>
-                <th>작성일</th>
-                <th>조회수</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="post, stat : ${postList}"
-                th:data-url="@{'/detailBoard/' + ${post.postId}}"
-                onclick="location.href=this.dataset.url"
-                style="cursor: pointer;">
-                <td th:text="${totalCount - ((page - 1) * 10 + stat.index)}"></td>
-    			<td th:text="${post.postTitle}"></td>
-    			<td th:text="${post.employeeName}"></td>
-    			<td th:text="${#dates.format(post.postDate, 'yyyy-MM-dd')}"></td>
-    			<td th:text="${post.views}"></td>
-            </tr>
-            </tbody>
-        </table>
+			<table class="table table-bordered" id="dataTable" width="100%"
+				cellspacing="0">
+				<thead>
+					<tr>
+						<th>번호</th>
+						<th>제목</th>
+						<th>작성자</th>
+						<th>작성일</th>
+						<th>조회수</th>
+					</tr>
+				</thead>
+				<tbody>
+					<!-- 고정 글 목록 -->
+					<tr th:each="post : ${fixedList}"
+    th:class="${'table-warning'}"
+    th:data-url="@{'/detailBoard/' + ${post.postId}}"
+    onclick="location.href=this.dataset.url" style="cursor: pointer;">
+						<td><i class="fas fa-thumbtack text-warning mr-1"></i></td>
+						<td th:text="${post.postTitle}"></td>
+						<td th:text="${post.employeeName}"></td>
+						<td th:text="${#dates.format(post.postDate, 'yyyy-MM-dd')}"></td>
+						<td th:text="${post.views}"></td>
+					</tr>
 
-        <!-- 페이징 -->
-        <div class="d-flex align-items-center justify-content-between mt-3">
-            <div class="flex-grow-1 d-flex justify-content-center">
-                <nav aria-label="페이지네이션">
-                    <ul class="pagination mb-0">
-                        <li class="page-item" th:classappend="${page == 1} ? 'disabled'">
-                            <a class="page-link" th:href="@{/noticeBoard(page=${page - 1}, keyword=${keyword})}">&laquo;</a>
-                        </li>
-                        <li class="page-item"
-                            th:each="i : ${#numbers.sequence(1, totalPages)}"
-                            th:classappend="${i == page} ? 'active'">
-                            <a class="page-link"
-                               th:href="@{/noticeBoard(page=${i}, keyword=${keyword})}"
-                               th:text="${i}"></a>
-                        </li>
-                        <li class="page-item" th:classappend="${page == totalPages} ? 'disabled'">
-                            <a class="page-link" th:href="@{/noticeBoard(page=${page + 1}, keyword=${keyword})}">&raquo;</a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
+					<!-- 일반글 -->
+					<tr th:each="post, iterStat : ${postList}"
+						th:data-url="@{'/detailBoard/' + ${post.postId}}"
+						onclick="location.href=this.dataset.url" style="cursor: pointer;">
+						<td th:text="${totalCount - ((page - 1) * 10 + iterStat.index)}"></td>
+						<td th:text="${post.postTitle}"></td>
+						<td th:text="${post.employeeName}"></td>
+						<td th:text="${#dates.format(post.postDate, 'yyyy-MM-dd')}"></td>
+						<td th:text="${post.views}"></td>
+					</tr>
+				</tbody>
+			</table>
 
-    </div>
-</div>
-<script th:inline="javascript">
-    const isAdmin = /*[[${isAdmin}]]*/ false;
+			<!-- 페이징 -->
+			<div class="d-flex align-items-center justify-content-between mt-3">
+				<div class="flex-grow-1 d-flex justify-content-center">
+					<nav aria-label="페이지네이션">
+						<ul class="pagination mb-0">
+							<li class="page-item" th:classappend="${page == 1} ? 'disabled'">
+								<a class="page-link"
+								th:href="@{/noticeBoard(page=${page - 1}, keyword=${keyword})}">&laquo;</a>
+							</li>
+							<li class="page-item"
+								th:each="i : ${#numbers.sequence(1, totalPages)}"
+								th:classappend="${i == page} ? 'active'"><a
+								class="page-link"
+								th:href="@{/noticeBoard(page=${i}, keyword=${keyword})}"
+								th:text="${i}"></a></li>
+							<li class="page-item"
+								th:classappend="${page == totalPages} ? 'disabled'"><a
+								class="page-link"
+								th:href="@{/noticeBoard(page=${page + 1}, keyword=${keyword})}">&raquo;</a>
+							</li>
+						</ul>
+					</nav>
+				</div>
+			</div>
 
-    document.getElementById("insertBtn").addEventListener("click", function(e) {
-        if (!isAdmin) {
-            e.preventDefault(); // 링크 이동 막기
-            alert("공지 게시판은 관리자만 등록할 수 있습니다.");
-        }
-        // 관리자면 원래 링크로 이동 (별도 처리 없이 href 그대로 동작)
-    });
+		</div>
+	</div>
+	<script th:inline="javascript">
+		const isAdmin = /*[[${isAdmin}]]*/false;
+
+		document.getElementById("insertBtn").addEventListener("click",
+				function(e) {
+					if (!isAdmin) {
+						e.preventDefault(); // 링크 이동 막기
+						alert("공지 게시판은 관리자만 등록할 수 있습니다.");
+					}
+					// 관리자면 원래 링크로 이동 (별도 처리 없이 href 그대로 동작)
+				});
+	</script>
+	<script>
+document.addEventListener("DOMContentLoaded", function () {
+	const rows = document.querySelectorAll(".clickable-row");
+	rows.forEach(row => {
+		row.addEventListener("click", function () {
+			const postId = this.getAttribute("data-id");
+			window.location.href = `/detailBoard/${postId}`;
+		});
+	});
+});
 </script>
 </body>
 </html>

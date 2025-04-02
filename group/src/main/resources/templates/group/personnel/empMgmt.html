@@ -1,86 +1,169 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org"
-	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	  layout:decorate="~{common/layouts/default_layout}"
-	  layout:fragment="content">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/layouts/default_layout}"
+      layout:fragment="content">
 <head>
-<meta charset="UTF-8">
-<title></title>
-    <!--  부트스트랩 (페이지네이션 스타일 적용) -->
+    <meta charset="UTF-8">
+    <title>사원 관리</title>
+    <!-- 부트스트랩 -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.6.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-size: 15px;
+        }
+
+        .container {
+            max-width: 1200px; /* 전체 박스 넓이 */
+        }
+
+        /* 카드 스타일 */
+        .card-box {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background: #fff;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        /* 검색 박스 스타일 */
+        .search-box {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .search-box select,
+        .search-box input {
+            padding: 7px 14px;
+            font-size: 15px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        .search-box button {
+            min-width: 90px;
+            font-size: 15px;
+        }
+
+        /* 테이블 스타일 */
+        .table thead th {
+            background-color: #f8f9fa;
+            text-align: center;
+            font-size: 15px;
+        }
+
+        .table tbody tr {
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* 페이지네이션 스타일 */
+        .pagination .page-link {
+            color: #007bff;
+            font-size: 14px;
+        }
+
+        .pagination .active .page-link {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: white;
+        }
+        
+        .th사원목록 {
+        background-color: #D7F3F7 !important; color: #333 !important;
+        }
+    </style>
 </head>
 <body>
-     <div class="container text-center">
-         <h3>사원 관리</h3>
-         
-         
-	<!-- 검색 기능 -->
-	<form name="frmSearch" action="/empMgmt">
-	    <input type="hidden" name="page" value="1">
-	
-	    <!-- 페이지 사이즈 선택 -->
-	    <select name="size" onchange="frmSearch.submit()">
-	        <option value="10" th:selected="${empserchVO.size == 10}">10</option>
-	        <option value="15" th:selected="${empserchVO.size == 15}">15</option>
-	        <option value="20" th:selected="${empserchVO.size == 20}">20</option>
-	        <option value="25" th:selected="${empserchVO.size == 25}">25</option>
-	    </select>
-	
-	    <!-- 검색 영역: 휴가현황처럼 -->
-	    <div class="search-box mt-3">
-	        <select id="depa" name="departmentNo">
-	            <option value="">부서를 선택하세요</option>
-	        </select>
-	
-	        <select id="rankId" name="rankId">
-	            <option value="">직급을 선택하세요</option>
-	        </select>
-	
-	        <input type="text" id="keyemp" placeholder="검색어 입력" th:value="${empserchVO.employeeName}" name="employeeName">
-	
-	        <button type="submit" class="btn btn-primary">검색</button>
-	        <button type="button" class="btn btn-secondary" onclick="init()">초기화</button>
-	        <button type="button" class="btn btn-outline-primary" onclick="filterStatus('N')">재직자</button>
-	        <button type="button" class="btn btn-outline-danger" onclick="filterStatus('Y')">퇴사자</button>
-	    </div>
-	
-	    <!-- 퇴직여부 히든 전송 -->
-	    <input type="hidden" name="resignationStatus" id="resignationStatus" th:value="${empserchVO.resignationStatus}">
-	</form>
-         <table class="table table-bordered">
+<div class="container">
+    <!-- 사원 목록 카드 박스 -->
+    <div class="card-box">
+        <div class="card-title">사원 목록</div>
+
+        <!-- 검색 폼 -->
+        <form name="frmSearch" action="/empMgmt">
+            <input type="hidden" name="page" value="1">
+            <input type="hidden" name="resignationStatus" id="resignationStatus" th:value="${empserchVO.resignationStatus}">
+
+            <div class="search-box">
+                <!-- 페이지 크기 -->
+                <select name="size" onchange="frmSearch.submit()">
+                    <option value="10" th:selected="${empserchVO.size == 10}">10</option>
+                    <option value="15" th:selected="${empserchVO.size == 15}">15</option>
+                    <option value="20" th:selected="${empserchVO.size == 20}">20</option>
+                    <option value="25" th:selected="${empserchVO.size == 25}">25</option>
+                </select>
+
+                <!-- 부서 선택 -->
+                <select id="depa" name="departmentNo">
+                    <option value="">부서를 선택하세요</option>
+                </select>
+
+                <!-- 직급 선택 -->
+                <select id="rankId" name="rankId">
+                    <option value="">직급을 선택하세요</option>
+                </select>
+
+                <!-- 이름 검색 -->
+                <input type="text" id="keyemp" name="employeeName" placeholder="이름으로 검색" th:value="${empserchVO.employeeName}" />
+
+                <!-- 버튼들 -->
+                <button type="submit" class="btn btn-primary">검색</button>
+                <button type="button" class="btn btn-secondary" onclick="init()">초기화</button>
+                <button type="button" class="btn btn-outline-primary" onclick="filterStatus('N')">재직자</button>
+                <button type="button" class="btn btn-outline-danger" onclick="filterStatus('Y')">퇴사자</button>
+            </div>
+        </form>
+
+        <!-- 테이블 -->
+        <table class="table table-bordered">
             <thead>
                 <tr>
-                   <th>사원번호</th>
-                   <th>부서</th>
-                   <th>직급</th>
-                   <th>이름</th>
-                   <th>입사일</th>
-                   <th>연락처</th>
+                    <th class="th사원목록">사원번호</th>
+                    <th class="th사원목록">부서</th>
+                    <th class="th사원목록">직급</th>
+                    <th class="th사원목록">이름</th>
+                    <th class="th사원목록">입사일</th>
+                    <th class="th사원목록">연락처</th>
                 </tr>
             </thead>
-            <tbody>                                   
-              <th:block th:each="info, sts : ${emps}">
-                <tr th:id="${info.employeeNo}"
-                    th:onclick="|location.href='@{/empInfo(employeeNo=${info.employeeNo})}'|">
-                   <td>[[${info.employeeNo}]]</td>                   
-                   <td>[[${info.departmentName}]]</td>
-                   <td>[[${info.jobTitleName}]]</td>
-                   <td>[[${info.employeeName}]]</td>
-                   <td>[[${#dates.format(info.hireDate, "yyyy년MM월dd일")}]]</td>
-                   <td>[[${info.phoneNumber}]]</td>
-                </tr>    
-              </th:block>
+            <tbody>
+                <th:block th:each="info : ${emps}">
+                    <tr th:onclick="|location.href='@{/empInfo(employeeNo=${info.employeeNo})}'|">
+                        <td>[[${info.employeeNo}]]</td>
+                        <td>[[${info.departmentName}]]</td>
+                        <td>[[${info.jobTitleName}]]</td>
+                        <td>[[${info.employeeName}]]</td>
+                        <td>[[${#dates.format(info.hireDate, 'yyyy년 MM월 dd일')}]]</td>
+                        <td>[[${info.phoneNumber}]]</td>
+                    </tr>
+                </th:block>
             </tbody>
-         </table>
-        
-        <!-- 페이징 버튼 -->
+        </table>
+
+        <!-- 페이지네이션 -->
         <nav aria-label="Page navigation">
             <ul class="pagination justify-content-center">
                 <li class="page-item" th:if="${currentPage > 1}">
                     <a class="page-link" th:href="|javascript:gopage(${currentPage - 1})|">이전</a>
                 </li>
                 <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}"
-                    th:classappend="${i == currentPage} ? 'active' : ''">
+                    th:classappend="${i == currentPage} ? 'active'">
                     <a class="page-link" th:href="|javascript:gopage(${i})|" th:text="${i}"></a>
                 </li>
                 <li class="page-item" th:if="${currentPage < totalPages}">
@@ -88,38 +171,36 @@
                 </li>
             </ul>
         </nav>
-       </div>
-       
-     <script src="/js/emp.js"></script>
-     <script th:inline="javascript">
-     const dept = [[${empserchVO.departmentNo}]]
-     const rank = [[${empserchVO.rankId}]]
-     
-     function init(){
-    	 depa.value=""
-    	 rankId.value=""
-         keyemp.value=""
-         resignationStatus.value = "";
-     }
-     
-     function gopage(p){
- 		frmSearch.page.value = p;
- 		frmSearch.submit();		
- 	}
-     
-     function filterStatus(status) {
-    	    document.getElementById("resignationStatus").value = status;
-    	    gopage(1);
-    	}
-     
+    </div>
+</div>
 
- 	// 페이지 로드 시 데이터 가져오기
- 	document.addEventListener("DOMContentLoaded", function() {
- 	    loadData("/api/departments", "depa" , dept);
- 	    loadData("/api/ranks", "rankId", rank);
- 	});
-     
-     
-     </script>
+<!-- JS -->
+<script src="/js/emp.js"></script>
+<script th:inline="javascript">
+    const dept = [[${empserchVO.departmentNo}]]
+    const rank = [[${empserchVO.rankId}]]
+
+    function init() {
+        depa.value = "";
+        rankId.value = "";
+        keyemp.value = "";
+        resignationStatus.value = "";
+    }
+
+    function gopage(p) {
+        frmSearch.page.value = p;
+        frmSearch.submit();
+    }
+
+    function filterStatus(status) {
+        document.getElementById("resignationStatus").value = status;
+        gopage(1);
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        loadData("/api/departments", "depa", dept);
+        loadData("/api/ranks", "rankId", rank);
+    });
+</script>
 </body>
 </html>

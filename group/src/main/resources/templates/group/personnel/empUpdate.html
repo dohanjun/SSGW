@@ -1,425 +1,349 @@
 <!DOCTYPE html>
-<html xmlns:th="https://www.thymeleaf.org"
+<html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{common/layouts/default_layout}"
       layout:fragment="content">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- Context Path 추가
-    <meta name="contextPath" value="/myapp">-->
-    
     <title>사원정보 수정</title>
     <style>
-        /* 메인 컨테이너*/
+        body { font-size: 14px; }
+
         .content-wrapper {
             display: flex;
             justify-content: center;
-            align-items: center;
-            height: calc(100vh - 100px);
-            width: 100%;
-            padding: 20px;
-            box-sizing: border-box;
+            padding: 40px 20px;
         }
 
-        /* 사원 상세정보 박스 크기 조정 */
-        .employee-container {
-            width: 700px;
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        .card-box {
+            width: 100%;
+            max-width: 980px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .card-header {
+            background-color: #f8f9fa;
+            padding: 12px 20px;
+            border-bottom: 1px solid #dee2e6;
             text-align: center;
         }
 
-        .emph2 {
-            margin-bottom: 15px;
-            font-size: 18px;
+        .card-header h5 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
         }
 
-        .profile-img {
-		    width: 100px;
-		    height: 100px;
-		    object-fit: cover; /* 원본 비율을 유지하면서 박스 크기에 맞춤 */
-		    border: 1px solid #ddd; /* 테두리 추가 */
-		    display: block;
-		    margin: 0 auto;
-       }
-       .profile-img img {
-		    width: 100px;
-		    height: 100px;
-		    object-fit: cover; /* 비율을 유지하면서 크기에 맞게 자름 */
-
-		    display: block;
-		    margin: 0 auto;
-	  }
-
-        .form-container {
+        .employee-container {
             display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            gap: 10px;
+            gap: 30px;
+            padding: 30px 40px;
+        }
+
+        .left-panel {
+            flex: 0 0 240px;
+            border-right: 1px solid #eee;
+            padding-right: 20px;
+        }
+
+        .left-panel h5 {
+            text-align: center;
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .profile-img-box {
+            width: 140px;
+            height: 140px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 0 auto 15px;
+            cursor: pointer;
+        }
+
+        .profile-img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .form-group {
-            flex: 1 1 calc(50% - 10px);
-            min-width: 250px;
-            text-align: left;
+            margin-bottom: 15px;
         }
 
-        .form-group label {
-            font-weight: bold;
+        .info-label {
             display: block;
+            font-weight: bold;
             margin-bottom: 5px;
-            font-size: 14px;
         }
 
-        .form-group input, .form-group select {
+        .form-control {
             width: 100%;
-            padding: 6px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #f8f9fa;
+            padding: 6px 10px;
             font-size: 14px;
+            background-color: #f8f9fa;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
         }
 
-        .btn-group {
+        .right-panel {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .full-row {
+            grid-column: 1 / 3;
+        }
+
+        .address-row {
             display: flex;
-            justify-content: space-between;
-            margin-top: 15px;
+            gap: 10px;
         }
 
         .btn {
-            padding: 8px 12px;
+            padding: 6px 16px;
+            font-size: 14px;
+            min-width: 100px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 14px;
-            width: 48%;
         }
 
-        .btn-update {
-            background: #007bff;
-            color: white;
-        }
+        .btn-primary { background-color: #007bff; color: white; }
+        .btn-secondary { background-color: #6c757d; color: white; }
+        .btn-danger { background-color: #dc3545; color: white; }
+        .btn-sm { padding: 4px 10px; font-size: 13px; }
 
-        .btn-cancel {
-            background: #dc3545;
-            color: white;
-        }
+    
+	    .form-buttons {
+	        grid-column: 1 / 3;
+	        display: flex;
+	        justify-content: flex-start;
+	        gap: 10px;
+	        margin-top: 4px; /* 최소 간격 */
+	    }
     </style>
 </head>
 <body>
 
 <form name="updateForm" th:action="@{/empUpdate}" th:object="${emp}" method="post" enctype="multipart/form-data">
     <div class="content-wrapper">
-        <div class="employee-container">
-            <h2 class="emph2">사원 정보수정</h2>
-			<div class="profile-container">
-			    <img id="imagePreview" class="profile-img" th:src="'data:image/png;base64,' + ${profileImageBase64}" 
-			         alt="프로필 이미지" onclick="document.getElementById('photo').click();">
-			    <input type="file" id="photo" name="profileImageFile" accept="image/*" style="display: none;" onchange="previewImage(event)">
-			</div>
-            
-            <div class="form-container">
-                <div class="form-group">
-                    <label for="empid">ID</label>
-                    <input type="text" id="empid" th:field="*{employeeId}" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="pw">PW</label>
-                    <input type="password" id="pw" th:field="*{employeePw}">
-                    <button type="button" onclick="resetPassword()">비밀번호 초기화</button>
-                </div>
-                <div class="form-group">
-                    <label for="number">사원번호</label>
-                    <input type="text" id="number" th:field="*{employeeNo}" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="name">이름</label>
-                    <input type="text" id="name" th:field="*{employeeName}" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="department">부서</label>
-				    <select id="department" name="departmentNo">
-				        <option value="">부서를 선택하세요</option>
-				    </select>
-                </div>
-                <div class="form-group">
-                    <label for="position">직급</label>
-				    <select id="position" name="rankId">
-				        <option value="">직급을 선택하세요</option>
-				    </select>
-                </div>
-                <div class="form-group">
-                    <label for="role">권한</label>
-				    <select id="role" name="rightsId">
-				        <option value="">권한을 선택하세요</option>
-				    </select>
+        <div class="card-box">
+            <div class="card-header"><h5>사원 정보 수정</h5></div>
+
+            <div class="employee-container">
+                <!-- 왼쪽 프로필 및 부서/직책/권한 -->
+                <div class="left-panel">
+                    <h5>프로필</h5>
+                    <div class="profile-img-box" onclick="document.getElementById('photo').click();">
+                        <img id="imagePreview" th:src="'data:image/png;base64,' + ${profileImageBase64}" alt="프로필 이미지">
+                    </div>
+                    <input type="file" id="photo" name="profileImageFile" accept="image/*" style="display: none;" onchange="previewImage(event)">
+
+                    <div class="form-group">
+                        <label class="info-label">부서</label>
+                        <select id="department" name="departmentNo" class="form-control"></select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="info-label">직책</label>
+                        <select id="position" name="rankId" class="form-control"></select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="info-label">권한</label>
+                        <select id="role" name="rightsId" class="form-control"></select>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="contact">연락처</label>
-                    <input type="text" id="contact" th:field="*{phoneNumber}">
-                </div>
-				<!-- 주소 입력 -->
-				<div class="form-group">
-				    <label for="address">주소</label>
-				    <input type="text" id="address" th:field="*{address}" readonly>
-				    <button type="button" class="btn btn-info btn-sm" onclick="searchAddress()">주소 검색</button>
-				</div>
-				
-				<!-- 상세주소 입력 -->
-				<div class="form-group">
-				    <label for="detailAddress">상세주소</label>
-				    <input type="text" id="detailAddress" placeholder="상세주소 입력">
-				</div>
-                <div class="form-group">
-                    <label for="hire-date">입사일</label>
-                    <input type="date" id="hire-date" th:field="*{hireDate}">
-                </div>
-                <div class="form-group">
-                    <label for="leave-date">퇴사일</label>
-                    <input type="date" id="leave-date" th:field="*{exitDate}">
-                </div>
-                <div class="form-group">
-				    <label for="resign">재직상태</label>
-				    <select id="resign" th:field="*{resignationStatus}">
-				        <option value="N">재직</option>
-				        <option value="Y">퇴사</option>
-				    </select>
-				</div>
-            </div>
+                <!-- 오른쪽 입력 필드들 -->
+                <div class="right-panel">
+                    <div class="form-group">
+                        <label class="info-label">ID</label>
+                        <input type="text" th:field="*{employeeId}" class="form-control" readonly>
+                    </div>
 
-            <!-- <button type="button">엑셀 등록</button> -->
+                    <div class="form-group">
+                        <label class="info-label">비밀번호</label>
+                        <div class="address-row">
+                            <input type="password" id="pw" th:field="*{employeePw}" class="form-control">
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="resetPassword()">초기화</button>
+                        </div>
+                    </div>
 
-            <div class="btn-group">
-                <button type="submit" id="btn1" class="btn btn-primary">수정</button>
-                <button type="button" class="btn btn-danger" th:onclick="|location.href = '@{ /empInfo(employeeNo=${emp.employeeNo}) }'|">취소</button>
+                    <div class="form-group">
+                        <label class="info-label">사원번호</label>
+                        <input type="text" id="number" th:field="*{employeeNo}" class="form-control" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="info-label">이름</label>
+                        <input type="text" th:field="*{employeeName}" class="form-control" readonly>
+                    </div>
+
+                    <div class="form-group full-row">
+                        <label class="info-label">연락처</label>
+                        <input type="text" th:field="*{phoneNumber}" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="info-label">주소</label>
+                        <div class="address-row">
+                            <input type="text" id="address" th:field="*{address}" class="form-control" readonly>
+                            <button type="button" class="btn btn-info btn-sm" onclick="searchAddress()">검색</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="info-label">상세주소</label>
+                        <input type="text" id="detailAddress" class="form-control" placeholder="상세주소 입력">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="info-label">입사일</label>
+                        <input type="date" th:field="*{hireDate}" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="info-label">퇴사일</label>
+                        <input type="date" id="leave-date" th:field="*{exitDate}" class="form-control">
+                    </div>
+
+                    <div class="form-group full-row">
+                        <label class="info-label">재직상태</label>
+                        <select id="resign" th:field="*{resignationStatus}" class="form-control">
+                            <option value="N">재직</option>
+                            <option value="Y">퇴사</option>
+                        </select>
+                    </div>
+
+                    <!-- 버튼 -->
+                    <div class="form-buttons">
+                        <button type="submit" class="btn btn-primary">수정</button>
+                        <button type="button" class="btn btn-danger"
+                                th:onclick="|location.href='@{/empInfo(employeeNo=${emp.employeeNo})}'|">취소</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </form>
 
+<!-- JS -->
+<script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script>
+    const selectedDepartment = "[[${emp.departmentNo}]]";
+    const selectedRank = "[[${emp.rankId}]]";
+    const selectedRight = "[[${emp.rightsId}]]";
 
-    <!--  카카오 주소 API -->
-    <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=843f623b54841d7e48c15c0667f81957&libraries=services"></script>
-    <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-    
-    <script>
-	    // 이미지 미리보기 기능
-	    function previewImage(event) {
-	        const image = document.getElementById('imagePreview');
-	        const file = event.target.files[0];
-	
-	        if (file) {
-	            const reader = new FileReader();
-	            reader.onload = function (e) {
-	                image.src = e.target.result; // 이미지 미리보기 업데이트
-	            };
-	            reader.readAsDataURL(file);
-	        }
-	    }
-        
-        /**/function resetPassword() {
-            document.getElementById('pw').value = '12345678';
+    // 이미지 미리보기
+    function previewImage(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = e => document.getElementById('imagePreview').src = e.target.result;
+            reader.readAsDataURL(file);
         }
-        
-        // 특정 버튼 선택
-        document.getElementById('btn1').addEventListener('click', updateAjax);
-        
-        // URL 절대경로 가져오기 포트도 가져옴
-        const baseURL = window.location.origin; // 예: http://localhost:8080
-        console.log("Base URL:", baseURL);
-        
-        // 필드 선언
-             let headers = new Headers();
-     
-		     headers.append('Content-Type', 'application/json'); // 여기 필드명 변수명과 필드명 동일 변수만 줘도됨
+    }
 
-        // HTTP 요청 헤더 설정
+    // 카카오 주소 검색 API
+    function searchAddress() {
+        new daum.Postcode({
+            oncomplete: function(data) {
+                const roadAddr = data.roadAddress;
+                const zip = data.zonecode;
+                document.getElementById("address").value = `[${zip}] ${roadAddr}`;
+            }
+        }).open();
+    }
 
-
-        // AJAX
-        function updateAjax(event){
-        // 1) 보낼 데이터 가져오기
-        let dataObj = getFormData();
-        // 2) AJAX
-        fetch(`${context}/empUpdate`, {
-            method : 'POST',
-            headers, // : {'Content-type' : 'application/json'}
-            body : JSON.stringify(dataObj)
-        })
-          .then(res => res.json())
-          .then(data => {
-        // 3) 응답받을 데이터 가져오기
-              if(data.result){
-                alert(`${data.target.employeeNo}를 수정!!`)
-              }else{
-                alert('수정되지 않았습니다.');
-              }    
-          })
-              .catch(err => console.log(err));
+    // 페이지 로드시 상세주소 자동 분리
+    document.addEventListener("DOMContentLoaded", () => {
+        const addrField = document.getElementById("address");
+        const full = addrField.value;
+        if (full.includes("]")) {
+            const parts = full.split("] ");
+            const zip = parts[0].replace("[", "").replace("]", "");
+            const body = parts[1] || "";
+            const match = body.match(/^(.+?\d{1,5})(?:\s+)(.+)$/);
+            const base = match ? match[1].trim() : body;
+            const detail = match ? match[2].trim() : "";
+            addrField.value = `[${zip}] ${base}`;
+            document.getElementById("detailAddress").value = detail;
         }
-        
-        //
-        function getFormData() {
-            let formData = new FormData(updateForm);
 
-            let obj = {};
-            formData.forEach((value, name) => {
-                obj[name] = value;
+        // 재직상태에 따라 퇴사일 비활성화
+        const resign = document.getElementById("resign");
+        const exit = document.getElementById("leave-date");
+        exit.disabled = resign.value === 'N';
+    });
+
+    // 퇴사상태 변경 시 퇴사일 활성화
+    document.getElementById("resign").addEventListener("change", () => {
+        const exit = document.getElementById("leave-date");
+        if (document.getElementById("resign").value === "N") {
+            exit.disabled = true;
+            exit.value = "";
+        } else {
+            exit.disabled = false;
+        }
+    });
+
+    // 폼 제출 시 주소 + 상세주소 합쳐서 저장
+    document.querySelector("form[name='updateForm']").addEventListener("submit", () => {
+        const addr = document.getElementById("address").value.trim();
+        const detail = document.getElementById("detailAddress").value.trim();
+        if (!addr.includes("[")) return; // 괄호 중복 방지
+        document.getElementById("address").value = `${addr} ${detail}`;
+    });
+
+    // 비밀번호 초기화
+    function resetPassword() {
+        const empNo = document.getElementById("number").value;
+        fetch("/api/resetPassword?employeeNo=" + empNo, { method: "POST" })
+            .then(res => res.text())
+            .then(msg => {
+                alert(msg);
+                document.getElementById("pw").value = "";
             })
+            .catch(err => {
+                alert("초기화 실패");
+                console.error(err);
+            });
+    }
 
-            return obj;
-        }
-        
-        // AJAX 요청을 통해 데이터 불러오기
-        function loadData(url, selectId, valueField, textField) {
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    let select = document.getElementById(selectId);
-                    select.innerHTML = '<option value="">선택하세요</option>'; // 기본값 초기화
+    // 드롭다운 불러오기 함수
+    function loadData(url, selectId, valueField, textField, selectedVal) {
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                const select = document.getElementById(selectId);
+                select.innerHTML = '<option value="">선택하세요</option>';
+                data.forEach(item => {
+                    const opt = document.createElement("option");
+                    opt.value = item[valueField];
+                    opt.textContent = item[textField];
+                    if (item[valueField] == selectedVal) opt.selected = true;
+                    select.appendChild(opt);
+                });
+            });
+    }
 
-                    data.forEach(item => {
-                        let option = document.createElement("option");
-                        option.value = item[valueField];  // ID 값
-                        option.textContent = item[textField]; // 표시할 텍스트
-                        select.appendChild(option);
-                    });
-                })
-                .catch(error => console.error(`Error loading ${selectId} data:`, error));
-        }
-
-        // 페이지 로드 시 실행
-        document.addEventListener("DOMContentLoaded", function() {
-            loadData("/api/departments", "department", "departmentNo", "departmentName");
-            loadData("/api/ranks", "position", "rankId", "jobTitleName");
-            loadData("/api/rights", "role", "rightsId", "rightsName");
-        });
-        
-        
-         // AJAX 요청을 통해 데이터 불러오기
-         
-        let empId = "[[${emp.employeeNo}]]";  
-        let selectedDepartment = "[[${emp.departmentNo}]]";
-        let selectedRank = "[[${emp.rankId}]]";
-        let selectedRight = "[[${emp.rightsId}]]";
-
-        function loadData(url, selectId, valueField, textField, selectedValue) {
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    let select = document.getElementById(selectId);
-                    select.innerHTML = '<option value="">선택하세요</option>'; 
-
-                    data.forEach(item => {
-                        let option = document.createElement("option");
-                        option.value = item[valueField];  
-                        option.textContent = item[textField]; 
-
-                        if (option.value === selectedValue) {
-                            option.selected = true;
-                        }
-
-                        select.appendChild(option);
-                    });
-                })
-                .catch(error => console.error(`Error loading ${selectId} data:`, error));
-        }
-
-        // 페이지 로드시 실행
-        document.addEventListener("DOMContentLoaded", function() {
-            loadData("/api/departments", "department", "departmentNo", "departmentName", selectedDepartment);
-            loadData("/api/ranks", "position", "rankId", "jobTitleName", selectedRank);
-            loadData("/api/rights", "role", "rightsId", "rightsName", selectedRight);
-        });
-        
-        //  주소 검색 API (카카오)
-        function searchAddress() {
-            new daum.Postcode({
-                oncomplete: function (data) {
-                    let fullAddress = "[" + data.zonecode + "] " + data.roadAddress;
-                    document.getElementById("address").value = fullAddress; // 주소 입력
-                }
-            }).open();
-        }
-
-        //  페이지 로드 시 기존 주소 데이터에서 상세주소를 분리하여 입력
-        document.addEventListener("DOMContentLoaded", function () {
-            let fullAddress = document.getElementById("address").value;
-            if (fullAddress.includes("]")) {
-                let splitAddress = fullAddress.split("] "); // "] "를 기준으로 분리
-                document.getElementById("address").value = splitAddress[0] + "]"; // 우편번호 포함 주소
-                document.getElementById("detailAddress").value = splitAddress[1] || ""; // 상세주소 입력
-            }
-        });
-
-        //  폼 제출 시 주소 + 상세주소 합쳐서 저장
-        document.querySelector("form[name='updateForm']").addEventListener("submit", function (event) {
-            const resignStatus = document.getElementById("resign").value;
-            const exitDate = document.getElementById("leave-date").value;
-            
-            let addressField = document.getElementById("address");
-            let detailAddressField = document.getElementById("detailAddress");
-
-            // 주소 + 상세주소를 하나의 값으로 합쳐서 저장
-            if (addressField.value && detailAddressField.value) {
-                addressField.value = addressField.value + " " + detailAddressField.value;
-            }
-        });
-        
-     // 퇴사여부 변경 시 퇴사일 입력 비활성화
-		document.getElementById('resign').addEventListener('change', function () {
-		    const status = this.value;
-		    const exitDateInput = document.getElementById('leave-date');
-		
-		    if (status === 'N') {
-		        // 재직이면 퇴사일 입력 비활성화 및 제거
-		        exitDateInput.value = '';
-		        exitDateInput.disabled = true;
-		    } else {
-		        // 퇴사 상태면 입력 가능
-		        exitDateInput.disabled = false;
-		    }
-		});
-     
-		document.addEventListener("DOMContentLoaded", function () {
-		    const status = document.getElementById('resign').value;
-		    const exitDateInput = document.getElementById('leave-date');
-
-		    if (status === 'N') {
-		        exitDateInput.disabled = true;
-		    } else {
-		        exitDateInput.disabled = false;
-		    }
-		});
-        
-        //비밀번호 초기화 API 버튼
-		function resetPassword() {
-		    const employeeNo = document.getElementById("number").value;
-		
-		    fetch("/api/resetPassword?employeeNo=" + employeeNo, {
-		        method: "POST"
-		    })
-		    .then(response => response.text())
-		    .then(message => {
-		        alert(message); // 예: 비밀번호가 123456으로 초기화되었습니다.
-		        document.getElementById("pw").value = ""; // 입력칸 비우기 (선택사항)
-		    })
-		    .catch(error => {
-		        console.error("비밀번호 초기화 실패:", error);
-		        alert("비밀번호 초기화에 실패했습니다.");
-		    });
-		}
-		
-		//비밀번호 초기화 API 버튼
-		fetch("/api/resetPassword?employeeNo=" + employeeNo, {
-		    method: "POST"
-		})
-
-    </script>
+    // 부서, 직책, 권한 초기 세팅
+    document.addEventListener("DOMContentLoaded", () => {
+        loadData("/api/departments", "department", "departmentNo", "departmentName", selectedDepartment);
+        loadData("/api/ranks", "position", "rankId", "jobTitleName", selectedRank);
+        loadData("/api/rights", "role", "rightsId", "rightsName", selectedRight);
+    });
+</script>
 </body>
 </html>

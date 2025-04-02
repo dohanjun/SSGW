@@ -1,207 +1,283 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org"
-	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	  layout:decorate="~{common/layouts/default_layout}"
-	  layout:fragment="content">
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{common/layouts/default_layout}"
+	layout:fragment="content">
 <head>
 <meta charset="UTF-8">
-<title>list</title>
+<title>부서주소록</title>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
-</head>
+
 <style>
-
-	#flo{
-	float: right;
-	display: flex;
-	justify-content: center;
-	padding-left: 30px;
-	}
-
-	.left{
-		position: relative;
-		left: 1430px;
-		bottom: 10px;
-	}
-    .p{
-    	clear: left;
-    	padding-left: 30px;
-    	text-align: center;
+    /* 페이지 레이아웃 */
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f7fc;
+        margin: 0;
+        padding: 20px;
     }
-    #se{
- 	margin-right: 10px;
+
+    /* 제목 스타일 */
+    h3 {
+        text-align: center;
+        color: #4e73df;
+        font-size: 28px;
+        margin-bottom: 30px;
     }
-	#bar{
-		position: static;
-		text-align: center;
-		padding: 20px;
-		padding-left: 600px;
-	}
-	
+
+    /* 버튼과 검색을 한 줄에 배치 */
+    .btn-search-container {
+        display: flex;
+        justify-content: space-between; /* 양 끝으로 배치 */
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    /* "개인주소록 이동" 버튼 스타일 */
+    .btn-primary {
+        padding: 10px 20px;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+        background-color: #007bff;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    /* 검색 기능 스타일 */
+    .search-container {
+        display: flex;
+        align-items: center;
+    }
+
+    .search-container input[type="search"] {
+        width: 200px;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        margin-right: 10px;
+    }
+
+    .search-container button {
+        padding: 10px 20px;
+        border-radius: 5px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+
+    .search-container button:hover {
+        background-color: #218838;
+    }
+
+    /* 삭제 버튼 스타일 */
+    .delete-button {
+        display: block;
+        width: 150px;
+        padding: 10px;
+        margin-top: 20px;
+        border-radius: 5px;
+        background-color: #dc3545;
+        color: white;
+        font-weight: bold;
+        border: none;
+        cursor: pointer;
+        margin-left: auto; /* 오른쪽으로 정렬 */
+    }
+
+    .delete-button:hover {
+        background-color: #c82333;
+    }
+
+    /* 테이블 스타일 */
+    .table-container {
+        padding: 0 30px; /* 테이블 양옆에 여백 추가 */
+        margin-top: 20px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 12px;
+        text-align: center;
+        border: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #f8f9fc;
+        color: #333;
+        font-weight: bold;
+    }
+
+    td {
+        background-color: #fff;
+    }
+
+    td:hover {
+        background-color: #f1f1f1;
+    }
+
+    /* 페이지 네비게이션 */
+    #bar {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .pagination {
+        display: inline-block;
+        padding: 10px 20px;
+    }
+
+    .pagination .page-item {
+        display: inline-block;
+        margin: 0 5px;
+    }
+
+    .pagination .page-link {
+        padding: 8px 16px;
+        color: #007bff;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .pagination .page-link:hover {
+        background-color: #f1f1f1;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: #4e73df;
+        color: white;
+    }
+
+    .pagination .page-item.disabled .page-link {
+        color: #ccc;
+        cursor: not-allowed;
+    }
 </style>
+
+</head>
 
 <body>
 <h3>부서주소록</h3>
-	<div class="btn-container">
-		<a class="btn btn-primary" th:onclick="|location.href='@{/myBookList}'|">
-		개인주소록 이동
-		</a>
-	</div>
-	
-<!-- 검색기능 -->
-<form role="search" name="frmSearch">
-  <div class="left" id="se">
-	  <input type="hidden" name="page" value="1">
-      <input name="search" type="search" placeholder="Search" th:value="${pageListVO.search}">
-      <button class="btn btn-outline-success" type="submit">검색</button>
 
-  </div>
-<!-- 검색기능 마침 -->
+<!-- 버튼과 검색을 한 줄에 배치 -->
+<div class="btn-search-container">
+    <!-- "개인주소록 이동" 버튼 -->
+    <div class="btn-container">
+        <a class="btn btn-primary" th:onclick="|location.href='@{/myBookList}'|">개인주소록 이동</a>
+    </div>
+    
+    <!-- 검색 기능 -->
+    <div class="search-container">
+        <form role="search" name="frmSearch" class="d-flex">
+            <input type="hidden" name="page" value="1">
+            <input name="search" type="search" placeholder="Search" th:value="${pageListVO.search}" class="form-control">
+            <button class="btn btn-outline-success" type="submit">검색</button>
+        </form>
+    </div>
+</div>
+
+<!-- 삭제 버튼 -->
+<button class="delete-button">삭제</button>
 
 <div>
-	<h5 th:text="'전체글: '+${paging.totalRecord}+'개'"></h5>
+    <h5 th:text="'전체글: '+${paging.totalRecord}+'개'"></h5>
 </div>
-<div id="flo">
-<button>삭제</button>
-
-<!-- 정렬기능 -->
-</div>
-</form>
-<!-- 정렬기능 마침 -->
 
 <!-- 메일목록 창 -->
-<div class="p">
-	<form name="form" method="post">
-	<table border="1" class="table">
-	<thead>
-		<tr class="text-center">
-			<td><input onchange="selectAllcheck(this)" type="checkbox" name="selectall" id="selectall"></td>
-			<td scope="col">이름</td>
-			<td scope="col">전화번호(개인)</td>
-			<td scope="col">이메일 주소</td>
-			<td scope="col">회사이름</td>
-			<td scope="col">전화번호(회사)</td>
-			<td scope="col">부서명</td>
-			<td scope="col">날짜</td>
-		</tr>
-	</thead>
-	<tbody>
-	<th:block th:each="info : ${books}">
-		<tr>
-		    <td><input type="checkbox" name="checkMenu" class="checkbox" onchange="checkMenuHandler(this)"/></td>
-			<td th:onclick="|location.href='@{/bookSelect(addressBookId=${info.addressBookId})}';|">[[ ${info.addressBookName} ]]</td>
-			<td th:onclick="|location.href='@{/bookSelect(addressBookId=${info.addressBookId})}';|">[[ ${info.addressBookNumber} ]]</td>
-			<td th:onclick="|location.href='@{/bookSelect(addressBookId=${info.addressBookId})}';|">[[ ${info.addressBookEmail} ]]</td>
-			<td th:onclick="|location.href='@{/bookSelect(addressBookId=${info.addressBookId})}';|">[[ ${info.addressBookCompanyName} ]]</td>
-			<td th:onclick="|location.href='@{/bookSelect(addressBookId=${info.addressBookId})}';|">[[ ${info.addressBookCompanyNumber} ]]</td>
-			<td th:onclick="|location.href='@{/bookSelect(addressBookId=${info.addressBookId})}';|">[[ ${info.bookDepartmentType} ]]</td>
-		  	<td th:onclick="|location.href='@{/myBookSelect(addressBookId=${info.addressBookId})}';|">[[ ${ #dates.format(info.addressBookUpdateDate, "yyyy년MM월dd일") } ]]</td>
-		</tr>
- 	  </th:block>
- 	  </tbody>
-	</table>
-	</form>
-	</div>
-<!-- 메일목록 창 마침 -->
+<div class="table-container">
+    <form name="form" method="post">
+    <table class="table">
+        <thead>
+            <tr class="text-center">
+                <th><input onchange="selectAllcheck(this)" type="checkbox" name="selectall" id="selectall"></th>
+                <th>이름</th>
+                <th>전화번호(개인)</th>
+                <th>이메일 주소</th>
+                <th>회사이름</th>
+                <th>전화번호(회사)</th>
+                <th>부서명</th>
+                <th>날짜</th>
+            </tr>
+        </thead>
+        <tbody>
+            <th:block th:each="info : ${books}">
+                <tr>
+                    <td><input type="checkbox" name="checkMenu" class="checkbox" onchange="checkMenuHandler(this)"/></td>
+                    <td th:onclick="|location.href='@{/bookSelect(addressBookId=${info.addressBookId})}';|">[[ ${info.addressBookName} ]]</td>
+                    <td th:onclick="|location.href='@{/bookSelect(addressBookId=${info.addressBookId})}';|">[[ ${info.addressBookNumber} ]]</td>
+                    <td th:onclick="|location.href='@{/bookSelect(addressBookId=${info.addressBookId})}';|">[[ ${info.addressBookEmail} ]]</td>
+                    <td th:onclick="|location.href='@{/bookSelect(addressBookId=${info.addressBookId})}';|">[[ ${info.addressBookCompanyName} ]]</td>
+                    <td th:onclick="|location.href='@{/bookSelect(addressBookId=${info.addressBookId})}';|">[[ ${info.addressBookCompanyNumber} ]]</td>
+                    <td th:onclick="|location.href='@{/bookSelect(addressBookId=${info.addressBookId})}';|">[[ ${info.bookDepartmentType} ]]</td>
+                    <td th:onclick="|location.href='@{/myBookSelect(addressBookId=${info.addressBookId})}';|">[[ ${ #dates.format(info.addressBookUpdateDate, "yyyy년MM월dd일") } ]]</td>
+                </tr>
+            </th:block>
+        </tbody>
+    </table>
+    </form>
+</div>
 
 <!-- 바기능 -->
 <div id="bar">
-	<nav>
-		<ul class="pagination">
-			<li class="page-item"
-				th:classappend="${paging.startPage} == 1 ? disabled"><a
-				class="page-link"
-				th:href="|javascript:gopage(${paging.startPage}-1)|">Previous</a></li>
-	
-			<li
-				th:each="num : *{#numbers.sequence(paging.startPage, paging.endPage)}"
-				class="page-item" th:classappend="${num} == ${paging.page} ? active">
-				<a class="page-link" th:href="|javascript:gopage(${num})|"
-				th:text="${num}">2</a>
-			</li>
-	
-			<li class="page-item"
-				th:classappend="${paging.endPage} >= ${paging.lastPage} ? disabled">
-				<a class="page-link"
-				th:href="|javascript:gopage(${paging.endPage}+1)|">Next</a>
-			</li>
-		</ul>
-	</nav>
+    <nav>
+        <ul class="pagination">
+            <li class="page-item" th:classappend="${paging.startPage} == 1 ? disabled">
+                <a class="page-link" th:href="|javascript:gopage(${paging.startPage}-1)|">Previous</a>
+            </li>
+
+            <li th:each="num : *{#numbers.sequence(paging.startPage, paging.endPage)}" class="page-item" th:classappend="${num} == ${paging.page} ? active">
+                <a class="page-link" th:href="|javascript:gopage(${num})|">[[ ${num} ]]</a>
+            </li>
+
+            <li class="page-item" th:classappend="${paging.endPage} >= ${paging.lastPage} ? disabled">
+                <a class="page-link" th:href="|javascript:gopage(${paging.endPage}+1)|">Next</a>
+            </li>
+        </ul>
+    </nav>
 </div>
-<!-- 바기능 마침 -->
-
-
-
 
 
 <script>
+    // 체크박스 처리
+    function checkMenuHandler(checkbox) {
+        menu = document.getElementsByName("checkMenu");
+        menuArr = [];
+        const selectall = document.querySelector('input[name="selectall"]');
+        if (checkbox != null && checkbox.checked === false) {
+            selectall.checked = false;
+        }
 
-	//버튼
-	const context = '';
-	
-	function moveInfoPage(event){
-		let selectedTr = event.currentTarget;
-		let did = selectedTr.children[1].textContent;
-		let url = context + '/bookSelect?addressBookId=' + did;
-	}
-	
-	//바 기능
-	function gopage(p){
-		frmSearch.page.value = p;
-		frmSearch.submit();		
-		//location.href = '/mail?page=' + p;
-	}
-	
-	
-	//체크박스 기능
-	function checkMenuHandler(checkbox) {
-	    menu = document.getElementsByName("checkMenu")
-	    menuArr = [];
-
-	    // 전체 체크 되어 있는 상태에서 자식데이터의 체크박스 해제시 전체 체크박스 해제
-	    const selectall = document.querySelector('input[name="selectall"]');
-	    if (checkbox != null && checkbox.checked === false) {
-	        selectall.checked = false;
-	    }
-
-	    
-  // 자식노드 체크가 한개라도 false일때 부모 전체체크 해제 자식노드 체크가 모두 true가 되면 부모 전체체크도 true
-	    let childMenuAll = document.querySelectorAll('[name="checkMenu"]').length;
-	    let childMenuCheckd = document.querySelectorAll('[name="checkMenu"]:checked').length;
-	    if (childMenuAll == childMenuCheckd){
-	        selectall.checked = true;
-	    }else{
-	    	selectall.checked = false;
-	    }
-	}
-
-	/**
-	 * 체크박스 모두 선택/해제
-	 * @param selectAll
-	 */
-	function selectAllcheck(selectAll) {
-	    const checkboxes = document.getElementsByName('checkMenu');
-
-	    checkboxes.forEach((checkbox) => {
-	        checkbox.checked = selectAll.checked
-	    })
-	    menu = document.getElementsByName("checkMenu")
-	    menuArr = [];
-
-	    // 체크되어 있는 데이터
-	    for (let i = 0; i < menu.length; i++) {
-	        if (menu[i].checked == true) {
-	            menuArr.push(menu[i].id);
-	        }
-	    }
-	}
-	
-	 // 폼을 제출하는 함수
-    function submitForm() {
-    	frmSearch.submit();
+        let childMenuAll = document.querySelectorAll('[name="checkMenu"]').length;
+        let childMenuChecked = document.querySelectorAll('[name="checkMenu"]:checked').length;
+        if (childMenuAll == childMenuChecked){
+            selectall.checked = true;
+        } else {
+            selectall.checked = false;
+        }
     }
 
+    function selectAllcheck(selectAll) {
+        const checkboxes = document.getElementsByName('checkMenu');
+        checkboxes.forEach((checkbox) => {
+            checkbox.checked = selectAll.checked
+        })
+    }
+
+    function gopage(p) {
+        frmSearch.page.value = p;
+        frmSearch.submit();
+    }
 </script>
 
-</body>  
+</body>
 </html>

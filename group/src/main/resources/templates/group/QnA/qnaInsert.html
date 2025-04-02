@@ -148,8 +148,6 @@
 	</script>
 	
 	<script th:inline="javascript">
-		let employeeNo = /*[[${userNo}]]*/[];
-		console.log(employeeNo)
 		$('.insert').on('click',e=>{
 				$.ajax({
 					type: "POST",

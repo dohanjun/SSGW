@@ -17,6 +17,7 @@ public interface MailMapper {
 	
 	//메일단건조회
 	public MailVO MailFindInfo(int mailId);
+
 	
 	//메일등록
 	public int mailCreate(MailVO mailVO);	
@@ -63,4 +64,5 @@ public interface MailMapper {
 	
 	//휴지통 자동삭제 기능
 	void deleteCurrentMails(LocalDateTime  currentDateTime);
+
 }

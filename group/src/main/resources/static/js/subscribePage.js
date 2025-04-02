@@ -6,6 +6,7 @@ $(document).ready(updatePrice);
 function updatePrice() {
 	let totalModulePrice = 0;
 	dataList.forEach(e => {
+		console.log(e)
 		totalModulePrice += Number(e.modulePrice);
 	})
 	let countValue = $('.countInput')[0].value;
@@ -39,33 +40,31 @@ function updatePrice() {
 }
 
 
-document.querySelectorAll('.selectModule .selectItem *').forEach(e => {
+document.querySelectorAll('.selectItem').forEach(item => {
+	item.addEventListener('click', function () {
+		this.classList.toggle('check');
 
-	e.addEventListener('click', f => {
-
-		f.currentTarget.classList.toggle('check');
-
-		let attrValue = f.target.getAttribute('for');
-		if (attrValue) {
-			let data = {};
-			let cleanedAttrValue = attrValue.replace(/^[^\(]*\(|\)$/g, '');
-
-			cleanedAttrValue.split(', ').forEach(pair => {
-				let [key, value] = pair.split('=');
-				if (value) {
-					data[key] = value;
-				}
-			});
-
-			if (f.target.classList.contains('check')) {
+		const moduleNo = this.getAttribute('data-module-no');
+		const modulePrice = this.getAttribute('data-module-Price');
+		const data = {
+			moduleNo: parseInt(moduleNo),
+			modulePrice: parseInt(modulePrice)
+		};
+		if (this.classList.contains('check')) {
+			// 중복 방지
+			if (!dataList.some(item => item.moduleNo === data.moduleNo)) {
 				dataList.push(data);
-			} else {
-				dataList = dataList.filter(item => item.moduleNo !== data.moduleNo);
 			}
-			updatePrice();
+		} else {
+			// 체크 해제 시 제거
+			dataList = dataList.filter(item => item.moduleNo !== data.moduleNo);
 		}
+
+		updatePrice();
 	});
 });
+
+
 
 
 document.querySelector('.plusButton').addEventListener('click', event => {
@@ -349,3 +348,5 @@ setupDropdown('.uploadInput', '.uploadDropdown', '.uploadOption');
 setupDropdown('.storageInput', '.storageDropdown', '.storageOption');
 setupDropdown('.periodInput', '.periodDropdown', '.periodOption');
 setupDropdown('.paymentInput', '.paymentDropdown', '.paymentOption');
+
+

@@ -16,95 +16,134 @@
 	integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
 	crossorigin="anonymous"></script>
 <style>
-#flo {
-	float: left;
-	display: flex;
-	justify-content: center;
-}
-/* 메인 컨테이너를 가운데 정렬하고 화면에 맞게 조정 */
+/* 전체 페이지 레이아웃 */
 .content-wrapper {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	height: calc(100vh - 100px); /* 상단 네비게이션 제외한 높이 */
+	min-height: 100vh; /* 화면을 가득 채우도록 설정 */
 	width: 100%;
-	padding: 20px;
+	background-color: #f7f9fc;
+	padding: 40px 20px; /* 여백을 추가하여 화면을 꽉 채움 */
 	box-sizing: border-box;
 }
 
-/* 사원 상세정보 박스 크기 조정 */
-.employee-container {
-	width: 600px; /* 기존 900px → 600px로 축소 */
-	height: 600px;
-	background: white;
-	padding: 20px;
+/* 메일 전달 박스 (카드 대신 여백을 두어 화면을 채움) */
+.email-container {
+	width: 100%;
+	max-width: 900px; /* 최대 너비를 설정하여 너무 넓어지지 않도록 */
+	background-color: white;
 	border-radius: 10px;
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-	text-align: center;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+	padding: 30px;
+	margin: 0 auto; /* 중앙 정렬 */
 }
 
-#center {
-	width: 100%;
-	height: 100%;
-	padding: 6px;
-	border: 1px solid #ccc;
-	border-radius: 5px;
-	background-color: #f8f9fa;
-	font-size: 14px;
-	margin-bottom: 15px;
-	font-size: 20px;
+/* 메일 전달 헤더 */
+.email-header {
+	font-size: 24px;
+	font-weight: bold;
+	color: #333;
+	text-align: center;
+	margin-bottom: 30px;
 }
+
+/* 폼 스타일 */
+.table {
+	width: 100%;
+	margin: 20px 0;
+}
+
+th, td {
+	text-align: left;
+	padding: 12px;
+}
+
+th {
+	background-color: #f8f9fc;
+}
+
+input[type="text"] {
+	width: 100%;
+	padding: 10px;
+	border: 1px solid #ddd;
+	border-radius: 5px;
+	margin-top: 5px;
+	font-size: 16px;
+}
+
+/* 버튼 스타일 */
+button {
+	width: 100%;
+	padding: 12px;
+	background-color: #4e73df;
+	color: white;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	font-size: 16px;
+	font-weight: bold;
+}
+
+button:hover {
+	background-color: #2e59d9;
+}
+
+/* 메일 본문 내용 */
+.email-details {
+	font-size: 18px;
+	line-height: 1.6;
+	margin-top: 30px;
+}
+
+.email-details p {
+	margin-bottom: 15px;
+}
+
+.email-details strong {
+	font-weight: bold;
+}
+
 </style>
 </head>
 
 <body>
-	<div id="content-wrapper" class="d-flex flex-column">
-		<div id="container-fluid px-0">
-			<div class="card shadow mb-4">
-				<div class="card-header py-3">
-					<h6 class="m-0 font-weight-bold text-primary">메일 전달하기</h6>
-					<button type="button" class="btn btn-primary"
-						onclick="submitForm()">전달하기</button>
-				</div>
+	<div class="content-wrapper">
+		<div class="email-container">
+		<div class="btn-container">
+				<a class="btn btn-primary" th:onclick="|location.href='@{/mailSelect(mailId=${mail.mailId})}'|">이전으로</a>
+			</div>
+			<div class="email-header">메일 전달하기</div>
+			<form th:action="@{mailVery}" method="post" class="user" id="emailForm">
+				<table class="table">
+					<tbody>
+						<tr>
+							<th>받는 사람</th>
+							<td><input type="text" class="form-control" id="getUser" name="getUser"></td>
+						</tr>
+						<tr>
+							<th>참조</th>
+							<td><input type="text" class="form-control" id="cc" name="cc"></td>
+						</tr>
+					</tbody>
+				</table>
 
-				<div class="card-body" id="VeryForm">
-					<form th:action="@{mailVery}" method="post" class="user"
-						id="emailForm">
-						<table class="table file-info-table">
-							<tbody>
-								<tr>
-									<th>받는 사람</th>
-									<td><input type="text" class="form-control" id="getUser"
-										name="getUser"></td>
-								</tr>
-								<tr>
-									<th>참조</th>
-									<td><input type="text" class="form-control" id="cc"
-										name="cc"></td>
-								</tr>
-							</tbody>
-						</table>
-					</form>
-				</div>
-				<div class="email-container">
-					<p>
-						<strong>보낸 사람:</strong> <span th:text="${mail.employeeId}"></span>
-					</p>
-					<p>
-						<strong>제목:</strong> <span th:text="${mail.title}"></span>
-					</p>
-					<p>
-						<strong>파일 첨부:</strong> <span th:text="${mail.attachedFileName}"></span>
-					</p>
-					<p>
-						<strong>본문:</strong> <span th:text="${mail.content}"></span>
-					</p>
-				</div>
+				<!-- 제출 버튼 -->
+				<button type="button" onclick="submitForm()">전달하기</button>
+			</form>
+
+			<!-- 메일 내용 보기 -->
+			<div class="email-details">
+				<p><strong>보낸 사람:</strong> <span th:text="${mail.employeeId}"></span></p>
+				<p><strong>제목:</strong> <span th:text="${mail.title}"></span></p>
+				<p><strong>파일 첨부:</strong> <span th:text="${mail.attachedFileName}"></span></p>
+				<p><strong>본문:</strong> <span th:text="${mail.content}"></span></p>
 			</div>
 		</div>
 	</div>
+
 	<script>
-		// form 제출을 처리하는 자바스크립트 함수
+		// 폼 제출 처리 함수
 		function submitForm() {
 			document.getElementById('emailForm').submit(); // 'emailForm' 아이디를 가진 폼을 제출
 		}

@@ -66,4 +66,16 @@ public interface AttendanceMapper {
     int insertOvertime(OvertimeVO vo);
     
     int updateClockOutAndWorkingHours(AttendanceManagementVO vo);
+    
+    // ✅ (추가) 부서원 상세 출결 데이터 조회
+    List<AttendanceManagementVO> selectDepartmentAttendanceDetail(@Param("departmentNo") Integer departmentNo);
+
+    
+    List<AttendanceManagementVO> selectAttendanceInfo(Integer employeeNo);
+    
+
+
+    int selectTotalOvertimeMinutes(Integer employeeNo);
+
+    List<AttendanceSummaryDTO> selectDepartmentAttendanceSummary(Integer departmentNo);
 }

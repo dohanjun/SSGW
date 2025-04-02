@@ -155,8 +155,8 @@
 		AND a.clock_out_time IS NOT NULL
 		THEN (a.clock_out_time - a.clock_in_time) * 24
 		ELSE 0
-		END), 2) AS totalWorkingHours,
-		ROUND(NVL(SUM(o.overtime_time), 0) / 60, 2) AS overtimeHours
+		END)) AS totalWorkingHours,
+		ROUND(NVL(SUM(o.overtime_time), 0) / 60) AS overtimeHours
 		FROM employees e
 		JOIN department d ON e.department_no = d.department_no
 		LEFT JOIN attendance_management a
@@ -243,8 +243,26 @@
 		e.employee_no
 		WHERE e.department_no = #{departmentNo}
 		AND
-		TO_CHAR(a.attendance_date, 'YYYY-MM') = TO_CHAR(SYSDATE, 'YYYY-MM')
+		TO_CHAR(a.attendance_date, 'YYYY-MM') = TO_CHAR(SYSDATE,
+		'YYYY-MM')
+	</select>
 
+
+	<select id="selectDepartmentAttendanceDetail"
+		parameterType="int"
+		resultType="com.yedam.app.group.service.AttendanceManagementVO">
+		SELECT
+		a.*,
+		e.employee_name,
+		d.department_name
+		FROM
+		attendance_management a
+		JOIN
+		employees e ON a.employee_no = e.employee_no
+		JOIN
+		department d ON e.department_no = d.department_no
+		WHERE
+		e.department_no = #{departmentNo}
 	</select>
 
 </mapper>

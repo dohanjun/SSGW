@@ -14,6 +14,8 @@ public interface MailService {
 	//메일단건조회
 	public MailVO MailSelectInfo(MailVO mailVO);
 	
+
+	
 	//메일등록
 	public int InsertMail(MailVO mailVO);
 	
@@ -58,6 +60,10 @@ public interface MailService {
 	
 	//휴지통 자동삭제 기능
 	void deleteCurrentMails();
+
+	public MailVO FileCount(Integer mailId);
+
+	
 
 }
 

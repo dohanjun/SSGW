@@ -46,10 +46,8 @@ public class BoardController {
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 
 		List<BoardVO> noticeBoards = boardService.getBoardsByType("공지", loggedInUser.getSuberNo(), null, null);
-		List<BoardVO> departmentBoards = boardService.getBoardsByType("부서", loggedInUser.getSuberNo(),
-				loggedInUser.getDepartmentNo(), null);
-		List<BoardVO> freeBoards = boardService.getBoardsByType("자유", loggedInUser.getSuberNo(), null,
-				loggedInUser.getEmployeeNo());
+		List<BoardVO> departmentBoards = boardService.getBoardsByType("부서", loggedInUser.getSuberNo(),	loggedInUser.getDepartmentNo(), null);
+		List<BoardVO> freeBoards = boardService.getBoardsByType("자유", loggedInUser.getSuberNo(), null,	loggedInUser.getEmployeeNo());
 
 		model.addAttribute("noticeBoards", noticeBoards);
 		model.addAttribute("departmentBoards", departmentBoards);
@@ -68,13 +66,15 @@ public class BoardController {
 		int offset = (page - 1) * pageSize;
 		int totalCount = boardService.getNoticeBoardPostCount(loggedInUser.getSuberNo(), keyword);
 		int totalPages = Math.max(1, (int) Math.ceil((double) totalCount / pageSize));
-
 		List<BoardPostVO> postList = boardService.getNoticeBoardPostsPaged(loggedInUser.getSuberNo(), keyword, offset,
 				pageSize);
 
 		boolean isAdmin = (loggedInUser.getRightsId() != null && loggedInUser.getRightsId() == 3)
 				|| (loggedInUser.getRightsLevel() != null && loggedInUser.getRightsLevel() == 5);
-
+		
+		List<BoardPostVO> fixedList = boardService.getFixedNoticeBoardPosts(loggedInUser.getSuberNo());
+		
+		model.addAttribute("fixedList", fixedList);
 		model.addAttribute("postList", postList);
 		model.addAttribute("page", page);
 		model.addAttribute("totalCount", totalCount);
@@ -103,6 +103,9 @@ public class BoardController {
 		List<BoardPostVO> postList = boardService.getDepartmentBoardPostsPaged(loggedInUser.getSuberNo(),
 				loggedInUser.getDepartmentNo(), keyword, offset, pageSize);
 
+		List<BoardPostVO> fixedList = boardService.getFixedNoticeBoardPosts(loggedInUser.getSuberNo());
+		
+		model.addAttribute("fixedList", fixedList);
 		model.addAttribute("postList", postList);
 		model.addAttribute("page", page);
 		model.addAttribute("totalCount", totalCount);
@@ -351,8 +354,19 @@ public class BoardController {
 
 	@GetMapping("/comment/list/{postId}")
 	@ResponseBody
-	public Map<String, Object> getComments(@PathVariable int postId) {
-		List<CommentVO> comments = commentService.getCommentsByPostId(postId);
+	public Map<String, Object> getComments(@PathVariable int postId,
+		    @RequestParam(defaultValue = "1") int page ){
+		int pageSize = 10;
+	    int offset = (page - 1) * pageSize;
+		
+	    // 부모 댓글만 페이징
+	    List<CommentVO> parentComments = commentService.getParentComments(postId, offset, pageSize);
+	    // 대댓글은 모두
+	    List<CommentVO> replyComments = commentService.getReplyComments(postId);
+	    
+	    int totalParentCount = commentService.countParentComments(postId);
+	    int totalPages = (int) Math.ceil((double) totalParentCount / pageSize);
+	    
 	    EmpVO loginUser = empService.getLoggedInUserInfo();
 
 	    Map<String, Object> loginUserMap = new HashMap<>();
@@ -363,8 +377,11 @@ public class BoardController {
 	    loginUserMap.put("departmentNo", loginUser.getDepartmentNo());
 
 	    Map<String, Object> result = new HashMap<>();
-	    result.put("comments", comments);
+	    result.put("parentComments", parentComments);  // 부모 댓글
+	    result.put("replyComments", replyComments);    // 대댓글
 	    result.put("loginUser", loginUserMap);
+	    result.put("currentPage", page);
+	    result.put("totalPages", totalPages);
 
 	    return result;
 	}
@@ -454,5 +471,14 @@ public class BoardController {
 
 	private boolean isDepartmentManager(EmpVO emp) {
 		return emp.getManager() != null;
+	}
+	
+	@PostMapping("/board/toggleFix")
+	@ResponseBody
+	public String toggleBoardFix(@RequestParam("postId") int postId) {
+	    BoardPostVO post = boardService.getPostDetail(postId);
+	    String newFix = "Y".equals(String.valueOf(post.getFixed())) ? "N" : "Y";
+	    boardService.updateFixStatus(postId, newFix);
+	    return "고정 상태가 변경되었습니다.";
 	}
 }

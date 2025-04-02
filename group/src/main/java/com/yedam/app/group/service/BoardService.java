@@ -36,4 +36,9 @@ public interface BoardService {
     // 게시글 삭제
     void deleteBoard(int postId);
     
+    void updateFixStatus(int postId, String fixed);
+    
+    List<BoardPostVO> getFixedNoticeBoardPosts(int suberNo);
+    List<BoardPostVO> getFixedDepartmentBoardPosts(int suberNo, int departmentNo);
+ 
 }
