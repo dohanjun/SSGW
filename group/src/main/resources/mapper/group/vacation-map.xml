@@ -189,25 +189,6 @@
 		  <include refid="vacationCriteria"/>
 		</select>
 		
-		<!-- 로그인 사용자 기준 전체 휴가 사용일 및 잔여일 업데이트 -->
-<!-- <update id="updateVacationUsage" parameterType="VacationVO">
-		  UPDATE LEAVE_HISTORY
-		  SET USED_VACATION = (
-		      SELECT NVL(SUM(USED_VACATION), 0)
-		      FROM VACATION_REQUEST
-		      WHERE EMPLOYEE_NO = #{employeeNo}
-		    ),
-		    REMAINING_VACATION = GRANTED_VACATION - (
-		      SELECT NVL(SUM(USED_VACATION), 0)
-		      FROM VACATION_REQUEST
-		      WHERE EMPLOYEE_NO = #{employeeNo}
-		    )
-		  WHERE EMPLOYEE_NO = #{employeeNo}
-		    AND YEAR = #{year}
-		    AND EMPLOYEE_NO IN (
-		      SELECT EMPLOYEE_NO FROM EMPLOYEES WHERE SUBER_NO = #{suberNo}
-		    )
-</update> -->
 
 <select id="selectVacationRequest" parameterType="VacationRequestVO" resultType="VacationRequestVO">
 	SELECT DRAFT_NO
@@ -235,5 +216,11 @@
 		    WHERE EMPLOYEE_NO = #{employeeNo}
 		      AND YEAR = #{year}
 		</select>
+		
+		<!-- 휴가유형 삭제 -->
+		<delete id="deleteVacationType">
+		    DELETE FROM VACATION_TYPE
+		    WHERE VACATION_TYPE_ID = #{vacationTypeId}
+		</delete>
 
 </mapper>

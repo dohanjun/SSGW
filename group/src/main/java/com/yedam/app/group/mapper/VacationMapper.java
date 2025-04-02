@@ -70,5 +70,8 @@ public interface VacationMapper {
     // 잔여일 계산
     public VacationVO getLeaveHistory(int employeeNo, String year);
     
+    // 휴가유형 삭제
+    public void deleteVacationType(int vacationTypeId);
+    
     
 }

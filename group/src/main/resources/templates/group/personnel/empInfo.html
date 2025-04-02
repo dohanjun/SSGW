@@ -7,33 +7,45 @@
     <meta charset="UTF-8">
     <title>사원 상세정보</title>
     <style>
-        body { font-size: 14px; }
-
-        .content-wrapper {
-            display: flex;
-            justify-content: center;
-            padding: 40px 20px;
+        body {
+            font-size: 14px;
+            background-color: #f8f9fa;
         }
 
-        .card-box {
+        /* ✅ 진짜 화면 중앙 정렬을 위한 flex 박스 */
+        .page-center-wrapper {
+            display: flex;
+            justify-content: center;  /* 가로 중앙 */
+            align-items: flex-start;  /* 세로는 위쪽 정렬 */
             width: 100%;
-            max-width: 980px;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
+            min-height: calc(100vh - 100px);  /* 대충 헤더/사이드 여백 고려 */
+            padding: 40px 20px;
+            box-sizing: border-box;
+        }
+
+        /* ✅ 카드 디자인 */
+        .card-box {
+            max-width: 950px;
+            width: 100%;
             background: #fff;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+            padding-bottom: 20px;
         }
 
         .card-header {
-            background-color: #f8f9fa;
-            padding: 12px 20px;
+            background-color: #f1f3f5;
+            padding: 14px 20px;
             border-bottom: 1px solid #dee2e6;
             text-align: center;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
         }
 
         .card-header h5 {
             margin: 0;
-            font-size: 16px;
+            font-size: 17px;
             font-weight: bold;
             color: #333;
         }
@@ -42,6 +54,7 @@
             display: flex;
             gap: 30px;
             padding: 30px 40px;
+            flex-wrap: wrap;
         }
 
         .left-panel {
@@ -61,7 +74,7 @@
             width: 140px;
             height: 140px;
             border: 1px solid #ccc;
-            border-radius: 4px;
+            border-radius: 6px;
             margin: 0 auto 15px;
             overflow: hidden;
         }
@@ -70,6 +83,10 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+
+        .right-panel {
+            flex: 1;
         }
 
         .form-group {
@@ -84,18 +101,12 @@
 
         .form-control {
             width: 100%;
-            padding: 6px 10px;
+            padding: 7px 12px;
             font-size: 14px;
             background-color: #f8f9fa;
-            border: 1px solid #ccc;
+            border: 1px solid #ced4da;
             border-radius: 4px;
             box-sizing: border-box;
-        }
-
-        /* 오른쪽 패널: 한 줄에 하나씩 */
-        .right-panel {
-            flex: 1;
-            display: block;
         }
 
         .form-buttons {
@@ -114,20 +125,28 @@
             cursor: pointer;
         }
 
-        .btn-primary { background-color: #007bff; color: white; }
-        .btn-danger { background-color: #dc3545; color: white; }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
     </style>
 </head>
 <body>
 
-<div class="content-wrapper">
+<!-- ✅ 진짜 화면 기준 중앙 정렬 -->
+<div class="page-center-wrapper">
     <div class="card-box">
         <div class="card-header">
             <h5>사원 상세정보</h5>
         </div>
 
         <div class="employee-container">
-            <!-- 왼쪽 프로필 + 부서/직책/권한 -->
+            <!-- 왼쪽 프로필 -->
             <div class="left-panel">
                 <h5>프로필</h5>
                 <div class="profile-img-box">
@@ -152,7 +171,7 @@
                 </div>
             </div>
 
-            <!-- 오른쪽 영역: 한 줄에 하나씩 -->
+            <!-- 오른쪽 상세정보 -->
             <div class="right-panel">
                 <div class="form-group">
                     <label class="info-label">사원번호</label>
@@ -192,7 +211,7 @@
                            th:value="${emp.resignationStatus == 'N' ? '재직' : '퇴사'}" readonly>
                 </div>
 
-                <!-- 버튼: 왼쪽 하단 -->
+                <!-- 버튼 -->
                 <div class="form-buttons">
                     <button type="button" class="btn btn-primary"
                             th:onclick="|location.href='@{/empUpdate(employeeNo=${emp.employeeNo})}'|">수정</button>
