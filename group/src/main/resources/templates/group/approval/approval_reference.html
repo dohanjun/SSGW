@@ -36,7 +36,7 @@
         </div>
         <div class="col-auto">
             <label class="sr-only">상신일</label>
-            <input class="form-control mb-2" type="date" name="draftDate" th:value="${searchDraftDate != null} ? ${#dates.format(searchDraftDate, 'yyyy-MM-dd')} : ''">
+            <input class="form-control mb-2 date" type="date" name="draftDate" th:value="${searchDraftDate != null} ? ${#dates.format(searchDraftDate, 'yyyy-MM-dd')} : ''">
         </div>
         <div class="col-auto">
             <button type="submit" class="btn btn-primary mb-2">검색</button>

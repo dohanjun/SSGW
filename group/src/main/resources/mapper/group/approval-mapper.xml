@@ -256,7 +256,7 @@
             CASE WHEN EXISTS (
             SELECT 1 FROM aprv_files f WHERE f.draft_no = d.draft_no
         ) THEN 1 ELSE 0 END AS has_file,
-            ROW_NUMBER() OVER (ORDER BY d.DRAFT_NO) AS rnum
+            ROW_NUMBER() OVER (ORDER BY d.DRAFT_NO desc) AS rnum
         FROM aprv_documents d
         JOIN employees e ON d.EMPLOYEE_NO = e.EMPLOYEE_NO
         WHERE d.EMPLOYEE_NO = #{employeeNo}
@@ -308,6 +308,13 @@
 	     ,#{basicsFormId}
 	     ,#{suberNo}) 
 	</insert>
+	
+	<!-- 임시저장 삭제 -->
+	<delete id="deleteTemporaryData" parameterType="Integer">
+		DELETE FROM aprv_documents 
+		WHERE draft_no = #{draftNo} 
+		  AND aprv_status = '임시'
+	</delete>
 	
 	<!-- 결재선등록 -->
 	<insert id="insertAprvRoutes" parameterType="AprvRoutesVO">

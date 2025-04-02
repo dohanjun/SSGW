@@ -272,8 +272,8 @@ public class ApprovalController {
 	        approvalVO.setAprvStatus("대기");
 	    }
 
-	    // 문서 저장
 	    approvalService.createAprvDocu(approvalVO);
+	    
 	    int draftNo = approvalVO.getDraftNo();
 	    
 	 //  휴가원 양식일 경우 vacation_request 테이블 insert
@@ -345,8 +345,25 @@ public class ApprovalController {
 	        return "redirect:/aprv/list";
 	    }
 	}
+	
+	// 임시저장된 문서 삭제
+	@PostMapping("/aprv/removeTemporaryData")
+    @ResponseBody
+    public Map<String, Object> removeTemporaryData(@RequestParam Integer draftNo) {
+        Map<String, Object> result = new HashMap<>();
 
+        try {
+            approvalService.removeTemporaryData(draftNo);
+            result.put("success", true);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
 
+        return result;
+    }
+	
+	
 	/**
 	 * 
 	 * 양식선택 모달창에서 선택한 양식의 content를 작성페이지 content 영역에 출력
@@ -740,20 +757,27 @@ public class ApprovalController {
 	public Map<String, Object> approve(@RequestBody AprvRoutesVO vo) {
 	    Map<String, Object> result = new HashMap<>();
 	    try {
-	        // 최대 결재 순서를 가져옴
-	        String maxAprvOrder = approvalService.getMaxAprvOrder(vo.getDraftNo());
+	        // 최대 결재 순서를 가져옴 (숫자로 비교하기 위해 파싱)
+	        String maxAprvOrderStr = approvalService.getMaxAprvOrder(vo.getDraftNo());
+	        
+	        // maxAprvOrder가 빈 문자열일 경우 0으로 처리
+	        int maxAprvOrder = maxAprvOrderStr.isEmpty() ? 0 : Integer.parseInt(maxAprvOrderStr);
+
+	        // 현재 결재자가 맡고 있는 순서를 정수로 변환
+	        // vo.getAprvOrder가 빈 문자열일 경우 0으로 처리
+	        int currentAprvOrder = vo.getAprvOrder().isEmpty() ? 0 : Integer.parseInt(vo.getAprvOrder());
 
 	        // 최대 결재 순서와 비교하여 상태 설정
-	        if (vo.getAprvOrder().equals(maxAprvOrder)) {
-	            vo.setAprvStatus("완료");
-	            // 휴가내역에 추가
+	        if (currentAprvOrder == maxAprvOrder) {
+	            vo.setAprvStatus("완료"); // 마지막 결재자일 경우 '완료'로 변경
+
+	            // 휴가내역에 추가 (해당 코드 로직은 그대로 유지)
 	            VacationRequestVO vrVO = new VacationRequestVO();
 	            vrVO.setDraftNo(vo.getDraftNo());
 	            vacationService.findUsedVacation(vrVO);
-	            
-	         // 기안자에게 결재 완료 알림 전송
-	            ApprovalVO done = approvalService.findTitleEmpNo(vo.getDraftNo());
 
+	            // 기안자에게 결재 완료 알림 전송
+	            ApprovalVO done = approvalService.findTitleEmpNo(vo.getDraftNo());
 	            if (done != null) {
 	                AlarmVO alarm = new AlarmVO();
 	                alarm.setAlarmMessage(done.getTitle() + "의 결재가 완료되었습니다!");
@@ -764,10 +788,8 @@ public class ApprovalController {
 
 	                alarmService.insertAlarm(alarm);
 	            }
-	            
-	            
 	        } else {
-	            vo.setAprvStatus("진행");
+	            vo.setAprvStatus("진행"); // 마지막 결재자가 아니면 '진행'으로 설정
 	        }
 
 	        // 결재 승인 처리
@@ -779,6 +801,8 @@ public class ApprovalController {
 	    }
 	    return result;
 	}
+
+
 
 	// 결재페이지 반려처리
 	@PostMapping("/aprv/reject")

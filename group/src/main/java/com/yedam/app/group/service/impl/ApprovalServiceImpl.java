@@ -284,4 +284,9 @@ public class ApprovalServiceImpl implements ApprovalService {
 		return approvalMapper.countReferenceList(aprvVO);
 	}
 	
+	public void removeTemporaryData(Integer draftNo) {
+		System.out.println("임시저장된 데이터 삭제 호출 - draftNo: " + draftNo);
+		approvalMapper.deleteTemporaryData(draftNo);
+	}
+	
 }

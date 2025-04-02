@@ -7,21 +7,6 @@
 <meta charset="UTF-8">
 <title>결재 페이지</title>
 <link th:href="@{/css/approval.css}" rel="stylesheet">
-<style>
-.stamp-placeholder {
-	width: 150px;
-	height: 150px;
-	border: 3px solid red;
-	border-radius: 50%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-weight: bold;
-	color: red;
-	font-size: 18px;
-	margin: 0 auto;
-}
-</style>
 </head>
 <body>
 	<div class="container mt-5">
@@ -46,64 +31,70 @@
 							id="aprvRole">
 
 						<!-- 결재선 테이블 -->
-						<table class="table table-bordered text-center small"
+						<table class="table table-bordered text-center"
 							style="table-layout: fixed; width: 100%;">
 							<thead class="thead-light">
 								<tr>
-									<th th:if="${aprv1 != null}" th:text="${aprv1.jobTitleName}">1차</th>
-									<th th:if="${aprv2 != null}" th:text="${aprv2.jobTitleName}">2차</th>
-									<th th:if="${aprv3 != null}" th:text="${aprv3.jobTitleName}">3차</th>
+									<th th:each="r : ${aprvroutes}" th:if="${r.aprvOrder eq '1'}"
+										th:data-aprvorder="${r.aprvOrder}"
+										th:data-empno="${r.employeeNo}" th:text="${r.jobTitleName}">1차</th>
+									<th th:each="r : ${aprvroutes}" th:if="${r.aprvOrder eq '2'}"
+										th:data-aprvorder="${r.aprvOrder}"
+										th:data-empno="${r.employeeNo}" th:text="${r.jobTitleName}">2차</th>
+									<th th:each="r : ${aprvroutes}" th:if="${r.aprvOrder eq '3'}"
+										th:data-aprvorder="${r.aprvOrder}"
+										th:data-empno="${r.employeeNo}" th:text="${r.jobTitleName}">3차</th>
 								</tr>
 							</thead>
 							<tbody>
 								<tr>
-									<td th:if="${aprv1 != null}" style="height: 120px;">
-										<div class="d-flex align-items-center justify-content-center"
-											style="height: 100%;">
+									<td style="height: 150px;">
+										<div th:each="r : ${aprvroutes}" th:if="${r.aprvOrder eq '1'}" class="d-flex justify-content-center align-items-center" style="height: 100%;">
 											<button
-												th:if="${aprv1.employeeNo == loggedInEmpNo and aprv1.stampId == null}"
-												th:data-draftno="${aprv1.draftNo}"
-												th:data-empno="${aprv1.employeeNo}"
+												th:if="${r.employeeNo.toString() eq loggedInEmpNo.toString() and r.stampId == null}"
+												th:data-draftno="${r.draftNo}"
+												th:data-empno="${r.employeeNo}"
 												class="btn btn-sm btn-outline-primary insert-stamp-btn">도장등록</button>
-
-											<img
-												th:if="${aprv1.stampImgPath != null and aprv1.stampId != null}"
-												th:src="@{${aprv1.stampImgPath}}" width="80" height="80">
+											<img th:if="${r.stampImgPath != null and r.stampId != null}"
+												th:src="@{${r.stampImgPath}}" width="100" height="100"
+												class="d-block mx-auto">
 										</div>
 									</td>
-									<td th:if="${aprv2 != null}" style="height: 120px;">
-										<div class="d-flex align-items-center justify-content-center"
-											style="height: 100%;">
+									<td style="height: 150px;">
+										<div th:each="r : ${aprvroutes}" th:if="${r.aprvOrder eq '2'}" class="d-flex justify-content-center align-items-center" style="height: 100%;">
 											<button
-												th:if="${aprv2.employeeNo == loggedInEmpNo and aprv2.stampId == null}"
-												th:data-draftno="${aprv2.draftNo}"
-												th:data-empno="${aprv2.employeeNo}"
+												th:if="${r.employeeNo.toString() eq loggedInEmpNo.toString() and r.stampId == null}"
+												th:data-draftno="${r.draftNo}"
+												th:data-empno="${r.employeeNo}"
 												class="btn btn-sm btn-outline-primary insert-stamp-btn">도장등록</button>
-
-											<img
-												th:if="${aprv2.stampImgPath != null and aprv2.stampId != null}"
-												th:src="@{${aprv2.stampImgPath}}" width="80" height="80">
+											<img th:if="${r.stampImgPath != null and r.stampId != null}"
+												th:src="@{${r.stampImgPath}}" width="100" height="100"
+												class="d-block mx-auto">
 										</div>
 									</td>
-									<td th:if="${aprv3 != null}" style="height: 120px;">
-										<div class="d-flex align-items-center justify-content-center"
-											style="height: 100%;">
+									<td style="height: 150px;">
+										<div th:each="r : ${aprvroutes}" th:if="${r.aprvOrder eq '3'}" class="d-flex justify-content-center align-items-center" style="height: 100%;">
 											<button
-												th:if="${aprv3.employeeNo == loggedInEmpNo and aprv3.stampId == null}"
-												th:data-draftno="${aprv3.draftNo}"
-												th:data-empno="${aprv3.employeeNo}"
+												th:if="${r.employeeNo.toString() eq loggedInEmpNo.toString() and r.stampId == null}"
+												th:data-draftno="${r.draftNo}"
+												th:data-empno="${r.employeeNo}"
 												class="btn btn-sm btn-outline-primary insert-stamp-btn">도장등록</button>
-
-											<img
-												th:if="${aprv3.stampImgPath != null and aprv3.stampId != null}"
-												th:src="@{${aprv3.stampImgPath}}" width="80" height="80">
+											<img th:if="${r.stampImgPath != null and r.stampId != null}"
+												th:src="@{${r.stampImgPath}}" width="100" height="100"
+												class="d-block mx-auto">
 										</div>
 									</td>
 								</tr>
 								<tr>
-									<td th:if="${aprv1 != null}" th:text="${aprv1.employeeName}"></td>
-									<td th:if="${aprv2 != null}" th:text="${aprv2.employeeName}"></td>
-									<td th:if="${aprv3 != null}" th:text="${aprv3.employeeName}"></td>
+									<td><span th:each="r : ${aprvroutes}"
+										th:if="${r.aprvOrder eq '1'}" th:text="${r.employeeName}"></span>
+									</td>
+									<td><span th:each="r : ${aprvroutes}"
+										th:if="${r.aprvOrder eq '2'}" th:text="${r.employeeName}"></span>
+									</td>
+									<td><span th:each="r : ${aprvroutes}"
+										th:if="${r.aprvOrder eq '3'}" th:text="${r.employeeName}"></span>
+									</td>
 								</tr>
 							</tbody>
 						</table>
@@ -113,7 +104,6 @@
 
 
 				<!-- 문서 정보 -->
-				<h5 class="mt-4">기안문 정보</h5>
 				<table class="table table-bordered">
 					<tr>
 						<th style="width: 150px;">제목</th>
@@ -217,8 +207,8 @@ document.addEventListener("DOMContentLoaded", function () {
                                     // 도장이 실제 등록된 경우 이미지로 표시
                                     const img = document.createElement("img");
                                     img.src = result.stampImgPath + '?v=' + new Date().getTime(); // 캐시 무효화;
-                                    img.width = 150;
-                                    img.height = 150;
+                                    img.width = 100;
+                                    img.height = 100;
                                     img.classList.add("d-block", "mx-auto");
                                     parentDiv.appendChild(img);
                                 }
@@ -252,6 +242,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (result.success) {
                 alert("승인 처리되었습니다!");
                 location.reload();
+                location.href = "/aprv/list?aprvStatus=대기";
             } else {
                 alert("승인 실패: " + result.message);
             }
@@ -307,6 +298,7 @@ document.getElementById("confirmRejectBtn").addEventListener("click", function (
         if (result.success) {
             alert("반려 처리되었습니다.");
             location.reload();
+            location.href = "/aprv/list?aprvStatus=대기";
         } else {
             alert("반려 실패: " + result.message);
         }
