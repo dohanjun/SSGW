@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{common/layouts/default_layout}"
+	layout:fragment="content">
+<head>
+<meta charset="UTF-8">
+<title></title>
+</head>
+<body>
+	<div class="container mt-5">
+    <div class="card shadow mb-4">
+        <div class="card-header">
+            <h5 class="m-0 font-weight-bold text-primary">양식 상세</h5>
+        </div>
+        <div class="card-body">
+            <form action="/aprv/update" method="post" onsubmit="return saveContent()">
+                <input type="hidden" name="formId" th:value="${form.formId}" />
+                <input type="hidden" name="content" id="hiddenContent" />
+
+                <div class="form-group">
+                    <label for="formType">양식유형</label>
+                    <input type="text" class="form-control" id="formType" name="formType" th:value="${form.formType}" />
+                </div>
+
+                <div class="form-group">
+                    <label for="version">버전</label>
+                    <input type="text" class="form-control" id="version" name="version" th:value="${form.version}" />
+                </div>
+
+                <div class="form-group">
+                    <label for="active">활성화 여부</label>
+                    <select class="form-control" name="active">
+                        <option value="Y" th:selected="${form.active == '1'}">Y</option>
+                        <option value="N" th:selected="${form.active == 'N'}">N</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="remarks">비고</label>
+                    <input type="text" class="form-control" id="remarks" name="remarks" th:value="${form.remarks}" />
+                </div>
+
+                <div class="form-group">
+                    <label>내용</label>
+                    <div id="editor-container">
+                        <textarea id="editor" th:text="${form.content}"></textarea>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">수정</button>
+                    <a th:href="@{/aprv/delete/{formId}(formId=${form.formId})}" class="btn btn-danger" onclick="return confirm('삭제하시겠습니까?');">삭제</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- CKEditor 스크립트 -->
+<script src="/ckeditor/ckeditor.js"></script>
+<script>
+    CKEDITOR.replace('editor', {
+        extraPlugins: 'table,tableresize',
+        removePlugins: 'exportpdf',
+        toolbar: [
+            ['FontSize', 'TextColor'],
+            ['Bold', 'Italic', 'Underline'],
+            ['Table'],
+            ['JustifyLeft', 'JustifyCenter', 'JustifyRight'],
+            ['TableProperties', 'TableCellProperties']
+        ],
+        fontSize_sizes: "10/10px;12/12px;14/14px;16/16px;18/18px;20/20px;24/24px;28/28px;32/32px;36/36px"
+    });
+
+    function saveContent() {
+        document.getElementById("hiddenContent").value = CKEDITOR.instances.editor.getData();
+        return true;
+    }
+</script>
+	
+</body>
+</html>

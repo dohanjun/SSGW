@@ -23,14 +23,26 @@ public interface ApprovalService {
 	// 기본양식목록 조회
 	public List<ApprovalVO> findAllBasicsForm(ApprovalVO aprvVO);
 	
-	// 회사전용양식목록 조회
+	// 회사전용활성화된양식목록 조회
 	public List<ApprovalFormVO> findAllAprvForm(ApprovalFormVO aprvformVO);
+	
+	// 회사전용양식목록 전체 조회
+	public List<ApprovalFormVO> findAllAprvForms(ApprovalFormVO aprvformVO);
 	
 	// 기본양식 조회
 	public ApprovalVO findBasicsForm(ApprovalVO aprvVO);
 
 	// 회사전용양식 조회
 	public ApprovalFormVO findAprvForm(ApprovalFormVO aprvformVO);
+	
+	// 양식 상세 조회
+	public ApprovalFormVO getAprvFormById(int formId);
+
+    // 양식 수정
+	public void updateAprvForm(ApprovalFormVO formVO);
+
+    // 양식 삭제
+	public void deleteAprvForm(int formId);
 	
 	// 사원의 도장 등록
 	public int createStamp(ApprovalVO aprvVO);

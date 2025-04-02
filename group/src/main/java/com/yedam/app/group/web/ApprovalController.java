@@ -139,6 +139,59 @@ public class ApprovalController {
         }
     }
 	
+    // 회사 전용 양식 목록 페이지
+    @GetMapping("aprv/forms")
+    public String showFormList(Model model) {
+        // 로그인한 사용자 정보에서 회사번호(suberNo) 가져오기
+        EmpVO loggedInUser = empService.getLoggedInUserInfo();
+        int suberNo = loggedInUser.getSuberNo();  // 회사 번호
+
+        // ApprovalFormVO 객체에 회사번호를 설정
+        ApprovalFormVO approvalFormVO = new ApprovalFormVO();
+        approvalFormVO.setSuberNo(suberNo);
+
+        // 해당 회사번호에 맞는 양식 목록 조회
+        List<ApprovalFormVO> formList = approvalService.findAllAprvForms(approvalFormVO);
+        System.out.println("Form List: " + formList); // 데이터가 출력되는지 확인
+        // 모델에 양식 목록 추가
+        model.addAttribute("formList", formList);
+
+        // 양식 목록을 보여주는 HTML로 이동
+        return "group/approval/approval_forms"; // Thymeleaf 템플릿 파일 이름
+    }
+    
+    // 상세 페이지
+    @GetMapping("aprv/detail/{formId}")
+    public String showFormDetail(@PathVariable("formId") int formId, Model model) {
+        ApprovalFormVO form = approvalService.getAprvFormById(formId);
+        model.addAttribute("form", form);
+        return "group/approval/approval_form_detail";
+    }
+
+    // 수정 처리
+    @PostMapping("aprv/update")
+    public String updateForm(@ModelAttribute ApprovalFormVO formVO) {
+    	if ("Y".equals(formVO.getActive())) {
+            formVO.setActive("1");
+        } else {
+            formVO.setActive("0");
+        }
+    	
+        approvalService.updateAprvForm(formVO);
+        return "redirect:/aprv/forms";
+    }
+
+    // 삭제 처리
+    @GetMapping("aprv/delete/{formId}")
+    public String deleteForm(@PathVariable("formId") int formId) {
+        approvalService.deleteAprvForm(formId);
+        return "redirect:/aprv/forms";
+    }
+    
+    
+    
+    
+    
 	/**
 	 * aprv_routes테이블에서 aprv_role이 '참조'인 사원만 볼 수 있는 페이지
 	 * @param aprvVO
