@@ -64,20 +64,20 @@
 	<thead>
 		<tr class="text-center">
 			<td><input onchange="selectAllcheck(this)" type="checkbox" name="selectall" id="selectall"></td>
-			<td scope="col">이미지</td>
-			<td scope="col">작성자</td>
-			<td scope="col">제목</td>
-			<td scope="col">날짜</td>
+            <td>제목</td>
+            <td>작성자</td>
+            <td>업로드 파일</td>
+            <td>날짜</td>
 		</tr>
 	</thead>
 	<tbody>
 	<th:block th:each="info : ${mails}">
 		<tr>
-		    <td><input type="checkbox" name="checkMenu" class="checkbox" onchange="checkMenuHandler(this)"/></td>
-			<td th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[ ${info.mailId} ]]</td>
-			<td th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[ ${info.getUser} ]]</td>
-			<td th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[ ${info.title} ]]</td>
-		  	<td th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[ ${ #dates.format(info.sentDate, "yyyy년MM월dd일") } ]]</td>
+          <td><input type="checkbox" name="checkMenu" class="checkbox" onchange="checkMenuHandler(this)" /></td>
+          <td th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[${info.title}]]</td>
+          <td th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[${info.employeeId}]]</td>
+          <td th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|" th:text="${info.fileCount > 1 ? (info.fileCount - 1) + '건' : info.attachedFileName}"></td>
+          <td th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[${ #dates.format(info.sentDate, "yyyy년MM월dd일") }]]</td>
 		</tr>
  	  </th:block>
  	  </tbody>

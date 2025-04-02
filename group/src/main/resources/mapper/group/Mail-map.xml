@@ -26,19 +26,19 @@
         <if test="mailType != null">
     <choose>
         <when test="mailType == '받은'">
-            m.mail_type = '받은'
+         and m.mail_type = '받은'
             and m.get_user = #{getUser}
         </when>
         <when test="mailType == '보낸'">
-            m.mail_type = '보낸'
+           and m.mail_type = '보낸'
             and m.employee_id = #{employeeId}
         </when>
         <when test="mailType == '임시'">
-            (m.mail_type = '받은' and m.get_user = #{getUser}
+          and (m.mail_type = '받은' and m.get_user = #{getUser}
             or m.mail_type = '보낸' and m.employee_id = #{employeeId})
         </when>
         <when test="mailType == '휴지통'">
-            (m.mail_type = '받은' and m.get_user = #{getUser}
+          and  (m.mail_type = '받은' and m.get_user = #{getUser}
             or m.mail_type = '보낸' and m.employee_id = #{employeeId})
         </when>
         <otherwise>
