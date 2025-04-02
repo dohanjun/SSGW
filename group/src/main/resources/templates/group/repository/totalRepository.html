@@ -27,7 +27,7 @@
 					<input type="text" name="keyword" class="form-control pl-4"
 						placeholder="검색어 입력" th:value="${keyword}">
 					<button type="submit"
-						style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%); background: none; border: none;">
+						style="position: absolute; top: 50%; left: 3px; transform: translateY(-50%); background: none; border: none;">
 						<i class="fas fa-search" style="color: #aaa;"></i>
 					</button>
 				</form>
@@ -77,9 +77,8 @@
 								th:value="${post.writingId}"
 								th:disabled="${post.employeeNo != loggedInEmpNo and !isAdmin}"
 								class="file-checkbox" onclick="event.stopPropagation()" /></td>
-							<td><span th:if="${post.fix?.toString() == 'Y'}"> <i
-									class="fas fa-thumbtack text-warning mr-1"></i>
-							</span> <span th:text="${post.title}"></span></td>
+							<td>
+							<span th:text="${post.title}"></span></td>
 							<td
 								th:text="${post.fileCount > 1 ? post.fileName + ' 외 ' + (post.fileCount - 1) + '건' : post.fileName}"></td>
 							<td th:text="${post.writer}"></td>
@@ -122,8 +121,8 @@
 		</div>
 	</div>
 
-	<!-- ✅ 스크립트 -->
-	<script>
+<!-- ✅ 스크립트 -->
+<script>
   document.getElementById('selectAll').addEventListener('change', function () {
     const checkboxes = document.querySelectorAll('input[name="writingIds"]:not(:disabled)');
     checkboxes.forEach(cb => cb.checked = this.checked);

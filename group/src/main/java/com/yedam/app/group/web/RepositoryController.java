@@ -1,6 +1,7 @@
 package com.yedam.app.group.web;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,7 +18,6 @@ import com.yedam.app.group.service.PostService;
 import com.yedam.app.group.service.RepositoryFileVO;
 import com.yedam.app.group.service.RepositoryPostVO;
 import com.yedam.app.group.service.RepositoryService;
-import com.yedam.app.group.service.RepositoryVO;
 
 /** 자료실 컨트롤
  * @author 윤지원
@@ -56,43 +56,45 @@ public class RepositoryController {
 	                              Model model) {
 
 	    EmpVO loggedInUser = empService.getLoggedInUserInfo();
-	    
-	    // 고정글 조회 (fix = 'Y')
-	    List<RepositoryPostVO> fixedList = postService.getFixedPosts(loggedInUser.getSuberNo(), keyword);
 
-	    // 1. 전체 게시글 수
+	    // 고정글은 1페이지일 때만 조회
+	    List<RepositoryPostVO> fixedList = (page == 1)
+	        ? postService.getFixedPosts(loggedInUser.getSuberNo(), keyword)
+	        		.stream()
+	                .limit(5)
+	                .collect(Collectors.toList())
+	        : List.of();
+
 	    int totalCount = postService.getTotalRepositoryPostCount(loggedInUser.getSuberNo(), keyword);
 
-	    // 2. 페이지 설정
 	    int pageSize = 10;
 	    int pageGroup = 10;
-	    int totalPages = (int) Math.ceil((double) totalCount / pageSize);
-	    
-	    // ROW_NUMBER 기반 페이징용 offset, limit 계산
+	    int totalPages = Math.max(1, (int) Math.ceil((double) totalCount / pageSize));
+
 	    int offset = (page - 1) * pageSize;
 	    int limit = pageSize;
 
-	    // 3. 자료글 목록
+	    int fetchLimit = limit + 5; // 넉넉히 가져오고
 	    List<RepositoryPostVO> totalRepositoryList = postService.getTotalRepositoryPostsPaged(
-	            loggedInUser.getSuberNo(), keyword, offset, limit
-	    );
+	        loggedInUser.getSuberNo(), keyword, offset, fetchLimit
+	    ).stream()
+	     .filter(post -> !"Y".equals(String.valueOf(post.getFix()))) // 고정글 제외
+	     .limit(10) // 일반글은 딱 10개만
+	     .collect(Collectors.toList());
 
-	    // 4. 권한 체크
 	    boolean isAdmin = (loggedInUser.getRightsId() != null && loggedInUser.getRightsId() == 3)
-	            || (loggedInUser.getRightsLevel() != null && loggedInUser.getRightsLevel() == 5);
+	        || (loggedInUser.getRightsLevel() != null && loggedInUser.getRightsLevel() == 5);
 
-	    // 5. 모델 전달
 	    model.addAttribute("loginUser", loggedInUser);
 	    model.addAttribute("repository", repositoryService.getTotalRepository(loggedInUser.getSuberNo()));
-	    model.addAttribute("fixedList", fixedList); // 고정글 따로 전달
+	    model.addAttribute("fixedList", fixedList);
 	    model.addAttribute("totalRepositoryList", totalRepositoryList);
 	    model.addAttribute("isAdmin", isAdmin);
 	    model.addAttribute("loggedInEmpNo", loggedInUser.getEmployeeNo());
 
-	    // 페이징 관련
 	    model.addAttribute("page", page);
 	    model.addAttribute("totalPages", totalPages);
-	    model.addAttribute("pageGroup", pageGroup); // 선택적 (페이지 그룹 묶음 단위)
+	    model.addAttribute("pageGroup", pageGroup);
 	    model.addAttribute("keyword", keyword);
 
 	    return "group/repository/totalRepository";
@@ -109,27 +111,29 @@ public class RepositoryController {
 	        throw new IllegalStateException("로그인한 사용자 정보를 찾을 수 없습니다.");
 	    }
 
-	    // 1. 고정글 조회
-	    List<RepositoryPostVO> fixedList = postService.getDepartmentFixedPosts(
-	        loggedInUser.getSuberNo(), loggedInUser.getDepartmentNo(), keyword
-	    );
+	    // 고정글은 1페이지일 때만
+	    List<RepositoryPostVO> fixedList = (page == 1)
+	        ? postService.getDepartmentFixedPosts(loggedInUser.getSuberNo(), loggedInUser.getDepartmentNo(), keyword)
+	        		.stream()
+	                .limit(5)
+	                .collect(Collectors.toList())
+	        : List.of();
 
-	    // 2. 일반글 개수
 	    int totalCount = postService.getDepartmentRepositoryPostCount(
 	        loggedInUser.getSuberNo(), loggedInUser.getDepartmentNo(), keyword
 	    );
 
-	    // 3. 페이징 설정
 	    int pageSize = 10;
 	    int pageGroup = 10;
-	    int totalPages = (int) Math.ceil((double) totalCount / pageSize);
+	    int totalPages = Math.max(1, (int) Math.ceil((double) totalCount / pageSize));
 	    int offset = (page - 1) * pageSize;
 	    int limit = pageSize;
 
-	    // 4. 일반글 조회 (페이징)
 	    List<RepositoryPostVO> departmentRepositoryList = postService.getDepartmentRepositoryPostsPaged(
 	        loggedInUser.getSuberNo(), loggedInUser.getDepartmentNo(), keyword, offset, limit
-	    );
+	    ).stream()
+	     .filter(post -> !"Y".equals(String.valueOf(post.getFix())))
+	     .collect(Collectors.toList());
 
 	    boolean isManager = loggedInUser.getManager() != null;
 
@@ -137,8 +141,8 @@ public class RepositoryController {
 	    model.addAttribute("repository", repositoryService.getDepartmentRepository(
 	        loggedInUser.getSuberNo(), loggedInUser.getDepartmentNo()
 	    ));
-	    model.addAttribute("fixedList", fixedList); // ✅ 고정글
-	    model.addAttribute("departmentRepositoryList", departmentRepositoryList); // ✅ 일반글
+	    model.addAttribute("fixedList", fixedList);
+	    model.addAttribute("departmentRepositoryList", departmentRepositoryList);
 	    model.addAttribute("isManager", isManager);
 	    model.addAttribute("loggedInEmpNo", loggedInUser.getEmployeeNo());
 
@@ -149,6 +153,7 @@ public class RepositoryController {
 
 	    return "group/repository/departmentRepository";
 	}
+
 
 	@GetMapping("/individualRepository")
 	public String individualRepository(@RequestParam(value = "page", defaultValue = "1") int page,
@@ -163,7 +168,7 @@ public class RepositoryController {
 	    // 2. 페이지 설정
 	    int pageSize = 10;
 	    int pageGroup = 10;
-	    int totalPages = (int) Math.ceil((double) totalCount / pageSize);
+	    int totalPages = Math.max(1, (int) Math.ceil((double) totalCount / pageSize));
 	    int offset = (page - 1) * pageSize;
 	    int limit = pageSize;
 

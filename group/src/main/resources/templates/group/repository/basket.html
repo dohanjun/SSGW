@@ -1,116 +1,119 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{common/layouts/default_layout}"
-      layout:fragment="content">
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{common/layouts/default_layout}"
+	layout:fragment="content">
 <head>
-  <meta charset="UTF-8">
-  <title>휴지통</title>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+<meta charset="UTF-8">
+<title>휴지통</title>
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+	rel="stylesheet">
 </head>
 <body>
 
-<!-- 휴지통 유형 선택용 별도 GET form -->
-<form id="filterForm" method="get" action="/basket">
-  <label for="repositoryType" class="form-label font-weight-bold">휴지통 유형</label>
-  <select id="repositoryType" name="repositoryType"
-          class="form-control" style="width: 200px; display: inline-block;"
-          onchange="document.getElementById('filterForm').submit();">
-    <option value="전체" th:selected="${repositoryType == '전체'}">전체</option>
-    <option value="부서" th:selected="${repositoryType == '부서'}">부서</option>
-    <option value="개인" th:selected="${repositoryType == '개인'}">개인</option>
-  </select>
-  <input type="hidden" name="keyword" th:value="${keyword}" />
-</form>
+	<!-- ✅ 드롭다운 form (form 중첩 방지용, 카드 바깥) -->
+	<form id="filterForm" method="get" action="/basket"
+		class="mb-3 d-flex justify-content-end align-items-center">
+		<select id="repositoryType" name="repositoryType"
+			class="form-control form-control-sm"
+			onchange="document.getElementById('filterForm').submit();"
+			style="width: 200px;">
+			<option value="전체" th:selected="${repositoryType == '전체'}">전체</option>
+			<option value="부서" th:selected="${repositoryType == '부서'}">부서</option>
+			<option value="개인" th:selected="${repositoryType == '개인'}">개인</option>
+		</select> <input type="hidden" name="keyword" th:value="${keyword}" />
+	</form>
 
-<!-- 검색창 -->
-<div class="text-center mt-3">
-  <form method="get" th:action="@{/basket}" style="width: 300px; margin: 0 auto;">
-    <input type="hidden" name="repositoryType" th:value="${repositoryType}" />
-    <div class="position-relative">
-      <input type="text" name="keyword" class="form-control pl-4" placeholder="검색어 입력" th:value="${keyword}" />
-      <button type="submit"
-              style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%); background: none; border: none;">
-        <i class="fas fa-search" style="color: #aaa;"></i>
-      </button>
-    </div>
-  </form>
-</div>
+	<form id="basketForm" method="post">
+		<input type="hidden" name="repositoryType"
+			th:value="${repositoryType}" />
 
-<!-- 실제 복원/삭제용 POST form -->
-<form id="basketForm" method="post">
-  <input type="hidden" name="repositoryType" th:value="${repositoryType}" />
+		<div class="card shadow mb-4" style="width: 100%;">
+			<div class="card-header py-3">
+				<h6 class="m-0 font-weight-bold text-primary">휴지통</h6>
+			</div>
 
-  <div class="card shadow mb-4" style="width: 100%; margin-top: 20px;">
-    <div class="card-header py-3">
-      <h6 class="m-0 font-weight-bold text-primary">휴지통</h6>
-    </div>
-    <div class="card-body">
-      <div class="table-responsive">
-        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-          <thead>
-            <tr>
-              <th><input type="checkbox" id="selectAll"></th>
-              <th>제목</th>
-              <th>작성자</th>
-              <th>파일명</th>
-              <th>작성일</th>
-              <th>삭제일</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr th:each="post : ${basketList}"
-                th:onclick="'goToBasketDetail(' + ${post.writingId} + ')'"
-                style="cursor: pointer;">
-              <td><input type="checkbox" name="writingIds"
-                         th:value="${post.writingId}"
-                         class="file-checkbox"
-                         onclick="event.stopPropagation();"></td>
-              <td th:text="${post.title}"></td>
-              <td th:text="${post.writer}"></td>
-              <td th:text="${post.fileCount > 1 ? post.fileName + ' 외 ' + (post.fileCount - 1) + '건' : post.fileName}"></td>
-              <td th:text="${#dates.format(post.creationDate, 'yyyy-MM-dd')}"></td>
-              <td th:text="${#dates.format(post.delDate, 'yyyy-MM-dd')}"></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+			<div class="card-body">
+				<!-- 🔍 검색창 -->
+				<div class="position-relative mb-3" style="width: 350px; margin: 0 auto;">
+  					<input type="text" id="searchInput" name="keyword" class="form-control pl-4"
+         					placeholder="검색어 입력" th:value="${keyword}" />
+  						<button type="button" onclick="submitSearchForm()" 
+          						style="position: absolute; top: 50%; left: 3px; transform: translateY(-50%); background: none; border: none;">
+    						<i class="fas fa-search" style="color: #aaa;"></i>
+  						</button>
+				</div>
+				<br>
+				<!-- 📄 테이블 -->
+				<div class="table-responsive">
+					<table class="table table-bordered" id="dataTable" width="100%"
+						cellspacing="0">
+						<thead>
+							<tr>
+								<th><input type="checkbox" id="selectAll"></th>
+								<th>제목</th>
+								<th>작성자</th>
+								<th>파일명</th>
+								<th>작성일</th>
+								<th>삭제일</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="post : ${basketList}"
+								th:onclick="'goToBasketDetail(' + ${post.writingId} + ')'"
+								style="cursor: pointer;">
+								<td><input type="checkbox" name="writingIds"
+									th:value="${post.writingId}" class="file-checkbox"
+									onclick="event.stopPropagation();"></td>
+								<td th:text="${post.title}"></td>
+								<td th:text="${post.writer}"></td>
+								<td
+									th:text="${post.fileCount > 1 ? post.fileName + ' 외 ' + (post.fileCount - 1) + '건' : post.fileName}"></td>
+								<td th:text="${#dates.format(post.creationDate, 'yyyy-MM-dd')}"></td>
+								<td th:text="${#dates.format(post.delDate, 'yyyy-MM-dd')}"></td>
+							</tr>
+							<tr th:if="${#lists.isEmpty(basketList)}">
+								<td colspan="6" class="text-center text-muted">휴지된 자료가
+									없습니다.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
 
-      <!-- 버튼 영역 -->
-      <div class="d-flex align-items-center justify-content-between mt-3">
-        <div>
-          <button type="submit" class="btn btn-success" formaction="/basket/restore">복원</button>
-          <button type="submit" class="btn btn-danger" formaction="/basket/delete">삭제</button>
-        </div>
+				<!-- ✅ 복원/삭제 버튼 -->
+				<div class="d-flex justify-content-end mt-3 mb-2">
+					<button type="submit" class="btn btn-success mr-2"
+						formaction="/basket/restore">복원</button>
+					<button type="submit" class="btn btn-danger"
+						formaction="/basket/delete">삭제</button>
+				</div>
 
-        <!-- 페이지네이션 -->
-        <div class="flex-grow-1 text-center">
-          <nav aria-label="페이지네이션">
-            <ul class="pagination mb-0 d-inline-flex">
-              <li class="page-item" th:classappend="${page == 1} ? 'disabled'">
-                <a class="page-link"
-                   th:href="@{/basket(repositoryType=${repositoryType}, page=${page - 1}, keyword=${keyword})}">&laquo;</a>
-              </li>
-              <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}"
-                  th:classappend="${i == page} ? 'active'">
-                <a class="page-link"
-                   th:href="@{/basket(repositoryType=${repositoryType}, page=${i}, keyword=${keyword})}"
-                   th:text="${i}"></a>
-              </li>
-              <li class="page-item" th:classappend="${page == totalPages} ? 'disabled'">
-                <a class="page-link"
-                   th:href="@{/basket(repositoryType=${repositoryType}, page=${page + 1}, keyword=${keyword})}">&raquo;</a>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </div>
-    </div>
-  </div>
-</form>
-
-</body>
-</html>
+				<!-- ✅ 페이지네이션 -->
+				<div class="d-flex justify-content-center">
+					<nav aria-label="페이지네이션">
+						<ul class="pagination mb-0">
+							<li class="page-item" th:classappend="${page == 1} ? 'disabled'">
+								<a class="page-link"
+								th:href="@{/basket(repositoryType=${repositoryType}, page=${page - 1}, keyword=${keyword})}">&laquo;</a>
+							</li>
+							<li class="page-item"
+								th:each="i : ${#numbers.sequence(1, totalPages > 0 ? totalPages : 1)}"
+								th:classappend="${i == page} ? 'active'"><a
+								class="page-link"
+								th:href="@{/basket(repositoryType=${repositoryType}, page=${i}, keyword=${keyword})}"
+								th:text="${i}"></a></li>
+							<li class="page-item"
+								th:classappend="${page == totalPages} ? 'disabled'"><a
+								class="page-link"
+								th:href="@{/basket(repositoryType=${repositoryType}, page=${page + 1}, keyword=${keyword})}">&raquo;</a>
+							</li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+		</div>
+	</form>
 
 <script>
   document.getElementById('selectAll').addEventListener('change', function () {
@@ -118,10 +121,20 @@
     checkboxes.forEach(cb => cb.checked = this.checked);
   });
 
-  document.getElementById('basketForm').addEventListener('submit', function (e) {
+//복원 버튼만 감지
+  document.querySelector('button[formaction="/basket/restore"]').addEventListener('click', function (e) {
     const checked = document.querySelectorAll('.file-checkbox:checked');
     if (checked.length === 0) {
-      alert("삭제 또는 복원할 항목을 선택해주세요.");
+      alert("복원할 항목을 선택해주세요.");
+      e.preventDefault();
+    }
+  });
+
+  // 삭제 버튼만 감지
+  document.querySelector('button[formaction="/basket/delete"]').addEventListener('click', function (e) {
+    const checked = document.querySelectorAll('.file-checkbox:checked');
+    if (checked.length === 0) {
+      alert("삭제할 항목을 선택해주세요.");
       e.preventDefault();
     }
   });
@@ -136,3 +149,21 @@
     });
   });
 </script>
+<script>
+  function submitSearchForm() {
+    const keyword = document.getElementById("searchInput").value;
+    const type = document.querySelector('select[name="repositoryType"]')?.value || "전체";
+    const url = `/basket?repositoryType=${encodeURIComponent(type)}&keyword=${encodeURIComponent(keyword)}`;
+    window.location.href = url;
+  }
+
+  // Enter 키 눌러도 검색되게
+  document.getElementById("searchInput").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      submitSearchForm();
+    }
+  });
+</script>
+</body>
+</html>
