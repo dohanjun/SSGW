@@ -146,66 +146,44 @@
 	font-weight: bold;
 }
 
-/* 품의서 */
+/* 품의서 옆의 선을 없애기 */
 .lettercontainer {
-	font-size: 14px;
-}
-
-.lettercontainer {
-	width: 800px;
-	margin: 0 auto;
-	border: 1px solid black;
+    font-size: 14px;
+    width: 800px;
+    margin: 0 auto;
+    border: none; /* 옆에 있는 테두리 선을 제거 */
 }
 
 .lettertable {
-	width: 100%;
-	border-collapse: collapse;
-	border: 1px solid black;
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid black;
 }
 
-.lettertable th, td {
-	border: 1px solid black;
-	padding: 10px;
-	text-align: left;
+.lettertable th, .lettertable td {
+    border: 1px solid black;
+    padding: 10px;
+    text-align: left;
 }
 
 .lettertable th {
-	background-color: #ddd;
-	text-align: center;
-	font-weight: bold;
+    background-color: #ddd;
+    text-align: center;
+    font-weight: bold;
 }
 
 .lettertitle {
-	font-size: 24px;
-	font-weight: bold;
-	text-align: center;
-	margin-bottom: 15px;
-}
-
-.lettercontainer .input-field {
-	width: 100%;
-	height: 25px;
-	border: 1px solid black;
-	padding-left: 5px;
-}
-
-.lettercontainer .date-field {
-	width: 95%;
-	height: 25px;
-	border: 1px solid black;
-	padding-left: 5px;
-}
-
-.lettercontainer .narrow-field {
-	width: 50px;
-	height: 25px;
-	border: 1px solid black;
-	text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 15px;
+    border: none; /* 품의서 제목 테두리 제거 */
 }
 
 /* 지출결의서 */
 .disburdd {
     margin-top: 30px;
+    font-size: 14px;
 }
 
 .disburtitle {
@@ -224,12 +202,56 @@
 .distable th, .distable td {
     border: 1px solid #ccc;
     padding: 8px 12px;
+    word-wrap: break-word;
 }
 
-.routes th{
-	border: 1px solid black;
+.distable th {
+    background-color: #ddd;
+    text-align: center;
+    font-weight: bold;
 }
 
-.disburdd th {
-		background-color:#ddd;
-	}
+.disburdd .input-field {
+    width: 100%;
+    height: 25px;
+    border: 1px solid #ccc;
+    padding-left: 5px;
+    box-sizing: border-box;
+}
+
+/* 지출결의서 내에서만 오른쪽 정렬 */
+.disburdd .text-right {
+    text-align: right;
+}
+
+/* 지출결의서 마진 클래스 구체화 */
+.disburdd .disburdd-mt-4 {
+    margin-top: 1.5rem;
+}
+
+.disburdd .disburdd-mb-3 {
+    margin-bottom: 1rem;
+}
+
+.btn {
+    border-radius: 5px;
+    padding: 6px 12px;
+    font-size: 14px;
+}
+
+#addDisRowBtn {
+    background-color: #28a745;
+    color: white;
+}
+
+#addDisRowBtn:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+
+/* 총 지출 합계 스타일 */
+.distable td input[type="text"]:disabled {
+    background-color: #f8f9fa;
+    border-color: #ddd;
+}
+

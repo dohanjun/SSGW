@@ -69,6 +69,9 @@ public interface ApprovalMapper {
 	// 문서 상신
 	public int insertAprvDocuments(ApprovalVO aprvVO);
 	
+	// 임시저장삭제
+	public void deleteTemporaryData(Integer draftNo);
+	
 	// 결재선 등록
 	public int insertAprvRoutes(AprvRoutesVO aprvRoutesVO);
 	

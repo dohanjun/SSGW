@@ -467,6 +467,7 @@ document.addEventListener("DOMContentLoaded", function () {
 $('#ajaxSubmitBtn').on('click', function () {
     const finalContent = prepareFinalContent();
     const title = $('input[name="title"]').val().trim();
+    const draftNo = new URLSearchParams(window.location.search).get("draftNo");
 	
     if (!title && !finalContent) {
         alert("제목과 내용을 입력해주세요.");
@@ -478,6 +479,25 @@ $('#ajaxSubmitBtn').on('click', function () {
         alert("내용을 입력해주세요.");
         return;
     }
+    
+    if (draftNo) {
+        $.ajax({
+            url: '/aprv/removeTemporaryData',  // 임시저장된 데이터 삭제 요청
+            type: 'POST',
+            data: { draftNo: draftNo },
+            success: function(response) {
+                if (response.success) {
+                    console.log('임시저장된 데이터 삭제 성공');
+                } else {
+                    console.log('임시저장된 데이터 삭제 실패');
+                }
+            },
+            error: function(err) {
+                console.log('Ajax 요청 실패:', err);
+            }
+        });
+    }
+    
     
     // FormData 생성
     const form = document.querySelector("form");

@@ -56,6 +56,9 @@ public interface ApprovalService {
 	// 전자결재 문서상신
 	public int createAprvDocu(ApprovalVO aprvVO);
 	
+	// 임시저장삭제
+	public void removeTemporaryData(Integer draftNo);
+	
 	// 결재선 등록
 	public int createAprvRout(AprvRoutesVO aprvRoutesVO);
 	
