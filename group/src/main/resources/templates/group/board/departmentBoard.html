@@ -24,7 +24,7 @@
 				<form th:action="@{/departmentBoard}" method="get"
 					class="position-relative mb-3" style="width: 300px;">
 					<input type="text" name="keyword" class="form-control pl-4"
-						placeholder="검색어 입력" th:value="${keyword}">
+						placeholder="   검색어 입력" th:value="${keyword}">
 					<button type="submit"
 						style="position: absolute; top: 50%; left: 3px; transform: translateY(-50%); background: none; border: none;">
 						<i class="fas fa-search" style="color: #aaa;"></i>
@@ -51,10 +51,9 @@
 				</thead>
 				<tbody>
 					<!-- 고정 글 목록 -->
-					<tr th:each="post : ${fixedList}"
-    th:class="${'table-warning'}"
-    th:data-url="@{'/detailBoard/' + ${post.postId}}"
-    onclick="location.href=this.dataset.url" style="cursor: pointer;">
+					<tr th:each="post : ${fixedList}" th:class="${'table-warning'}"
+						th:data-url="@{'/detailBoard/' + ${post.postId}}"
+						onclick="location.href=this.dataset.url" style="cursor: pointer;">
 						<td><i class="fas fa-thumbtack text-warning mr-1"></i></td>
 						<td th:text="${post.postTitle}"></td>
 						<td th:text="${post.employeeName}"></td>

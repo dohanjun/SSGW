@@ -23,6 +23,7 @@
 		WHERE
 		b.suber_no = #{suberNo}
 		AND b.board_type = '공지'
+		AND p.fixed = 'N'
 		<if test="keyword != null and keyword != ''">
 			AND (
 			LOWER(p.post_title) LIKE '%' || LOWER(#{keyword}) ||
@@ -53,6 +54,7 @@
 			LOWER(e.employee_name) LIKE '%' || LOWER(#{keyword}) || '%'
 			)
 		</if>
+		AND p.fixed = 'N'
 		)
 		WHERE rn BETWEEN #{offset} + 1 AND #{offset} + #{limit}
 	</select>
@@ -68,6 +70,7 @@
 		AND b.board_type = '부서'
 		AND b.department_no =
 		#{departmentNo}
+		AND p.fixed = 'N'
 		<if test="keyword != null and keyword != ''">
 			AND (
 			LOWER(p.post_title) LIKE '%' || LOWER(#{keyword}) ||
@@ -103,6 +106,7 @@
 			LOWER(e.employee_name) LIKE '%' || LOWER(#{keyword}) || '%'
 			)
 		</if>
+		AND p.fixed = 'N'
 		)
 		WHERE rn BETWEEN #{offset} + 1 AND #{offset} + #{limit}
 	</select>

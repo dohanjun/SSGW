@@ -129,10 +129,12 @@ public class RepositoryController {
 	    int offset = (page - 1) * pageSize;
 	    int limit = pageSize;
 
+	    int fetchLimit = limit + 5;
 	    List<RepositoryPostVO> departmentRepositoryList = postService.getDepartmentRepositoryPostsPaged(
-	        loggedInUser.getSuberNo(), loggedInUser.getDepartmentNo(), keyword, offset, limit
+	        loggedInUser.getSuberNo(), loggedInUser.getDepartmentNo(), keyword, offset, fetchLimit
 	    ).stream()
-	     .filter(post -> !"Y".equals(String.valueOf(post.getFix())))
+	     .filter(post -> !"Y".equals(String.valueOf(post.getFix()))) // 고정글 제외
+	     .limit(10) // 일반글 10개만
 	     .collect(Collectors.toList());
 
 	    boolean isManager = loggedInUser.getManager() != null;
@@ -207,7 +209,7 @@ public class RepositoryController {
 	        (loggedInUser.getRightsLevel() != null && loggedInUser.getRightsLevel() == 5);
 	    
 	    // 로그인한 사람이 해당 게시글 작성자의 부서장인지 확인
-	    boolean isManager = writerId != null && writerId.equals(loggedInUser.getManager());
+	    boolean isManager = loggedInUser.getManager() != null;
 	    
 	    boolean isEditable = false;
 	    switch (post.getRepositoryType()) {
@@ -215,7 +217,7 @@ public class RepositoryController {
 	        case "부서" -> isEditable = isOwner || isManager;
 	        case "개인" -> isEditable = isOwner;
 	    }
-	    
+	    System.out.println("로그인 유저 manager 필드 값: " + loggedInUser.getManager());
 	    System.out.println("작성자 ID: " + post.getEmployeeNo());
 	    System.out.println("현재 로그인 ID: " + loggedInUser.getEmployeeNo());
 	    System.out.println("isOwner: " + isOwner);

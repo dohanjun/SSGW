@@ -7,9 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -64,15 +64,27 @@ public class BoardController {
 
 		int pageSize = 10;
 		int offset = (page - 1) * pageSize;
+		
 		int totalCount = boardService.getNoticeBoardPostCount(loggedInUser.getSuberNo(), keyword);
 		int totalPages = Math.max(1, (int) Math.ceil((double) totalCount / pageSize));
-		List<BoardPostVO> postList = boardService.getNoticeBoardPostsPaged(loggedInUser.getSuberNo(), keyword, offset,
-				pageSize);
+		
+		// 일반글 조회 (고정 제외)
+	    int fetchLimit = pageSize + 5;
+	    List<BoardPostVO> postList = boardService.getNoticeBoardPostsPaged(
+	        loggedInUser.getSuberNo(), keyword, offset, fetchLimit
+	    ).stream()
+	     .filter(post -> !"Y".equals(post.getFixed()))
+	     .limit(10)
+	     .collect(Collectors.toList());
 
 		boolean isAdmin = (loggedInUser.getRightsId() != null && loggedInUser.getRightsId() == 3)
 				|| (loggedInUser.getRightsLevel() != null && loggedInUser.getRightsLevel() == 5);
 		
-		List<BoardPostVO> fixedList = boardService.getFixedNoticeBoardPosts(loggedInUser.getSuberNo());
+		// 고정글 1페이지에만 최대 5개
+	    List<BoardPostVO> fixedList = (page == 1)
+	        ? boardService.getFixedNoticeBoardPosts(loggedInUser.getSuberNo())
+	            .stream().limit(5).collect(Collectors.toList())
+	        : List.of();
 		
 		model.addAttribute("fixedList", fixedList);
 		model.addAttribute("postList", postList);
@@ -99,11 +111,19 @@ public class BoardController {
 		int totalCount = boardService.getDepartmentBoardPostCount(loggedInUser.getSuberNo(),
 				loggedInUser.getDepartmentNo(), keyword);
 		int totalPages = Math.max(1, (int) Math.ceil((double) totalCount / pageSize));
-
+		
+		int fetchLimit = pageSize + 5;
 		List<BoardPostVO> postList = boardService.getDepartmentBoardPostsPaged(loggedInUser.getSuberNo(),
-				loggedInUser.getDepartmentNo(), keyword, offset, pageSize);
+				loggedInUser.getDepartmentNo(), keyword, offset, pageSize).stream()
+			     .filter(post -> !"Y".equals(post.getFixed()))
+			     .limit(10)
+			     .collect(Collectors.toList());
 
-		List<BoardPostVO> fixedList = boardService.getFixedNoticeBoardPosts(loggedInUser.getSuberNo());
+		// 고정글 (1페이지일 때만)
+	    List<BoardPostVO> fixedList = (page == 1)
+	        ? boardService.getFixedDepartmentBoardPosts(loggedInUser.getSuberNo(), loggedInUser.getDepartmentNo())
+	            .stream().limit(5).collect(Collectors.toList())
+	        : List.of();
 		
 		model.addAttribute("fixedList", fixedList);
 		model.addAttribute("postList", postList);
