@@ -36,7 +36,7 @@ public class SecurityConfig {
 						"/savePaymentDetails", "/saveUser", "/insertBoardPost", "/selectBoardPost", "/updateBoardPost")
 				.permitAll().requestMatchers("/insertPost", "/basket/**", "/api/**", "/alerts/**", "/insertAlarm")
 				.permitAll()
-        .requestMatchers("/uploadImage").permitAll()
+        .requestMatchers("/uploadImage").permitAll() 
 	      .requestMatchers("/comment/**").permitAll()
 	      .requestMatchers("/board/toggleFix").permitAll()
 				// 관리자만 접근 가능
