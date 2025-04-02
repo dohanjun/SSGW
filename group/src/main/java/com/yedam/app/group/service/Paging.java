@@ -44,6 +44,9 @@ public class Paging {
 	public int getLastPage() {
 		lastPage = totalRecord / pageUnit + 
 				   ( totalRecord % pageUnit>0 ? 1 : 0 );
+		if(lastPage==0) {
+			lastPage=1;
+		}
 		return lastPage;
 	}
 

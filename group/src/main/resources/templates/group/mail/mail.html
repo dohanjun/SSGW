@@ -16,20 +16,6 @@
 	crossorigin="anonymous"></script>
 
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f7fc;
-            margin: 0;
-            padding: 20px;
-            color: #333;
-        }
-
-        h3 {
-            color: #495057;
-            font-size: 30px;
-            margin-bottom: 30px;
-            font-weight: bold;
-        }
 
         .search-container {
             display: flex;
@@ -103,6 +89,7 @@
         .btn-group .btn-danger:hover {
             background-color: #c82333;
             transform: scale(1.05);
+            margin: right;
         }
 
         table {
@@ -166,16 +153,17 @@
 </head>
 
 <body>
-
-    <h3>메일메인화면</h3>
+<div class="mx-3">
+    <h3 class="font-weight-bold">메일메인화면</h3>
 
     <!-- Search Form -->
     <form role="search" name="frmSearch">
         <div class="search-container">
+        <div>
             <input type="hidden" name="page" value="1">
             <input name="search" type="search" placeholder="Search" th:value="${pageListVO.search}">
             <button class="btn btn-outline-success" type="submit">검색</button>
-
+		</div>
             <!-- Sort Dropdown -->
             <div class="sort-options">
                 <h5>정렬</h5>
@@ -244,7 +232,7 @@
             </ul>
         </nav>
     </div>
-
+</div>
     <!-- Scripts -->
     <script>
         // Form submission

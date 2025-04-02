@@ -123,6 +123,7 @@ public class MailController {
 	// 메일등록
 	@PostMapping("/mailInsert")
 	public String insertMail(MailVO vo, @RequestParam("file") MultipartFile file) {
+		if(!file.isEmpty()) {
 		try {
 			// 파일 업로드 처리
 			String filename = StringUtils.cleanPath(file.getOriginalFilename()); // 파일 이름 정리
@@ -144,7 +145,7 @@ public class MailController {
 			// 파일 업로드 실패 시 처리
 			return "redirect:/error"; // 오류 페이지로 리다이렉트 (필요 시)
 		}
-
+		}
 		// 로그인한 사용자 정보 가져오기
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 		vo.setEmployeeNo(loggedInUser.getEmployeeNo());
@@ -159,9 +160,6 @@ public class MailController {
 	// 메일답장 페이지
 	@GetMapping("/mailReply")
 	public String mailReplyForm(MailVO mailVO, Model model) {
-		
-		EmpVO loggedInUser = empService.getLoggedInUserInfo();
-		mailVO.setEmployeeNo(loggedInUser.getEmployeeNo());
 		
 		MailVO findVO = mailService.MailSelectInfo(mailVO);
 		model.addAttribute("mail", findVO);
@@ -184,9 +182,6 @@ public class MailController {
 	// 전달 - 페이지
 	@GetMapping("/mailVery")
 	public String mailVeryForm(MailVO mailVO, Model model) {
-		
-		EmpVO loggedInUser = empService.getLoggedInUserInfo();
-		mailVO.setEmployeeNo(loggedInUser.getEmployeeNo());
 		
 		MailVO findVO = mailService.MailSelectInfo(mailVO);
 		model.addAttribute("mail", findVO);
