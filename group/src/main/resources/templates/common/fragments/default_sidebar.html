@@ -51,21 +51,12 @@
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
         <!-- Sidebar - Brand -->
-        <a class="sidebar-brand d-flex align-items-center justify-content-center" th:href="@{/MainPage}">
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" th:href="@{/main}">
             <div class="sidebar-brand-icon rotate-n-15"> 
                 <i class="fas fa-laugh-wink"></i>
             </div>
         </a>
 
-        <!-- Nav Item - Dashboard -->
-        <li class="nav-item active">
-            <a class="nav-link" href="index.html">
-                <i class="fas fa-fw fa-tachometer-alt"></i> <span>Dashboard</span>
-            </a>
-        </li>
-
-        <!-- Divider -->
-        <hr class="sidebar-divider">
 
         <!-- 일정 -->
         <li class="nav-item">
@@ -131,11 +122,11 @@
             <div id="work" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <th:block th:if="${#authorization.expression('hasAnyAuthority(''ROLE_BOARD_ADMIN'', ''ROLE_MANAGER'', ''ROLE_HR'')')}">
-                        <a class="collapse-item" th:href="@{/chartsManager}">
+                        <a class="collapse-item" th:href="@{/deptAttendance}">
                             <i class="fas fa-fw fa-user-cog"></i> 관리자 근태관리
                         </a>
                     </th:block>
-                    <a class="collapse-item" th:href="@{/blank}">
+                    <a class="collapse-item" th:href="@{/attendance}">
                         <i class="fas fa-fw fa-user-clock"></i> 사원 근태관리
                     </a>
                 </div>
@@ -163,6 +154,9 @@
                     </a>
                     <a class="collapse-item" th:href="@{/write}">
                         <i class="fas fa-fw fa-plus-square"></i> 양식추가
+                    </a>
+                    <a class="collapse-item" th:href="@{/aprv/forms}">
+                        <i class="fa-solid fa-wrench"></i> 회사양식수정/삭제
                     </a>
                     <h6 class="collapse-header">결재</h6>
                     <a class="collapse-item" th:href="@{/aprv/list?aprvStatus=대기}">
@@ -200,6 +194,9 @@
                         </a>
                         <a class="collapse-item" th:href="@{/empMgmt}">
                             <i class="fas fa-fw fa-user-friends"></i> 사원관리
+                        </a>
+                        <a class="collapse-item" th:href="@{/deptHist}">
+                            <i class="fas fa-fw fa-user-friends"></i> 이동내역
                         </a>
                         <h6 class="collapse-header">부서관리</h6>
                         <a class="collapse-item" th:href="@{/deptMgmt}">

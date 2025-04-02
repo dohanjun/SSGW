@@ -1,12 +1,23 @@
 package com.yedam.app.group.web;
+import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
+import java.security.Principal;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,47 +26,41 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.lowagie.text.Chunk;
+import com.lowagie.text.Document;
+import com.lowagie.text.Element;
+import com.lowagie.text.Font;
+import com.lowagie.text.PageSize;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.pdf.BaseFont;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfWriter;
 import com.yedam.app.group.service.AlarmService;
 import com.yedam.app.group.service.AlarmVO;
+import com.yedam.app.group.service.ApprovalVO;
 import com.yedam.app.group.service.BoardPostService;
 import com.yedam.app.group.service.BoardPostVO;
+import com.yedam.app.group.service.BoardService;
+import com.yedam.app.group.service.BoardVO;
+import com.yedam.app.group.service.DashboardService;
 import com.yedam.app.group.service.EmpService;
 import com.yedam.app.group.service.EmpVO;
+import com.yedam.app.group.service.MailVO;
 import com.yedam.app.group.service.ModuleService;
 import com.yedam.app.group.service.ModuleVO;
 import com.yedam.app.group.service.PaymentService;
 import com.yedam.app.group.service.PaymentVO;
+import com.yedam.app.group.service.RepositoryPostVO;
+import com.yedam.app.group.service.ScheduleVO;
 import com.yedam.app.group.service.SubscriberService;
 import com.yedam.app.group.service.SubscriberVO;
 import com.yedam.app.group.service.SubscriptionSummaryVO;
 
-import org.springframework.ui.Model;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
-
-import com.lowagie.text.Document;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.Chunk;
-import com.lowagie.text.Font;
-import com.lowagie.text.PageSize;
-import com.lowagie.text.pdf.BaseFont;
-import com.lowagie.text.pdf.PdfWriter;
-import com.lowagie.text.pdf.PdfPCell;
-import com.lowagie.text.pdf.PdfPTable;
-import com.lowagie.text.Element;
-
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.ContentDisposition;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.HttpStatus;
-
-import java.io.ByteArrayOutputStream;
-import java.io.Console;
-import java.nio.charset.StandardCharsets;
 import jakarta.servlet.http.HttpSession;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
 
 
 /** 외부페이지 컨트롤
@@ -81,14 +86,42 @@ public class mainController {
 	private final PaymentService paymentService;
 	private final EmpService empService;
 	private final AlarmService alarmService;
-	
+	private final DashboardService dashboardService;
+	private final BoardService boardService;
 	/**
 	 * 메인페이지로 이동
 	 * @return group/mainPage
 	 */
 
 	@GetMapping("/main")
-	public String mainPage() {
+	public String mainPage(Model model, Principal principal) {
+		EmpVO loginEmployee = empService.getLoggedInUserInfo();
+		model.addAttribute("loginEmployee", loginEmployee);
+
+		if (loginEmployee != null) {
+			List<ScheduleVO> scheduleList = dashboardService.getTodaySchedule(loginEmployee.getEmployeeNo());
+			List<RepositoryPostVO> repositoryList = dashboardService.getRecentRepositoryPosts();
+			List<ApprovalVO> approvalList = dashboardService.getRecentApprovalList(loginEmployee.getEmployeeNo());
+//			List<BoardVO> boardList = dashboardService.getRecentBoardList(loginEmployee.getSuberNo());
+			List<MailVO> mailList = dashboardService.getRecentMailList(loginEmployee.getEmployeeId()); // 메일 추가
+			String base64Image = Base64.getEncoder().encodeToString(loginEmployee.getProfileImageBLOB());
+			List<BoardPostVO> postList = boardService.getNoticeBoardPostsPaged(loginEmployee.getSuberNo(), null, 10,
+					10);
+			
+			
+			model.addAttribute("profileImageBase64", base64Image);
+			model.addAttribute("userInfo", loginEmployee);
+			model.addAttribute("repositoryList", dashboardService.getRecentRepositoryPosts());
+			model.addAttribute("postList", postList);
+			model.addAttribute("recentMailList", dashboardService.getRecentMailList(loginEmployee.getEmployeeId()));
+			model.addAttribute("todaySchedule", dashboardService.getTodaySchedule(loginEmployee.getEmployeeNo()));
+			model.addAttribute("recentApprovalList",
+					dashboardService.getRecentApprovalList(loginEmployee.getEmployeeNo()));
+			// ✅ 디버깅
+			System.out.println("✅ 로그인 사원: " + loginEmployee);
+			System.out.println("✅ 오늘 일정 수: " + scheduleList.size());
+			System.out.println("✅ 최근 자료실 게시글 수: " + repositoryList.size());
+		}
 		return "group/mainPage";
 	}
 

@@ -27,8 +27,11 @@ public interface ApprovalMapper {
 	// 양식목록불러오기(기본)
 	public List<ApprovalVO> selectAllBasicsForms(ApprovalVO aprvVO);
 	
-	// 양식목록불러오기(회사전용)
+	// 양식목록불러오기(회사전용) 활성화 된것만
 	public List<ApprovalFormVO> selectAllAprvForms(ApprovalFormVO approvalFormVO);
+	
+	// 양식목록불러오기(회사전용) 활성화, 비활성화 둘다
+	public List<ApprovalFormVO> selectAllAprvFormss(ApprovalFormVO approvalFormVO);
 	
 	// 양식불러오기(기본)
 	public ApprovalVO selectBasicsForm(ApprovalVO aprvVO);
@@ -69,6 +72,9 @@ public interface ApprovalMapper {
 	// 문서 상신
 	public int insertAprvDocuments(ApprovalVO aprvVO);
 	
+	// 임시저장삭제
+	public void deleteTemporaryData(Integer draftNo);
+	
 	// 결재선 등록
 	public int insertAprvRoutes(AprvRoutesVO aprvRoutesVO);
 	
@@ -92,5 +98,14 @@ public interface ApprovalMapper {
 	
 	//
 	public int countReferenceList(ApprovalVO aprvVO);
+	
+	 // 양식 1개 조회 (상세페이지용)
+	public ApprovalFormVO selectOneAprvFormById(int formId);
+
+    // 양식 수정
+	public int updateAprvForm(ApprovalFormVO formVO);
+
+    // 양식 삭제
+	public int deleteAprvForm(int formId);
 	
 }

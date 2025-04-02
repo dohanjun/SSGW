@@ -139,6 +139,59 @@ public class ApprovalController {
         }
     }
 	
+    // 회사 전용 양식 목록 페이지
+    @GetMapping("aprv/forms")
+    public String showFormList(Model model) {
+        // 로그인한 사용자 정보에서 회사번호(suberNo) 가져오기
+        EmpVO loggedInUser = empService.getLoggedInUserInfo();
+        int suberNo = loggedInUser.getSuberNo();  // 회사 번호
+
+        // ApprovalFormVO 객체에 회사번호를 설정
+        ApprovalFormVO approvalFormVO = new ApprovalFormVO();
+        approvalFormVO.setSuberNo(suberNo);
+
+        // 해당 회사번호에 맞는 양식 목록 조회
+        List<ApprovalFormVO> formList = approvalService.findAllAprvForms(approvalFormVO);
+        System.out.println("Form List: " + formList); // 데이터가 출력되는지 확인
+        // 모델에 양식 목록 추가
+        model.addAttribute("formList", formList);
+
+        // 양식 목록을 보여주는 HTML로 이동
+        return "group/approval/approval_forms"; // Thymeleaf 템플릿 파일 이름
+    }
+    
+    // 상세 페이지
+    @GetMapping("aprv/detail/{formId}")
+    public String showFormDetail(@PathVariable("formId") int formId, Model model) {
+        ApprovalFormVO form = approvalService.getAprvFormById(formId);
+        model.addAttribute("form", form);
+        return "group/approval/approval_form_detail";
+    }
+
+    // 수정 처리
+    @PostMapping("aprv/update")
+    public String updateForm(@ModelAttribute ApprovalFormVO formVO) {
+    	if ("Y".equals(formVO.getActive())) {
+            formVO.setActive("1");
+        } else {
+            formVO.setActive("0");
+        }
+    	
+        approvalService.updateAprvForm(formVO);
+        return "redirect:/aprv/forms";
+    }
+
+    // 삭제 처리
+    @GetMapping("aprv/delete/{formId}")
+    public String deleteForm(@PathVariable("formId") int formId) {
+        approvalService.deleteAprvForm(formId);
+        return "redirect:/aprv/forms";
+    }
+    
+    
+    
+    
+    
 	/**
 	 * aprv_routes테이블에서 aprv_role이 '참조'인 사원만 볼 수 있는 페이지
 	 * @param aprvVO
@@ -272,8 +325,8 @@ public class ApprovalController {
 	        approvalVO.setAprvStatus("대기");
 	    }
 
-	    // 문서 저장
 	    approvalService.createAprvDocu(approvalVO);
+	    
 	    int draftNo = approvalVO.getDraftNo();
 	    
 	 //  휴가원 양식일 경우 vacation_request 테이블 insert
@@ -345,8 +398,25 @@ public class ApprovalController {
 	        return "redirect:/aprv/list";
 	    }
 	}
+	
+	// 임시저장된 문서 삭제
+	@PostMapping("/aprv/removeTemporaryData")
+    @ResponseBody
+    public Map<String, Object> removeTemporaryData(@RequestParam Integer draftNo) {
+        Map<String, Object> result = new HashMap<>();
 
+        try {
+            approvalService.removeTemporaryData(draftNo);
+            result.put("success", true);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
 
+        return result;
+    }
+	
+	
 	/**
 	 * 
 	 * 양식선택 모달창에서 선택한 양식의 content를 작성페이지 content 영역에 출력
@@ -740,20 +810,27 @@ public class ApprovalController {
 	public Map<String, Object> approve(@RequestBody AprvRoutesVO vo) {
 	    Map<String, Object> result = new HashMap<>();
 	    try {
-	        // 최대 결재 순서를 가져옴
-	        String maxAprvOrder = approvalService.getMaxAprvOrder(vo.getDraftNo());
+	        // 최대 결재 순서를 가져옴 (숫자로 비교하기 위해 파싱)
+	        String maxAprvOrderStr = approvalService.getMaxAprvOrder(vo.getDraftNo());
+	        
+	        // maxAprvOrder가 빈 문자열일 경우 0으로 처리
+	        int maxAprvOrder = maxAprvOrderStr.isEmpty() ? 0 : Integer.parseInt(maxAprvOrderStr);
+
+	        // 현재 결재자가 맡고 있는 순서를 정수로 변환
+	        // vo.getAprvOrder가 빈 문자열일 경우 0으로 처리
+	        int currentAprvOrder = vo.getAprvOrder().isEmpty() ? 0 : Integer.parseInt(vo.getAprvOrder());
 
 	        // 최대 결재 순서와 비교하여 상태 설정
-	        if (vo.getAprvOrder().equals(maxAprvOrder)) {
-	            vo.setAprvStatus("완료");
-	            // 휴가내역에 추가
+	        if (currentAprvOrder == maxAprvOrder) {
+	            vo.setAprvStatus("완료"); // 마지막 결재자일 경우 '완료'로 변경
+
+	            // 휴가내역에 추가 (해당 코드 로직은 그대로 유지)
 	            VacationRequestVO vrVO = new VacationRequestVO();
 	            vrVO.setDraftNo(vo.getDraftNo());
 	            vacationService.findUsedVacation(vrVO);
-	            
-	         // 기안자에게 결재 완료 알림 전송
-	            ApprovalVO done = approvalService.findTitleEmpNo(vo.getDraftNo());
 
+	            // 기안자에게 결재 완료 알림 전송
+	            ApprovalVO done = approvalService.findTitleEmpNo(vo.getDraftNo());
 	            if (done != null) {
 	                AlarmVO alarm = new AlarmVO();
 	                alarm.setAlarmMessage(done.getTitle() + "의 결재가 완료되었습니다!");
@@ -764,10 +841,8 @@ public class ApprovalController {
 
 	                alarmService.insertAlarm(alarm);
 	            }
-	            
-	            
 	        } else {
-	            vo.setAprvStatus("진행");
+	            vo.setAprvStatus("진행"); // 마지막 결재자가 아니면 '진행'으로 설정
 	        }
 
 	        // 결재 승인 처리
@@ -779,6 +854,8 @@ public class ApprovalController {
 	    }
 	    return result;
 	}
+
+
 
 	// 결재페이지 반려처리
 	@PostMapping("/aprv/reject")

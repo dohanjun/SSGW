@@ -41,7 +41,7 @@ public class DeptViewController {
      * 로그인한 사용자의 회사번호(suberNo)를 기준으로 부서 목록을 가져와 화면에 출력
      */
     @GetMapping("/deptInsert")
-    public String showDeptInsertForm(Model model) {
+    public String deptInsert(Model model) {
         // 현재 로그인한 사용자 정보 가져오기
         EmpVO loggedInUser = empService.getLoggedInUserInfo();
         Integer suberNo = loggedInUser.getSuberNo();

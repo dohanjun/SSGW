@@ -1,5 +1,6 @@
 package com.yedam.app.group.web;
 
+import java.util.Base64;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -74,11 +75,23 @@ public class DeptController {
     // 조직도 데이터 제공 (JSON 응답)
     @GetMapping("/orgchart")
     public List<DeptVO> getOrgChart(DeptVO deptVO) {
-    	// 로그인한 사용자 정보 가져오기
-	    EmpVO loggedInUser = empService.getLoggedInUserInfo();
-	    deptVO.setSuberNo(loggedInUser.getSuberNo());
+       // 로그인한 사용자 정보 가져오기
+	   EmpVO loggedInUser = empService.getLoggedInUserInfo();
+	   deptVO.setSuberNo(loggedInUser.getSuberNo());
     	
        List<DeptVO> result = deptMapper.getOrgChart(deptVO);
+       
+       //  사원 BLOB → Base64 변환 후 profileImageBase64 세팅
+       for (DeptVO dept : result) {
+           if (dept.getEmployees() != null) {
+               for (EmpVO emp : dept.getEmployees()) {
+                   if (emp.getProfileImageBLOB() != null) {
+                       String base64 = Base64.getEncoder().encodeToString(emp.getProfileImageBLOB());
+                       emp.setProfileImageBase64(base64); // 🔹 VO에 해당 필드 있어야 함
+                   }
+               }
+           }
+       }
 
         //  디버깅 로그 찍기
         System.out.println("[조직도 호출] 회사번호: " + deptVO.getSuberNo());

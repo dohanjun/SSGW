@@ -18,7 +18,7 @@ public class ApprovalVO {
 	// 기본양식
 	private Integer basicsFormId;  // 기본양식아이디
 	private String content;        // 양식
-	private int version;           // 버전
+	private double version;           // 버전
 	private String remarks;        // 비고
 	private String formType;       // 유형
 	

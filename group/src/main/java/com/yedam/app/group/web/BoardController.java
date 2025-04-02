@@ -46,10 +46,8 @@ public class BoardController {
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 
 		List<BoardVO> noticeBoards = boardService.getBoardsByType("공지", loggedInUser.getSuberNo(), null, null);
-		List<BoardVO> departmentBoards = boardService.getBoardsByType("부서", loggedInUser.getSuberNo(),
-				loggedInUser.getDepartmentNo(), null);
-		List<BoardVO> freeBoards = boardService.getBoardsByType("자유", loggedInUser.getSuberNo(), null,
-				loggedInUser.getEmployeeNo());
+		List<BoardVO> departmentBoards = boardService.getBoardsByType("부서", loggedInUser.getSuberNo(),	loggedInUser.getDepartmentNo(), null);
+		List<BoardVO> freeBoards = boardService.getBoardsByType("자유", loggedInUser.getSuberNo(), null,	loggedInUser.getEmployeeNo());
 
 		model.addAttribute("noticeBoards", noticeBoards);
 		model.addAttribute("departmentBoards", departmentBoards);

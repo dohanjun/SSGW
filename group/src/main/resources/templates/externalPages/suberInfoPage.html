@@ -69,17 +69,16 @@
 	color: #333;
 }
 
-@keyframes fadeIn {
-	from {
-		opacity: 0;
-		transform: translateY(-10px);
-	}
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
+@keyframes fadeIn {from { opacity:0;
+	transform: translateY(-10px);
 }
 
+to {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+}
 to {
 	opacity: 1;
 	transform: translateY(0);
@@ -127,26 +126,27 @@ to {
 			</div>
 			<div class="card-container">
 				<div class="info-card">
-					<div class="label">최대 인원수</div>
-					<div class="value" th:text="${suber[0].maxCount + '명'}"></div>
+					<div class="label">최대 인원</div>
+					<div class="value" th:text="${suber[0].maxCount} +명"></div>
 				</div>
+				
 				<div class="info-card">
-					<div class="label">최대 저장소</div>
-					<div class="value" th:text="${suber[0].maxSize + 'TB'}"></div>
+					<div class="label">저장소 제한</div>
+					<div class="value" th:text="${suber[0].maxSize} +TB"></div>
 				</div>
+
 				<div class="info-card">
 					<div class="label">업로드 제한</div>
-					<div class="value" th:text="${suber[0].maxUpSize + 'MB'}"></div>
+					<div class="value" th:text="${suber[0].maxUpSize} +MB"></div>
 				</div>
 			</div>
-
 
 			<div class="card-body">
 				<table class="table">
 					<tbody>
 						<tr th:each="suber : ${suber}">
 							<td th:text="${suber.moduleName}"></td>
-							<td th:text="${suber.paymentPrice}"></td>
+							<td th:text="${suber.paymentPrice == 0 ? '기본 모듈' : suber.paymentPrice}"></td>
 							<td
 								th:text="${#dates.format(suber.paymentStartDate, 'yyyy-MM-dd')}"></td>
 							<td
@@ -177,6 +177,7 @@ to {
 
 	<script th:inline="javascript">
 		var suber = /*[[${suber}]]*/[];
+		console.log(suber)
 		const token = $('meta[name="_csrf"]').attr('content');
 		const header = $('meta[name="_csrf_header"]').attr('content');
 		

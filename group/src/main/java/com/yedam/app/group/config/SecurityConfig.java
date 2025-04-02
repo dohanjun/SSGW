@@ -36,7 +36,7 @@ public class SecurityConfig {
 						"/savePaymentDetails", "/saveUser", "/insertBoardPost", "/selectBoardPost", "/updateBoardPost")
 				.permitAll().requestMatchers("/insertPost", "/basket/**", "/api/**", "/alerts/**", "/insertAlarm")
 				.permitAll()
-        .requestMatchers("/uploadImage").permitAll()
+        .requestMatchers("/uploadImage").permitAll() 
 	      .requestMatchers("/comment/**").permitAll()
 	      .requestMatchers("/board/toggleFix").permitAll()
 				// 관리자만 접근 가능
@@ -45,7 +45,7 @@ public class SecurityConfig {
 				.hasAuthority("ROLE_MANAGER")
 				// 로그인시 접근 가능
 				.anyRequest().authenticated())
-				.formLogin(form -> form.loginPage("/login").loginProcessingUrl("/login").defaultSuccessUrl("/MainPage", true)
+				.formLogin(form -> form.loginPage("/login").loginProcessingUrl("/login").successHandler(successHandler)
 						.permitAll())
 				.logout(logout -> logout.logoutUrl("/logout").logoutSuccessUrl("/login?logout")
 						.invalidateHttpSession(true).deleteCookies("JSESSIONID").permitAll())

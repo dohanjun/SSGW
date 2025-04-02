@@ -55,7 +55,7 @@
 }
 
 .module-container {
-	max-width: 1100px;
+	max-width: 50%;
 	margin: 40px auto;
 	padding: 30px;
 	background-color: #eee;
@@ -129,16 +129,14 @@
 		<h2>모듈 관리</h2>
 
 		<div th:each="item : ${moduleList}" class="module-row">
+
 			<div class="module-name" th:text="${item.moduleName}">모듈명</div>
+<div class="module-name" th:text="${item.paymentPrice == 0 ? '기본 모듈' : item.paymentPrice}">모듈가격</div>
+
 			<div class="module-dates"
 				th:text="${#dates.format(item.paymentStartDate, 'yyyy-MM-dd')} + ' ~ ' + ${#dates.format(item.paymentEndDate, 'yyyy-MM-dd')}">
 			</div>
-			<div class="module-actions">
-				<button class="btn btn-sm btn-danger"
-					th:onclick="'requestRefund(' + ${item.paymentDetailsNo} + ')'">
-					<i class="fa-solid fa-money-bill-transfer"></i>
-				</button>
-			</div>
+
 		</div>
 
 
@@ -298,7 +296,8 @@
                         html += `
                             <tr class="module-select-row" data-module-no="${item.moduleNo}">
                                 <td>${item.moduleName}</td>
-                                <td>${item.modulePrice?.toLocaleString() ?? '-'}</td>
+                                <td>${item.modulePrice === 0 ? '기본 모듈' : (item.modulePrice?.toLocaleString() ?? '-')}</td>
+
                             </tr>
                         `;
                     });

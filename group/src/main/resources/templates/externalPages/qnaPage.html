@@ -82,90 +82,106 @@
 	background-color: #f9f1d8;
 	font-weight: bold;
 }
+
 .faq-row .postId {
 	color: #e67e22;
+}
+
+.card-header {
+	background-color: #2C3E50;
+}
+.text-secondary {
+  color: gray !important;
+}
+.no-underline{
+  text-decoration: none !important;
 }
 </style>
 </head>
 <body>
-	<div class="card shadow"
-		style="width: 100%; margin-top: 20px; margin-bottom: auto;">
-		<div class="card-body">
-			<div class="table-responsive">
+	<div class="container my-4">
+		<div class="card">
+			<div class="card-header text-white">
+				<h4 class="mb-0">QnA</h4>
+			</div>
+			<div class="card-body">
+				<div class="table-responsive">
 
-				<!-- 검색 기능 -->
-				<form class="search-container" th:action="@{/qna}" method="get">
-				<div class="search-box">
-					<input type="text" class="form-control" name="keyword"
-						placeholder="검색어 입력" th:value="${keyword}">
-					
-					<button type="submit" class="search-icon-btn">
-						<i class="fas fa-search"></i>
-					</button>
+					<!-- 검색 기능 -->
+					<form class="search-container" th:action="@{/qna}" method="get">
+						<div class="search-box">
+							<input type="text" class="form-control" name="keyword"
+								placeholder="검색어 입력" th:value="${keyword}">
+
+							<button type="submit" class="search-icon-btn">
+								<i class="fas fa-search"></i>
+							</button>
+						</div>
+					</form>
+
+
+					<!-- 게시판 테이블 -->
+					<table class="table table-bordered" id="dataTable" width="100%"
+						cellspacing="0">
+						<thead>
+							<tr>
+								<th>번호</th>
+								<th>제목</th>
+								<th>작성자</th>
+								<th>작성일</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="board : ${boardList}"
+								th:if="${board.parentCommentId == null}">
+								<td class="postId" th:text="${board.postId}"></td>
+								<td>
+								  <a th:href="@{/qna/detail(postId=${board.postId})}"
+								     th:class="${#strings.equals(board.childYn, 'Y')} ? 'text-secondary no-underline'  : 'no-underline'" 
+								     th:text="${board.postTitle}"></a>
+								</td>
+								<td th:text="${board.employeeName}"></td>
+								<td th:text="${#dates.format(board.postDate, 'yyyy-MM-dd')}"></td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="pagination-container">
+						<nav aria-label="페이지네이션">
+							<ul class="pagination mb-0">
+								<!-- 이전 페이지 -->
+								<li class="page-item"
+									th:classappend="${currentPage == 1} ? 'disabled'"><a
+									class="page-link"
+									th:href="@{/qna(page=${currentPage - 1}, keyword=${keyword})}">&laquo;</a>
+								</li>
+
+								<!-- 페이지 번호 목록 -->
+								<li class="page-item"
+									th:each="i : ${#numbers.sequence(1, totalPages)}"
+									th:classappend="${currentPage == i} ? 'active'"><a
+									class="page-link"
+									th:href="@{/qna(page=${i}, keyword=${keyword})}" th:text="${i}"></a>
+								</li>
+
+								<!-- 다음 페이지 -->
+								<li class="page-item"
+									th:classappend="${currentPage == totalPages} ? 'disabled'">
+									<a class="page-link"
+									th:href="@{/qna(page=${currentPage + 1}, keyword=${keyword})}">&raquo;</a>
+								</li>
+							</ul>
+
+						</nav>
+					</div>
+
 				</div>
-			</form>
-
-
-				<!-- 게시판 테이블 -->
-				<table class="table table-bordered" id="dataTable" width="100%"
-					cellspacing="0">
-					<thead>
-						<tr>
-							<th>번호</th>
-							<th>제목</th>
-							<th>작성자</th>
-							<th>작성일</th>
-						</tr>
-					</thead>
-					<tbody>
-					    <tr th:each="board : ${boardList}" th:if="${board.parentCommentId == null}">
-					        <td class="postId" th:text="${board.postId}"></td>
-					        <td>
-					            <a th:href="@{/qna/detail(postId=${board.postId})}" th:text="${board.postTitle}"></a>
-					        </td>
-					        <td th:text="${board.employeeName}"></td>
-					        <td th:text="${#dates.format(board.postDate, 'yyyy-MM-dd')}"></td>
-					    </tr>
-					</tbody>
-				</table>
-				<div class="pagination-container">
-					<nav aria-label="페이지네이션">
-						<ul class="pagination mb-0">
-							<!-- 이전 페이지 -->
-							<li class="page-item"
-								th:classappend="${currentPage == 1} ? 'disabled'"><a
-								class="page-link"
-								th:href="@{/qna(page=${currentPage - 1}, keyword=${keyword})}">&laquo;</a>
-							</li>
-
-							<!-- 페이지 번호 목록 -->
-							<li class="page-item"
-								th:each="i : ${#numbers.sequence(1, totalPages)}"
-								th:classappend="${currentPage == i} ? 'active'"><a
-								class="page-link"
-								th:href="@{/qna(page=${i}, keyword=${keyword})}" th:text="${i}"></a>
-							</li>
-
-							<!-- 다음 페이지 -->
-							<li class="page-item"
-								th:classappend="${currentPage == totalPages} ? 'disabled'">
-								<a class="page-link"
-								th:href="@{/qna(page=${currentPage + 1}, keyword=${keyword})}">&raquo;</a>
-							</li>
-						</ul>
-
-					</nav>
-				</div>
-
 			</div>
 		</div>
 	</div>
 
-
-<script th:inline="javascript">
-    var post = /*[[${boardList}]]*/[];
-
-</script>
+	<script th:inline="javascript">
+		var post = /*[[${boardList}]]*/[];
+	</script>
 
 
 

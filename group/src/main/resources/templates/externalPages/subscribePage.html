@@ -82,7 +82,9 @@
 				<div class="modules">
 					<div class="selectItem" th:each="item : ${modules}"
 						th:data-module-no='${item.moduleNo}'
-						th:data-module-price='${item.modulePrice}'>
+						th:data-module-price='${item.modulePrice}'
+						th:if="${#strings.equals(item.activate, 'Y')}"
+						th:classappend="${#strings.equals(item.basicModule, 'Y')} ? ' check basic-locked'">			
 						<div class="moduleCard">
 							<div class="moduleTitle" th:text="${item.moduleName}">모듈명</div>
 							<div class="moduleBottom">
