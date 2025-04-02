@@ -5,16 +5,19 @@ import java.util.Map;
 
 public interface AddressBookService {
 
-	//주소록검색기능
+	//페이지리스트
 	public PageListVO getPageList(PageListVO vo);
 	
-	//주소록전체조회
+	//부서주소록전체조회
 	public List<AddressBookVO> AddressBookSelectAll(PageListVO vo);
 	
-	//주소록단건조회
+	//개인주소록전체조회
+	public List<AddressBookVO> MyAddressBookSelectAll(PageListVO vo);
+	
+	//부서주소록단건조회
 	public AddressBookVO AddressBookSelectInfo(AddressBookVO addressBookVO);
 	
-	//주소록메일단건조회
+	//개인주소록단건조회
 	public AddressBookVO MyAddressBookSelectInfo(AddressBookVO addressBookVO);
 	
 	//주소록등록
@@ -28,5 +31,6 @@ public interface AddressBookService {
 
 	//주소록 페이지네이션
 	public int pageGetCount(PageListVO vo);
+
 
 }

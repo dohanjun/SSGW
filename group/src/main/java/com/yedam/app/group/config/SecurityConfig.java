@@ -54,7 +54,7 @@ public class SecurityConfig {
 						"/insertModule", "/saveForm", "/schedule/**", "/qna", "/fixed", "/saveSubDetail",
 						"/saveSubDetail", "/saveSuber", "/savePaymentDetails", "/saveUser", "/insertBoardPost",
 						"/selectBoardPost", "/updateBoardPost", "/basket/**", "/api/**", "/alerts/**", "/insertAlarm",
-						"/bookUpdate","/uploadImage","/comment/**","/board/toggleFix"));
+						"/bookUpdate","/uploadImage","/comment/**","/board/toggleFix","/mail/**"));
 		return http.build();
 	}
 

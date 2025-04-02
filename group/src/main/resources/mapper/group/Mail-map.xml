@@ -14,40 +14,40 @@
 	<sql id="mailCondition">
 		<where>
 			<if test="employeeNo != null">
-            e.employee_no = #{employeeNo}
-        </if>
+				e.employee_no = #{employeeNo}
+			</if>
 
-        <if test="search != null and search != ''">
-            ( m.TITLE LIKE '%' || #{search} || '%'
-            OR m.GET_USER LIKE '%' || #{search} || '%'
-            OR m.RECODE LIKE '%' || #{search} || '%' )
-        </if>
+			<if test="search != null and search != ''">
+				( m.TITLE LIKE '%' || #{search} || '%'
+				OR m.GET_USER LIKE '%' || #{search} || '%'
+				OR m.RECODE LIKE '%' || #{search} || '%' )
+			</if>
 
-        <if test="mailType != null">
-    <choose>
-        <when test="mailType == '받은'">
-         and m.mail_type = '받은'
-            and m.get_user = #{getUser}
-        </when>
-        <when test="mailType == '보낸'">
-           and m.mail_type = '보낸'
-            and m.employee_id = #{employeeId}
-        </when>
-        <when test="mailType == '임시'">
-          and (m.mail_type = '받은' and m.get_user = #{getUser}
-            or m.mail_type = '보낸' and m.employee_id = #{employeeId})
-        </when>
-        <when test="mailType == '휴지통'">
-          and  (m.mail_type = '받은' and m.get_user = #{getUser}
-            or m.mail_type = '보낸' and m.employee_id = #{employeeId})
-        </when>
-        <otherwise>
-            <!-- 기본 동작: '받은'과 '보낸' 모두 조회 -->
-            (m.mail_type = '받은' and m.get_user = #{getUser}
-            or m.mail_type = '보낸' and m.employee_id = #{employeeId})
-        </otherwise>
-    </choose>
-</if>
+			<if test="mailType != null">
+				<choose>
+					<when test="mailType == '받은'">
+						and m.mail_type = '받은'
+						and m.get_user = #{getUser}
+					</when>
+					<when test="mailType == '보낸'">
+						and m.mail_type = '보낸'
+						and m.employee_id = #{employeeId}
+					</when>
+					<when test="mailType == '임시'">
+						and (m.mail_type = '받은' and m.get_user = #{getUser}
+						or m.mail_type = '보낸' and m.employee_id = #{employeeId})
+					</when>
+					<when test="mailType == '휴지통'">
+						and (m.mail_type = '받은' and m.get_user = #{getUser}
+						or m.mail_type = '보낸' and m.employee_id = #{employeeId})
+					</when>
+					<otherwise>
+						<!-- 기본 동작: '받은'과 '보낸' 모두 조회 -->
+						(m.mail_type = '받은' and m.get_user = #{getUser}
+						or m.mail_type = '보낸' and m.employee_id = #{employeeId})
+					</otherwise>
+				</choose>
+			</if>
 		</where>
 	</sql>
 
@@ -69,7 +69,8 @@
 		,e.employee_no
 		FROM mail m
 		INNER JOIN employees e
-		ON m.employee_id = e.employee_id
+		ON m.employee_id =
+		e.employee_id
 		<include refid="mailCondition"></include>
 		ORDER BY
 		<choose>
@@ -108,12 +109,12 @@
 		FROM Mail
 		WHERE mail_id = #{mailId}
 	</select>
-	
+
 	<select id="fileCount" resultType="MailVO">
 		SELECT COUNT(*)
-        FROM mail
-        WHERE attached_file_name IS NOT NULL
-        AND   mail_id = 149
+		FROM mail
+		WHERE attached_file_name IS NOT NULL
+		AND mail_id = 149
 	</select>
 
 	<!-- 메일등록 -->
@@ -124,30 +125,30 @@
 			FROM Mail
 		</selectKey>
 		INSERT INTO Mail(
-						mail_id
-						,title
-						,content
-						,sent_state
-						,sent_date
-						,employee_id
-						,attached_file_name
-						,get_user
-						,cc
-						,recode
-						,mail_type)
-		
+		mail_id
+		,title
+		,content
+		,sent_state
+		,sent_date
+		,employee_id
+		,attached_file_name
+		,get_user
+		,cc
+		,recode
+		,mail_type)
+
 		VALUES(
-						#{mailId}
-						,#{title}
-						,#{content}
-						,#{sentState}
-						,sysdate
-						,#{employeeId}
-						,#{attachedFileName}
-						,#{getUser}
-						,#{cc}
-						,#{recode}
-						,
+		#{mailId}
+		,#{title}
+		,#{content}
+		,#{sentState}
+		,sysdate
+		,#{employeeId}
+		,#{attachedFileName}
+		,#{getUser}
+		,#{cc}
+		,#{recode}
+		,
 		<choose>
 			<when test="isSent == true">
 				'보낸'
@@ -168,12 +169,13 @@
 	<!-- 메일답장 -->
 	<update id="MailPutDate" parameterType="MailVO">
 		UPDATE Mail
-		SET get_user = #{getUser}
-			,cc = #{cc}
-			,title = #{title}
-			,attached_file_name = #{attachedFileName}
-			,content = #{content}
-			,recode = #{recode}
+		SET get_user =
+		#{getUser}
+		,cc = #{cc}
+		,title = #{title}
+		,attached_file_name = #{attachedFileName}
+		,content = #{content}
+		,recode = #{recode}
 		WHERE mail_id = #{mailId}
 	</update>
 
@@ -185,31 +187,41 @@
 		VALUES(
 		,#{getUser}
 		,#{cc}
-)
+		)
+	</update>
+	
+	<!-- 단건 임시 이동 -->
+	<update id="Mailpro" parameterType="int">
+	UPDATE Mail
+	SET mail_type = '임시'
+	WHERE mail_id = #{mailId}
 	</update>
 
-	<!-- 단건메일 삭제 -->
+<!-- 단건 휴지통 이동 -->
+	<update id="Maildel" parameterType="int">
+	UPDATE Mail
+	SET mail_type = '휴지통'
+	WHERE mail_id = #{mailId}
+	</update>
 
-	<delete id="MailRemove" parameterType="int">
-		DELETE FROM Mail
-		WHERE mail_id = #{mailId}
-	</delete>
-
-	    <!-- 여러 개의 메일 삭제 -->
-    <delete id="MailRemoves" parameterType="java.util.List">
-        DELETE FROM Mail
-        WHERE mail_id IN
-        <foreach item="mailId" collection="list" open="(" separator="," close=")">
-            #{mailId}
-        </foreach>
-    </delete>
+	<!-- 여러 개의 메일 휴지통 이동 -->
+	<update id="Maildels" parameterType="java.util.List">
+		UPDATE Mail
+		SET mail_type = #{mailType}
+		WHERE mail_id IN
+		<foreach item="mailId" collection="list" open="("
+			separator="," close=")">
+			#{mailId}
+		</foreach>
+	</update>
 
 	<!-- 전체건수반환 -->
 	<select id="getCount" resultType="int">
 		SELECT COUNT(*)
 		FROM mail m
 		INNER JOIN employees e
-		ON m.employee_id = e.employee_id
+		ON m.employee_id =
+		e.employee_id
 		<include refid="mailCondition"></include>
 	</select>
 
@@ -218,14 +230,23 @@
 	<delete id="deleteExpiredMails">
 		DELETE FROM mail
 		WHERE is_temporary = 1
-		AND expiry_date &lt;= sysdate
+		AND expiry_date
+		&lt;= sysdate
 	</delete>
 
 	<!-- 휴지통 자동삭제 -->
 	<delete id="deleteCurrentMails">
 		DELETE FROM mail
 		WHERE is_temporary = 1
-		AND expiry_date &lt;= sysdate
+		AND expiry_date
+		&lt;= sysdate
+	</delete>
+	
+	<!-- 완전삭제 -->
+	<delete id="MailRemove" parameterType="int">
+		DELETE FROM Mail
+		WHERE
+		mail_id = #{mailId}
 	</delete>
 
 </mapper>

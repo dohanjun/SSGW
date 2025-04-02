@@ -2,6 +2,7 @@ package com.yedam.app.group.mapper;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import com.yedam.app.group.service.MailVO;
 import com.yedam.app.group.service.PageListVO;
@@ -35,10 +36,10 @@ public interface MailMapper {
 	public int MailVeryDate(MailVO mailVO);
 	
 	//단건메일삭제
-	public int MailRemove(int mailId);
+	public int MailDel(int mailId);
 	
 	//여러개의 메일삭제
-	public int MailRemoves(List<Integer> mailIds);
+	public int MailDels(List<Integer> mailIds);
 	
 	//메일페이지네이션
 	public int getCount(PageListVO pagelistVO);
@@ -53,6 +54,8 @@ public interface MailMapper {
 	public List<MailVO> selectTemList(PageListVO vo);
 	//휴지통
 	public List<MailVO> selectDelList(PageListVO vo);
+	//메일단건삭제
+	public int MailRemove(int MailId);
 
 //기타
 

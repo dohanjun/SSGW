@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.yedam.app.group.service.AddressBookService;
 import com.yedam.app.group.service.AddressBookVO;
 import com.yedam.app.group.service.EmpService;
+import com.yedam.app.group.service.EmpVO;
 import com.yedam.app.group.service.PageListVO;
 import com.yedam.app.group.service.Paging;
 
@@ -34,8 +35,8 @@ import com.yedam.app.group.service.Paging;
 @Controller
 public class AddressBookController {
 
-	private AddressBookService addressBookService;
-	private EmpService empService;
+	private final AddressBookService addressBookService;
+	private final EmpService empService;
 	
 	public AddressBookController(AddressBookService addressBookService, EmpService empService) {
 		this.addressBookService = addressBookService;
@@ -52,6 +53,10 @@ public class AddressBookController {
 	//주소록목록
 		 @GetMapping("bookList")
 		    public String list(Model model, PageListVO vo, Paging paging) {
+			 
+			 EmpVO loggedInUser = empService.getLoggedInUserInfo();
+			 vo.setEmployeeNo(loggedInUser.getEmployeeNo());
+			 
 			 //페이징처리
 			 vo.setStart(paging.getFirst());
 			 vo.setEnd(paging.getLast());
@@ -66,6 +71,10 @@ public class AddressBookController {
 			//개인주소록목록
 		 @GetMapping("myBookList")
 		    public String myBookList(Model model, PageListVO vo, Paging paging) {
+			 
+			 EmpVO loggedInUser = empService.getLoggedInUserInfo();
+			 vo.setEmployeeId(loggedInUser.getEmployeeId());
+			 
 			 //페이징처리
 			 vo.setStart(paging.getFirst());
 			 vo.setEnd(paging.getLast());
@@ -103,22 +112,35 @@ public class AddressBookController {
 		
 		//개인 주소록 등록 - 처리
 		 @PostMapping("/bookInsert")
-		    public String bookInsertProcess(AddressBookVO addressBookVO) {
-		     int did = addressBookService.AddressBookInsert(addressBookVO);
-			 String url = null;
-			 if (did > -1) {
-				 url = "redirect:myBookSelect?addressBookId="+did;
-			 }
-			 else {
-				 url = "redirect:myList";
-			 }
-			 return url;
-		    }	
+		 public String bookInsertProcess(AddressBookVO addressBookVO, Model model) {
+		     String url = ""; // 초기 URL 값 설정
+		     
+		     try {
+		         // 주소록 등록 처리
+		         int did = addressBookService.AddressBookInsert(addressBookVO);
+
+		         // 정상적으로 등록된 경우
+		         if (did > -1) {
+		             url = "redirect:myBookList?addressBookId=" + did;
+		             model.addAttribute("alertMessage", "정상적으로 등록되었습니다!");
+		         } else {
+		             // 등록되지 않은 경우
+		             url = "group/book/insert";
+		             model.addAttribute("alertMessage", "값을 정확하게 입력해주세요!");
+		         }
+		     } catch (Exception e) {
+		         // 예외가 발생한 경우
+		         url = "group/book/insert";
+		     }
+
+		     return url;
+		 }
+
 		
 		//개인주소록 수정 - 페이지
 		@GetMapping("/bookUpdate")
 			public String bookUpdate(AddressBookVO addressBookVO, Model model) {
-			AddressBookVO findVO = addressBookService.AddressBookSelectInfo(addressBookVO);
+			AddressBookVO findVO = addressBookService.MyAddressBookSelectInfo(addressBookVO);
 				model.addAttribute("book", findVO);
 				return "group/book/update";
 			}
@@ -126,32 +148,27 @@ public class AddressBookController {
 		//개인주소록 수정 - 처리
 		@PostMapping("/bookUpdate")
 		@ResponseBody
-		public boolean bookUpdateForm(@RequestBody AddressBookVO addressBookVO, Model model) {
-			try {
+		public boolean bookUpdateForm(@RequestBody AddressBookVO addressBookVO) {
+		    try {
 		        // 수정할 데이터가 넘어오면 서비스에서 업데이트 처리
-		    	Map<String, Object> updateSuccess = addressBookService.AddressBookUpdate(addressBookVO);
+		        Map<String, Object> updateSuccess = addressBookService.AddressBookUpdate(addressBookVO);
 		        
-		        if (updateSuccess != null) {
-		            model.addAttribute("message", "주소록이 성공적으로 수정되었습니다.");
-		        } else {
-		            model.addAttribute("message", "주소록 수정에 실패했습니다.");
-		        }
-		        
-		        return true;  // 수정 후 주소록 목록으로 리다이렉트
+		        // 정상적으로 수정되었으면 true 반환
+		        return updateSuccess != null && (boolean) updateSuccess.get("result");
 
 		    } catch (Exception e) {
-		        model.addAttribute("error", "서버 오류로 수정에 실패했습니다.");
-		        return false;  // 오류 발생 시 메일 상세 화면으로 이동
+		        e.printStackTrace();
+		        return false; // 오류가 발생하면 false 반환
 		    }
 		}
 
-		
-		 
+
 		 //주소록 삭제
 		 
 		 @GetMapping("bookDelete")
 		    public String bookDelete(Integer addressBookId) {
 			 addressBookService.AddressBookDelete(addressBookId);
-		      return "redirect:bookList";
+		      return "redirect:/bookList";
 		    }
+		 
 }

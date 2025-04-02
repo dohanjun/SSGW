@@ -32,10 +32,10 @@ public interface MailService {
 	public int MailVeryInfo(MailVO mailVO);
 	
 	//단건메일 삭제
-	public Map<String, Object> MailDelete(int MailId);
+	public Map<String, Object> MailDel(int MailId);
 	
 	//여러개의 메일삭제
-	public int MailDeletes(List<Integer> mailIds);
+	public int MailDels(List<Integer> mailIds);
 	
 	//메일 페이지네이션
 	public int pageGetCount(PageListVO pagelistVO);
@@ -50,6 +50,9 @@ public interface MailService {
 	public List<MailVO> selectTemList(PageListVO vo);
 	//휴지통
 	public List<MailVO> selectDelList(PageListVO vo);
+	
+	//단건메일 삭제
+	public Map<String, Object> MailRemove(int MailId);
 	
 //기타
 	//주소검색기능

@@ -122,7 +122,7 @@ public class MailController {
 
 	// 메일등록
 	@PostMapping("/mailInsert")
-	public String insertMail(MailVO vo, @RequestParam("file") MultipartFile file) {
+	public String insertMail(MailVO vo, @RequestParam("file") MultipartFile file, Model model) {
 		if(!file.isEmpty()) {
 		try {
 			// 파일 업로드 처리
@@ -146,6 +146,8 @@ public class MailController {
 			return "redirect:/error"; // 오류 페이지로 리다이렉트 (필요 시)
 		}
 		}
+		MailVO findVO = mailService.MailSelectInfo(vo);
+		model.addAttribute("mail", findVO);
 		// 로그인한 사용자 정보 가져오기
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 		vo.setEmployeeNo(loggedInUser.getEmployeeNo());
@@ -208,17 +210,17 @@ public class MailController {
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 		mailVO.setEmployeeNo(loggedInUser.getEmployeeNo());
 		
-		mailService.MailDelete(mailId);
-		return "redirect:mail";
+		mailService.MailDel(mailId);
+		return "redirect:/deleteMail";
 	}
 
 	// 여러개의 메일삭제
 	@PostMapping("/mail/mailDeletes")
 	public String mailDeletes(@RequestParam List<Integer> mailIds) {
 		// 여러 메일을 삭제하도록 MailDelete 메서드 호출
-		mailService.MailDeletes(mailIds);
+		mailService.MailDels(mailIds);
 		// 삭제 후 메일 목록 페이지로 리다이렉트
-		return "redirect:/mail";
+		return "redirect:/deleteMail";
 	}
 
 //세부메일함
@@ -298,6 +300,19 @@ public class MailController {
 		model.addAttribute("mails", list);
 		return "group/mail/deleteMail";
 	}
+	
+	
+	// 단건메일삭제
+	@GetMapping("MailRemove")
+	public String MailRemove(Integer mailId, MailVO mailVO) {
+		
+		EmpVO loggedInUser = empService.getLoggedInUserInfo();
+		mailVO.setEmployeeNo(loggedInUser.getEmployeeNo());
+		
+		mailService.MailRemove(mailId);
+		return "redirect:/deleteMail";
+	}
+	
 
 	// 메일 검색 폼
 	@GetMapping("/searchMailForm")

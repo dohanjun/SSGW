@@ -31,25 +31,31 @@ public class AddressBookServiceImpl implements AddressBookService {
 		return result;
 	}
 
-	// 주소록전체조회
+	//부서주소록
 	@Override
 	public List<AddressBookVO> AddressBookSelectAll(PageListVO vo) {
 		return addressBookMapper.AddressBookFindAll(vo);
 	}
+	
+	//개인주소록
+	@Override
+	public List<AddressBookVO> MyAddressBookSelectAll(PageListVO vo) {
+		return addressBookMapper.MyAddressBookFindAll(vo);
+	}
 
-	// 주소록상세조회
+	//부서주소록 상세조회
 	@Override
 	public AddressBookVO AddressBookSelectInfo(AddressBookVO addressBookVO) {
 		return addressBookMapper.AddressBookFindInfo(addressBookVO.getAddressBookId());
 	}
 
-	// 나의주소록상세조회
+	//개인주소록 상세조회
 	@Override
 	public AddressBookVO MyAddressBookSelectInfo(AddressBookVO addressBookVO) {
 		return addressBookMapper.MyAddressBookFindInfo(addressBookVO.getAddressBookId());
 	}
 
-	// 주소록등록
+	//개인주소록 등록
 	@Override
 	public int AddressBookInsert(AddressBookVO addressBookVO) {
 		int result = addressBookMapper.AddressBookCreate(addressBookVO);
@@ -57,27 +63,35 @@ public class AddressBookServiceImpl implements AddressBookService {
 		return result == 1 ? addressBookVO.getAddressBookId() : -1;
 	}
 
-	// 주소록수정
+	//개인주소록 수정
 	@Override
 	public Map<String, Object> AddressBookUpdate(AddressBookVO addressBookVO) {
-		Map<String, Object> map = new HashMap<>();
-		boolean isSuccessed = false;
+	    Map<String, Object> map = new HashMap<>();
+	    boolean isSuccessed = false;
 
-		int result = addressBookMapper.AddressBookModify(addressBookVO);
+	    // 먼저 기존 주소록 정보를 가져옵니다.
+	    AddressBookVO existingBook = addressBookMapper.AddressBookFindInfo(addressBookVO.getAddressBookId());
 
-		if (result == 1) {
-			isSuccessed = true;
-		}
+	    // 기존 정보와 입력 받은 정보가 동일한지 확인
+	    if (existingBook != null && !existingBook.equals(addressBookVO)) {
+	        // 기존 정보와 다르면 수정 진행
+	        int result = addressBookMapper.AddressBookModify(addressBookVO);
 
-		map.put("result", isSuccessed);
-		map.put("target", addressBookVO);
+	        if (result == 1) {
+	            isSuccessed = true;
+	        }
+	    } else {
+	        // 값이 변경되지 않거나, 이미 최신 정보라면 수정하지 않음
+	        isSuccessed = true;
+	    }
 
-		AddressBookVO findVO = (AddressBookVO) map.get("target");
+	    map.put("result", isSuccessed);
+	    map.put("target", addressBookVO);
 
-		return map;
+	    return map;
 	}
 
-	// 주소록삭제
+	//개인주소록 삭제
 	@Override
 	public Map<String, Object> AddressBookDelete(int AddressBookId) {
 		Map<String, Object> map = new HashMap<>();
@@ -91,10 +105,11 @@ public class AddressBookServiceImpl implements AddressBookService {
 		return map;
 	}
 
-	// 주소록페이지네이션
+	//주소록 페이지네이션
 	@Override
 	public int pageGetCount(PageListVO pagelistVO) {
 		return addressBookMapper.getCount(pagelistVO);
 	}
+
 
 }

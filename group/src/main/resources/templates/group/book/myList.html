@@ -28,6 +28,7 @@
             justify-content: space-between; /* 양 끝으로 배치 */
             align-items: center;
             margin-bottom: 20px;
+            max-width: 100%; /* Ensure this container does not exceed the table's width */
         }
 
         .btn-primary {
@@ -89,14 +90,28 @@
             background-color: #c82333;
         }
 
+        /* Align '전체글' and '삭제' button in the same row */
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            max-width: 100%; /* Prevent from exceeding table width */
+        }
+
+        .header-row h5 {
+            margin: 0;
+        }
+
         /* 테이블 스타일 */
         .table-container {
-            padding: 0 30px;
-            margin-top: 20px;
+            padding: 0;
+            margin: 0;
         }
 
         table {
             width: 100%;
+            max-width: 100%; /* Ensure table does not exceed container */
             border-collapse: collapse;
         }
 
@@ -180,20 +195,17 @@
         </div>
     </div>
 
-    <!-- 삭제 버튼 -->
-    <button class="delete-button">삭제</button>
-
-    <div>
+    <!-- Align '전체글' and '삭제' button in the same row -->
+    <div class="header-row">
         <h5 th:text="'전체글: '+${paging.totalRecord}+'개'"></h5>
+        <button class="delete-button">삭제</button>
     </div>
 
-    <!-- 메일목록 창 -->
     <div class="table-container">
         <form name="form" method="post">
             <table class="table">
                 <thead>
                     <tr class="text-center">
-                        <th><input onchange="selectAllcheck(this)" type="checkbox" name="selectall" id="selectall"></th>
                         <th>이름</th>
                         <th>전화번호(개인)</th>
                         <th>이메일 주소</th>
@@ -206,7 +218,6 @@
                 <tbody>
                     <th:block th:each="info : ${books}">
                         <tr>
-                            <td><input type="checkbox" name="checkMenu" class="checkbox" onchange="checkMenuHandler(this)"/></td>
                             <td th:onclick="|location.href='@{/myBookSelect(addressBookId=${info.addressBookId})}';|">[[ ${info.addressBookName} ]]</td>
                             <td th:onclick="|location.href='@{/myBookSelect(addressBookId=${info.addressBookId})}';|">[[ ${info.addressBookNumber} ]]</td>
                             <td th:onclick="|location.href='@{/myBookSelect(addressBookId=${info.addressBookId})}';|">[[ ${info.addressBookEmail} ]]</td>

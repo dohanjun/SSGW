@@ -11,16 +11,10 @@
 
     <style>
         /* 전체 페이지 스타일 */
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f7fc;
-            margin: 0;
-            padding: 0;
-        }
 
         .content-wrapper {
             display: flex;
-            justify-content: center;
+            justify-content: left;
             padding: 40px;
         }
 
@@ -109,6 +103,7 @@
             border-radius: 8px;
             cursor: pointer;
             transition: background-color 0.3s ease;
+            width: 100%;
         }
 
         button:hover {
@@ -117,8 +112,8 @@
 
         /* 이전 페이지로 돌아가는 버튼 */
         .btn-container {
-            text-align: right; /* 버튼을 오른쪽 정렬 */
-            margin-top: 20px;
+            text-align: right;
+            margin-bottom: 20px;
         }
 
         .btn-container a {
@@ -163,24 +158,16 @@
             justify-content: space-between;
             align-items: center;
         }
-
-        /* 버튼을 정렬할 스타일 */
-        .button-container {
-            display: flex;
-            justify-content: flex-end; /* 답장 버튼을 오른쪽으로 정렬 */
-            gap: 10px;
-        }
     </style>
 </head>
 <body>
     <div class="content-wrapper">
         <div class="email-container">
-            <!-- 메일 제목과 '답장하기' 버튼을 동일한 줄로 배치 -->
+            <!-- 제목과 '이전으로' 버튼을 동일한 줄로 배치 -->
             <div class="title-and-button-container">
-                <div class="email-header">메일 답장하기</div>
-                <div class="button-container">
-                    <!-- 답장하기 버튼 위치 -->
-                    <button type="button" onclick="submitForm()">답장하기</button>
+                <h1>메일 답장 화면</h1>
+                <div class="btn-container">
+                    <a class="btn btn-primary" th:onclick="|location.href='@{/mailSelect(mailId=${mail.mailId})}'|">이전으로</a>
                 </div>
             </div>
 
@@ -223,12 +210,10 @@
                         </tr>
                     </tbody>
                 </table>
-            </form>
 
-            <!-- 이전으로 버튼 위치 -->
-            <div class="btn-container">
-                <a class="btn btn-primary" th:onclick="|location.href='@{/mailSelect(mailId=${mail.mailId})}'|">이전으로</a>
-            </div>
+                <!-- 답장 버튼 -->
+                <button type="button" onclick="submitForm()">답장하기</button>
+            </form>
         </div>
     </div>
 
