@@ -311,7 +311,7 @@ document.querySelector('.add-btn').addEventListener('click', event => {
 	document.getElementById('moduleNo').value = '';
     document.getElementById('moduleTitle').value ='';
     document.getElementById('modulePrice').value = '';
-    document.getElementById('moduleDescription').value ='';  
+    quill.root.innerHTML = ''; 
     document.getElementById('modal').style.display = 'flex';
 })
 
