@@ -217,7 +217,7 @@ body {
 					<div class="main-grid">
 
 						<!-- 사용자 정보 -->
-						<div class="userinfo-box col-lg-">
+	<!-- 					<div class="userinfo-box col-lg-">
 							<div>
 								<h5 class="mb-1 fw-bold">
 									👋 환영합니다, <span th:text="${userInfo.employeeName}">홍길동</span> 님
@@ -229,7 +229,7 @@ body {
 										th:src="'data:image/png;base64,' + ${profileImageBase64}"
 										alt="프로필 이미지">
 							</div>
-						</div>
+						</div> -->
 
 						<!-- 날짜 & 시간 -->
 						<div class="datetime-box datetime">
@@ -333,5 +333,6 @@ body {
         document.getElementById('weatherText').innerText = `${weather.temperature}°C, 풍속 ${weather.windspeed} km/h`;
       });
   </script>
+
 </body>
 </html>

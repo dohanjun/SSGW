@@ -134,9 +134,8 @@
 
     <!-- 삭제 버튼 -->
     <div class="btn-container">
-      <button class="btn btn-primary">
-        삭제
-      </button>
+     <button type="button" class="btn btn-danger"
+                        th:onclick="|location.href='@{/deleteMail(mailId=${mail.mailId},country=Kor)}'|">삭제</button>
     </div>
 
     <!-- 메일목록 창 -->
