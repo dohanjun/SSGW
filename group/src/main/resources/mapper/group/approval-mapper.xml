@@ -226,6 +226,7 @@
 	           ,CREATION_DATE
 		FROM   APRV_FORMS
 		WHERE  SUBER_NO = #{suberNo}
+		ORDER BY FORM_TYPE
 	</select>
 	
 	

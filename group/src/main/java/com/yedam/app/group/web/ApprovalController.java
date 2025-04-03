@@ -160,7 +160,7 @@ public class ApprovalController {
         return "group/approval/approval_forms"; // Thymeleaf 템플릿 파일 이름
     }
     
-    // 상세 페이지
+    // 회사양식 상세 페이지
     @GetMapping("aprv/detail/{formId}")
     public String showFormDetail(@PathVariable("formId") int formId, Model model) {
         ApprovalFormVO form = approvalService.getAprvFormById(formId);
@@ -168,7 +168,7 @@ public class ApprovalController {
         return "group/approval/approval_form_detail";
     }
 
-    // 수정 처리
+    // 회사양식 수정 
     @PostMapping("aprv/update")
     public String updateForm(@ModelAttribute ApprovalFormVO formVO) {
     	if ("Y".equals(formVO.getActive())) {
@@ -181,7 +181,7 @@ public class ApprovalController {
         return "redirect:/aprv/forms";
     }
 
-    // 삭제 처리
+    // 회사양식 삭제
     @GetMapping("aprv/delete/{formId}")
     public String deleteForm(@PathVariable("formId") int formId) {
         approvalService.deleteAprvForm(formId);
@@ -776,7 +776,7 @@ public class ApprovalController {
 	 */
 	@GetMapping("write")
 	public String write() {
-		return "group/approval/write";
+		return "group/approval/approval_form_create";
 	}
 	
 	/**
