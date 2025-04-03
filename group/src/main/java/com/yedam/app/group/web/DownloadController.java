@@ -34,6 +34,8 @@ import com.yedam.app.group.service.FileService;
 import com.yedam.app.group.service.RepositoryFileVO;
 import com.yedam.app.utill.AESUtil;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @Controller
 @RequestMapping("/download")
 public class DownloadController {
@@ -46,12 +48,12 @@ public class DownloadController {
 	}
 
 	@GetMapping("/{fileId}")
-	public ResponseEntity<Resource> downloadFile(@PathVariable Long fileId) {
+	public ResponseEntity<Resource> downloadFile(@PathVariable Long fileId, HttpServletRequest request) {
 		// 1. 로그인 사용자 정보
         EmpVO loggedInUser = empService.getLoggedInUserInfo();
 
         // 2. 공인 IP 조회 (ipinfo.io)
-        String clientIp = getClientPublicIp();
+        String clientIp =request.getRemoteAddr(); //getClientPublicIp();
 
         // 3. DB에 저장된 회사/사원 허용 IP 정보 조회
         String firstIp = empService.getFirstIpByEmployeeNo(loggedInUser.getSuberNo());
