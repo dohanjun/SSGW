@@ -29,7 +29,7 @@ public class MyPageController {
 
     // 1️⃣ [GET] 마이페이지 수정 폼 진입
     @GetMapping("MyPageUpdate")
-    public String empUpdate(Model model) {
+    public String MyPageUpdate(Model model) {
         // 현재 로그인된 사용자 정보 조회
         EmpVO loginUser = empService.getLoggedInUserInfo();
         if (loginUser == null) return "redirect:/login"; // 로그인 안 되어있으면 로그인 페이지로 리다이렉트
@@ -51,7 +51,7 @@ public class MyPageController {
 
         // 수정 폼에 사원 정보 전달
         model.addAttribute("emp", findVO);
-        return "group/MyPage/MyPageUpdate"; // 수정 페이지 뷰 반환
+        return "group/Mypage/MyPageUpdate"; // 수정 페이지 뷰 반환
     }
 
     // 2️⃣ [POST] 사원 정보 수정 처리 (AJAX 요청 전용)
@@ -96,7 +96,7 @@ public class MyPageController {
 
     // 3️⃣ [GET] 수정 완료 후 상세 정보 보기 화면
     @GetMapping("MyPageInfo")
-    public String empInfo(Model model) {
+    public String MyPageInfo(Model model) {
         // 로그인된 사용자 정보 확인
         EmpVO loginUser = empService.getLoggedInUserInfo();
         if (loginUser == null) return "redirect:/login";
@@ -116,6 +116,6 @@ public class MyPageController {
 
         // 사원 정보 모델에 담아 뷰로 전달
         model.addAttribute("emp", findVO);
-        return "group/MyPage/MyPageInfo"; // 마이페이지 보기 화면
+        return "group/Mypage/MyPageInfo"; // 마이페이지 보기 화면
     }
 }

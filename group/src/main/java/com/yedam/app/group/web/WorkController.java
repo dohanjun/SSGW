@@ -31,7 +31,7 @@ public class WorkController {
     private final EmpService empService;
 
     @GetMapping("/attendance")
-    public String attendanceRecords(@RequestParam(required = false) String yearMonth, HttpSession session, Model model) {
+    public String attendance(@RequestParam(required = false) String yearMonth, HttpSession session, Model model) {
         EmpVO loggedInUser = empService.getLoggedInUserInfo();
 
         if (loggedInUser != null) {
@@ -67,7 +67,7 @@ public class WorkController {
     }
 
     @GetMapping("/deptAttendance")
-    public String showChartsManagerPage(@RequestParam(required = false) String yearMonth,
+    public String deptAttendance(@RequestParam(required = false) String yearMonth,
                                         @RequestParam(required = false) String employeeName,
                                         Model model) {
 

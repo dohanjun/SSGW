@@ -285,10 +285,10 @@ body {
 						<div
 							class="board-box recentApproval shadow-sm border clickable-card"
 							data-url="/aprv/request">
-							<div class="board-title">📌 최근 결재 문서</div>
+							<div class="board-title">📌 결재 요청 받은 문문문서</div>
 							<ul class="board-list">
-								<li th:each="post, iterStat : ${postList}" th:data-url="@{'/detailBoard/' + ${post.postId}}"
-									onclick="location.href=this.dataset.url" style="cursor: pointer;" th:text="${post.postTitle}"></li>
+								<li th:each="approvalList, iterStat : ${approvalList}" th:data-url="@{'/aprv/info?draftNo=' + ${approvalList.draftNo}}"
+									onclick="location.href=this.dataset.url" style="cursor: pointer;" th:text="${approvalList.title} +' - '+ ${approvalList.aprvStatus}"></li>
 							</ul>
 						</div>
 
