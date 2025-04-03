@@ -17,8 +17,7 @@ public interface MailMapper {
 	public List<MailVO> MailFindAll(PageListVO vo);
 	
 	//메일단건조회
-	public MailVO MailFindInfo(int mailId);
-
+	public MailVO MailFindInfo(Integer mailId);
 	
 	//메일등록
 	public int mailCreate(MailVO mailVO);	
@@ -39,7 +38,7 @@ public interface MailMapper {
 	public int MailDel(int mailId);
 	
 	//여러개의 메일삭제
-	public int MailDels(List<Integer> mailIds);
+	public void MailDels(List<Integer> mailIds);
 	
 	//메일페이지네이션
 	public int getCount(PageListVO pagelistVO);

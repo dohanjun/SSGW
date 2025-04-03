@@ -14,7 +14,8 @@ public interface MailService {
 	//메일단건조회
 	public MailVO MailSelectInfo(MailVO mailVO);
 	
-
+	//파일 업로드 갯수
+	public MailVO FileCount(Integer mailId);
 	
 	//메일등록
 	public int InsertMail(MailVO mailVO);
@@ -35,7 +36,7 @@ public interface MailService {
 	public Map<String, Object> MailDel(int MailId);
 	
 	//여러개의 메일삭제
-	public int MailDels(List<Integer> mailIds);
+	public void MailDels(List<Integer> mailIds);
 	
 	//메일 페이지네이션
 	public int pageGetCount(PageListVO pagelistVO);
@@ -64,7 +65,6 @@ public interface MailService {
 	//휴지통 자동삭제 기능
 	void deleteCurrentMails();
 
-	public MailVO FileCount(Integer mailId);
 
 	
 

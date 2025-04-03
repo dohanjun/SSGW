@@ -1,196 +1,183 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="~{common/layouts/default_layout}"
-	layout:fragment="content">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/layouts/default_layout}"
+      layout:fragment="content">
+
 <head>
-<meta charset="UTF-8">
-<title>메일 쓰기</title>
-<script
-	src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-	integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-	crossorigin="anonymous"></script>
-<script
-	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
-	integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
-	crossorigin="anonymous"></script>
+    <meta charset="UTF-8">
+    <title>메일 쓰기</title>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+            integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
+            integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
+            crossorigin="anonymous"></script>
 
-<style>
-/* 메인 컨테이너 */
-.content-wrapper {
-	display: flex;
-	justify-content: left;
-	align-items: center;
-	height: 100vh;
-	background-color: #f8f9fc;
-	padding: 0 20px;
-}
+    <style>
+        /* 메인 컨테이너 */
+        .content-wrapper {
+            display: flex;
+            justify-content: left;
+            align-items: center;
+            height: 100vh;
+            background-color: #f8f9fc;
+            padding: 0 20px;
+        }
 
-/* 메일 작성 박스 */
-.employee-container {
-	width: 800px; /* 카드의 너비를 800px로 증가 */
-	height: 600px; /* 카드의 높이를 800px로 증가 */
-	background: white;
-	padding: 20px;
-	border-radius: 10px;
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-	text-align: left;
-}
+        /* 메일 작성 박스 */
+        .employee-container {
+            width: 800px; /* 카드의 너비를 800px로 증가 */
+            height: 600px; /* 카드의 높이를 800px로 증가 */
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
 
-.btn-container {
-	display: flex;
-	justify-content: space-between;
-	margin-bottom: 20px;
-}
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
 
-.btn-container button {
-	width: 120px;
-	padding: 10px;
-	font-size: 16px;
-	font-weight: bold;
-	border-radius: 10px;
-	transition: background-color 0.3s ease;
-}
+        .btn-container button {
+            width: 120px;
+            padding: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 10px;
+            transition: background-color 0.3s ease;
+        }
 
-.btn-primary {
-	background-color: #007bff;
-	color: white;
-}
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
 
-.btn-primary:hover {
-	background-color: #0056b3;
-}
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
 
-/* 테이블 스타일 */
-.table {
-	width: 100%;
-	margin-bottom: 20px;
-}
+        /* 테이블 스타일 */
+        .table {
+            width: 100%;
+            margin-bottom: 20px;
+        }
 
-th, td {
-	text-align: center; /* 가로 중앙 정렬 */
-	vertical-align: middle; /* 세로 중앙 정렬 */
-	padding: 12px;
-	font-size: 16px;
-	height: 50px; /* 셀의 높이 설정 */
-}
+        th, td {
+            text-align: center; /* 가로 중앙 정렬 */
+            vertical-align: middle; /* 세로 중앙 정렬 */
+            padding: 12px;
+            font-size: 16px;
+            height: 50px; /* 셀의 높이 설정 */
+        }
 
-/* th 요소 중앙 정렬 (class cen을 사용하는 경우에도 동일하게 처리) */
-th.cen {
-	text-align: center; /* 가로 중앙 정렬 */
-	vertical-align: middle; /* 세로 중앙 정렬 */
-	font-weight: bold;
-	background-color: #f8f9fa; /* 배경 색상 */
-	color: #6c757d; /* 텍스트 색상 */
-}
+        /* th 요소 중앙 정렬 (class cen을 사용하는 경우에도 동일하게 처리) */
+        th.cen {
+            text-align: center; /* 가로 중앙 정렬 */
+            vertical-align: middle; /* 세로 중앙 정렬 */
+            font-weight: bold;
+            background-color: #f8f9fa; /* 배경 색상 */
+            color: #6c757d; /* 텍스트 색상 */
+        }
 
-input[type="text"], textarea, input[type="file"] {
-	width: 100%;
-	padding: 10px;
-	margin: 8px 0;
-	border: 1px solid #ddd;
-	border-radius: 5px;
-	font-size: 14px;
-}
+        input[type="text"], textarea, input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
 
-textarea {
-	height: 150px;
-}
+        textarea {
+            height: 150px;
+        }
 
-/* 파일 입력 스타일 */
-input[type="file"] {
-	padding: 6px;
-}
+        /* 파일 입력 스타일 */
+        input[type="file"] {
+            padding: 6px;
+        }
 
-/* 제목, 내용 구분 */
-.title, .content {
-	margin-bottom: 15px;
-}
+        /* 제목, 내용 구분 */
+        .title, .content {
+            margin-bottom: 15px;
+        }
 
-/* 메일 내용 텍스트 */
-.email-details {
-	font-size: 16px;
-}
+        /* 메일 내용 텍스트 */
+        .email-details {
+            font-size: 16px;
+        }
 
-.email-details p {
-	margin-bottom: 10px;
-}
+        .email-details p {
+            margin-bottom: 10px;
+        }
 
-.email-details strong {
-	font-weight: bold;
-}
-</style>
+        .email-details strong {
+            font-weight: bold;
+        }
+    </style>
 </head>
 
 <body>
-	<div class="content-wrapper">
-		<div class="employee-container">
-			<h3 class="text-center">메일쓰기</h3>
-			<form enctype="multipart/form-data" th:action="@{mailInsert}"
-				method="post" class="user" name="form">
-				<!-- 보내기 및 임시저장 버튼 -->
-				<div class="btn-container">
-					<button class="btn btn-primary" type="button"
-						onclick="insert('보낸')">보내기</button>
-					<button class="btn btn-primary" type="button"
-						onclick="insert('임시')">임시저장</button>
-				</div>
+    <div class="content-wrapper">
+        <div class="employee-container">
+            <h3 class="text-center">메일쓰기</h3>
+            <form enctype="multipart/form-data" th:action="@{mailInsert}" method="post" class="user" name="form">
+                <!-- 보내기 및 임시저장 버튼 -->
+                <div class="btn-container">
+                    <button class="btn btn-primary" type="button" onclick="insertMailType('보낸')">보내기</button>
+                    <button class="btn btn-primary" type="button" onclick="insertMailType('임시')">임시저장</button>
+                </div>
 
-				<input type="hidden" name="sentState" value="0">
-				<input type="hidden" name="mailType">
-				<input type="hidden" name="employeeId" th:value="${employeeId}">
+                <!-- hidden input으로 employeeId 추가 -->
+                <input type="hidden" name="sentState" value="0">
+                <input type="hidden" name="mailType">
+                <input type="hidden" name="employeeId" id="employeeId" th:value="${employeeId}" readonly>
+                <input type="hidden" name="domain" value="${userDepInfo.domain}">
 
-				<!-- 이메일 정보 테이블 -->
-				<table class="table">
-					<tbody>
-						<tr>
-							<th class="cen">받는 사람</th>
-							<td><input type="text" class="form-control" id="getUser"
-								name="getUser" placeholder="받는 사람 이메일" required></td>
-							<th class="cen">참조</th>
-							<td><input type="text" class="form-control" id="cc"
-								name="cc" placeholder="참조 이메일"></td>
-						</tr>
-						<tr>
-							<th class="cen">제목</th>
-							<td colspan="3"><input type="text" class="form-control"
-								id="title" name="title" placeholder="메일 제목" required></td>
-						</tr>
-						<tr>
-							<th class="cen">파일 첨부</th>
-							<td colspan="3"><input type="file" class="form-control"
-								id="file" name="file" multiple="multiple"></td>
-						</tr>
-						<tr>
-							<th class="cen">내용</th>
-							<td colspan="3"><textarea id="content" name="content"
-									placeholder="메일 내용을 작성하세요..." required></textarea></td>
-						</tr>
-					</tbody>
-				</table>
-			</form>
-		</div>
-	</div>
+                <!-- 이메일 정보 테이블 -->
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <th class="cen">받는 사람</th>
+                            <td><input type="text" class="form-control" id="getUser" name="getUser" placeholder="받는 사람 이메일" required></td>
+                            <th class="cen">참조</th>
+                            <td><input type="text" class="form-control" id="cc" name="cc" placeholder="참조 이메일"></td>
+                        </tr>
+                        <tr>
+                            <th class="cen">제목</th>
+                            <td colspan="3"><input type="text" class="form-control" id="title" name="title" placeholder="메일 제목" required></td>
+                        </tr>
+                        <tr>
+                            <th class="cen">파일 첨부</th>
+                            <td colspan="3"><input type="file" class="form-control" id="file" name="file" multiple="multiple"></td>
+                        </tr>
+                        <tr>
+                            <th class="cen">내용</th>
+                            <td colspan="3"><textarea id="content" name="content" placeholder="메일 내용을 작성하세요..." required></textarea></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    </div>
 
-	<!-- 다운로드 파일 리스트 -->
-	<ul>
-		<li th:each="file : ${files}"><a
-			th:href="@{/download/{filename}(filename=${file})}" th:text="${file}"></a>
-		</li>
-	</ul>
+    <!-- 다운로드 파일 리스트 -->
+    <ul>
+        <li th:each="file : ${files}">
+            <a th:href="@{/download/{filename}(filename=${file})}" th:text="${file}"></a>
+        </li>
+    </ul>
 
-	<script>
-		// 메일 상태에 따라 폼 제출
-		function insert(mailType) {
-			document.form.mailType.value = mailType;
-			document.form.employeeId.value = employeeId;
-			document.form.submit();
-		}
-		// 메일 상태에 따라 폼 제출
-		function insert(employeeId) {
-			document.form.employeeId.value = employeeId;
-			document.form.submit();
-		}
-	</script>
+    <script>
+        // 메일 상태에 따라 폼 제출 (보내기/임시저장)
+        function insertMailType(mailType) {
+            document.form.mailType.value = mailType;
+            document.form.submit();
+        }
+    </script>
 </body>
 </html>

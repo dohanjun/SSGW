@@ -66,7 +66,7 @@ public class MailController {
 
 	// 메일상세보기
 	@GetMapping("/mailSelect")
-	public String mailSelect(MailVO mailVO, Model model) {
+	public String mailSelect(MailVO mailVO, Model model, Integer mailId) {
 		// 로그인한 사용자 정보 가져오기
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 		mailVO.setEmployeeNo(loggedInUser.getEmployeeNo());
@@ -76,7 +76,7 @@ public class MailController {
 		model.addAttribute("mail", findVO);
 
 		// 첨부파일 수량 가져오기
-		MailVO fileCount = mailService.FileCount(mailVO.getMailId()); // mailId를 전달하여 파일 수량을 가져옴
+		MailVO fileCount = mailService.FileCount(mailVO.getMailId());// mailId를 전달하여 파일 수량을 가져옴
 		model.addAttribute("fileCount", fileCount);
 
 		// 첨부파일 다운로드 URL 생성 (첨부파일이 있을 경우)
@@ -116,13 +116,15 @@ public class MailController {
 
 	// 등록 - 페이지
 	@GetMapping("/mailInsert")
-	public String InsertMailForm() {
+	public String InsertMailForm(Model model) {
+		EmpVO loggedInUser = empService.getLoggedInUserInfo();
+		model.addAttribute("employeeId", loggedInUser.getEmployeeId());
 		return "group/mail/mailInsert";
 	}
 
 	// 메일등록
 	@PostMapping("/mailInsert")
-	public String insertMail(MailVO vo, @RequestParam("file") MultipartFile file, Model model) {
+	public String insertMail(MailVO vo, @RequestParam("file") MultipartFile file, Model model, @RequestParam("domain") String domain) {
 		if(!file.isEmpty()) {
 		try {
 			// 파일 업로드 처리
@@ -184,10 +186,10 @@ public class MailController {
 	// 전달 - 페이지
 	@GetMapping("/mailVery")
 	public String mailVeryForm(MailVO mailVO, Model model) {
-		
+		// 로그인한 사용자 정보 가져오기
 		MailVO findVO = mailService.MailSelectInfo(mailVO);
 		model.addAttribute("mail", findVO);
-		
+
 		return "group/mail/mailVery";
 	}
 
@@ -216,10 +218,19 @@ public class MailController {
 
 	// 여러개의 메일삭제
 	@PostMapping("/mail/mailDeletes")
-	public String mailDeletes(@RequestParam List<Integer> mailIds) {
+	public String mailDeletes(@RequestParam List<Integer> mailIds, Model model, PageListVO vo, Paging paging) {
 		// 여러 메일을 삭제하도록 MailDelete 메서드 호출
 		mailService.MailDels(mailIds);
-		// 삭제 후 메일 목록 페이지로 리다이렉트
+		
+		// 페이징처리
+		vo.setStart(paging.getFirst());
+		vo.setEnd(paging.getLast());
+		paging.setTotalRecord(mailService.pageGetCount(vo));
+		model.addAttribute("paging", paging);
+
+		List<MailVO> list = mailService.MailSelectAll(vo);
+		model.addAttribute("mails", list);
+		
 		return "redirect:/deleteMail";
 	}
 
@@ -227,11 +238,11 @@ public class MailController {
 
 	// 받은메일함
 	@GetMapping("getMail")
-	public String getMail(Model model, PageListVO vo, Paging paging) {
+	public String getMail(@RequestParam("domain") String domain, Model model, PageListVO vo, Paging paging) {
 		
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 		vo.setMailType("받은");
-		vo.setEmployeeNo(loggedInUser.getEmployeeNo());
+		vo.setGetUser(loggedInUser.getEmployeeId()+domain);
 		
 		// 페이징처리
 		vo.setStart(paging.getFirst());
@@ -241,16 +252,17 @@ public class MailController {
 
 		List<MailVO> list = mailService.MailSelectAll(vo);
 		model.addAttribute("mails", list);
+		
 		return "group/mail/getMail";
 	}
 
 	// 보낸메일함
 	@GetMapping("putMail")
-	public String putMail(Model model, PageListVO vo, Paging paging) {
+	public String putMail(@RequestParam("domain") String domain, Model model, PageListVO vo, Paging paging) {
 		
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 		vo.setMailType("보낸");
-		vo.setEmployeeNo(loggedInUser.getEmployeeNo());
+		vo.setEmployeeId(loggedInUser.getEmployeeId()+domain);
 
 		// 페이징처리
 		vo.setStart(paging.getFirst());
@@ -260,6 +272,7 @@ public class MailController {
 
 		List<MailVO> list = mailService.MailSelectAll(vo);
 		model.addAttribute("mails", list);
+		
 		return "group/mail/putMail"; // mainPage.html을 반환
 	}
 
@@ -270,6 +283,7 @@ public class MailController {
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 		vo.setMailType("임시");
 		vo.setEmployeeNo(loggedInUser.getEmployeeNo());
+		vo.setEmployeeId(loggedInUser.getEmployeeId());
 		
 		// 페이징처리
 		vo.setStart(paging.getFirst());
@@ -279,6 +293,7 @@ public class MailController {
 
 		List<MailVO> list = mailService.MailSelectAll(vo);
 		model.addAttribute("mails", list);
+		
 		return "group/mail/temporaryMail";
 	}
 
@@ -289,6 +304,7 @@ public class MailController {
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 		vo.setMailType("휴지통");
 		vo.setEmployeeNo(loggedInUser.getEmployeeNo());
+		vo.setEmployeeId(loggedInUser.getEmployeeId());
 
 		// 페이징처리
 		vo.setStart(paging.getFirst());
