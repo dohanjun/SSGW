@@ -7,10 +7,14 @@
 		resultType="com.yedam.app.group.service.ScheduleVO">
 		SELECT schedule_id, schedule_title, schedule_start,
 		employee_no
-		FROM schedule
+		FROM
+		schedule
 		WHERE employee_no = #{employeeNo}
-		AND	TO_CHAR(schedule_start, 'YYYY-MM-DD') <![CDATA[ <= ]]> TO_CHAR(SYSDATE,	'YYYY-MM-DD')
-		AND	TO_CHAR(schedule_end, 'YYYY-MM-DD') <![CDATA[ >= ]]> TO_CHAR(SYSDATE,	'YYYY-MM-DD')
+		AND TO_CHAR(schedule_start,
+		'YYYY-MM-DD') <![CDATA[ <= ]]>
+		TO_CHAR(SYSDATE, 'YYYY-MM-DD')
+		AND TO_CHAR(schedule_end, 'YYYY-MM-DD') <![CDATA[ >= ]]>
+		TO_CHAR(SYSDATE, 'YYYY-MM-DD')
 	</select>
 
 	<!-- 최근 게시물 3개 -->
@@ -30,17 +34,17 @@
 
 	<select id="selectRecentApprovalList"
 		resultType="com.yedam.app.group.service.ApprovalVO">
-		SELECT draft_no, title, aprv_status, draft_date,
-		employee_no
+		SELECT draft_no, title, aprv_status, draft_date, employee_no
 		FROM (
-		SELECT d.draft_no, d.title, d.aprv_status, d.draft_date,
-		d.employee_no, r.aprv_id, r.aprv_date, r.reject_reason, r.stamp_id
-		FROM aprv_documents d join aprv_routes r on d.employee_no = r.employee_no 
+		SELECT d.draft_no, d.title, d.aprv_status, d.draft_date, d.employee_no
+		FROM aprv_documents d
 		WHERE d.employee_no = #{employeeNo}
-		ORDER
-		BY draft_date DESC
+		AND d.aprv_status = '대기'
+		OR d.aprv_status = '진행'
+		ORDER BY d.draft_date DESC
 		)
-		WHERE ROWNUM &lt;= 10
+		WHERE ROWNUM &lt;= 3
+
 	</select>
 
 	<select id="selectRecentBoardList"
@@ -56,14 +60,15 @@
 		WHERE suber_no = #{suberNo}
 		ORDER BY board_id DESC
 		)
-		WHERE ROWNUM &lt;= 5
+		WHERE ROWNUM &lt;= 10
 	</select>
 
 	<select id="selectRecentMailList"
 		resultType="com.yedam.app.group.service.MailVO">
 		SELECT mail_id, title, sent_date, get_user
 		FROM (
-		SELECT mail_id, title, sent_date, get_user
+		SELECT
+		mail_id, title, sent_date, get_user
 		FROM mail
 		WHERE get_user =
 		#{employeeId}
