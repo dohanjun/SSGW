@@ -16,7 +16,6 @@
 	crossorigin="anonymous"></script>
 
     <style>
-
         .search-container {
             display: flex;
             justify-content: space-between;
@@ -24,7 +23,6 @@
             background-color: #fff;
             padding: 15px;
             border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             margin-bottom: 30px;
         }
 
@@ -97,7 +95,6 @@
             border-collapse: collapse;
             background-color: #fff;
             border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
 
@@ -115,7 +112,7 @@
         }
 
         table td:hover {
-            background-color: #f1f1f1;
+            background-color: #f4f4f4;
             cursor: pointer;
         }
 
@@ -138,7 +135,7 @@
             background-color: #f7f7f7;
             color: #333;
             font-size: 14px;
-            transition: background-color 0.3s ease;
+
         }
 
         .pagination .page-item a:hover {
@@ -177,63 +174,65 @@
         </div>
     </form>
 
-    <h5 th:text="'전체글: '+${paging.totalRecord}+'개'"></h5>
-
-    <!-- Button Group -->
-    <div class="btn-group">
-        <button type="button" class="btn btn-danger" onclick="deleteSelected()">삭제</button>
+  <div class="col">
+    <div class="d-flex justify-content-between align-items-center">
+        <h5 th:text="'전체글: '+${paging.totalRecord}+'개'"></h5>
+        <!-- 삭제 버튼 -->
+        <div class="btn-container">
+          <button class="btn btn-primary" onclick="deleteSelected()">삭제</button>
+        </div>
     </div>
 
-    <!-- Mail List Table -->
+    <!-- 메일목록 창 -->
     <div class="p">
-        <form name="form" method="post">
-            <table>
-                <thead>
-                    <tr class="text-center">
-                        <td><input onchange="selectAllcheck(this)" type="checkbox" name="selectall" id="selectall"></td>
-                        <td>제목</td>
-                        <td>작성자</td>
-                        <td>업로드 파일</td>
-                        <td>날짜</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <th:block th:each="info : ${mails}">
-                        <tr>
-                            <td><input type="checkbox" name="checkMenu" class="checkbox" onchange="checkMenuHandler(this)" /></td>
-                            <td th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[${info.title}]]</td>
-                            <td th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[${info.employeeId}]]</td>
-                            <td th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|" th:text="${info.fileCount > 1 ? (info.fileCount - 1) + '건' : info.attachedFileName}"></td>
-                            <td th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[${ #dates.format(info.sentDate, "yyyy년MM월dd일") }]]</td>
-                        </tr>
-                    </th:block>
-                </tbody>
-            </table>
-        </form>
+      <form name="form" method="post">
+        <table border="1" class="table table-striped">
+          <thead>
+            <tr class="text-center">
+              <th><input onchange="selectAllcheck(this)" type="checkbox" name="selectall" id="selectall"></th>
+              <th>제목</th>
+              <th>작성자</th>
+              <th>업로드 파일</th>
+              <th>날짜</th>
+            </tr>
+          </thead>
+          <tbody>
+            <th:block th:each="info : ${mails}">
+              <tr>
+                <td><input type="checkbox" name="checkMenu" th:value="${info.mailId}"  class="checkbox" onchange="checkMenuHandler(this)" /></td>
+                <td th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[${info.title}]]</td>
+                <td th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[${info.employeeId}]]</td>
+                <td th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|" th:text="${info.fileCount > 1 ? (info.fileCount - 1) + '건' : info.attachedFileName}"></td>
+                <td th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[${ #dates.format(info.sentDate, 'yyyy년MM월dd일') }]]</td>
+              </tr>
+            </th:block>
+          </tbody>
+        </table>
+      </form>
     </div>
+    <!-- 메일목록 창 마침 -->
 
-    <!-- Pagination -->
+    <!-- 바기능 -->
     <div id="bar">
-        <nav>
-            <ul class="pagination">
-                <li class="page-item" th:classappend="${paging.startPage} == 1 ? disabled">
-                    <a class="page-link" th:href="|javascript:gopage(${paging.startPage}-1)|">Previous</a>
-                </li>
-
-                <li th:each="num : *{#numbers.sequence(paging.startPage, paging.endPage)}"
-                    class="page-item" th:classappend="${num} == ${paging.page} ? active">
-                    <a class="page-link" th:href="|javascript:gopage(${num})|"
-                       th:text="${num}">2</a>
-                </li>
-
-                <li class="page-item" th:classappend="${paging.endPage} >= ${paging.lastPage} ? disabled">
-                    <a class="page-link" th:href="|javascript:gopage(${paging.endPage}+1)|">Next</a>
-                </li>
-            </ul>
-        </nav>
+      <nav>
+        <ul class="pagination">
+          <li class="page-item" th:classappend="${paging.startPage} == 1 ? disabled">
+            <a class="page-link" th:href="|javascript:gopage(${paging.startPage}-1)|">Previous</a>
+          </li>
+          <li th:each="num : *{#numbers.sequence(paging.startPage, paging.endPage)}" class="page-item" th:classappend="${num} == ${paging.page} ? active">
+            <a class="page-link" th:href="|javascript:gopage(${num})|"
+            th:text="${num}">2</a>
+          </li>
+          <li class="page-item" th:classappend="${paging.endPage} >= ${paging.lastPage} ? disabled">
+            <a class="page-link" th:href="|javascript:gopage(${paging.endPage}+1)|">Next</a>
+          </li>
+        </ul>
+      </nav>
     </div>
+    <!-- 바기능 마침 -->
+  </div>
 </div>
-    <!-- Scripts -->
+
     <script>
         // Form submission
         function submitForm() {

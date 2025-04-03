@@ -8,119 +8,147 @@
     <meta charset="UTF-8">
     <title>부서 관리</title>
 
-    <!-- CSRF 토큰 (스프링 시큐리티용) -->
+    <!-- CSRF 토큰 -->
     <meta name="_csrf" th:content="${_csrf.token}" />
     <meta name="_csrf_header" th:content="${_csrf.headerName}" />
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.6.2/css/bootstrap.min.css">
     <style>
-        #orgTree, #orgTree ul { list-style: none; padding-left: 20px; }
-        #orgTree li { cursor: pointer; margin-bottom: 4px; }
-        .toggle-icon { margin-right: 5px; cursor: pointer; }
-        
-    /* 부서명 + 부서장 수평 정렬 유지하면서 간격 줄이기 */
-    .dept-info {
-        display: flex;
-        align-items: center;
-        padding: 2px 0;  /* 위아래 여백 최소화 */
-    }
+        .card-box {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background: #fff;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
 
-    .dept-name-fixed {
-        width: 130px;
-        font-weight: bold;
-        font-size: 14px;
-        line-height: 1.2;
-        margin: 0;
-    }
+        .card-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 25px;
+            color: #333;
+            text-align: center;
+        }
 
-    .manager-name {
-        font-size: 13.3px;
-        line-height: 1.2;
-        margin: 0;
-        padding: 0;
-    }
+        .section-box {
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 20px;
+            background-color: #fafafa;
+            margin-bottom: 20px;
+        }
 
-    /* 리스트 항목 높이 줄이기 */
-    .list-group-item {
-        padding-top: 6px;
-        padding-bottom: 6px;
-    }
+        .dept-info {
+            display: flex;
+            align-items: center;
+            padding: 2px 0;
+        }
+
+        .dept-name-fixed {
+            width: 130px;
+            font-weight: bold;
+            font-size: 14px;
+            line-height: 1.2;
+            margin: 0;
+        }
+
+        .manager-name {
+            font-size: 13.3px;
+            line-height: 1.2;
+            margin: 0;
+            padding: 0;
+        }
+
+        .list-group-item {
+            padding-top: 6px;
+            padding-bottom: 6px;
+            cursor: pointer;
+        }
+
+        .btn-delete-custom {
+            background-color: transparent;
+            color: #dc3545;
+            border: 1px solid #dc3545;
+            transition: all 0.2s;
+        }
+
+        .btn-delete-custom:hover {
+            background-color: #dc3545;
+            color: #fff;
+        }
     </style>
 </head>
 
 <body>
 <div class="container mt-4">
-    <h2 class="text-center mb-4">부서 관리</h2>
-    <div class="row">
+    <div class="card-box">
+        <div class="card-title">부서 관리</div>
+        <div class="row">
+            <!-- 왼쪽: 부서 등록 -->
+            <div class="col-md-6">
+                <div class="section-box">
+                    <h5 class="text-center mb-3">부서 등록</h5>
+                    <form th:action="@{/deptInsert}" th:object="${deptVO}" method="post" onsubmit="return confirmInsert()">
+                        <input type="hidden" th:field="*{departmentNo}" />
+                        <input type="hidden" th:field="*{suberNo}" />
 
-        <!--  왼쪽: 부서 등록 -->
-        <div class="col-md-6">
-            <div class="card h-100">
-                <div class="card-header font-weight-bold text-center">부서 등록</div>
-                <div class="card-body">
-				<!--  기존 form 안에서 -->
-				<form th:action="@{/deptInsert}" th:object="${deptVO}" method="post" onsubmit="return confirmInsert()">
-				    <input type="hidden" th:field="*{departmentNo}" />
-				    <input type="hidden" th:field="*{suberNo}" />
-				
-				    <div class="form-group">
-				        <label>부서명</label>
-				        <input type="text" class="form-control" th:field="*{departmentName}" required>
-				    </div>
-				
-				    <div class="form-group">
-				        <label>상위 부서</label>
-				        <select class="form-control" th:field="*{upperDepNo}">
-				            <option value="0">-- 부서를 선택하세요 --</option>
-				            <option th:each="dept : ${deptList}" th:value="${dept.departmentNo}" th:text="${dept.departmentName}"></option>
-				        </select>
-				    </div>
-				
-				    <!--  버튼 영역: form 내부 + 가운데 정렬 + 살짝 위쪽 여백 -->
-				    <div class="d-flex justify-content-center mt-4">
-				        <button type="submit" class="btn btn-success mx-2 px-4">등록</button>
-				        <button type="button" class="btn btn-danger mx-2 px-4" onclick="window.history.back()">뒤로</button>
-				    </div>
-				</form>
+                        <div class="form-group">
+                            <label>부서명</label>
+                            <input type="text" class="form-control" th:field="*{departmentName}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>상위 부서</label>
+							<select class="form-control text-monospace" th:field="*{upperDepNo}" style="font-family: monospace;">
+							  <option value="0">-- 부서를 선택하세요 --</option>
+							  <option th:each="dept : ${deptList}"
+							          th:value="${dept.departmentNo}"
+							          th:text="${#strings.concat(#strings.repeat(' ', 12 - dept.departmentName.length()), dept.departmentName, '  (Lv.', dept.departmentLevel != null ? dept.departmentLevel : 0, ')')}">
+							  </option>
+							</select>
+                        </div>
+
+                        <div class="d-flex justify-content-center mt-4">
+                            <button type="submit" class="btn btn-success mx-2 px-4">등록</button>
+                            <button type="button" class="btn btn-danger mx-2 px-4" th:onclick="|location.href='@{/deptMgmt}'|">뒤로</button>
+                        </div>
+                    </form>
                 </div>
-
             </div>
-        </div>
 
-        <!--  오른쪽: 부서장 추가 -->
-		<div class="col-md-6">
-		    <div class="card h-100">
-		        <div class="card-header font-weight-bold text-center">부서장 추가</div>
-		        <div class="card-body">
-		            <ul class="list-group">
-		                <li class="list-group-item d-flex align-items-center justify-content-between"
-		                    th:each="dept : ${deptList}">
-		                    
-		                    <!-- 부서명 + 부서장 정보 클릭 시 조직도 모달 -->
-							<div class="dept-info" style="cursor: pointer;" th:onclick="|openOrgModal(${dept.departmentNo})|">
-							    <div class="dept-name-fixed" th:text="${dept.departmentName}"></div>
-							
-							    <span th:if="${dept.employeeName != null}"
-							          th:text="'부서장 : ' + ${dept.employeeName}"
-							          class="text-success small manager-name"></span>
-							
-							    <span th:if="${dept.employeeName == null}"
-							          class="text-danger small manager-name">(부서장 미지정)</span>
-							</div>
+            <!-- 오른쪽: 부서장 추가 -->
+            <div class="col-md-6">
+                <div class="section-box">
+                    <h5 class="text-center mb-3">부서장 추가</h5>
+                    <ul class="list-group">
+                        <li class="list-group-item d-flex align-items-center justify-content-between"
+                            th:each="dept : ${deptList}"
+                            th:onclick="|openOrgModal(${dept.departmentNo})|">
+                            
+                            <!-- 부서명 + 부서장 -->
+                            <div class="dept-info">
+                                <div class="dept-name-fixed" th:text="${dept.departmentName}"></div>
+                                <span th:if="${dept.employeeName != null}"
+                                      th:text="'부서장 : ' + ${dept.employeeName}"
+                                      class="text-success small manager-name"></span>
+                                <span th:if="${dept.employeeName == null}"
+                                      class="text-danger small manager-name">(부서장 미지정)</span>
+                            </div>
 
-                    <!-- 삭제 버튼 -->
-					<button type="button" class="btn btn-sm btn-danger"
-					        th:onclick="|event.stopPropagation(); deleteDepartment(${dept.departmentNo})|">
-					    삭제
-					</button>
-                </li>
-            </ul>
+                            <!-- 삭제 버튼: 클릭 이벤트 전파 방지 -->
+                            <button type="button" class="btn btn-sm btn-delete-custom"
+                                    th:onclick="|event.stopPropagation(); deleteDepartment(${dept.departmentNo})|">
+                                삭제
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-
-<!--  조직도 모달 -->
+<!-- 조직도 모달 -->
 <div class="modal fade" id="orgModal" tabindex="-1" role="dialog" aria-labelledby="orgModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
@@ -160,9 +188,18 @@
     const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
     const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
 
-    // 부서 등록 시 알림
+ 	// 부서 등록 시 유효성 검사 및 알림
     function confirmInsert() {
-        alert("부서가 등록되었습니다.");
+        const upperDepSelect = document.querySelector('[name="upperDepNo"]');
+        const selectedValue = upperDepSelect.value;
+
+        // 상위 부서 선택 안 했을 경우 경고
+        if (selectedValue === "0") {
+            alert("⚠️ 상위 부서를 선택해주세요!");
+            return false;
+        }
+
+        alert("✅ 부서가 등록되었습니다.");
         return true;
     }
 

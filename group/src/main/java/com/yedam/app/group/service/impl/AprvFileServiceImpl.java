@@ -26,34 +26,39 @@ public class AprvFileServiceImpl implements AprvFileService {
 	
 	@Override
 	public void insertFiles(int draftNo, MultipartFile[] files) {
-        if (files == null || files.length == 0) return;
+	    if (files == null || files.length == 0) return;
 
-        String draftPath = Paths.get(uploadDir, String.valueOf(draftNo)).toString();
-        File dir = new File(draftPath);
-        if (!dir.exists()) dir.mkdirs();
+	    String draftPath = Paths.get(uploadDir, String.valueOf(draftNo)).toString();
+	    File dir = new File(draftPath);
+	    if (!dir.exists()) dir.mkdirs();
 
-        int order = 1;
-        for (MultipartFile file : files) {
-            if (file.isEmpty()) continue;
+	    int order = 1;
+	    for (MultipartFile file : files) {
+	        if (file.isEmpty()) continue;
 
-            try {
-                String saveName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-                File dest = new File(draftPath, saveName);
-                file.transferTo(dest);
+	        try {
+	            String originalFileName = file.getOriginalFilename();
+	            String saveName = UUID.randomUUID().toString() + "_" + originalFileName;
+	            File dest = new File(draftPath, saveName);
+	            file.transferTo(dest);
 
-                AprvFileVO fileVO = new AprvFileVO();
-                fileVO.setDraftNo(draftNo);
-                fileVO.setFileName(file.getOriginalFilename());
-                fileVO.setFilePath(dest.getAbsolutePath());
-                fileVO.setFileSize(file.getSize());
-                fileVO.setFileOrder(order++);
+	            // DB 저장용 웹 경로 생성
+	            String fileDbPath = "/uploads/" + draftNo + "/" + saveName;
 
-                aprvFileMapper.insertFile(fileVO);
-            } catch (Exception e) {
-                throw new RuntimeException("파일 업로드 실패", e);
-            }
-        }
-    }
+	            AprvFileVO fileVO = new AprvFileVO();
+	            fileVO.setDraftNo(draftNo);
+	            fileVO.setFileName(originalFileName);
+	            fileVO.setFilePath(fileDbPath); //
+	            fileVO.setFileSize(file.getSize());
+	            fileVO.setFileOrder(order++);
+
+	            aprvFileMapper.insertFile(fileVO);
+	        } catch (Exception e) {
+	            throw new RuntimeException("파일 업로드 실패", e);
+	        }
+	    }
+	}
+
 
 	@Override
 	public List<AprvFileVO> findFilesByDraftNo(int draftNo) {

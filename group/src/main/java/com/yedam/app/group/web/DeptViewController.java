@@ -17,13 +17,29 @@ import com.yedam.app.group.service.EmpVO;
 
 import lombok.RequiredArgsConstructor;
 
+
+/**
+ * 부서관리 뷰 컨트롤러 (화면 이동, 등록, 삭제 등 처리)
+ * 
+ * @author 김예찬
+ * @since 2025-04-03
+ */
+
+
 @Controller
 @RequiredArgsConstructor
 public class DeptViewController {
 
     private final DeptService deptService;
     private final EmpService empService;
-
+    
+    /**
+     * 부서 관리 화면 이동
+     *
+     * @param model 화면에 전달할 부서 목록
+     * @return 부서 관리 화면 뷰명
+     */
+    
     // View용: 부서관리 화면
     @GetMapping("/deptMgmt")
     public String getDepartmentList(Model model) {
@@ -37,11 +53,14 @@ public class DeptViewController {
     }
     
     /**
-     * 부서 등록 화면 요청
-     * 로그인한 사용자의 회사번호(suberNo)를 기준으로 부서 목록을 가져와 화면에 출력
+     * 부서 등록 화면 이동
+     *
+     * @param model 부서VO, 부서 목록
+     * @return 부서 등록 화면 뷰명
      */
+    
     @GetMapping("/deptInsert")
-    public String showDeptInsertForm(Model model) {
+    public String deptInsert(Model model) {
         // 현재 로그인한 사용자 정보 가져오기
         EmpVO loggedInUser = empService.getLoggedInUserInfo();
         Integer suberNo = loggedInUser.getSuberNo();
@@ -62,8 +81,11 @@ public class DeptViewController {
 
     /**
      * 부서 등록 처리
-     * 부서레벨 자동 계산 후 부서 등록
+     *
+     * @param deptVO 등록할 부서 정보
+     * @return 부서 관리 화면으로 리다이렉트
      */
+    
     @PostMapping("/deptInsert")
     public String insertDepartment(DeptVO deptVO) {
         // 부서레벨 자동 설정
@@ -79,6 +101,14 @@ public class DeptViewController {
         // 부서 목록 화면으로 리다이렉트
         return "redirect:/deptMgmt";
     }
+    
+    /**
+     * 부서장 업데이트 (Ajax 요청)
+     *
+     * @param employeeNo 선택된 사원 번호
+     * @param departmentNo 부서 번호
+     * @return 성공 여부 문자열 ("success")
+     */
     
     // 부서장 업데이트
     @PostMapping("/updateManager")
@@ -100,6 +130,13 @@ public class DeptViewController {
 
         return "success";
     }
+    
+    /**
+     * 부서 삭제 처리 (Ajax 요청)
+     *
+     * @param departmentNo 삭제할 부서 번호
+     * @return 삭제 결과 문자열 ("success", "hasChild", "hasEmployee", "fail")
+     */
     
     // 부서삭제
     @PostMapping("/deleteDepartment")

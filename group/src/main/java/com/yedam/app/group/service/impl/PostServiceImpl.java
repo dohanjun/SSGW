@@ -130,4 +130,9 @@ public class PostServiceImpl implements PostService {
     public List<RepositoryPostVO> getIndividualRepositoryPostsPaged(int suberNo, int employeeNo, String keyword, int offset, int limit) {
         return postMapper.getIndividualRepositoryPostsPaged(suberNo, employeeNo, keyword, offset, limit);
     }
+    
+    @Override
+    public int countFixedPosts(Integer suberNo, String repositoryType) {
+        return postMapper.countFixedPosts(suberNo, repositoryType);
+    }
 }

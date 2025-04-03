@@ -167,11 +167,36 @@ public class ApprovalServiceImpl implements ApprovalService {
 		return approvalMapper.selectAllBasicsForms(aprvVO);
 	}
 	
-	// 회사전용양식목록
+	// 회사전용활성화된양식목록
 	@Override
 	public List<ApprovalFormVO> findAllAprvForm(ApprovalFormVO aprvformVO) {
 		return approvalMapper.selectAllAprvForms(aprvformVO);
 	}
+	
+	// 회사전용양식목록
+	@Override
+	public List<ApprovalFormVO> findAllAprvForms(ApprovalFormVO aprvformVO) {
+		return approvalMapper.selectAllAprvFormss(aprvformVO);
+	}
+	
+	// 회사전용양식상세조회
+	@Override
+    public ApprovalFormVO getAprvFormById(int formId) {
+        return approvalMapper.selectOneAprvFormById(formId);
+    }
+	
+	// 회사전용양식수정
+    @Override
+    public void updateAprvForm(ApprovalFormVO formVO) {
+        approvalMapper.updateAprvForm(formVO);
+    }
+    
+    // 회사전용양식삭제
+    @Override
+    public void deleteAprvForm(int formId) {
+        approvalMapper.deleteAprvForm(formId);
+    }
+	
 	
 	// 결재요청함, 임시저장함
 	@Override
@@ -282,6 +307,11 @@ public class ApprovalServiceImpl implements ApprovalService {
 	@Override
 	public int countReferenceList(ApprovalVO aprvVO) {
 		return approvalMapper.countReferenceList(aprvVO);
+	}
+	
+	public void removeTemporaryData(Integer draftNo) {
+		System.out.println("임시저장된 데이터 삭제 호출 - draftNo: " + draftNo);
+		approvalMapper.deleteTemporaryData(draftNo);
 	}
 	
 }

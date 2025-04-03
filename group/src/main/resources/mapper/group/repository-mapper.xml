@@ -33,7 +33,7 @@
 		file_repository_type = '개인'
 	</select>
 
-	<select id="getPostDetail" parameterType="long"
+<select id="getPostDetail" parameterType="long"
 		resultType="com.yedam.app.group.service.RepositoryPostVO">
 		SELECT
 		p.writing_id,
@@ -47,7 +47,7 @@
 		employees e ON p.employee_no = e.employee_no
 		WHERE p.writing_id =
 		#{writingId}
-	</select>
+</select>
 
 
 

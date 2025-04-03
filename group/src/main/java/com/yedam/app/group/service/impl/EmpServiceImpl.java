@@ -10,7 +10,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.yedam.app.group.service.DeptHistVO;
+import com.yedam.app.group.mapper.DeptHistMapper;
 import com.yedam.app.group.mapper.EmpMapper;
+import com.yedam.app.group.service.DeptHistVO;
 import com.yedam.app.group.service.EmpService;
 import com.yedam.app.group.service.EmpVO;
 import com.yedam.app.group.service.EmpserchVO;
@@ -23,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class EmpServiceImpl implements EmpService{
 	
 	private final EmpMapper empMapper;
+	private final DeptHistMapper deptHistMapper;
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	
 //	@Autowired
@@ -33,8 +37,24 @@ public class EmpServiceImpl implements EmpService{
 	// 사원등록
 	@Override
 	public int createEmpInfo(EmpVO empVO) {
-		return empMapper.insertEmpInfo(empVO);
-	}
+        int result = empMapper.insertEmpInfo(empVO);
+
+        //  등록 성공 시, 부서/직책 최초 이력 저장
+        if (result > 0) {
+            DeptHistVO hist = new DeptHistVO();
+            hist.setEmployeeNo(empVO.getEmployeeNo());
+            hist.setDepartmentNo(0); // 이전 없음
+            hist.setMovedToDepartment(empVO.getDepartmentNo());
+            hist.setPreviousRankId(null);
+            hist.setCurrentRankId(empVO.getRankId());
+            hist.setContent("신규 등록");
+
+            deptHistMapper.insertDeptTransferHistory(hist);
+        }
+
+        return result;
+    }
+
 
 	// 사원 전체조회
 	@Override
@@ -48,24 +68,58 @@ public class EmpServiceImpl implements EmpService{
 		return empMapper.selectEmpInfo(empVO);
 	}
 
-	// 사원 정보 수정
+	// 사원 정보 수정 (부서/직급 변경 시 이력 기록 포함)
 	@Override
 	public Map<String, Object> modifyEmpInfo(EmpVO empVO) {
-		Map<String, Object> map = new HashMap<>();
-		boolean isSuccessed = false;
-		
-		int result = empMapper.updateEmpInfo(empVO);
-		
-		if(result == 1) {
-			isSuccessed = true;
-		}
-		
-		map.put("result", isSuccessed);
-		map.put("target", empVO);
-		// 자바 내부 기준말고 아작스 기준으로 만듬 자바스크립트한태 전달형태 지금만든 맵
-		
-		return map;
+	    Map<String, Object> map = new HashMap<>();
+	    boolean isSuccessed = false;
+
+	    // 1. 기존 사원 정보 가져오기 (변경 전 데이터)
+	    EmpVO oldEmp = empMapper.selectEmpInfo(empVO);
+
+	    // 2. 부서 또는 직급이 변경되었는지 확인
+	    boolean isDeptChanged = empVO.getDepartmentNo() != null &&
+	                            !empVO.getDepartmentNo().equals(oldEmp.getDepartmentNo());
+	    boolean isRankChanged = empVO.getRankId() != null &&
+	                            !empVO.getRankId().equals(oldEmp.getRankId());
+
+	    // 3. 사원 정보 업데이트 실행
+	    int result = empMapper.updateEmpInfo(empVO);
+
+	    // 4. 업데이트 성공 시 변경 이력 저장
+	    if (result == 1) {
+	        isSuccessed = true;
+
+	        // 부서 또는 직급이 바뀐 경우만 이력 기록
+	        if (isDeptChanged || isRankChanged) {
+	            DeptHistVO hist = new DeptHistVO();
+	            hist.setEmployeeNo(empVO.getEmployeeNo());                         // 사원번호
+	            hist.setDepartmentNo(oldEmp.getDepartmentNo());                   // 이전 부서번호
+	            hist.setDeleteDate(new java.util.Date());                         // 부서 종료 날짜 = 이동한 날짜
+	            hist.setMovedToDepartment(empVO.getDepartmentNo());               // 이동한 부서
+	            hist.setPreviousRankId(oldEmp.getRankId());                       // 이전 직책 ID
+	            hist.setCurrentRankId(empVO.getRankId());                         // 이동 후 직책 ID
+
+	            // 변경 유형에 따라 content 작성
+	            if (isDeptChanged && isRankChanged) {
+	                hist.setContent("부서/직책 변경");
+	            } else if (isDeptChanged) {
+	                hist.setContent("부서 이동");
+	            } else if (isRankChanged) {
+	                hist.setContent("직책 변경");
+	            }
+
+	            // 이력 저장
+	            deptHistMapper.insertDeptTransferHistory(hist);
+	        }
+	    }
+
+	    // 결과 전달 (Ajax 응답용)
+	    map.put("result", isSuccessed);
+	    map.put("target", empVO);
+	    return map;
 	}
+
 
 	// 사원번호 자동증가 조회
 	@Override

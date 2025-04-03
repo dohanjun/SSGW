@@ -594,7 +594,7 @@ document.querySelector('#shareModal .btn-secondary').addEventListener('click', f
   if (backdrop) backdrop.remove();
 });
 
-// ✅ 공유자 추가
+//  공유자 추가
 document.getElementById('addSharesBtn').addEventListener('click', function () {
   const checked = document.querySelectorAll('#orgTreeShare input.emp-check:checked');
   const names = [];
@@ -628,7 +628,7 @@ document.getElementById('addSharesBtn').addEventListener('click', function () {
   if (backdrop) backdrop.remove();
 });
 
-// ✅ 조직도 트리 빌드 함수
+//  조직도 트리 빌드 함수
 function buildTree(data, treeId) {
   const tree = document.getElementById(treeId);
   tree.innerHTML = '';

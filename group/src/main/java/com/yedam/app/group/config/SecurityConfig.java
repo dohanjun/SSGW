@@ -36,9 +36,10 @@ public class SecurityConfig {
 						"/savePaymentDetails", "/saveUser", "/insertBoardPost", "/selectBoardPost", "/updateBoardPost")
 				.permitAll().requestMatchers("/insertPost", "/basket/**", "/api/**", "/alerts/**", "/insertAlarm")
 				.permitAll()
-        .requestMatchers("/uploadImage").permitAll() 
+		  .requestMatchers("/uploadImage").permitAll() 
 	      .requestMatchers("/comment/**").permitAll()
 	      .requestMatchers("/board/toggleFix").permitAll()
+	      .requestMatchers("/download/**").permitAll()
 				// 관리자만 접근 가능
 				.requestMatchers("/module", "/insertModule", "/updateModule", "/deleteModule/*", "/updateModuleBasic/*",
 						"/updateModuleActive/*", "/qna", "/fixed")
@@ -54,7 +55,7 @@ public class SecurityConfig {
 						"/insertModule", "/saveForm", "/schedule/**", "/qna", "/fixed", "/saveSubDetail",
 						"/saveSubDetail", "/saveSuber", "/savePaymentDetails", "/saveUser", "/insertBoardPost",
 						"/selectBoardPost", "/updateBoardPost", "/basket/**", "/api/**", "/alerts/**", "/insertAlarm",
-						"/bookUpdate","/uploadImage","/comment/**","/board/toggleFix"));
+						"/bookUpdate","/uploadImage","/comment/**","/board/toggleFix","/mail/**","/download/**"));
 		return http.build();
 	}
 

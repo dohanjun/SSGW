@@ -137,7 +137,7 @@
 
   <!-- ✅ 월 + 부서원 선택 -->
   <div class="select-container">
-    <form id="monthSelectForm" method="get" action="/chartsManager">
+    <form id="monthSelectForm" method="get" action="/deptAttendance">
       <label for="yearMonth">월 선택:</label>
       <select id="yearMonth" name="yearMonth" onchange="document.getElementById('monthSelectForm').submit()">
         <option th:value="${T(java.time.YearMonth).now().minusMonths(2)}"
@@ -185,6 +185,7 @@
             <th>부서명</th>
             <th>사원번호</th>
             <th>사원이름</th>
+            <th>날짜</th>
             <th>출근시간</th>
             <th>퇴근시간</th>
             <th>오늘 근무시간</th>
@@ -196,6 +197,7 @@
             <td th:text="${attendance.departmentName}"></td>
             <td th:text="${attendance.employeeNo}"></td>
             <td th:text="${attendance.employeeName}"></td>
+            <td th:text="${#dates.format(attendance.attendanceDate, 'yyyy-MM-dd')}"></td>
             <td th:text="${#dates.format(attendance.clockInTime, 'HH:mm')} ?: '-'"></td>
             <td th:text="${#dates.format(attendance.clockOutTime, 'HH:mm')} ?: '-'"></td>
             <td th:text="${attendance.totalWorkingHours} ?: '-'"></td>

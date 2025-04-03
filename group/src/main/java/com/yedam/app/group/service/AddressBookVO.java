@@ -23,4 +23,6 @@ public class AddressBookVO {
 	private String addressBookType;
 	private String bookRecode;
 	private String bookDepartmentType;
+	
+    private Integer employeeNo;
 }

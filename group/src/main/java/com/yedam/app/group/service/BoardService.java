@@ -39,6 +39,9 @@ public interface BoardService {
     void updateFixStatus(int postId, String fixed);
     
     List<BoardPostVO> getFixedNoticeBoardPosts(int suberNo);
+    
     List<BoardPostVO> getFixedDepartmentBoardPosts(int suberNo, int departmentNo);
+    
+    int countFixedPosts(int boardId);
  
 }

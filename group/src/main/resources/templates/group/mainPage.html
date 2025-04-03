@@ -225,9 +225,9 @@ body {
 								<p class="mb-0 text-muted">오늘도 좋은 하루 되세요!</p>
 							</div>
 							<div>
-								<img th:if="${profileImageBase64}"
-									th:src="'data:image/png;base64,' + ${profileImageBase64}"
-									alt="프로필 이미지">
+											<img th:if="${profileImageBase64}"
+										th:src="'data:image/png;base64,' + ${profileImageBase64}"
+										alt="프로필 이미지">
 							</div>
 						</div>
 
@@ -257,8 +257,8 @@ body {
 							data-url="/noticeBoard">
 							<div class="board-title">📢 공지 · 업무</div>
 							<ul class="board-list">
-								<li th:each="board : ${recentBoardList}"><a
-									th:text="${board.boardName}" th:href="@{/noticeBoard}"></a></li>
+								<li th:each="post, iterStat : ${postList}" th:data-url="@{'/detailBoard/' + ${post.postId}}"
+									onclick="location.href=this.dataset.url" style="cursor: pointer;" th:text="${post.postTitle}"></li>
 							</ul>
 						</div>
 
@@ -267,8 +267,7 @@ body {
 							data-url="/mailBox">
 							<div class="board-title">📨 받은 메일함</div>
 							<ul class="board-list">
-								<li th:each="mail : ${recentMailList}"><a
-									th:text="${mail.title}" th:href="@{/mailBox}"></a></li>
+								<li th:each="mail : ${recentMailList}"><a th:text="${mail.title}" th:href="@{/mailBox}"></a></li>
 							</ul>
 						</div>
 
@@ -278,8 +277,7 @@ body {
 							data-url="/schedulePage">
 							<div class="board-title">📅 오늘 내 일정</div>
 							<ul class="board-list">
-								<li th:each="schedule : ${todaySchedule}"><a
-									th:text="${schedule.scheduleTitle}" th:href="@{/schedulePage}"></a></li>
+								<li th:each="schedule : ${todaySchedule}"><a th:text="${schedule.scheduleTitle}" th:href="@{/schedulePage}"></a></li>
 							</ul>
 						</div>
 
@@ -287,11 +285,10 @@ body {
 						<div
 							class="board-box recentApproval shadow-sm border clickable-card"
 							data-url="/aprv/request">
-							<div class="board-title">📌 최근 결재 문서</div>
+							<div class="board-title">📌 결재 요청 받은 문문문서</div>
 							<ul class="board-list">
-								<li th:each="aprv : ${recentApprovalList}"><a
-									th:text="${aprv.title} + ' - ' + ${aprv.aprvStatus}"
-									th:href="@{/aprv/request}"></a></li>
+								<li th:each="approvalList, iterStat : ${approvalList}" th:data-url="@{'/aprv/info?draftNo=' + ${approvalList.draftNo}}"
+									onclick="location.href=this.dataset.url" style="cursor: pointer;" th:text="${approvalList.title} +' - '+ ${approvalList.aprvStatus}"></li>
 							</ul>
 						</div>
 

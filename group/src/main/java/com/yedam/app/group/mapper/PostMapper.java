@@ -71,4 +71,6 @@ public interface PostMapper {
     List<RepositoryPostVO> selectDepartmentFixedPosts(Map<String, Object> paramMap);
     
     List<RepositoryPostVO> selectIndividualFixedPosts(Map<String, Object> paramMap);
+    
+    int countFixedPosts(@Param("suberNo") Integer suberNo, @Param("repositoryType") String repositoryType);
 }

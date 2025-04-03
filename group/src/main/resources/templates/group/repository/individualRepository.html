@@ -13,82 +13,102 @@
 </head>
 <body>
 
-<div class="card shadow mb-4">
-	<div class="card-header py-3">
-		<h6 class="m-0 font-weight-bold text-primary" th:text="${repository.fileRepositoryType}">개인 자료실</h6>
-	</div>
-	<div class="card-body">
+	<div class="card shadow mb-4">
+		<div class="card-header py-3">
+			<h6 class="m-0 font-weight-bold text-primary"
+				th:text="${repository.fileRepositoryType}+' '+자료실"></h6>
+		</div>
+		<div class="card-body">
 
-		<!-- 🔍 검색 form (GET) -->
-		<div class="position-relative" style="width: 350px; margin: 0 auto;">
-			<form th:action="@{/individualRepository}" method="get" class="position-relative mb-3" style="width: 300px;">
-				<input type="text" name="keyword" class="form-control pl-4" placeholder="검색어 입력" th:value="${keyword}">
-				<button type="submit" style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%); background: none; border: none;">
-					<i class="fas fa-search" style="color: #aaa;"></i>
-				</button>
+			<!-- 🔍 검색 form (GET) -->
+			<div class="position-relative" style="width: 350px; margin: 0 auto;">
+				<form th:action="@{/individualRepository}" method="get"
+					class="position-relative mb-3" style="width: 300px;">
+					<input type="text" name="keyword" class="form-control pl-4"
+						placeholder="   검색어 입력" th:value="${keyword}">
+					<button type="submit"
+						style="position: absolute; top: 50%; left: 3px; transform: translateY(-50%); background: none; border: none;">
+						<i class="fas fa-search" style="color: #aaa;"></i>
+					</button>
+				</form>
+			</div>
+
+			<!-- 게시글 리스트 + 휴지통 form (POST) -->
+			<form id="moveForm" th:action="@{/basket/moveToBasket}" method="post">
+				<input type="hidden" name="repositoryType" value="개인" />
+
+				<div class="text-right mb-3">
+					<a class="btn btn-primary"
+						href='/repositoryInsert?repositoryType=개인'>동륵</a>
+				</div>
+
+				<table class="table table-bordered" id="dataTable" width="100%"
+					cellspacing="0">
+					<thead>
+						<tr>
+							<th style= "text-align: center; width: 60px;"><input type="checkbox" id="selectAll"></th>
+							<th style="text-align: center; width: 400px;">제목</th>
+							<th style="text-align: center;">첨부파일</th>
+							<th style="text-align: center; width: 200px;">작성자</th>
+							<th style="text-align: center; width: 200px;">작성일</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:if="${#lists.isEmpty(individualRepositoryList)}">
+							<td colspan="5" class="text-center text-muted">등록된 자료가 없습니다.</td>
+						</tr>
+
+						<tr th:each="post : ${individualRepositoryList}"
+							th:data-url="@{'/detailPost/' + ${post.writingId}}"
+							onclick="location.href=this.dataset.url" style="cursor: pointer;">
+							<td style= "text-align: center;"><input type="checkbox" name="writingIds"
+								th:value="${post.writingId}"
+								th:disabled="${post.employeeNo != loggedInEmpNo}"
+								class="file-checkbox" onclick="event.stopPropagation()" /></td>
+							<td th:text="${post.title}"></td>
+							<td
+								th:text="${post.fileCount > 1 ? post.fileName + ' 외 ' + (post.fileCount - 1) + '건' : post.fileName}"></td>
+							<td style="text-align: center;" th:text="${post.writer}"></td>
+							<td style="text-align: center;" th:text="${#dates.format(post.creationDate, 'yyyy-MM-dd')}"></td>
+						</tr>
+					</tbody>
+				</table>
+
+				<div class="d-flex align-items-center justify-content-between mt-3">
+					<div>
+						<button type="submit" class="btn btn-danger">
+							<i class="fas fa-trash"></i>
+						</button>
+					</div>
+
+					<div class="flex-grow-1 d-flex justify-content-center">
+						<nav aria-label="페이지네이션">
+							<ul class="pagination mb-0">
+								<li class="page-item" th:classappend="${page == 1} ? 'disabled'">
+									<a class="page-link"
+									th:href="@{/individualRepository(page=${page - 1}, keyword=${keyword})}">&laquo;</a>
+								</li>
+								<li class="page-item"
+									th:each="i : ${#numbers.sequence(1, totalPages)}"
+									th:classappend="${i == page} ? 'active'"><a
+									class="page-link"
+									th:href="@{/individualRepository(page=${i}, keyword=${keyword})}"
+									th:text="${i}"></a></li>
+								<li class="page-item"
+									th:classappend="${page == totalPages} ? 'disabled'"><a
+									class="page-link"
+									th:href="@{/individualRepository(page=${page + 1}, keyword=${keyword})}">&raquo;</a>
+								</li>
+							</ul>
+						</nav>
+					</div>
+				</div>
 			</form>
 		</div>
-
-		<!-- 게시글 리스트 + 휴지통 form (POST) -->
-		<form id="moveForm" th:action="@{/basket/moveToBasket}" method="post">
-			<input type="hidden" name="repositoryType" value="개인" />
-
-			<div class="text-right mb-3">
-				<a class="btn btn-primary" href='/repositoryInsert?repositoryType=개인'>동륵</a>
-			</div>
-
-			<table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-				<thead>
-					<tr>
-						<th><input type="checkbox" id="selectAll"></th>
-						<th>자료이름</th>
-						<th>파일명</th>
-						<th>작성자</th>
-						<th>작성일</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr th:each="post : ${individualRepositoryList}" th:data-url="@{'/detailPost/' + ${post.writingId}}" onclick="location.href=this.dataset.url" style="cursor: pointer;">
-						<td>
-							<input type="checkbox" name="writingIds" th:value="${post.writingId}" th:disabled="${post.employeeNo != loggedInEmpNo}" class="file-checkbox" onclick="event.stopPropagation()" />
-						</td>
-						<td th:text="${post.title}"></td>
-						<td th:text="${post.fileCount > 1 ? post.fileName + ' 외 ' + (post.fileCount - 1) + '건' : post.fileName}"></td>
-						<td th:text="${post.writer}"></td>
-						<td th:text="${#dates.format(post.creationDate, 'yyyy-MM-dd')}"></td>
-					</tr>
-				</tbody>
-			</table>
-
-			<div class="d-flex align-items-center justify-content-between mt-3">
-				<div>
-					<button type="submit" class="btn btn-danger">
-						<i class="fas fa-trash"></i>
-					</button>
-				</div>
-
-				<div class="flex-grow-1 d-flex justify-content-center">
-					<nav aria-label="페이지네이션">
-						<ul class="pagination mb-0">
-							<li class="page-item" th:classappend="${page == 1} ? 'disabled'">
-								<a class="page-link" th:href="@{/individualRepository(page=${page - 1}, keyword=${keyword})}">&laquo;</a>
-							</li>
-							<li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}" th:classappend="${i == page} ? 'active'">
-								<a class="page-link" th:href="@{/individualRepository(page=${i}, keyword=${keyword})}" th:text="${i}"></a>
-							</li>
-							<li class="page-item" th:classappend="${page == totalPages} ? 'disabled'">
-								<a class="page-link" th:href="@{/individualRepository(page=${page + 1}, keyword=${keyword})}">&raquo;</a>
-							</li>
-						</ul>
-					</nav>
-				</div>
-			</div>
-		</form>
 	</div>
-</div>
 
-<!-- ✅ 스크립트 -->
-<script>
+	<!-- ✅ 스크립트 -->
+	<script>
 	document.getElementById('selectAll').addEventListener('change', function () {
 		const checkboxes = document.querySelectorAll('input[name="writingIds"]:not(:disabled)');
 		checkboxes.forEach(cb => cb.checked = this.checked);

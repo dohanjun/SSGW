@@ -154,6 +154,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // 회사별로 구분해서 조직도 구성
+
 function buildOrgChart(data, treeId) {
     const tree = document.getElementById(treeId);
     tree.innerHTML = "";
@@ -176,7 +177,8 @@ function buildOrgChart(data, treeId) {
         companyLi.innerHTML = `<span class="toggle-icon">▶</span> 🏢 <strong>${company.companyName}</strong>`;
 
         const deptTree = document.createElement("ul");
-        deptTree.style.display = "none";
+        deptTree.style.display = "block";
+        companyLi.querySelector(".toggle-icon").textContent = "▼";
 
         // 부서 트리 구조화
         buildDeptTree(company.departments, deptTree);
@@ -359,7 +361,10 @@ $('#addReferencesBtn').click(function () {
 
     const names = [], nos = [];
     checked.each(function () {
-        names.push($(this).data('name'));
+    	const name = $(this).data('name');
+        const job = $(this).data('job');
+        
+        names.push(`${name} (${job})`);
         nos.push($(this).val());
     });
 
@@ -467,6 +472,7 @@ document.addEventListener("DOMContentLoaded", function () {
 $('#ajaxSubmitBtn').on('click', function () {
     const finalContent = prepareFinalContent();
     const title = $('input[name="title"]').val().trim();
+    const draftNo = new URLSearchParams(window.location.search).get("draftNo");
 	
     if (!title && !finalContent) {
         alert("제목과 내용을 입력해주세요.");
@@ -478,6 +484,25 @@ $('#ajaxSubmitBtn').on('click', function () {
         alert("내용을 입력해주세요.");
         return;
     }
+    
+    if (draftNo) {
+        $.ajax({
+            url: '/aprv/removeTemporaryData',  // 임시저장된 데이터 삭제 요청
+            type: 'POST',
+            data: { draftNo: draftNo },
+            success: function(response) {
+                if (response.success) {
+                    console.log('임시저장된 데이터 삭제 성공');
+                } else {
+                    console.log('임시저장된 데이터 삭제 실패');
+                }
+            },
+            error: function(err) {
+                console.log('Ajax 요청 실패:', err);
+            }
+        });
+    }
+    
     
     // FormData 생성
     const form = document.querySelector("form");

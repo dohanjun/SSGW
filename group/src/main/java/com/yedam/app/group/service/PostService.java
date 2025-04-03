@@ -45,5 +45,7 @@ public interface PostService {
     List<RepositoryPostVO> getIndividualRepositoryPostsPaged(int suberNo, int employeeNo, String keyword, int offset, int limit);
     
     List<RepositoryPostVO> getDepartmentFixedPosts(int suberNo, int departmentNo, String keyword);
+    
+    int countFixedPosts(Integer suberNo, String repositoryType);
 
 }

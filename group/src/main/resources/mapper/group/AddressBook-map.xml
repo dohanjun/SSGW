@@ -2,155 +2,202 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yedam.app.group.mapper.AddressBookMapper">
 
-<!-- 단건조회 -->
-	<select id="getPageList" parameterType="PageListVO" resultType="PageListVO">
+	<!-- 주소록 조회 -->
+	<select id="getPageList" parameterType="PageListVO"
+		resultType="PageListVO">
 		SELECT *
+		FROM ADDRESS_BOOK
+		WHERE ADDRESS_BOOK_ID =
+		#{addressBookId}
+	</select>
+
+
+<!-- 부서주소록 메인화면 -->
+<sql id="bookCondition">
+    <where>
+        <if test="employeeNo != null">
+            e.employee_no = #{employeeNo}
+        </if>
+        <if test="search != null and search != ''">
+            ( a.ADDRESS_BOOK_NAME LIKE '%' || #{search} || '%'
+            OR a.ADDRESS_BOOK_NUMBER LIKE '%' || #{search} || '%'
+            OR a.ADDRESS_BOOK_COMPANY_NAME LIKE '%' || #{search} || '%'
+            OR a.ADDRESS_BOOK_COMPANY_NUMBER LIKE '%' || #{search} || '%'
+            )
+        </if>
+    </where>
+</sql>
+
+<select id="AddressBookFindAll" resultType="AddressBookVO">
+    SELECT B.* FROM ( SELECT A.*, ROWNUM RN FROM(
+	    SELECT a.ADDRESS_BOOK_ID
+	    ,a.ADDRESS_BOOK_NAME
+	    ,a.ADDRESS_BOOK_NUMBER
+	    ,a.ADDRESS_BOOK_EMAIL
+	    ,a.ADDRESS_BOOK_UPDATE_DATE
+	    ,a.ADDRESS_BOOK_COMPANY_NAME
+	    ,a.ADDRESS_BOOK_COMPANY_NUMBER
+	    ,a.EMPLOYEE_ID
+	    ,a.ZIP_CODE
+	    ,a.STREET_ADDRESS
+	    ,a.ADDRESS_BOOK_TYPE
+	    ,a.BOOK_RECODE
+	    ,a.BOOK_DEPARTMENT_TYPE
+	    ,e.EMPLOYEE_NO
+	    FROM ADDRESS_BOOK a  JOIN EMPLOYEES e
+	                           ON a.employee_id = e.employee_id
+	    <include refid="bookCondition"></include>
+    ) A ) B WHERE RN BETWEEN #{start} AND #{end}
+</select>
+
+
+
+	<!-- 개인주소록 메인화면 -->
+	<sql id="MyBookCondition">
+		<where>
+			<if test="employeeId != null">
+				employee_id = #{employeeId}
+			</if>
+			<if test="search != null and search != ''">
+				( ADDRESS_BOOK_NAME LIKE '%' || #{search} || '%'
+				OR ADDRESS_BOOK_NUMBER LIKE '%' || #{search} || '%'
+				OR ADDRESS_BOOK_COMPANY_NAME LIKE '%' || #{search} || '%'
+				OR ADDRESS_BOOK_COMPANY_NUMBER LIKE '%' || #{search} || '%'
+				)
+			</if>
+
+		</where>
+	</sql>
+
+
+	<select id="MyAddressBookFindAll" resultType="AddressBookVO">
+		SELECT B.* FROM ( SELECT A.*, ROWNUM RN FROM(
+		SELECT
+		ADDRESS_BOOK_ID
+		,ADDRESS_BOOK_NAME
+		,ADDRESS_BOOK_NUMBER
+		,ADDRESS_BOOK_EMAIL
+		,ADDRESS_BOOK_UPDATE_DATE
+		,ADDRESS_BOOK_COMPANY_NAME
+		,ADDRESS_BOOK_COMPANY_NUMBER
+		,EMPLOYEE_ID
+		,ZIP_CODE
+		,STREET_ADDRESS
+		,ADDRESS_BOOK_TYPE
+		,BOOK_RECODE
+		,BOOK_DEPARTMENT_TYPE
+		FROM ADDRESS_BOOK
+		<include refid="MyBookCondition"></include>
+		) A ) B WHERE RN BETWEEN #{start} AND #{end}
+	</select>
+
+	<!-- 부서주소록단건조회 -->
+	<select id="AddressBookFindInfo" resultType="AddressBookVO">
+		SELECT
+		ADDRESS_BOOK_ID
+		,ADDRESS_BOOK_NAME
+		,ADDRESS_BOOK_NUMBER
+		,ADDRESS_BOOK_EMAIL
+		,ADDRESS_BOOK_UPDATE_DATE
+		,ADDRESS_BOOK_COMPANY_NAME
+		,ADDRESS_BOOK_COMPANY_NUMBER
+		,EMPLOYEE_ID
+		,ZIP_CODE
+		,STREET_ADDRESS
+		,ADDRESS_BOOK_TYPE
+		,BOOK_RECODE
+		,BOOK_DEPARTMENT_TYPE
 		FROM ADDRESS_BOOK
 		WHERE ADDRESS_BOOK_ID = #{addressBookId}
 	</select>
-	
 
-<sql id="bookCondition">
-		  <where>
-		  	<if test="search != null and search != ''">
-		  		( ADDRESS_BOOK_NAME LIKE '%' || #{search} || '%'
-		  		OR ADDRESS_BOOK_NUMBER LIKE '%' || #{search} || '%'
-		  		OR ADDRESS_BOOK_COMPANY_NAME LIKE '%' || #{search} || '%'
-		  		OR ADDRESS_BOOK_COMPANY_NUMBER LIKE '%' || #{search} || '%'
-		  		 )
-		  	</if>
-		  </where>
-</sql>
-
- 
-	<!-- 메일전체조회 -->
-	<select id="AddressBookFindAll" resultType="AddressBookVO">
-	SELECT B.* FROM ( SELECT A.*, ROWNUM RN FROM(
-	SELECT
-         ADDRESS_BOOK_ID
-        ,ADDRESS_BOOK_NAME
-        ,ADDRESS_BOOK_NUMBER
-        ,ADDRESS_BOOK_EMAIL
-        ,ADDRESS_BOOK_UPDATE_DATE
-        ,ADDRESS_BOOK_COMPANY_NAME
-        ,ADDRESS_BOOK_COMPANY_NUMBER
-        ,EMPLOYEE_ID
-        ,ZIP_CODE
-        ,STREET_ADDRESS
-        ,ADDRESS_BOOK_TYPE
-        ,BOOK_RECODE
-        ,BOOK_DEPARTMENT_TYPE
-	FROM ADDRESS_BOOK
-	<include refid="bookCondition"></include>
-	) A ) B WHERE RN BETWEEN #{start} AND #{end}
-	</select>
-
-	<!-- 메일단건조회 -->
-	<select id="AddressBookFindInfo" resultType="AddressBookVO">
-	SELECT
-         ADDRESS_BOOK_ID
-        ,ADDRESS_BOOK_NAME
-        ,ADDRESS_BOOK_NUMBER
-        ,ADDRESS_BOOK_EMAIL
-        ,ADDRESS_BOOK_UPDATE_DATE
-        ,ADDRESS_BOOK_COMPANY_NAME
-        ,ADDRESS_BOOK_COMPANY_NUMBER
-        ,EMPLOYEE_ID
-        ,ZIP_CODE
-        ,STREET_ADDRESS
-        ,ADDRESS_BOOK_TYPE
-        ,BOOK_RECODE
-        ,BOOK_DEPARTMENT_TYPE
-    FROM ADDRESS_BOOK
-	WHERE ADDRESS_BOOK_ID = #{addressBookId}
-	</select>
-	
-	<!-- 나의메일단건조회 -->
+	<!-- 개인주소록단건조회 -->
 	<select id="MyAddressBookFindInfo" resultType="AddressBookVO">
-	SELECT
-         ADDRESS_BOOK_ID
-        ,ADDRESS_BOOK_NAME
-        ,ADDRESS_BOOK_NUMBER
-        ,ADDRESS_BOOK_EMAIL
-        ,ADDRESS_BOOK_UPDATE_DATE
-        ,ADDRESS_BOOK_COMPANY_NAME
-        ,ADDRESS_BOOK_COMPANY_NUMBER
-        ,EMPLOYEE_ID
-        ,ZIP_CODE
-        ,STREET_ADDRESS
-        ,ADDRESS_BOOK_TYPE
-        ,BOOK_RECODE
-        ,BOOK_DEPARTMENT_TYPE
-	FROM ADDRESS_BOOK
-	WHERE ADDRESS_BOOK_ID = #{addressBookId}
+		SELECT
+		ADDRESS_BOOK_ID
+		,ADDRESS_BOOK_NAME
+		,ADDRESS_BOOK_NUMBER
+		,ADDRESS_BOOK_EMAIL
+		,ADDRESS_BOOK_UPDATE_DATE
+		,ADDRESS_BOOK_COMPANY_NAME
+		,ADDRESS_BOOK_COMPANY_NUMBER
+		,EMPLOYEE_ID
+		,ZIP_CODE
+		,STREET_ADDRESS
+		,ADDRESS_BOOK_TYPE
+		,BOOK_RECODE
+		,BOOK_DEPARTMENT_TYPE
+		FROM ADDRESS_BOOK
+		WHERE ADDRESS_BOOK_ID = #{addressBookId}
 	</select>
-	
-	<!-- 메일등록 -->
+
+	<!-- 개인주소록 등록 -->
 	<insert id="AddressBookCreate" parameterType="AddressBookVO">
-	<selectKey keyProperty="addressBookId" resultType="Integer" order="BEFORE">
-	SELECT NVL(MAX(ADDRESS_BOOK_ID) + 1, 100) as ADDRESS_BOOK_ID
-	FROM ADDRESS_BOOK
-	</selectKey>
-	INSERT INTO ADDRESS_BOOK(
-                  ADDRESS_BOOK_ID
-                 ,ADDRESS_BOOK_NAME
-                 ,ADDRESS_BOOK_NUMBER
-                 ,ADDRESS_BOOK_EMAIL
-                 ,ADDRESS_BOOK_UPDATE_DATE
-                 ,ADDRESS_BOOK_COMPANY_NAME
-                 ,ADDRESS_BOOK_COMPANY_NUMBER
-                 ,EMPLOYEE_ID
-                 ,ZIP_CODE
-                 ,STREET_ADDRESS
-                 ,ADDRESS_BOOK_TYPE
-                 ,BOOK_RECODE
-                 ,BOOK_DEPARTMENT_TYPE
-                 )
-    VALUES(
-    			  #{addressBookId}
-    			 ,#{addressBookName}
-    			 ,#{addressBookNumber}
-    			 ,#{addressBookEmail}
-    			 ,sysdate
-    			 ,#{addressBookCompanyName}
-    			 ,#{addressBookCompanyNumber}
-    			 ,#{employeeId}
-    			 ,#{zipCode}
-    			 ,#{streetAddress}
-    			 ,#{addressBookType}
-    			 ,#{bookRecode}
-    			 ,#{bookDepartmentType}
-    			 )
+		<selectKey keyProperty="addressBookId" resultType="Integer"
+			order="BEFORE">
+			SELECT NVL(MAX(ADDRESS_BOOK_ID) + 1, 100) as ADDRESS_BOOK_ID
+			FROM ADDRESS_BOOK
+		</selectKey>
+		INSERT INTO ADDRESS_BOOK(
+		ADDRESS_BOOK_ID
+		,ADDRESS_BOOK_NAME
+		,ADDRESS_BOOK_NUMBER
+		,ADDRESS_BOOK_EMAIL
+		,ADDRESS_BOOK_UPDATE_DATE
+		,ADDRESS_BOOK_COMPANY_NAME
+		,ADDRESS_BOOK_COMPANY_NUMBER
+		,EMPLOYEE_ID
+		,ZIP_CODE
+		,STREET_ADDRESS
+		,ADDRESS_BOOK_TYPE
+		,BOOK_RECODE
+		,BOOK_DEPARTMENT_TYPE
+		)
+		VALUES(
+		#{addressBookId}
+		,#{addressBookName}
+		,#{addressBookNumber}
+		,#{addressBookEmail}
+		,sysdate
+		,#{addressBookCompanyName}
+		,#{addressBookCompanyNumber}
+		,#{employeeId}
+		,#{zipCode}
+		,#{streetAddress}
+		,#{addressBookType}
+		,#{bookRecode}
+		,#{bookDepartmentType}
+		)
 	</insert>
-	
-	<!-- 메일검색기록 -->
+
+	<!-- 주소록검색기록 -->
 	<insert id="AddressBookRecode" parameterType="AddressBookVO">
-<!--INSERT INTO ADDRESS_BOOK recode
-    VALUES      #{recode}  --> 
+		<!--INSERT INTO ADDRESS_BOOK recode VALUES #{recode} -->
 	</insert>
-	
-	<!-- 메일수정 -->
+
+	<!-- 주소록 수정 -->
 	<update id="AddressBookModify" parameterType="AddressBookVO">
-	UPDATE  ADDRESS_BOOK
-	   SET  ADDRESS_BOOK_NAME = #{addressBookName}
-	       ,ADDRESS_BOOK_NUMBER = #{addressBookNumber}
-	       ,ADDRESS_BOOK_EMAIL = #{addressBookEmail}
-	       ,ADDRESS_BOOK_COMPANY_NAME = #{addressBookCompanyName}
-	       ,BOOK_DEPARTMENT_TYPE = #{bookDepartmentType}
-	WHERE ADDRESS_BOOK_ID = #{addressBookId}
+		UPDATE ADDRESS_BOOK
+		SET ADDRESS_BOOK_NAME = #{addressBookName}
+		,ADDRESS_BOOK_NUMBER = #{addressBookNumber}
+		,ADDRESS_BOOK_EMAIL = #{addressBookEmail}
+		,ADDRESS_BOOK_COMPANY_NAME = #{addressBookCompanyName}
+		,BOOK_DEPARTMENT_TYPE = #{bookDepartmentType}
+		WHERE ADDRESS_BOOK_ID = #{addressBookId}
 	</update>
 
-	<!-- 메일삭제 -->
+	<!-- 주소록 삭제 -->
 	<delete id="AddressBookRemove" parameterType="int">
-	DELETE FROM ADDRESS_BOOK
-	WHERE ADDRESS_BOOK_ID = #{addressBookId}
+		DELETE FROM ADDRESS_BOOK
+		WHERE ADDRESS_BOOK_ID = #{addressBookId}
 	</delete>
-	
+
 	<!-- 전체건수반환 -->
 	<select id="getCount" resultType="int">
-	SELECT COUNT(*)
-	FROM ADDRESS_BOOK
-	<include refid="bookCondition"></include>
+		SELECT COUNT(*)
+		FROM ADDRESS_BOOK a  JOIN EMPLOYEES e
+	                           ON a.employee_id = e.employee_id
+		<include refid="bookCondition"></include>
 	</select>
 
 </mapper>

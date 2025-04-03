@@ -25,7 +25,8 @@
 							<div class="d-flex align-items-center">
 								<h6 class="m-0 font-weight-bold text-primary">자료 정보</h6>
 								<!-- 고정 상태일 때 뱃지처럼 표시 -->
-								<span th:if="${post.fix == 'Y'}"
+								<span
+									th:if="${post.fix == 'Y' and (post.repositoryType == '전체' or post.repositoryType == '부서')}"
 									class="badge badge-warning ml-2"> <i
 									class="fas fa-thumbtack"></i> 고정됨
 								</span>
@@ -33,8 +34,9 @@
 
 							<div class="d-flex gap-2">
 								<!-- 고정/해제 버튼 -->
-								<form th:if="${isEditable}" th:action="@{/toggleFix}"
-									method="post" class="mb-0 mr-2">
+								<form
+									th:if="${isEditable and (post.repositoryType == '전체' or post.repositoryType == '부서')}"
+									th:action="@{/toggleFix}" method="post" class="mb-0 mr-2">
 									<input type="hidden" name="writingId"
 										th:value="${post.writingId}" />
 									<button type="submit" class="btn btn-sm"
@@ -55,19 +57,34 @@
 						<div class="card-body">
 							<table class="table table-bordered file-info-table">
 								<tbody>
+									<!-- 제목 -->
 									<tr>
-										<th>제목</th>
-										<td th:text="${post.title}"></td>
+										<th style="width: 120px;">제목</th>
+										<td colspan="3" th:text="${post.title}"></td>
+									</tr>
+
+									<!-- 작성자 / 등록일 -->
+									<tr>
 										<th>작성자</th>
 										<td th:text="${post.writer}"></td>
-									</tr>
-									<tr>
 										<th>등록일</th>
 										<td
 											th:text="${#dates.format(post.creationDate, 'yyyy-MM-dd')}"></td>
+									</tr>
+
+									<!-- 본문 내용 -->
+									<tr>
+										<th>내용</th>
+										<td colspan="3"><textarea
+												class="content-area auto-expand" th:utext="${post.content}"
+												readonly></textarea></td>
+									</tr>
+
+									<!-- 첨부파일 -->
+									<tr>
 										<th>첨부파일</th>
-										<td>
-											<ul>
+										<td colspan="3">
+											<ul class="mb-0">
 												<li th:each="file : ${fileList}"><a
 													th:href="@{'/download/' + ${file.fileId}}"
 													th:text="${file.fileName}"></a></li>
@@ -75,15 +92,11 @@
 											</ul>
 										</td>
 									</tr>
-									<tr>
-										<td colspan="4"><textarea class="content-area"
-												th:utext="${post.content}"></textarea></td>
-									</tr>
 								</tbody>
 							</table>
 							<div class="text-center mb-3">
 								<div class="d-inline-flex gap-2">
-									<a href="javascript:history.back()" class="btn btn-secondary">
+									<a onclick="history.back()" class="btn btn-secondary">
 										<i class="fas fa-arrow-left"></i>
 									</a> <a th:if="${isEditable}"
 										th:href="@{/editPost(writingId=${post.writingId})}"
@@ -108,14 +121,38 @@
 			</div>
 		</div>
 	</div>
+	<script type="application/javascript">
+	
+	let userIp;
+  function getIP(json) {
+	  userIp =json.ip;
+  }
+
+</script>
+<script type="application/javascript"
+	src="http://ipinfo.io/?format=jsonp&callback=getIP"></script>
 	<script src="/static/vendor/jquery/jquery.min.js"></script>
 	<script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 	<script src="/static/js/sb-admin-2.min.js"></script>
-</body>
-</html>
-<script>
+	<script>
 	function goToDetail(writingId) {
 		window.location.href = '/detailPost/' + writingId;
 	}
 </script>
+	<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    const textareas = document.querySelectorAll('.auto-expand');
+    textareas.forEach(textarea => {
+      textarea.style.height = textarea.scrollHeight + 'px';
+    });
+  });
+</script>
+	<script th:inline="javascript">
+  let errorMessage = /*[[${errorMessage}]]*/ null;
+  if (errorMessage !== null && errorMessage !== 'null') {
+    alert(errorMessage);
+  }
+</script>
+</body>
+</html>
 

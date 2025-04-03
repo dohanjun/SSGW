@@ -205,9 +205,61 @@
 	<select id="selectAllAprvForms" parameterType="ApprovalFormVO" resultType="ApprovalFormVO">
 		SELECT FORM_ID
 		       ,FORM_TYPE
+		       ,REMARKS
+               ,CONTENT
+	           ,VERSION
+	           ,ACTIVE
+	           ,CREATION_DATE
 		FROM   APRV_FORMS
 		WHERE  SUBER_NO = #{suberNo}
+		  AND  active = '1'
 	</select>
+	
+	<!-- 회사양식목록 불러오기 -->
+	<select id="selectAllAprvFormss" parameterType="ApprovalFormVO" resultType="ApprovalFormVO">
+		SELECT FORM_ID
+		       ,FORM_TYPE
+		       ,REMARKS
+               ,CONTENT
+	           ,VERSION
+	           ,ACTIVE
+	           ,CREATION_DATE
+		FROM   APRV_FORMS
+		WHERE  SUBER_NO = #{suberNo}
+		ORDER BY FORM_TYPE
+	</select>
+	
+	
+	<!-- 상세페이지: formId로 단건 조회 -->
+    <select id="selectOneAprvFormById" parameterType="int" resultType="ApprovalFormVO">
+        SELECT FORM_ID,
+               FORM_TYPE,
+               REMARKS,
+               CONTENT,
+               VERSION,
+               ACTIVE,
+               CREATION_DATE,
+               SUBER_NO
+        FROM APRV_FORMS
+        WHERE FORM_ID = #{formId}
+    </select>
+
+    <!-- 양식 수정 -->
+    <update id="updateAprvForm" parameterType="ApprovalFormVO">
+        UPDATE APRV_FORMS
+        SET FORM_TYPE = #{formType},
+            REMARKS = #{remarks},
+            CONTENT = #{content},
+            VERSION = #{version},
+            ACTIVE  = #{active}
+        WHERE FORM_ID = #{formId}
+    </update>
+
+    <!-- 양식 삭제 -->
+    <delete id="deleteAprvForm" parameterType="int">
+        DELETE FROM APRV_FORMS
+        WHERE FORM_ID = #{formId}
+    </delete>
 	
 	<!-- 기본양식불러오기 -->
 	<select id="selectBasicsForm" parameterType="ApprovalVO" resultType="ApprovalVO">
@@ -256,7 +308,7 @@
             CASE WHEN EXISTS (
             SELECT 1 FROM aprv_files f WHERE f.draft_no = d.draft_no
         ) THEN 1 ELSE 0 END AS has_file,
-            ROW_NUMBER() OVER (ORDER BY d.DRAFT_NO) AS rnum
+            ROW_NUMBER() OVER (ORDER BY d.DRAFT_NO desc) AS rnum
         FROM aprv_documents d
         JOIN employees e ON d.EMPLOYEE_NO = e.EMPLOYEE_NO
         WHERE d.EMPLOYEE_NO = #{employeeNo}
@@ -308,6 +360,13 @@
 	     ,#{basicsFormId}
 	     ,#{suberNo}) 
 	</insert>
+	
+	<!-- 임시저장 삭제 -->
+	<delete id="deleteTemporaryData" parameterType="Integer">
+		DELETE FROM aprv_documents 
+		WHERE draft_no = #{draftNo} 
+		  AND aprv_status = '임시'
+	</delete>
 	
 	<!-- 결재선등록 -->
 	<insert id="insertAprvRoutes" parameterType="AprvRoutesVO">

@@ -82,10 +82,10 @@ public class MailServiceImpl implements MailService {
 
 	// 메일단건삭제
 	@Override
-	public Map<String, Object> MailDelete(int mailId) {
+	public Map<String, Object> MailDel(int mailId) {
 		Map<String, Object> map = new HashMap<>();
 
-		int result = mailMapper.MailRemove(mailId);
+		int result = mailMapper.MailDel(mailId);
 
 		if (result == 1) {
 			map.put("mailId", mailId);
@@ -95,10 +95,10 @@ public class MailServiceImpl implements MailService {
 
 	// 여러개의 메일삭제
 	@Override
-	public int MailDeletes(List<Integer> mailIds) {
+	public int MailDels(List<Integer> mailIds) {
 
 		// mailIds 리스트에 있는 모든 메일을 삭제
-		int result = mailMapper.MailRemoves(mailIds);
+		int result = mailMapper.MailDels(mailIds);
 
 		// 결과가 0보다 크면 삭제가 성공한 것이므로 삭제된 개수 반환
 		if (result > 0) {
@@ -191,6 +191,19 @@ public class MailServiceImpl implements MailService {
 	@Scheduled(cron = "0 0/1 0 * * ?")
 	public void scheduledDeleteExpiredMails() {
 		deleteExpiredMails();
+	}
+	
+	// 메일삭제
+	@Override
+	public Map<String, Object> MailRemove(int mailId) {
+		Map<String, Object> map = new HashMap<>();
+
+		int result = mailMapper.MailRemove(mailId);
+
+		if (result == 1) {
+			map.put("mailId", mailId);
+		}
+		return map;
 	}
 
 

@@ -30,8 +30,8 @@ public class WorkController {
     private final AttendanceService attendanceService;
     private final EmpService empService;
 
-    @GetMapping("/blank")
-    public String attendanceRecords(@RequestParam(required = false) String yearMonth, HttpSession session, Model model) {
+    @GetMapping("/attendance")
+    public String attendance(@RequestParam(required = false) String yearMonth, HttpSession session, Model model) {
         EmpVO loggedInUser = empService.getLoggedInUserInfo();
 
         if (loggedInUser != null) {
@@ -52,7 +52,7 @@ public class WorkController {
                     .filter(vo -> vo.getTotalOvertimeTime() != null)
                     .mapToInt(AttendanceManagementVO::getTotalOvertimeTime)
                     .sum();
-            double totalOvertimeHours = totalOvertimeMinutes / 60.0;
+            double totalOvertimeHours = totalOvertimeMinutes / 60;
 
             YearMonth currentYearMonth = (yearMonth != null) ? YearMonth.parse(yearMonth) : YearMonth.now();
 
@@ -66,8 +66,8 @@ public class WorkController {
         return "group/workPage/blank";
     }
 
-    @GetMapping("/chartsManager")
-    public String showChartsManagerPage(@RequestParam(required = false) String yearMonth,
+    @GetMapping("/deptAttendance")
+    public String deptAttendance(@RequestParam(required = false) String yearMonth,
                                         @RequestParam(required = false) String employeeName,
                                         Model model) {
 
