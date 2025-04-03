@@ -44,7 +44,7 @@
 		parameterType="com.yedam.app.group.service.RankVO">
 		SELECT RANK_ID, JOB_TITLE_NAME
 		FROM RANK
-		ORDER BY RANK_ID ASC
+		ORDER BY RANK_ID DESC
 	</select>
 
 	<!-- 권한 목록 조회 -->
