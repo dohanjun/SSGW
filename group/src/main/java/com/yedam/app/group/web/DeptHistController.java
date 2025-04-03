@@ -13,12 +13,30 @@ import com.yedam.app.group.service.EmpVO;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * 부서/직급 이동 이력 컨트롤러
+ * - 페이징, 검색 기반 이력 조회
+ * 
+ * @author 김예찬
+ * @since 2025-04-03
+ */
+
 @Controller
 @RequiredArgsConstructor
 public class DeptHistController {
 	
     private final DeptHistService deptHistService;
     private final EmpService empService;
+    
+    
+    /**
+     * 부서이동/직급이동 이력 목록 조회 화면
+     *
+     * @param searchVO 검색 및 페이징 파라미터
+     * @param model    화면 전달용 데이터
+     * @return         deptHist.html 화면 반환
+     */
+    
     
     // 이동이력 리스트 화면
     @GetMapping("deptHist")
