@@ -6,6 +6,7 @@ import java.util.List;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import org.springframework.stereotype.Controller;
@@ -63,23 +64,48 @@ public class EmpController {
 	    model.addAttribute("empVO", empVO); // thymeleaf form과 바인딩할 객체
 	    return "group/personnel/empinsert"; // 사원 등록 페이지로 이동
 	}
+	
+    /**
+     * 사원 등록 처리
+     * @param empVO 등록할 사원 정보
+     * @param file 프로필 이미지 파일
+     * @return 사원관리 화면 리다이렉트
+     */
 
 	// 등록 처리
 	@PostMapping("empinsert")
-	public String empInsertProcess(EmpVO empVO, 
-			                       @RequestParam("profileImageFile") MultipartFile file) {
-		try {
+	public String empInsert(EmpVO empVO,
+            @RequestParam("profileImageFile") MultipartFile file) {
+			try {
 			if (!file.isEmpty()) {
-				empVO.setProfileImageBLOB(file.getBytes()); // 파일을 byte[]로 변환하여 저장
+			// 이미지 등록한 경우: 업로드된 이미지 저장
+			empVO.setProfileImageBLOB(file.getBytes());
+			} else {
+			// 이미지 미등록한 경우: 기본 이미지 BLOB으로 저장
+			ClassPathResource resource = new ClassPathResource("static/img/default-profile.jpg");
+			byte[] defaultImageBytes = resource.getInputStream().readAllBytes();
+			empVO.setProfileImageBLOB(defaultImageBytes);
 			}
-		} catch (IOException e) {
+			} catch (IOException e) {
 			e.printStackTrace();
-		}
-		 String hash = bCryptPasswordEncoder.encode(empVO.getEmployeePw());
-		 empVO.setEmployeePw(hash);
-		empService.createEmpInfo(empVO);
-		return "redirect:empMgmt";
-	}
+			}
+			
+			// 비밀번호 암호화
+			String hash = bCryptPasswordEncoder.encode(empVO.getEmployeePw());
+			empVO.setEmployeePw(hash);
+			
+			// 사원 정보 등록
+			empService.createEmpInfo(empVO);
+			
+			return "redirect:empMgmt";
+			}
+	
+    /**
+     * 사원 목록 조회
+     * @param empsVO 검색조건
+     * @param model View 전달용 모델
+     * @return 사원목록 화면
+     */
 
 	// 사원관리
 	@GetMapping("/empMgmt")
@@ -104,6 +130,13 @@ public class EmpController {
 
 		return "group/personnel/empMgmt";
 	}
+	
+    /**
+     * 사원 상세정보 조회
+     * @param employeeNo 사원번호
+     * @param model View 전달용 모델
+     * @return 상세정보 화면
+     */
 
 	// 사원 상세조회
 	@GetMapping("empInfo")
@@ -128,6 +161,13 @@ public class EmpController {
 
 		return "group/personnel/empInfo";
 	}
+	
+    /**
+     * 사원 상세정보 조회
+     * @param employeeNo 사원번호
+     * @param model View 전달용 모델
+     * @return 상세정보 화면
+     */
 
 	// 사원 정보 수정 페이지 이동
 	@GetMapping("empUpdate")
@@ -162,6 +202,13 @@ public class EmpController {
 
 		return "group/personnel/empUpdate"; // 뷰 반환
 	}
+	
+    /**
+     * 사원 정보 수정 처리
+     * @param empVO 수정할 사원 정보
+     * @param file 새 프로필 이미지 파일
+     * @return 상세페이지 리다이렉트
+     */
 
 	// 사원 정보 수정
 	@PostMapping("empUpdate")
@@ -204,6 +251,12 @@ public class EmpController {
 		// 3) 수정 후 사원 상세 페이지로 이동
 		return "redirect:/empInfo?employeeNo=" + empVO.getEmployeeNo();
 	}
+	
+    /**
+     * 비밀번호 초기화 처리 (Ajax)
+     * @param employeeNo 초기화 대상 사원번호
+     * @return 메시지 문자열
+     */
 
 	// 비밀번호 초기화 API
 	@PostMapping("/api/resetPassword")
@@ -213,12 +266,23 @@ public class EmpController {
 	    empService.resetPassword(employeeNo, defaultPw); //  매개변수 추가
 	    return "비밀번호가 123456으로 초기화되었습니다.";
 	}
+	
+    /**
+     * 조직도 화면 이동
+     * @return View
+     */
 
     // 조직도 화면 이동
     @GetMapping("/orgChart")
     public String orgChartPage() {
         return "group/personnel/orgChart";
     }
+    
+    /**
+     * 사원 ID 중복 체크 (Ajax)
+     * @param employeeId 입력 ID
+     * @return duplicate / available
+     */
     
     // 아이디 중복 체크 (Ajax 호출용)
     @GetMapping("/checkEmployeeId")

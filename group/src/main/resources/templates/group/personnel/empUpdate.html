@@ -9,13 +9,12 @@
     <style>
         body { font-size: 14px; background-color: #f8f9fa; }
 
-        /* ✅ 상세정보처럼 센터 정렬용 wrapper */
         .page-center-wrapper {
             display: flex;
             justify-content: center;
             align-items: flex-start;
             width: 100%;
-            min-height: calc(100vh - 100px); /* 헤더/사이드 고려 */
+            min-height: calc(100vh - 100px)
             padding: 40px 20px;
             box-sizing: border-box;
         }
@@ -140,7 +139,7 @@
 <body>
 
 <form name="updateForm" th:action="@{/empUpdate}" th:object="${emp}" method="post" enctype="multipart/form-data">
-    <!-- ✅ 센터 정렬된 래퍼 시작 -->
+    <!-- 래퍼 시작 -->
     <div class="page-center-wrapper">
         <div class="card-box">
             <div class="card-header"><h5>사원 정보 수정</h5></div>
