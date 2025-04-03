@@ -894,7 +894,9 @@ public class ApprovalController {
 	        return ResponseEntity.notFound().build();
 	    }
 
-	    File file = new File(fileVO.getFilePath());
+	    String relativePath = fileVO.getFilePath().replaceFirst("/uploads", "");
+	    File file = new File(uploadDir + relativePath);
+
 	    if (!file.exists()) {
 	        return ResponseEntity.notFound().build();
 	    }
@@ -903,12 +905,13 @@ public class ApprovalController {
 	    String originalName = fileVO.getFileName();
 
 	    return ResponseEntity.ok()
-	            .header(HttpHeaders.CONTENT_DISPOSITION, 
+	            .header(HttpHeaders.CONTENT_DISPOSITION,
 	                    "attachment; filename=\"" + URLEncoder.encode(originalName, StandardCharsets.UTF_8) + "\"")
 	            .contentLength(file.length())
 	            .contentType(MediaType.APPLICATION_OCTET_STREAM)
 	            .body(resource);
 	}
+
 	
 	@GetMapping("/aprv/vacation")
 	@ResponseBody
