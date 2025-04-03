@@ -7,9 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -64,15 +65,27 @@ public class BoardController {
 
 		int pageSize = 10;
 		int offset = (page - 1) * pageSize;
+		
 		int totalCount = boardService.getNoticeBoardPostCount(loggedInUser.getSuberNo(), keyword);
 		int totalPages = Math.max(1, (int) Math.ceil((double) totalCount / pageSize));
-		List<BoardPostVO> postList = boardService.getNoticeBoardPostsPaged(loggedInUser.getSuberNo(), keyword, offset,
-				pageSize);
+		
+		// 일반글 조회 (고정 제외)
+	    int fetchLimit = pageSize + 5;
+	    List<BoardPostVO> postList = boardService.getNoticeBoardPostsPaged(
+	        loggedInUser.getSuberNo(), keyword, offset, fetchLimit
+	    ).stream()
+	     .filter(post -> !"Y".equals(post.getFixed()))
+	     .limit(10)
+	     .collect(Collectors.toList());
 
 		boolean isAdmin = (loggedInUser.getRightsId() != null && loggedInUser.getRightsId() == 3)
 				|| (loggedInUser.getRightsLevel() != null && loggedInUser.getRightsLevel() == 5);
 		
-		List<BoardPostVO> fixedList = boardService.getFixedNoticeBoardPosts(loggedInUser.getSuberNo());
+		// 고정글 1페이지에만 최대 5개
+	    List<BoardPostVO> fixedList = (page == 1)
+	        ? boardService.getFixedNoticeBoardPosts(loggedInUser.getSuberNo())
+	            .stream().limit(5).collect(Collectors.toList())
+	        : List.of();
 		
 		model.addAttribute("fixedList", fixedList);
 		model.addAttribute("postList", postList);
@@ -99,11 +112,19 @@ public class BoardController {
 		int totalCount = boardService.getDepartmentBoardPostCount(loggedInUser.getSuberNo(),
 				loggedInUser.getDepartmentNo(), keyword);
 		int totalPages = Math.max(1, (int) Math.ceil((double) totalCount / pageSize));
-
+		
+		int fetchLimit = pageSize + 5;
 		List<BoardPostVO> postList = boardService.getDepartmentBoardPostsPaged(loggedInUser.getSuberNo(),
-				loggedInUser.getDepartmentNo(), keyword, offset, pageSize);
+				loggedInUser.getDepartmentNo(), keyword, offset, pageSize).stream()
+			     .filter(post -> !"Y".equals(post.getFixed()))
+			     .limit(10)
+			     .collect(Collectors.toList());
 
-		List<BoardPostVO> fixedList = boardService.getFixedNoticeBoardPosts(loggedInUser.getSuberNo());
+		// 고정글 (1페이지일 때만)
+	    List<BoardPostVO> fixedList = (page == 1)
+	        ? boardService.getFixedDepartmentBoardPosts(loggedInUser.getSuberNo(), loggedInUser.getDepartmentNo())
+	            .stream().limit(5).collect(Collectors.toList())
+	        : List.of();
 		
 		model.addAttribute("fixedList", fixedList);
 		model.addAttribute("postList", postList);
@@ -232,23 +253,42 @@ public class BoardController {
 		default -> "redirect:/boardList"; // fallback
 		};
 	}
+	
+	@Value("${file.upload-dir}")
+	private String uploadDir;
 
 	@PostMapping("/uploadImage")
 	@ResponseBody
 	public String uploadImage(@RequestParam("file") MultipartFile file) {
 		try {
-			String uploadDir = "D:/upload_files/";
-			String uuid = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-			Path savePath = Paths.get(uploadDir + uuid);
+			String originalFilename = file.getOriginalFilename();
+
+			// 확장자 추출 (예: .png, .jpg)
+			String extension = "";
+			int dotIndex = originalFilename.lastIndexOf(".");
+			if (dotIndex > 0) {
+				extension = originalFilename.substring(dotIndex);
+			}
+
+			// 파일명 깨끗하게 처리 (영문+숫자만, 확장자 제외)
+			String cleanedName = originalFilename.substring(0, dotIndex).replaceAll("[^a-zA-Z0-9]", "");
+
+			// 최종 파일명: UUID_파일명.확장자 (예: UUID_cleaned.png)
+			String uuid = UUID.randomUUID().toString();
+			String finalFilename = uuid + "_" + cleanedName + extension;
+
+			// 저장 경로
+			Path savePath = Paths.get(uploadDir, finalFilename);
 			file.transferTo(savePath.toFile());
 
-			// 업로드된 파일의 URL 경로 반환 (정적 매핑 필요)
-			return "/uploads/" + uuid;
+			// 클라이언트에 보낼 URL 경로
+			return "/uploads/" + finalFilename;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return "error";
 		}
 	}
+
 	
 	@GetMapping("/updateBoard/{postId}")
 	public String updateBoardForm(@PathVariable("postId") int postId, Model model) {
@@ -478,7 +518,15 @@ public class BoardController {
 	public String toggleBoardFix(@RequestParam("postId") int postId) {
 	    BoardPostVO post = boardService.getPostDetail(postId);
 	    String newFix = "Y".equals(String.valueOf(post.getFixed())) ? "N" : "Y";
+	    
+	    if ("Y".equals(newFix)) {
+	        int fixedCount = boardService.countFixedPosts(post.getBoardId());
+	        if (fixedCount >= 5) {
+	            return "LIMIT_EXCEEDED";
+	        }
+	    }
+	    
 	    boardService.updateFixStatus(postId, newFix);
-	    return "고정 상태가 변경되었습니다.";
+	    return "UPDATED";
 	}
 }

@@ -16,7 +16,7 @@
 	<div class="card shadow mb-4">
 		<div class="card-header py-3">
 			<h6 class="m-0 font-weight-bold text-primary"
-				th:text="${repository.fileRepositoryType}">전체 자료실</h6>
+				th:text="${repository.fileRepositoryType}+' '+자료실"></h6>
 		</div>
 		<div class="card-body">
 
@@ -25,7 +25,7 @@
 				<form th:action="@{/totalRepository}" method="get"
 					class="position-relative mb-3" style="width: 300px;">
 					<input type="text" name="keyword" class="form-control pl-4"
-						placeholder="검색어 입력" th:value="${keyword}">
+						placeholder="   검색어 입력" th:value="${keyword}">
 					<button type="submit"
 						style="position: absolute; top: 50%; left: 3px; transform: translateY(-50%); background: none; border: none;">
 						<i class="fas fa-search" style="color: #aaa;"></i>
@@ -45,11 +45,11 @@
 					cellspacing="0">
 					<thead>
 						<tr>
-							<td><input type="checkbox" id="selectAll"></td>
-							<td>자료이름</td>
-							<td>파일명</td>
-							<td>작성자</td>
-							<td>작성일</td>
+							<td style= "text-align: center; width: 60px;"><input type="checkbox" id="selectAll"></td>
+							<td style="text-align: center; width: 400px;">제목</td>
+							<td style="text-align: center;">첨부파일</td>
+							<td style="text-align: center; width: 200px;">작성자</td>
+							<td style="text-align: center; width: 200px;">작성일</td>
 						</tr>
 					</thead>
 					<tbody>
@@ -57,7 +57,7 @@
 						<tr th:each="post : ${fixedList}" class="table-warning"
 							th:data-url="@{'/detailPost/' + ${post.writingId}}"
 							onclick="location.href=this.dataset.url" style="cursor: pointer;">
-							<td><input type="checkbox" name="writingIds"
+							<td style= "text-align: center;"><input type="checkbox" name="writingIds"
 								th:value="${post.writingId}"
 								th:disabled="${post.employeeNo != loggedInEmpNo and !isAdmin}"
 								class="file-checkbox" onclick="event.stopPropagation()" /></td>
@@ -65,15 +65,15 @@
 								th:text="${post.title}"></span></td>
 							<td
 								th:text="${post.fileCount > 1 ? post.fileName + ' 외 ' + (post.fileCount - 1) + '건' : post.fileName}"></td>
-							<td th:text="${post.writer}"></td>
-							<td th:text="${#dates.format(post.creationDate, 'yyyy-MM-dd')}"></td>
+							<td style="text-align: center;" th:text="${post.writer}"></td>
+							<td style="text-align: center;" th:text="${#dates.format(post.creationDate, 'yyyy-MM-dd')}"></td>
 						</tr>
 
 						<!-- 일반글 출력 -->
 						<tr th:each="post : ${totalRepositoryList}"
 							th:data-url="@{'/detailPost/' + ${post.writingId}}"
 							onclick="location.href=this.dataset.url" style="cursor: pointer;">
-							<td><input type="checkbox" name="writingIds"
+							<td style= "text-align: center;"><input type="checkbox" name="writingIds"
 								th:value="${post.writingId}"
 								th:disabled="${post.employeeNo != loggedInEmpNo and !isAdmin}"
 								class="file-checkbox" onclick="event.stopPropagation()" /></td>
@@ -81,8 +81,8 @@
 							<span th:text="${post.title}"></span></td>
 							<td
 								th:text="${post.fileCount > 1 ? post.fileName + ' 외 ' + (post.fileCount - 1) + '건' : post.fileName}"></td>
-							<td th:text="${post.writer}"></td>
-							<td th:text="${#dates.format(post.creationDate, 'yyyy-MM-dd')}"></td>
+							<td style="text-align: center;" th:text="${post.writer}"></td>
+							<td style="text-align: center;" th:text="${#dates.format(post.creationDate, 'yyyy-MM-dd')}"></td>
 						</tr>
 					</tbody>
 				</table>

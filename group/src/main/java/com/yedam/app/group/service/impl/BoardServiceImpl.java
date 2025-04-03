@@ -159,5 +159,10 @@ public class BoardServiceImpl implements BoardService {
     public List<BoardPostVO> getFixedDepartmentBoardPosts(int suberNo, int departmentNo) {
         return boardMapper.getFixedDepartmentBoardPosts(suberNo, departmentNo);
     }
+    
+    @Override
+    public int countFixedPosts(int boardId) {
+        return boardMapper.countFixedPosts(boardId);
+    }
 
 }
