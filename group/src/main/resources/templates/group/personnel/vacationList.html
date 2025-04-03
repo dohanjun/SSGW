@@ -63,7 +63,7 @@
         <div class="card-title">🌴 휴가유형 관리</div>
         <div class="row">
 
-            <!-- 👈 왼쪽: 휴가유형 목록 -->
+            <!-- 왼쪽: 휴가유형 목록 -->
             <div class="col-md-8">
                 <div class="section-box">
                     <h5 class="text-center mb-3">📋 휴가유형 목록</h5>
@@ -120,7 +120,7 @@
                 </div>
             </div>
 
-            <!-- 👉 오른쪽: 휴가유형 등록 -->
+            <!-- 오른쪽: 휴가유형 등록 -->
             <div class="col-md-4">
                 <div class="section-box">
                     <h5 class="text-center mb-3"> 휴가유형 등록</h5>
@@ -130,12 +130,12 @@
 
                         <div class="form-group">
                             <label>📝 휴가 이름</label>
-                            <input type="text" class="form-control" th:field="*{vacationTypeName}" required>
+                            <input type="text" class="form-control" th:field="*{vacationTypeName}" maxlength="9" required>
                         </div>
 
                         <div class="form-group">
                             <label>📅 휴가 일수</label>
-                            <input type="number" class="form-control" th:field="*{vacationDate}" min="1" required>
+                            <input type="number" class="form-control" th:field="*{vacationDate}" min="1" max="999" required>
                         </div>
 
                         <div class="form-group form-check">
@@ -157,20 +157,36 @@
 
 <!--  기능 스크립트 -->
 <script th:inline="javascript">
+    // CSRF 토큰 가져오기
     const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
     const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
 
+    // 등록 시 유효성 검사 및 등록 확인 알림
     function confirmInsert() {
+        const name = document.querySelector('[name="vacationTypeName"]').value;
+        const date = document.querySelector('[name="vacationDate"]').value;
+
+        if (name.length > 9) {
+            alert("휴가 이름은 최대 9자까지 입력 가능합니다.");
+            return false;
+        }
+        if (parseInt(date) > 999) {
+            alert("휴가 일수는 최대 999일까지 가능합니다.");
+            return false;
+        }
+
         alert("✅ 등록이 완료되었습니다.");
         return true;
     }
 
+    // 페이지 이동 처리
     function gopage(p) {
         const form = document.forms["frmSearch"];
         form.page.value = p;
         form.submit();
     }
 
+    // 보기 개수 변경 처리
     function changeSize(size) {
         const form = document.forms["frmSearch"];
         form.size.value = size;
@@ -178,6 +194,7 @@
         form.submit();
     }
 
+    // 휴가 유형 삭제 처리
     function deleteVacation(vacationTypeId) {
         if (!confirm("🗑 이 휴가 유형을 삭제하시겠습니까?")) return;
 
@@ -185,7 +202,7 @@
             method: "POST",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
-                [csrfHeader]: csrfToken
+                [csrfHeader]: csrfToken // CSRF 보안 토큰 포함
             },
             body: "vacationTypeId=" + vacationTypeId
         })
@@ -203,7 +220,31 @@
             console.error(err);
         });
     }
+
+    // 실시간 입력 제한 (휴가 이름: 9자, 휴가 일수: 최대 999)
+    document.addEventListener('DOMContentLoaded', function () {
+        const nameInput = document.querySelector('[name="vacationTypeName"]');
+        const dateInput = document.querySelector('[name="vacationDate"]');
+
+        // 휴가 이름: 9자 초과 입력 시 자동으로 잘라냄
+        nameInput.addEventListener('input', function () {
+            if (this.value.length > 9) {
+                this.value = this.value.slice(0, 9);
+            }
+        });
+
+        // 휴가 일수: 1 ~ 999 사이로만 입력 가능하게 제한
+        dateInput.addEventListener('input', function () {
+            const value = parseInt(this.value);
+            if (value > 999) {
+                this.value = 999;
+            } else if (value < 1 || isNaN(value)) {
+                this.value = 1;
+            }
+        });
+    });
 </script>
+
 
 </body>
 </html>

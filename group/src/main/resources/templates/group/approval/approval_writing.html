@@ -154,6 +154,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // 회사별로 구분해서 조직도 구성
+
 function buildOrgChart(data, treeId) {
     const tree = document.getElementById(treeId);
     tree.innerHTML = "";
@@ -176,7 +177,8 @@ function buildOrgChart(data, treeId) {
         companyLi.innerHTML = `<span class="toggle-icon">▶</span> 🏢 <strong>${company.companyName}</strong>`;
 
         const deptTree = document.createElement("ul");
-        deptTree.style.display = "none";
+        deptTree.style.display = "block";
+        companyLi.querySelector(".toggle-icon").textContent = "▼";
 
         // 부서 트리 구조화
         buildDeptTree(company.departments, deptTree);
@@ -359,7 +361,10 @@ $('#addReferencesBtn').click(function () {
 
     const names = [], nos = [];
     checked.each(function () {
-        names.push($(this).data('name'));
+    	const name = $(this).data('name');
+        const job = $(this).data('job');
+        
+        names.push(`${name} (${job})`);
         nos.push($(this).val());
     });
 

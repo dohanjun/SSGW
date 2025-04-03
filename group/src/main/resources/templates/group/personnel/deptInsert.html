@@ -188,9 +188,18 @@
     const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
     const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
 
-    // 부서 등록 시 알림
+ 	// 부서 등록 시 유효성 검사 및 알림
     function confirmInsert() {
-        alert("부서가 등록되었습니다.");
+        const upperDepSelect = document.querySelector('[name="upperDepNo"]');
+        const selectedValue = upperDepSelect.value;
+
+        // 상위 부서 선택 안 했을 경우 경고
+        if (selectedValue === "0") {
+            alert("⚠️ 상위 부서를 선택해주세요!");
+            return false;
+        }
+
+        alert("✅ 부서가 등록되었습니다.");
         return true;
     }
 

@@ -78,7 +78,6 @@
 		parameterType="com.yedam.app.group.service.SubscriberVO">
 		UPDATE suber
 		SET
-		sub_pw = #{subPw},
 		sub_name = #{subName},
 		sub_email = #{subEmail},
 		sub_bnis_no = #{subBnisNo},

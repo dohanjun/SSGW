@@ -104,15 +104,16 @@ public class mainController {
 			List<ApprovalVO> approvalList = dashboardService.getRecentApprovalList(loginEmployee.getEmployeeNo());
 //			List<BoardVO> boardList = dashboardService.getRecentBoardList(loginEmployee.getSuberNo());
 			List<MailVO> mailList = dashboardService.getRecentMailList(loginEmployee.getEmployeeId()); // 메일 추가
-			String base64Image = Base64.getEncoder().encodeToString(loginEmployee.getProfileImageBLOB());
 			List<BoardPostVO> postList = boardService.getNoticeBoardPostsPaged(loginEmployee.getSuberNo(), null, 10,
 					10);
+			String base64Image = Base64.getEncoder().encodeToString(loginEmployee.getProfileImageBLOB());
 			
 			
 			model.addAttribute("profileImageBase64", base64Image);
 			model.addAttribute("userInfo", loginEmployee);
 			model.addAttribute("repositoryList", dashboardService.getRecentRepositoryPosts());
 			model.addAttribute("postList", postList);
+			model.addAttribute("approvalList", approvalList);
 			model.addAttribute("recentMailList", dashboardService.getRecentMailList(loginEmployee.getEmployeeId()));
 			model.addAttribute("todaySchedule", dashboardService.getTodaySchedule(loginEmployee.getEmployeeNo()));
 			model.addAttribute("recentApprovalList",

@@ -23,8 +23,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 
 /** 
- *  그룹웨어 부서관리 등록,조회,조직도 등컨트롤러   
- *  @author DEPT관리자 개발팀 김예찬
+ * 그룹웨어 부서 관련 API 컨트롤러
+ * - 부서 목록 조회, 직급/권한 조회, 조직도, 부서 등록 및 부서장 수정  
+ *  @author 김예찬
  *  @serial 2025-03-24
  *  <pre>
  *  <pre>
@@ -42,6 +43,13 @@ public class DeptController {
     private final EmpService empService;
     private final DeptService deptService;
     
+    
+    /**
+     * 부서 목록 조회 API
+     * 
+     * @param deptVO : 부서 필터 정보
+     * @return 부서 목록
+     */
 
     // 부서 목록 조회 API
     @GetMapping("/departments")
@@ -52,6 +60,14 @@ public class DeptController {
 	    	    
         return deptMapper.getAllDepartments(deptVO);
     }
+    
+    /**
+     * 직급 목록 조회 API
+     * 
+     * @param rankVO : 직급 필터 정보
+     * @return 직급 목록
+     */
+    
     // 직급 목록 조회 API
     @GetMapping("/ranks")
     public List<RankVO> getRanks(RankVO rankVO) {
@@ -62,6 +78,13 @@ public class DeptController {
         return deptMapper.getAllRanks(rankVO);
     }
     
+    /**
+     * 권한 목록 조회 API
+     * 
+     * @param rightsVO : 권한 필터 정보
+     * @return 권한 목록
+     */
+    
     // 권한 목록 조회 API
     @GetMapping("/rights")
     public List<RightsVO> getRights(RightsVO rightsVO) {
@@ -71,6 +94,13 @@ public class DeptController {
     	
         return deptMapper.getAllRights(rightsVO);
     }
+    
+    /**
+     * 조직도 데이터 조회 API (부서 + 사원 포함)
+     * 
+     * @param deptVO : 조직도 필터 정보
+     * @return 조직도 정보 (부서 + 사원 리스트 포함)
+     */
     
     // 조직도 데이터 제공 (JSON 응답)
     @GetMapping("/orgchart")
@@ -102,12 +132,26 @@ public class DeptController {
         return result;
     }
     
+    /**
+     * 부서 등록 API (그룹웨어 구독시 사용)
+     * 
+     * @param deptVO : 등록할 부서 정보
+     * @return 등록된 부서번호
+     */
+    
     // 그룹웨어 구독시 대표 부서등록
     @PostMapping("/saveDepartMent")
     public ResponseEntity<Integer> saveDept(@RequestBody DeptVO deptVO) {
         deptService.insertDepartment(deptVO);
         return ResponseEntity.ok(deptVO.getDepartmentNo());
     }
+    
+    /**
+     * 부서장 변경 API
+     * 
+     * @param deptVO : 부서번호 + 부서장 사번 포함
+     * @return 성공 여부 메시지
+     */
     
     @PostMapping("/updateDepartMent")
     public ResponseEntity<String> updateManager(@RequestBody DeptVO deptVO) {
