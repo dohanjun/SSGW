@@ -26,22 +26,32 @@
 							<table class="table table-bordered file-info-table">
 								<tbody>
 									<tr>
-										<th>제목</th>
-										<td th:text="${post.title}">제목</td>
-										<th>작성자</th>
-										<td th:text="${post.writer}">작성자</td>
+										<th style="width: 120px;">제목</th>
+										<td colspan="3" th:text="${post.title}"></td>		
 									</tr>
 									<tr>
+										<th>작성자</th>
+										<td th:text="${post.writer}">작성자</td>
 										<th>등록일</th>
 										<td
 											th:text="${#dates.format(post.creationDate, 'yyyy-MM-dd')}">등록일</td>
-										<th>파일명</th>
-										<td
-											th:text="${post.fileCount > 1 ? post.fileName + ' 외 ' + (post.fileCount - 1) + '건' : post.fileName}">파일명</td>
+										
 									</tr>
 									<tr>
-										<td colspan="4"><textarea class="content-area" readonly
-												th:text="${post.content}"></textarea></td>
+										<th>내용</th>
+										<td colspan="3"><textarea
+												class="content-area auto-expand" th:utext="${post.content}"
+												readonly></textarea></td>
+									</tr>
+									<tr>
+										<th>첨부파일</th>
+										<td colspan="3">
+											<ul class="mb-0">
+												<li th:each="file : ${fileList}"><a
+													th:text="${file.fileName}"></a></li>
+												<li th:if="${#lists.isEmpty(fileList)}">첨부파일 없음</li>
+											</ul>
+										</td>
 									</tr>
 								</tbody>
 							</table>

@@ -44,7 +44,7 @@
 		parameterType="com.yedam.app.group.service.RankVO">
 		SELECT RANK_ID, JOB_TITLE_NAME
 		FROM RANK
-		ORDER BY RANK_ID ASC
+		ORDER BY RANK_ID DESC
 	</select>
 
 	<!-- 권한 목록 조회 -->
@@ -78,7 +78,7 @@
 
 	<!-- 부서 및 직원 정보 매핑 -->
 	<resultMap id="DeptMap" type="DeptVO">
-		<!-- 1 부서 ID (필수) -->
+		<!-- 1 부서 ID -->
 		<id property="departmentNo" column="DEPARTMENT_NO" />
 
 		<!-- 2 회사 정보 -->

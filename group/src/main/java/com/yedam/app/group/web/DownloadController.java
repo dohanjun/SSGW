@@ -34,6 +34,8 @@ import com.yedam.app.group.service.FileService;
 import com.yedam.app.group.service.RepositoryFileVO;
 import com.yedam.app.utill.AESUtil;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @Controller
 @RequestMapping("/download")
 public class DownloadController {
@@ -46,12 +48,12 @@ public class DownloadController {
 	}
 
 	@GetMapping("/{fileId}")
-	public ResponseEntity<Resource> downloadFile(@PathVariable Long fileId) {
+	public ResponseEntity<Resource> downloadFile(@PathVariable Long fileId, HttpServletRequest request) {
 		// 1. 로그인 사용자 정보
         EmpVO loggedInUser = empService.getLoggedInUserInfo();
 
         // 2. 공인 IP 조회 (ipinfo.io)
-        String clientIp = getClientPublicIp();
+        String clientIp =request.getRemoteAddr(); //getClientPublicIp();
 
         // 3. DB에 저장된 회사/사원 허용 IP 정보 조회
         String firstIp = empService.getFirstIpByEmployeeNo(loggedInUser.getSuberNo());
@@ -115,7 +117,6 @@ public class DownloadController {
                 return map.get("ip").toString();
             }
         } catch (Exception e) {
-            System.out.println("ipinfo.io 호출 실패: " + e.getMessage());
         }
         return null;
     }
@@ -131,10 +132,10 @@ public class DownloadController {
     }
     
     @GetMapping("/zip/{writingId}")
-    public ResponseEntity<Resource> downloadAllFilesAsZip(@PathVariable Long writingId) {
+    public ResponseEntity<Resource> downloadAllFilesAsZip(@PathVariable Long writingId, HttpServletRequest request) {
         EmpVO loginUser = empService.getLoggedInUserInfo();
 
-        String clientIp = getClientPublicIp();
+        String clientIp = request.getRemoteAddr();//getClientPublicIp();
         String firstIp = empService.getFirstIpByEmployeeNo(loginUser.getSuberNo());
         String secondIp = empService.getSecondIpByEmployeeNo(loginUser.getSuberNo());
         String tempIp = loginUser.getTempIp();
@@ -226,9 +227,9 @@ public class DownloadController {
     }
     
     @GetMapping("/boardFile/zip/{postId}")
-    public ResponseEntity<Resource> downloadBoardFilesAsZip(@PathVariable int postId) {
+    public ResponseEntity<Resource> downloadBoardFilesAsZip(@PathVariable int postId, HttpServletRequest request) {
         EmpVO loginUser = empService.getLoggedInUserInfo();
-        String clientIp = getClientPublicIp();
+        String clientIp = request.getRemoteAddr(); //getClientPublicIp();
 
         // IP 인증
         String firstIp = empService.getFirstIpByEmployeeNo(loginUser.getSuberNo());
@@ -266,11 +267,9 @@ public class DownloadController {
                         log.setIp(clientIp);
                         fileService.insertDownloadLog(log);
                     } catch (Exception logEx) {
-                        System.out.println("다운로드 로그 저장 실패: " + logEx.getMessage());
                     }
 
                 } catch (Exception fileEx) {
-                    System.out.println("파일 압축 실패: " + fileEx.getMessage());
                 }
             }
         } catch (Exception e) {

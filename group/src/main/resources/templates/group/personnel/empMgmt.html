@@ -180,23 +180,28 @@
     const dept = [[${empserchVO.departmentNo}]]
     const rank = [[${empserchVO.rankId}]]
 
+    // 검색 초기화 함수
     function init() {
-        depa.value = "";
-        rankId.value = "";
-        keyemp.value = "";
-        resignationStatus.value = "";
+        document.getElementById("depa").value = '';
+        document.getElementById("rankId").value = '';
+        document.getElementById("keyemp").value = '';
+        document.getElementById("resignationStatus").value = '';
+        gopage(1);
     }
 
+    // 페이지 이동 처리
     function gopage(p) {
-        frmSearch.page.value = p;
-        frmSearch.submit();
+        document.forms["frmSearch"].page.value = p;
+        document.forms["frmSearch"].submit();
     }
 
+    // 재직자 / 퇴사자 필터링
     function filterStatus(status) {
         document.getElementById("resignationStatus").value = status;
         gopage(1);
     }
 
+    // 부서, 직급 드롭다운 비동기 로딩
     document.addEventListener("DOMContentLoaded", function () {
         loadData("/api/departments", "depa", dept);
         loadData("/api/ranks", "rankId", rank);

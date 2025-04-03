@@ -38,7 +38,7 @@
 				<!-- 🔍 검색창 -->
 				<div class="position-relative mb-3" style="width: 350px; margin: 0 auto;">
   					<input type="text" id="searchInput" name="keyword" class="form-control pl-4"
-         					placeholder="검색어 입력" th:value="${keyword}" />
+         					placeholder="   검색어 입력" th:value="${keyword}" />
   						<button type="button" onclick="submitSearchForm()" 
           						style="position: absolute; top: 50%; left: 3px; transform: translateY(-50%); background: none; border: none;">
     						<i class="fas fa-search" style="color: #aaa;"></i>
@@ -51,27 +51,27 @@
 						cellspacing="0">
 						<thead>
 							<tr>
-								<th><input type="checkbox" id="selectAll"></th>
-								<th>제목</th>
-								<th>작성자</th>
-								<th>파일명</th>
-								<th>작성일</th>
-								<th>삭제일</th>
+								<th style= "text-align: center; width: 60px;"><input type="checkbox" id="selectAll"></th>
+								<th style="text-align: center; width: 350px;">제목</th>
+								<th style="text-align: center;">첨부파일</th>
+								<th style="text-align: center; width: 200px;">작성자</th>
+								<th style="text-align: center; width: 200px;">작성일</th>
+								<th style="text-align: center; width: 200px;">삭제일</th>
 							</tr>
 						</thead>
 						<tbody>
 							<tr th:each="post : ${basketList}"
 								th:onclick="'goToBasketDetail(' + ${post.writingId} + ')'"
 								style="cursor: pointer;">
-								<td><input type="checkbox" name="writingIds"
+								<td style= "text-align: center; width: 60px;"><input type="checkbox" name="writingIds"
 									th:value="${post.writingId}" class="file-checkbox"
 									onclick="event.stopPropagation();"></td>
 								<td th:text="${post.title}"></td>
-								<td th:text="${post.writer}"></td>
 								<td
 									th:text="${post.fileCount > 1 ? post.fileName + ' 외 ' + (post.fileCount - 1) + '건' : post.fileName}"></td>
-								<td th:text="${#dates.format(post.creationDate, 'yyyy-MM-dd')}"></td>
-								<td th:text="${#dates.format(post.delDate, 'yyyy-MM-dd')}"></td>
+								<td style="text-align: center;" th:text="${post.writer}"></td>
+								<td style="text-align: center;" th:text="${#dates.format(post.creationDate, 'yyyy-MM-dd')}"></td>
+								<td style="text-align: center;" th:text="${#dates.format(post.delDate, 'yyyy-MM-dd')}"></td>
 							</tr>
 							<tr th:if="${#lists.isEmpty(basketList)}">
 								<td colspan="6" class="text-center text-muted">휴지된 자료가

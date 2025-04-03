@@ -22,7 +22,7 @@
 							<h6 class="m-0 font-weight-bold text-primary">게시글 등록</h6>
 						</div>
 						<div class="card-body">
-						  <form th:action="@{/insertBoard}" method="post" enctype="multipart/form-data">
+						  <form id="insertForm" th:action="@{/insertBoard}" method="post" enctype="multipart/form-data">
 						  <input type="hidden" name="boardType" th:value="${boardType}"/>
 						  <input type="hidden" name="boardId" th:value="${boardId}" />
 							<table class="table file-info-table">
@@ -123,15 +123,16 @@
 		document.querySelector('.ql-editor').style.maxHeight = "500px";
 		
 		document.getElementById("insertForm").addEventListener("submit", function (e) {
-		      const html = quill.root.innerHTML.trim();
-		      const cleanContent = html.replace(/<\/?p>/g, "").trim();
-		      document.getElementById("postContent").value = cleanContent;
+			  const html = quill.root.innerHTML.trim();
+			  document.getElementById("postContent").value = html;
 
-		      if (!cleanContent || cleanContent === "") {
-		        alert("내용이 입력되지 않았습니다.");
-		        e.preventDefault();
-		      }
-		    });
+			  const textOnly = html.replace(/<(.|\n)*?>/g, "").trim();
+			  if (!textOnly || textOnly === "") {
+			    alert("내용이 입력되지 않았습니다.");
+			    e.preventDefault();
+			  }
+			});
+
 	</script>
 </body>
 </html>

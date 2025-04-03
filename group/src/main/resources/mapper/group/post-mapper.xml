@@ -123,6 +123,7 @@
 <sql id="cri">
   		WHERE r.suber_no = #{suberNo}
           AND r.file_repository_type = '전체'
+          AND p.fix = 'N'
           AND p.writing_id NOT IN (SELECT writing_id FROM basket)
           <if test="keyword != null and keyword != ''">
           AND (
@@ -153,6 +154,7 @@
     WHERE r.suber_no = #{suberNo}
       AND r.department_no = #{departmentNo}
       AND r.file_repository_type = '부서'
+      AND p.fix = 'N'
       AND p.writing_id NOT IN (SELECT writing_id FROM basket)
       <if test="keyword != null and keyword != ''">
         AND (
