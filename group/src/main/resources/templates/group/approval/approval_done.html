@@ -144,111 +144,15 @@
     			<h5 class="text-danger">반려 사유</h5>
     			<div class="border p-3 bg-light" th:text="${aprv.rejectReason}">반려 사유 내용</div>
 			</div>
-            <!-- 승인/반려 버튼 -->
-            <div class="text-right" th:if="${aprv.aprvStatus != '완료' and aprv.aprvStatus != '반려' and aprvRole != '참조'}">
-                <button id="approvebtn" class="btn btn-success">승인</button>
-                <button id="backbtn" class="btn btn-danger">반려</button>
-            </div>
-
         </div>
     </div>
 </div>
-<!-- 반려 사유 입력 모달 -->
-<div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="rejectModalLabel">반려 사유 입력</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="닫기">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <textarea id="rejectReasonInput" class="form-control" rows="5" placeholder="반려 사유를 입력해주세요."></textarea>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
-        <button type="button" class="btn btn-danger" id="confirmRejectBtn">반려 처리</button>
-      </div>
-    </div>
-  </div>
-</div>
+
 
 
 
 </body>
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    // 도장등록 버튼
-    document.querySelectorAll(".insert-stamp-btn").forEach(btn => {
-    btn.addEventListener("click", function () {
-        const draftNo = this.getAttribute("data-draftno");
-        const employeeNo = this.getAttribute("data-empno");
-        const employeeName = this.getAttribute("data-empname") || "이름없음";
-        const parentDiv = this.parentElement;
-
-        fetch('/aprv/stampsave', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ draftNo: draftNo, employeeNo: employeeNo })
-        })
-        .then(res => res.json())
-        .then(result => {
-            if (result.success) {
-                parentDiv.innerHTML = ""; // 기존 버튼 제거
-
-                if (result.stampImgPath) {
-                    // 도장이 실제 등록된 경우 이미지로 표시
-                    const img = document.createElement("img");
-                    img.src = result.stampImgPath;
-                    img.width = 150;
-                    img.height = 150;
-                    img.classList.add("d-block", "mx-auto");
-                    parentDiv.appendChild(img);
-                } else {
-                    // 도장이 없으면 이름으로 가짜 도장 표시
-                    const placeholder = document.createElement("div");
-                    placeholder.className = "stamp-placeholder";
-                    placeholder.textContent = employeeName;
-                    parentDiv.appendChild(placeholder);
-                }
-            } else {
-                alert("도장 등록 실패: " + result.message);
-            }
-        })
-        .catch(err => console.error("에러 발생:", err));
-    });
-});
-
-
-    // 승인 버튼
-    document.getElementById("approvebtn").addEventListener("click", function () {
-        const draftNo = document.getElementById("draftNo").value;
-        const employeeNo = document.getElementById("employeeNo").value;
-        const aprvOrder = document.getElementById("aprvOrder").value;
-
-        fetch('/aprv/approve', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ draftNo, employeeNo, aprvOrder })
-        })
-        .then(res => res.json())
-        .then(result => {
-            if (result.success) {
-                alert("승인 처리되었습니다!");
-                location.reload();
-            } else {
-                alert("승인 실패: " + result.message);
-            }
-        })
-        .catch(err => {
-            console.error("승인 중 오류 발생:", err);
-            alert("승인 처리 중 오류가 발생했습니다.");
-        });
-    });
-
-});
-
 document.addEventListener("DOMContentLoaded", function () {
     // 'data-aprvorder' 속성이 있는 모든 <span> 요소 선택
     const aprvOrderElements = Array.from(document.querySelectorAll('[data-aprvorder]'));
@@ -266,41 +170,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-//반려 버튼 클릭 시 모달 띄우기
-document.getElementById("backbtn").addEventListener("click", function () {
-    $('#rejectModal').modal('show');
-});
-
-// 반려 모달에서 '반려 처리' 버튼 클릭 시 서버 전송
-document.getElementById("confirmRejectBtn").addEventListener("click", function () {
-    const draftNo = document.getElementById("draftNo").value;
-    const employeeNo = document.getElementById("employeeNo").value;
-    const rejectReason = document.getElementById("rejectReasonInput").value.trim();
-
-    if (!rejectReason) {
-        alert("반려 사유를 입력해주세요.");
-        return;
-    }
-
-    fetch('/aprv/reject', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ draftNo, employeeNo, rejectReason })
-    })
-    .then(res => res.json())
-    .then(result => {
-        if (result.success) {
-            alert("반려 처리되었습니다.");
-            location.reload();
-        } else {
-            alert("반려 실패: " + result.message);
-        }
-    })
-    .catch(err => {
-        console.error("반려 중 오류 발생:", err);
-        alert("반려 처리 중 오류가 발생했습니다.");
-    });
-});
 
 </script>
 
