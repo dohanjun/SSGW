@@ -96,7 +96,7 @@
 							</table>
 							<div class="text-center mb-3">
 								<div class="d-inline-flex gap-2">
-									<a href="javascript:history.back()" class="btn btn-secondary">
+									<a onclick="history.back()" class="btn btn-secondary">
 										<i class="fas fa-arrow-left"></i>
 									</a> <a th:if="${isEditable}"
 										th:href="@{/editPost(writingId=${post.writingId})}"

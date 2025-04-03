@@ -338,4 +338,11 @@
     )
     WHERE rn &gt; #{offset}
 </select>
+
+<select id="countFixedPosts" resultType="int">
+        SELECT COUNT(*)
+        FROM board_post
+        WHERE board_id = #{boardId}
+          AND fixed = 'Y'
+</select>
 </mapper>

@@ -71,5 +71,7 @@ public interface BoardMapper {
                                                    @Param("keyword") String keyword,
                                                    @Param("offset") int offset,
                                                    @Param("pageSize") int pageSize);
+    
+    int countFixedPosts(@Param("boardId") int boardId);
 
 }

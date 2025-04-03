@@ -109,11 +109,17 @@ iframe.pdf-viewer {
 										<th>조회수</th>
 										<td th:text="${post.views}"></td>
 									</tr>
+									
+									<tr>
+										<th>내용</th>
+										<td colspan="4">
+											<div class="content-area" th:utext="${post.postContent}"></div>
+										</td>
+									</tr>
 									<tr>
 										<th>첨부파일</th>
 										<td colspan="3">
-											<div
-												th:if="${attachments != null and !#lists.isEmpty(attachments)}">
+											<div th:if="${attachments != null and !#lists.isEmpty(attachments)}">
 												<div th:each="file : ${attachments}">
 													<a
 														th:href="@{/download/boardFile/{id}(id=${file.attachmentId})}"
@@ -122,11 +128,6 @@ iframe.pdf-viewer {
 											</div> <span
 											th:if="${attachments == null or #lists.isEmpty(attachments)}">첨부파일
 												없음</span>
-										</td>
-									</tr>
-									<tr>
-										<td colspan="4">
-											<div class="content-area" th:utext="${post.postContent}"></div>
 										</td>
 									</tr>
 								</tbody>
@@ -182,6 +183,19 @@ iframe.pdf-viewer {
 		</div>
 	</div>
 <script>
+document.addEventListener('DOMContentLoaded', () => {
+  const images = document.querySelectorAll('.content-area img');
+  images.forEach(img => {
+    const originalSrc = img.getAttribute('src');
+    const parts = originalSrc.split('/');
+    const fileName = parts.pop();
+    const encodedFileName = encodeURIComponent(fileName);
+    const encodedSrc = [...parts, encodedFileName].join('/');
+    img.setAttribute('src', encodedSrc);
+  });
+});
+</script>
+<script>
   document.addEventListener('DOMContentLoaded', function () {
     const postId = document.getElementById("postId").value;
 
@@ -194,23 +208,32 @@ iframe.pdf-viewer {
     });
 });
 </script>
-<script>
-function toggleFix(postId) {
-	  fetch('/board/toggleFix', {
-	    method: 'POST',
-	    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-	    body: new URLSearchParams({ postId: postId })
-	  })
-	    .then(response => response.text())
-	    .then(result => {
-	      console.log("서버 응답:", result);
-	      location.reload(); // 새로고침해서 반영
-	    })
-	    .catch(error => {
-	      alert("고정 상태 변경 실패");
-	      console.error(error);
-	    });
-	}
+<script th:inline="javascript">
+  const fixedCount = /*[[${fixedCount}]]*/ 0;
+
+  function toggleFix(postId) {
+    fetch('/board/toggleFix', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        postId: postId,
+        fixedCount: fixedCount
+      })
+    })
+    .then(response => response.text())
+    .then(result => {
+      if (result === 'LIMIT_EXCEEDED') {
+        alert('⚠ 고정글은 최대 5개까지만 설정할 수 있습니다.');
+      } else {
+        alert('✅ 고정 상태가 변경되었습니다.');
+        location.reload();
+      }
+    })
+    .catch(error => {
+      alert('❌ 고정 상태 변경 중 오류가 발생했습니다.');
+      console.error(error);
+    });
+  }
 </script>
 <!-- 페이징 적용된 댓글 처리용 수정 코드 -->
 <script>
