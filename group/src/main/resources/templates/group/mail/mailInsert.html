@@ -125,11 +125,11 @@
     <div class="content-wrapper">
         <div class="employee-container">
             <h3 class="text-center">메일쓰기</h3>
-            <form enctype="multipart/form-data" th:action="@{mailInsert}" method="post" class="user" name="form">
                 <!-- 보내기 및 임시저장 버튼 -->
+            <form enctype="multipart/form-data" th:action="@{mailInsert}" method="post" class="user" name="form">
                 <div class="btn-container">
-                    <button class="btn btn-primary" type="button" onclick="insertMailType('보낸')">보내기</button>
                     <button class="btn btn-primary" type="button" onclick="insertMailType('임시')">임시저장</button>
+                    <button class="btn btn-primary" type="button" onclick="insertMailType('보낸')">보내기</button>
                 </div>
 
                 <!-- hidden input으로 employeeId 추가 -->

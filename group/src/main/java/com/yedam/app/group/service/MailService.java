@@ -49,8 +49,15 @@ public interface MailService {
 	public List<MailVO> selectPutList(PageListVO vo);
 	//임시메일함
 	public List<MailVO> selectTemList(PageListVO vo);
+	
+	//임시저장
+	public Map<String, Object> MailPro(int mailId);
+	
 	//휴지통
 	public List<MailVO> selectDelList(PageListVO vo);
+	
+	//휴지통 단건조회
+	public MailVO deleteFindInfo(MailVO mailVO);
 	
 	//단건메일 삭제
 	public Map<String, Object> MailRemove(int MailId);

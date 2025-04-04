@@ -48,7 +48,7 @@ public class MailServiceImpl implements MailService {
 		return mailMapper.MailFindInfo(mailVO.getMailId());
 	}
 	
-
+	//등록된 파일 갯수
 	@Override
 	public MailVO FileCount(Integer mailId) {
 		return mailMapper.MailFindInfo(mailId);
@@ -128,6 +128,18 @@ public class MailServiceImpl implements MailService {
 	public List<MailVO> selectTemList(PageListVO vo) {
 		return mailMapper.selectTemList(vo);
 	}
+	//임시저장
+	@Override
+	public Map<String, Object> MailPro(int mailId) {
+		Map<String, Object> map = new HashMap<>();
+
+		int result = mailMapper.MailPro(mailId);
+
+		if (result == 1) {
+			map.put("mailId", mailId);
+		}
+		return map;
+	}
 
 	// 휴지통
 	@Override
@@ -162,12 +174,10 @@ public class MailServiceImpl implements MailService {
 		//}
 		
 			//보낸
-		vo.setMailType("보낸");
-		vo.getGetUser();
+		vo.setMailType("보낸");  //   id -> getUser
 		mailMapper.mailCreate(vo);
 		//받은
-		vo.setMailType("받은");
-		vo.getEmployeeId();
+		vo.setMailType("받은");  //
 		mailMapper.mailCreate(vo);
 
 		return "전송성공";
@@ -194,6 +204,12 @@ public class MailServiceImpl implements MailService {
 		LocalDateTime expiryDate = currentDateTime.plusDays(30);
 		mailMapper.deleteExpiredMails(expiryDate); // 만료된 메일 삭제
 	}
+	
+	// 휴지통상세조회
+		@Override
+		public MailVO deleteFindInfo(MailVO mailVO) {
+			return mailMapper.deleteFindInfo(mailVO.getMailId());
+		}
 
 	@Scheduled(cron = "0 0/1 0 * * ?")
 	public void scheduledDeleteExpiredMails() {
