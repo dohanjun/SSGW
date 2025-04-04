@@ -136,7 +136,7 @@ public class MailController {
 			if (!dir.exists()) {
 				dir.mkdirs();
 			}
-
+  
 			// 파일을 지정된 경로에 복사
 			Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
@@ -195,17 +195,22 @@ public class MailController {
 
 	// 메일전달처리
 	@PostMapping("mailVery")
-	public String mailVeryProcess(MailVO vo) {
+	public String mailVeryProcess(MailVO vo, Model model) {
+		
+		MailVO findVO = mailService.MailSelectInfo(vo);
+		model.addAttribute("mail", findVO);
 		// 로그인한 사용자 정보 가져오기
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 		vo.setEmployeeNo(loggedInUser.getEmployeeNo());
 
+		// 메일 발송
 		mailService.sendMailToUser(vo);
 
-		return "redirect:mail";
+		// 메일 발송 후 mail 목록 페이지로 리다이렉트
+		return "redirect:mail"; // 메일 목록 페이지로 리다이렉트 (올바른 경로)
 	}
 
-	// 단건메일삭제
+	// 단건휴지통 이동
 	@GetMapping("mailDelete")
 	public String mailDelete(Integer mailId, MailVO mailVO) {
 		
@@ -244,6 +249,8 @@ public class MailController {
 		vo.setMailType("받은");
 		vo.setGetUser(loggedInUser.getEmployeeId()+domain);
 		
+		System.out.print(vo.getGetUser());
+		
 		// 페이징처리
 		vo.setStart(paging.getFirst());
 		vo.setEnd(paging.getLast());
@@ -258,11 +265,11 @@ public class MailController {
 
 	// 보낸메일함
 	@GetMapping("putMail")
-	public String putMail(@RequestParam("domain") String domain, Model model, PageListVO vo, Paging paging) {
+	public String putMail(Model model, PageListVO vo, Paging paging) {
 		
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 		vo.setMailType("보낸");
-		vo.setEmployeeId(loggedInUser.getEmployeeId()+domain);
+		vo.setEmployeeId(loggedInUser.getEmployeeId());
 
 		// 페이징처리
 		vo.setStart(paging.getFirst());
@@ -297,6 +304,18 @@ public class MailController {
 		return "group/mail/temporaryMail";
 	}
 
+	
+	// 임시저장
+	@GetMapping("mailTem")
+	public String mailTem(Integer mailId, MailVO mailVO) {
+		
+		EmpVO loggedInUser = empService.getLoggedInUserInfo();
+		mailVO.setEmployeeNo(loggedInUser.getEmployeeNo());
+		
+		mailService.MailPro(mailId);
+		return "redirect:/temporaryMail";
+	}
+	
 	// 휴지통 -> 30일 뒤 삭제
 	@GetMapping("deleteMail")
 	public String deleteMail(Model model, PageListVO vo, Paging paging) {
@@ -315,6 +334,30 @@ public class MailController {
 		List<MailVO> list = mailService.MailSelectAll(vo);
 		model.addAttribute("mails", list);
 		return "group/mail/deleteMail";
+	}
+	
+	// 휴지통상세보기
+	@GetMapping("/deleteSelect")
+	public String deleteSelect(MailVO mailVO, Model model, Integer mailId) {
+		// 로그인한 사용자 정보 가져오기
+		EmpVO loggedInUser = empService.getLoggedInUserInfo();
+		mailVO.setEmployeeNo(loggedInUser.getEmployeeNo());
+
+		// 메일 조회
+		MailVO findVO = mailService.MailSelectInfo(mailVO);
+		model.addAttribute("mail", findVO);
+
+		// 첨부파일 수량 가져오기
+		MailVO fileCount = mailService.FileCount(mailVO.getMailId());// mailId를 전달하여 파일 수량을 가져옴
+		model.addAttribute("fileCount", fileCount);
+
+		// 첨부파일 다운로드 URL 생성 (첨부파일이 있을 경우)
+		if (findVO.getAttachedFileName() != null && !findVO.getAttachedFileName().isEmpty()) {
+			model.addAttribute("downloadUrl", "/download/" + findVO.getAttachedFileName());
+		}
+
+		// "group/mail/mailSelect" 템플릿 반환
+		return "group/mail/deleteSelect";
 	}
 	
 	

@@ -38,8 +38,7 @@
 						or m.mail_type = '보낸' and m.employee_id = #{employeeId})
 					</when>
 					<when test="mailType == '휴지통'">
-						and (m.mail_type = '받은' and m.get_user = #{getUser}
-						or m.mail_type = '보낸' and m.employee_id = #{employeeId})
+						and m.mail_type = '휴지통'
 					</when>
 					<otherwise>
 						<!-- 기본 동작: '받은'과 '보낸' 모두 조회 -->
@@ -48,6 +47,11 @@
 					</otherwise>
 				</choose>
 			</if>
+			<if test="mailType == null">
+				and m.mail_type != '받은'
+				and m.mail_type != '휴지통'
+			</if>
+			
 		</where>
 	</sql>
 
@@ -229,6 +233,30 @@
 		AND expiry_date
 		&lt;= sysdate
 	</delete>
+	
+		<!-- 휴지통 단건조회 -->
+	<select id="deleteFindInfo" resultType="MailVO">
+		SELECT mail_id
+		,title
+		,content
+		,sent_state
+		,sent_date
+		,employee_id
+		,attached_file_name
+		,get_user
+		,cc
+		,recode
+		,mail_type
+		FROM Mail
+		WHERE mail_id = #{mailId}
+	</select>
+	
+	<!-- 복구 -->
+	<update id="MailBack" parameterType="int">
+	UPDATE Mail
+	SET mail_type = #{mailType}
+	WHERE mail_id = #{mailId}
+	</update>
 	
 	<!-- 완전삭제 -->
 	<delete id="MailRemove" parameterType="int">
