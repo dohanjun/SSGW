@@ -77,6 +77,8 @@ public class SecurityConfig {
 			    + "  UNION ALL "
 			    + "  SELECT EMPLOYEE_ID AS username, 'ROLE_MANAGERUSER' AS authority FROM EMPLOYEES WHERE RANK_ID = 7 "
 			    + "  UNION ALL "
+			    + "  SELECT EMPLOYEE_ID AS username, 'ROLE_SUPER_ADMIN' AS authority FROM EMPLOYEES WHERE RIGHTS_ID = 1  "
+			    + "  UNION ALL "
 			    + "  SELECT EMPLOYEE_ID AS username, 'ROLE_HR' AS authority FROM EMPLOYEES WHERE RIGHTS_ID = 2 "
 			    + "  UNION ALL "
 			    + "  SELECT EMPLOYEE_ID AS username, 'ROLE_BOARD_ADMIN' AS authority FROM EMPLOYEES WHERE RIGHTS_ID = 3 "
