@@ -1,8 +1,11 @@
 package com.yedam.app.group.web;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -58,10 +61,18 @@ public class ModuleController {
 	}
 
 	@PostMapping("/saveUser")
-	public ResponseEntity<?> saveUser(@RequestBody EmpVO employee) {   
-	    employee.setEmployeePw(encoder.encode(employee.getEmployeePw()));
-	    empService.createEmpInfo(employee);
-	    return ResponseEntity.ok(employee.getEmployeeNo());
+	public ResponseEntity<?> saveUser(@RequestBody EmpVO employee) {
+	    try {
+	        employee.setEmployeePw(encoder.encode(employee.getEmployeePw()));
+	        ClassPathResource resource = new ClassPathResource("static/img/default-profile.jpg");
+	        byte[] defaultImageBytes = resource.getInputStream().readAllBytes();
+	        employee.setProfileImageBLOB(defaultImageBytes); // VO에 필드가 있다면
+	        empService.createEmpInfo(employee);
+	        return ResponseEntity.ok(employee.getEmployeeNo());
+	    } catch (IOException e) {
+	        e.printStackTrace(); // 로그 처리
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // 혹은 사용자 메시지
+	    }
 	}
 
 
