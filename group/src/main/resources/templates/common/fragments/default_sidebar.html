@@ -121,7 +121,7 @@
             </a>
             <div id="work" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
-                    <th:block th:if="${#authorization.expression('hasAnyAuthority(''ROLE_BOARD_ADMIN'', ''ROLE_MANAGER'', ''ROLE_HR'')')}">
+                    <th:block th:if="${#authorization.expression('hasAnyAuthority(''ROLE_SUPER_ADMIN'',''ROLE_BOARD_ADMIN'', ''ROLE_MANAGER'', ''ROLE_HR'')')}">
                         <a class="collapse-item" th:href="@{/deptAttendance}">
                             <i class="fas fa-fw fa-user-cog"></i> 관리자 근태관리
                         </a>
@@ -179,7 +179,7 @@
         </li>
 
         <!-- 인사관리 -->
-        <th:block th:if="${#authorization.expression('hasAnyAuthority(''ROLE_MANAGER'', ''ROLE_HR'')')}">
+        <th:block th:if="${#authorization.expression('hasAnyAuthority(''ROLE_SUPER_ADMIN'',''ROLE_MANAGER'', ''ROLE_HR'')')}">
             <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseT"
                    aria-expanded="true" aria-controls="collapseT">
