@@ -29,7 +29,7 @@ public class MailVO {
     private boolean isTemporary;
     private LocalDateTime expiryDate;
     
-    private String isSent;
+    private boolean isSent;
     
     private Integer employeeNo;
     

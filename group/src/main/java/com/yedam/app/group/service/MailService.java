@@ -14,7 +14,8 @@ public interface MailService {
 	//메일단건조회
 	public MailVO MailSelectInfo(MailVO mailVO);
 	
-
+	//파일 업로드 갯수
+	public MailVO FileCount(Integer mailId);
 	
 	//메일등록
 	public int InsertMail(MailVO mailVO);
@@ -35,7 +36,7 @@ public interface MailService {
 	public Map<String, Object> MailDel(int MailId);
 	
 	//여러개의 메일삭제
-	public int MailDels(List<Integer> mailIds);
+	public void MailDels(List<Integer> mailIds);
 	
 	//메일 페이지네이션
 	public int pageGetCount(PageListVO pagelistVO);
@@ -48,8 +49,15 @@ public interface MailService {
 	public List<MailVO> selectPutList(PageListVO vo);
 	//임시메일함
 	public List<MailVO> selectTemList(PageListVO vo);
+	
+	//임시저장
+	public Map<String, Object> MailPro(int mailId);
+	
 	//휴지통
 	public List<MailVO> selectDelList(PageListVO vo);
+	
+	//휴지통 단건조회
+	public MailVO deleteFindInfo(MailVO mailVO);
 	
 	//단건메일 삭제
 	public Map<String, Object> MailRemove(int MailId);
@@ -64,7 +72,6 @@ public interface MailService {
 	//휴지통 자동삭제 기능
 	void deleteCurrentMails();
 
-	public MailVO FileCount(Integer mailId);
 
 	
 

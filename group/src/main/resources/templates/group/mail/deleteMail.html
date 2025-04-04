@@ -133,11 +133,10 @@
     </div>
 
     <!-- 삭제 버튼 -->
-    <div class="btn-container">
-      <button class="btn btn-primary">
-        삭제
-      </button>
-    </div>
+<!--     <div class="btn-container">
+     <button type="button" class="btn btn-danger"
+                        th:onclick="|location.href='@{/deleteMail(mailId=${mail.mailId},country=Kor)}'|">삭제</button>
+    </div> -->
 
     <!-- 메일목록 창 -->
     <div class="p">
@@ -156,10 +155,10 @@
             <th:block th:each="info : ${mails}">
               <tr>
                 <td><input type="checkbox" name="checkMenu" class="checkbox" onchange="checkMenuHandler(this)" /></td>
-                <td th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[${info.title}]]</td>
-                <td th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[${info.employeeId}]]</td>
-                <td th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|" th:text="${info.fileCount > 1 ? (info.fileCount - 1) + '건' : info.attachedFileName}"></td>
-                <td th:onclick="|location.href='@{/mailSelect(mailId=${info.mailId})}';|">[[${ #dates.format(info.sentDate, 'yyyy년MM월dd일') }]]</td>
+                <td th:onclick="|location.href='@{/deleteSelect(mailId=${info.mailId})}';|">[[${info.title}]]</td>
+                <td th:onclick="|location.href='@{/deleteSelect(mailId=${info.mailId})}';|">[[${info.employeeId}]]</td>
+                <td th:onclick="|location.href='@{/deleteSelect(mailId=${info.mailId})}';|" th:text="${info.fileCount > 1 ? (info.fileCount - 1) + '건' : info.attachedFileName}"></td>
+                <td th:onclick="|location.href='@{/deleteSelect(mailId=${info.mailId})}';|">[[${ #dates.format(info.sentDate, 'yyyy년MM월dd일') }]]</td>
               </tr>
             </th:block>
           </tbody>

@@ -121,7 +121,7 @@
             </a>
             <div id="work" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
-                    <th:block th:if="${#authorization.expression('hasAnyAuthority(''ROLE_BOARD_ADMIN'', ''ROLE_MANAGER'', ''ROLE_HR'')')}">
+                    <th:block th:if="${#authorization.expression('hasAnyAuthority(''ROLE_SUPER_ADMIN'',''ROLE_BOARD_ADMIN'', ''ROLE_MANAGER'', ''ROLE_HR'')')}">
                         <a class="collapse-item" th:href="@{/deptAttendance}">
                             <i class="fas fa-fw fa-user-cog"></i> 관리자 근태관리
                         </a>
@@ -156,7 +156,7 @@
                         <i class="fas fa-fw fa-plus-square"></i> 양식추가
                     </a>
                     <a class="collapse-item" th:href="@{/aprv/forms}">
-                        <i class="fa-solid fa-wrench"></i> 회사양식수정/삭제
+                        <i class="fa-solid fa-wrench"></i> 양식관리
                     </a>
                     <h6 class="collapse-header">결재</h6>
                     <a class="collapse-item" th:href="@{/aprv/list?aprvStatus=대기}">
@@ -179,7 +179,7 @@
         </li>
 
         <!-- 인사관리 -->
-        <th:block th:if="${#authorization.expression('hasAnyAuthority(''ROLE_MANAGER'', ''ROLE_HR'')')}">
+        <th:block th:if="${#authorization.expression('hasAnyAuthority(''ROLE_SUPER_ADMIN'',''ROLE_MANAGER'', ''ROLE_HR'')')}">
             <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseT"
                    aria-expanded="true" aria-controls="collapseT">
@@ -200,10 +200,10 @@
                         </a>
                         <h6 class="collapse-header">부서관리</h6>
                         <a class="collapse-item" th:href="@{/deptMgmt}">
-                            <i class="fas fa-fw fa-building"></i> 부서조회
+                            <i class="fas fa-fw fa-building"></i> 부서목록
                         </a>
                         <a class="collapse-item" th:href="@{/deptInsert}">
-                            <i class="fas fa-fw fa-plus"></i> 부서추가
+                            <i class="fas fa-fw fa-plus"></i> 부서관리
                         </a>
                         <h6 class="collapse-header">휴가관리</h6>
                         <a class="collapse-item" th:href="@{/vacaList}">
@@ -234,16 +234,16 @@
                         <i class="fas fa-fw fa-edit"></i> 메일쓰기
                     </a>
                     <h6 class="collapse-header">메일함</h6>
-                    <a class="collapse-item" th:href="@{/getMail?mailType=받은}">
+                    <a class="collapse-item" th:href="@{/getMail(mailType='받은',domain='@test.com')}">
                         <i class="fas fa-fw fa-download"></i> 받은메일함
                     </a>
-                    <a class="collapse-item" th:href="@{/putMail?mailType=보낸}">
+                    <a class="collapse-item" th:href="@{/putMail(mailType='보낸',domain='@test.com')}">
                         <i class="fas fa-fw fa-upload"></i> 보낸메일함
                     </a>
-                    <a class="collapse-item" th:href="@{/temporaryMail?mailType=임시}">
+                    <a class="collapse-item" th:href="@{/temporaryMail(mailType='임시',domain='@test.com')}">
                         <i class="fas fa-fw fa-save"></i> 임시메일함
                     </a>
-                    <a class="collapse-item" th:href="@{/deleteMail?mailType=휴지통}">
+                    <a class="collapse-item" th:href="@{/deleteMail(mailType='휴지통',domain='@test.com')}">
                         <i class="fas fa-fw fa-trash"></i> 휴지통
                     </a>
                 </div>
@@ -323,5 +323,9 @@
     </ul>
     <!-- End of Sidebar -->
 </div>
+  	<script th:inline="javascript">
+		var post = /*[[${userDepInfo}]]*/[];
+		console.log(post)
+	</script>
 </body>
 </html>

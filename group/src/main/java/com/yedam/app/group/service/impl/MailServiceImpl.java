@@ -11,6 +11,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.yedam.app.group.mapper.MailMapper;
 import com.yedam.app.group.service.MailService;
@@ -47,7 +48,7 @@ public class MailServiceImpl implements MailService {
 		return mailMapper.MailFindInfo(mailVO.getMailId());
 	}
 	
-
+	//등록된 파일 갯수
 	@Override
 	public MailVO FileCount(Integer mailId) {
 		return mailMapper.MailFindInfo(mailId);
@@ -95,17 +96,11 @@ public class MailServiceImpl implements MailService {
 
 	// 여러개의 메일삭제
 	@Override
-	public int MailDels(List<Integer> mailIds) {
+	public void MailDels(List<Integer> mailIds) {
 
-		// mailIds 리스트에 있는 모든 메일을 삭제
-		int result = mailMapper.MailDels(mailIds);
-
-		// 결과가 0보다 크면 삭제가 성공한 것이므로 삭제된 개수 반환
-		if (result > 0) {
-			return result; // 삭제된 개수 반환
-		} else {
-			return 0; // 삭제 실패 시 0 반환
-		}
+		if (mailIds != null && !mailIds.isEmpty()) {
+            mailMapper.MailDels(mailIds); // Mapper를 통해 데이터베이스에서 삭제
+        }
 	}
 
 	// 메일페이지네이션
@@ -133,6 +128,18 @@ public class MailServiceImpl implements MailService {
 	public List<MailVO> selectTemList(PageListVO vo) {
 		return mailMapper.selectTemList(vo);
 	}
+	//임시저장
+	@Override
+	public Map<String, Object> MailPro(int mailId) {
+		Map<String, Object> map = new HashMap<>();
+
+		int result = mailMapper.MailPro(mailId);
+
+		if (result == 1) {
+			map.put("mailId", mailId);
+		}
+		return map;
+	}
 
 	// 휴지통
 	@Override
@@ -141,15 +148,19 @@ public class MailServiceImpl implements MailService {
 	}
 
 	// 메일전송
-
 	@Value("${spring.mail.username}")
 	private String ADMIN_SEND_EMAIL;
 
 	public String sendMailToUser(MailVO vo) {
 
-		if (vo.getMailType().equals("보낸")) {
+	    if (vo.getGetUser() == null || vo.getGetUser().isEmpty()) {
+	        return "수신자의 이메일 주소가 유효하지 않습니다.";
+	    }
+	    
+		//if (vo.getMailType().equals("보낸")) {
+		
 			SimpleMailMessage message = new SimpleMailMessage();
-			message.setFrom(ADMIN_SEND_EMAIL); // 이메일을 보낼 송신자
+			message.setFrom(vo.getEmployeeId()); // 이메일을 보낼 송신자
 			message.setTo(vo.getGetUser()); // 이메일을 받을 수신자
 			message.setSubject(vo.getTitle()); // 이메일 제목
 			message.setText(vo.getContent()); // 이메일 본문
@@ -160,7 +171,13 @@ public class MailServiceImpl implements MailService {
 				e.printStackTrace();
 				return "전송 실패";
 			}
-		}
+		//}
+		
+			//보낸
+		vo.setMailType("보낸");  //   id -> getUser
+		mailMapper.mailCreate(vo);
+		//받은
+		vo.setMailType("받은");  //
 		mailMapper.mailCreate(vo);
 
 		return "전송성공";
@@ -187,6 +204,12 @@ public class MailServiceImpl implements MailService {
 		LocalDateTime expiryDate = currentDateTime.plusDays(30);
 		mailMapper.deleteExpiredMails(expiryDate); // 만료된 메일 삭제
 	}
+	
+	// 휴지통상세조회
+		@Override
+		public MailVO deleteFindInfo(MailVO mailVO) {
+			return mailMapper.deleteFindInfo(mailVO.getMailId());
+		}
 
 	@Scheduled(cron = "0 0/1 0 * * ?")
 	public void scheduledDeleteExpiredMails() {
@@ -198,7 +221,7 @@ public class MailServiceImpl implements MailService {
 	public Map<String, Object> MailRemove(int mailId) {
 		Map<String, Object> map = new HashMap<>();
 
-		int result = mailMapper.MailRemove(mailId);
+		int result = mailMapper.MailDel(mailId);
 
 		if (result == 1) {
 			map.put("mailId", mailId);

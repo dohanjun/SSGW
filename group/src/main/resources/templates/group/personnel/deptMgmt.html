@@ -79,7 +79,7 @@
         <table class="table table-bordered table-hover">
             <thead class="thead-light">
                 <tr>
-                    <th>부서번호</th>
+                    <th>부서레벨</th>
                     <th>부서이름</th>
                     <th>부서장</th>
                     <th>부서 총원</th>
@@ -87,7 +87,8 @@
             </thead>
             <tbody>
                 <tr th:each="dept : ${deptList}">
-                    <td th:text="${dept.departmentNo}">부서번호</td>
+                    <!--  <td th:text="${dept.departmentNo}">부서번호</td>-->
+                    <td th:text="${dept.departmentLevel}">부서레벨</td>
                     <td th:text="${dept.departmentName}">부서이름</td>
                     <td th:text="${dept.employeeName}">부서장</td>
                     <td class="text-bold" th:text="${dept.employeeCount}">총원</td>

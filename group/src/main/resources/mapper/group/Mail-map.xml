@@ -20,7 +20,7 @@
 			<if test="search != null and search != ''">
 				( m.TITLE LIKE '%' || #{search} || '%'
 				OR m.GET_USER LIKE '%' || #{search} || '%'
-				OR m.RECODE LIKE '%' || #{search} || '%' )
+				OR m.EMPLOYEE_ID LIKE '%' || #{search} || '%' )
 			</if>
 
 			<if test="mailType != null">
@@ -38,8 +38,7 @@
 						or m.mail_type = '보낸' and m.employee_id = #{employeeId})
 					</when>
 					<when test="mailType == '휴지통'">
-						and (m.mail_type = '받은' and m.get_user = #{getUser}
-						or m.mail_type = '보낸' and m.employee_id = #{employeeId})
+						and m.mail_type = '휴지통'
 					</when>
 					<otherwise>
 						<!-- 기본 동작: '받은'과 '보낸' 모두 조회 -->
@@ -48,6 +47,11 @@
 					</otherwise>
 				</choose>
 			</if>
+			<if test="mailType == null">
+				and m.mail_type != '받은'
+				and m.mail_type != '휴지통'
+			</if>
+			
 		</where>
 	</sql>
 
@@ -148,15 +152,7 @@
 		,#{getUser}
 		,#{cc}
 		,#{recode}
-		,
-		<choose>
-			<when test="isSent == true">
-				'보낸'
-			</when>
-			<otherwise>
-				'받은'
-			</otherwise>
-		</choose>
+		,#{mailType}
 		)
 	</insert>
 
@@ -169,8 +165,7 @@
 	<!-- 메일답장 -->
 	<update id="MailPutDate" parameterType="MailVO">
 		UPDATE Mail
-		SET get_user =
-		#{getUser}
+		SET get_user = #{getUser}
 		,cc = #{cc}
 		,title = #{title}
 		,attached_file_name = #{attachedFileName}
@@ -181,13 +176,10 @@
 
 	<!-- 메일전달 -->
 	<update id="MailVeryDate" parameterType="MailVO">
-		INSERT INTO Mail(
-		get_user
-		,cc
-		VALUES(
-		,#{getUser}
-		,#{cc}
-		)
+		UPDATE Mail
+		SET employee_id = #{employeeId}
+		,cc = #{cc}
+		WHERE mail_id = #{mailId}
 	</update>
 	
 	<!-- 단건 임시 이동 -->
@@ -198,16 +190,16 @@
 	</update>
 
 <!-- 단건 휴지통 이동 -->
-	<update id="Maildel" parameterType="int">
+	<update id="MailDel" parameterType="int">
 	UPDATE Mail
 	SET mail_type = '휴지통'
 	WHERE mail_id = #{mailId}
 	</update>
 
 	<!-- 여러 개의 메일 휴지통 이동 -->
-	<update id="Maildels" parameterType="java.util.List">
+	<update id="MailDels" parameterType="java.util.List">
 		UPDATE Mail
-		SET mail_type = #{mailType}
+		SET mail_type = '휴지통'
 		WHERE mail_id IN
 		<foreach item="mailId" collection="list" open="("
 			separator="," close=")">
@@ -241,6 +233,30 @@
 		AND expiry_date
 		&lt;= sysdate
 	</delete>
+	
+		<!-- 휴지통 단건조회 -->
+	<select id="deleteFindInfo" resultType="MailVO">
+		SELECT mail_id
+		,title
+		,content
+		,sent_state
+		,sent_date
+		,employee_id
+		,attached_file_name
+		,get_user
+		,cc
+		,recode
+		,mail_type
+		FROM Mail
+		WHERE mail_id = #{mailId}
+	</select>
+	
+	<!-- 복구 -->
+	<update id="MailBack" parameterType="int">
+	UPDATE Mail
+	SET mail_type = #{mailType}
+	WHERE mail_id = #{mailId}
+	</update>
 	
 	<!-- 완전삭제 -->
 	<delete id="MailRemove" parameterType="int">
