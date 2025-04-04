@@ -136,7 +136,7 @@ public class MailController {
 			if (!dir.exists()) {
 				dir.mkdirs();
 			}
-
+  
 			// 파일을 지정된 경로에 복사
 			Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
