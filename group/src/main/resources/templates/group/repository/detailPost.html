@@ -75,9 +75,9 @@
 									<!-- 본문 내용 -->
 									<tr>
 										<th>내용</th>
-										<td colspan="3"><textarea
-												class="content-area auto-expand" th:utext="${post.content}"
-												readonly></textarea></td>
+										<td colspan="3">
+											<div class="content-area ql-editor" th:utext="${post.content}"></div>
+										</td>
 									</tr>
 
 									<!-- 첨부파일 -->
