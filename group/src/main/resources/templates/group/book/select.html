@@ -129,17 +129,7 @@
             </div>
             <h1>주소록 상세화면</h1>
         </div>
-
         <hr>
-
-        <!-- 삭제 버튼: 오른쪽에 배치 -->
-        <div class="btn-container justify-content-end">
-            <button type="button" class="btn btn-danger"
-                    th:onclick="|location.href='@{/bookDelete(addressBookId=${book.addressBookId},country=Kor)}'|">삭제</button>
-        </div>
-
-        <hr>
-
         <!-- 주소록 상세 정보 -->
         <div class="address-detail">
             <label for="Name">이름</label>

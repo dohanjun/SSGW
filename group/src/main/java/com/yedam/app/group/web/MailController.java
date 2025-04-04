@@ -218,7 +218,7 @@ public class MailController {
 		mailVO.setEmployeeNo(loggedInUser.getEmployeeNo());
 		
 		mailService.MailDel(mailId);
-		return "redirect:/deleteMail";
+		return "redirect:/mail";
 	}
 
 	// 여러개의 메일삭제
@@ -236,7 +236,7 @@ public class MailController {
 		List<MailVO> list = mailService.MailSelectAll(vo);
 		model.addAttribute("mails", list);
 		
-		return "redirect:/deleteMail";
+		return "redirect:/mail";
 	}
 
 //세부메일함

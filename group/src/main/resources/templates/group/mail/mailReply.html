@@ -216,6 +216,12 @@
             </form>
         </div>
     </div>
+        <!-- 다운로드 파일 리스트 -->
+    <ul>
+        <li th:each="file : ${files}">
+            <a th:href="@{/download/{filename}(filename=${file})}" th:text="${file}"></a>
+        </li>
+    </ul>
     <script>
         // 폼 제출을 처리하는 자바스크립트 함수
         function submitForm() {
