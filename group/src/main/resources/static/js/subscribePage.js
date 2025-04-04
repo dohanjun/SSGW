@@ -280,9 +280,8 @@ function payment(type) {
 					url: "/api/saveDepartMent",
 					data: data,
 					contentType: "application/json"
-				})
+				});
 
-				;
 				//6 대표 정보 저장
 				let empnum = await $.ajax({
 					type: "POST",
