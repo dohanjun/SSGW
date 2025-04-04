@@ -217,13 +217,6 @@ public class RepositoryController {
 	        case "부서" -> isEditable = isOwner || isManager;
 	        case "개인" -> isEditable = isOwner;
 	    }
-	    System.out.println("로그인 유저 manager 필드 값: " + loggedInUser.getManager());
-	    System.out.println("작성자 ID: " + post.getEmployeeNo());
-	    System.out.println("현재 로그인 ID: " + loggedInUser.getEmployeeNo());
-	    System.out.println("isOwner: " + isOwner);
-	    System.out.println("isAdmin: " + isAdmin);
-	    System.out.println("isManager: " + isManager);
-	    System.out.println("최종 isEditable: " + isEditable);
 
 	    model.addAttribute("post", post);
 	    model.addAttribute("fileList", fileList);

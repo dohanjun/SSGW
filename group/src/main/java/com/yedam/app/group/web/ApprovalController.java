@@ -152,7 +152,6 @@ public class ApprovalController {
 
         // 해당 회사번호에 맞는 양식 목록 조회
         List<ApprovalFormVO> formList = approvalService.findAllAprvForms(approvalFormVO);
-        System.out.println("Form List: " + formList); // 데이터가 출력되는지 확인
         // 모델에 양식 목록 추가
         model.addAttribute("formList", formList);
 
@@ -313,7 +312,6 @@ public class ApprovalController {
 	@PostMapping(value = "/aprv/writing", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public String submitApproval(@ModelAttribute ApprovalVO approvalVO,
 	                             @RequestParam(value = "files", required = false) MultipartFile[] files) {
-		System.out.println("받은 상태: " + approvalVO.getAprvStatus());
 	    EmpVO loginUser = empService.getLoggedInUserInfo();
 	    approvalVO.setEmployeeNo(loginUser.getEmployeeNo());
 	    approvalVO.setSuberNo(loginUser.getSuberNo());

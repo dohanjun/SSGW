@@ -54,12 +54,10 @@ public class DeptServiceimpl implements DeptService{
 	    List<DeptVO> deptList = deptMapper.getOrgChart(deptVO);
 
 	    for (DeptVO dept : deptList) {
-	        System.out.println("부서: " + dept.getDepartmentName() + " / 사원 수: " + (dept.getEmployees() != null ? dept.getEmployees().size() : 0));
 
 	        List<EmpVO> empList = dept.getEmployees();
 	        if (empList != null) {
 	            for (EmpVO emp : empList) {
-	                System.out.println("   - 사원: " + emp.getEmployeeName() + ", 부서번호: " + emp.getDepartmentNo() + ", 직급: " + emp.getJobTitleName());
 	            }
 	        }
 	    }

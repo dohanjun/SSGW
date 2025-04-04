@@ -15,11 +15,9 @@ public class AESUtilTest {
 
             // 암호화
             String encryptedText = AESUtil.encrypt(originalText);
-            System.out.println("Encrypted: " + encryptedText);
 
             // 복호화
             String decryptedText = AESUtil.decrypt(encryptedText);
-            System.out.println("Decrypted: " + decryptedText);
 
         } catch (Exception e) {
             e.printStackTrace();

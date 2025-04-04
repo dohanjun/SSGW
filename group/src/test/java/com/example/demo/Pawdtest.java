@@ -11,7 +11,6 @@ public class Pawdtest {
 	public void test1() {
 		BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder(10);
 		String hash = bCryptPasswordEncoder.encode("123456");
-		System.out.println(hash);
 	}
 	
 	

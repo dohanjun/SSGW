@@ -32,7 +32,6 @@ public class BasketServiceImpl implements BasketService {
 	            try {
 	                fileService.restoreFilesByWritingId(id);  // ← 이거 추가!
 	            } catch (Exception e) {
-	                System.out.println("파일 복원 중 오류 발생 (writingId=" + id + "): " + e.getMessage());
 	            }
 
 	            // 휴지통에서 제거
@@ -46,27 +45,22 @@ public class BasketServiceImpl implements BasketService {
 
 	        for (Long id : writingIds) {
 	            if (id == null) {
-	                System.out.println("writingId가 null임. 건너뜀");
 	                continue;
 	            }
 
 	            String type = basketMapper.getRepositoryTypeByWritingId(id);
 	            if (type == null) {
-	                System.out.println("repositoryType이 null임. 건너뜀");
 	                continue;
 	            }
 
 	            // 파일 백업 처리 (upload → backup 폴더로 이동)
 	            try {
 	                fileService.backupFilesByWritingId(id);
-	                System.out.println("파일 백업 완료: writingId = " + id);
 	            } catch (Exception e) {
-	                System.out.println("파일 백업 실패 (writingId=" + id + "): " + e.getMessage());
 	            }
 
 	            // 휴지통으로 등록
 	            basketMapper.insertToBasketWithType(id, type);
-	            System.out.println("INSERT 실행: writingId = " + id + ", type = " + type);
 	        }
 	    }
 	    
@@ -136,7 +130,6 @@ public class BasketServiceImpl implements BasketService {
 
 	            // 4. repository_post 삭제 (basket도 자동으로 CASCADE 삭제됨)
 	            int deleted = basketMapper.deletePostByWritingId(id);
-	            System.out.println("게시글 삭제: writingId = " + id + ", 삭제 건수 = " + deleted);
 	        }
 	    }
 	    

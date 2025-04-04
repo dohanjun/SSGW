@@ -87,7 +87,6 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             response.sendRedirect("/main");
 
         } catch (Exception e) {
-            System.out.println("사용자 정보를 가져오는 중 오류 발생: " + e.getMessage());
             response.sendRedirect("/login?error=ipcheck");
         }
     }

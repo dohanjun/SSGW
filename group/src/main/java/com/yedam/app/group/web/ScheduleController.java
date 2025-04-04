@@ -42,7 +42,6 @@ public class ScheduleController {
 	    scheduleVO.setSuberNo(loggedInUser.getSuberNo()); // 로그인한 사용자 회사번호
 	    scheduleVO.setDepartmentNo(loggedInUser.getDepartmentNo()); // 로그인한 사용자 부서번호
 	    
-	    System.out.println("✅ departmentNo: " + loggedInUser.getDepartmentNo());
 	    
 	    int result = scheduleService.createSchedule(scheduleVO);
 

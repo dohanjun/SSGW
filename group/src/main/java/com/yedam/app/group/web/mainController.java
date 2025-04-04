@@ -118,10 +118,6 @@ public class mainController {
 			model.addAttribute("todaySchedule", dashboardService.getTodaySchedule(loginEmployee.getEmployeeNo()));
 			model.addAttribute("recentApprovalList",
 					dashboardService.getRecentApprovalList(loginEmployee.getEmployeeNo()));
-			// ✅ 디버깅
-			System.out.println("✅ 로그인 사원: " + loginEmployee);
-			System.out.println("✅ 오늘 일정 수: " + scheduleList.size());
-			System.out.println("✅ 최근 자료실 게시글 수: " + repositoryList.size());
 		}
 		return "group/mainPage";
 	}

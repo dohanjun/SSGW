@@ -8,6 +8,5 @@ public class MailCleanup {
 
 	@Scheduled(cron = "0 0 0 * * ?")
 	public void deleteTemporaryMails() {
-		System.out.println("임시 메일 삭제 작업 시작...");
 	}
 }

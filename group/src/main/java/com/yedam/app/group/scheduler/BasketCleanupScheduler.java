@@ -26,6 +26,5 @@ public class BasketCleanupScheduler {
             basketMapper.deleteBasketByWritingId(id);
         }
 
-        System.out.println("30일 지난 휴지통 게시글 자동 삭제 완료: " + expiredWritingIds.size() + "건");
     }
 }

@@ -123,12 +123,6 @@ public class DeptController {
            }
        }
 
-        //  디버깅 로그 찍기
-        System.out.println("[조직도 호출] 회사번호: " + deptVO.getSuberNo());
-        for (DeptVO d : result) {
-            System.out.println("부서: " + d.getDepartmentName() + ", 사원 수: " + (d.getEmployees() != null ? d.getEmployees().size() : 0));
-        }
-
         return result;
     }
     

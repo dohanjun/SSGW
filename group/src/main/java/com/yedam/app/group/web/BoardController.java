@@ -96,7 +96,6 @@ public class BoardController {
 		model.addAttribute("loggedInUser", loggedInUser);
 		model.addAttribute("isAdmin", isAdmin);
 
-		System.out.println("postList: " + postList);
 
 		return "group/board/noticeBoard";
 	}

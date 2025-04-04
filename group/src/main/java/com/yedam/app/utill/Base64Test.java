@@ -13,10 +13,6 @@ public class Base64Test {
         byte[] iv = Base64.getDecoder().decode(ivBase64);
 
         // 결과 출력
-        System.out.println("Decoded Secret Key Length: " + secretKey.length);
-        System.out.println("Decoded IV Length: " + iv.length);
-        System.out.println("Decoded Secret Key (Hex): " + bytesToHex(secretKey));
-        System.out.println("Decoded IV (Hex): " + bytesToHex(iv));
     }
 
     // 바이트 배열을 16진수 문자열로 변환하는 함수

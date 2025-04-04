@@ -20,7 +20,5 @@ public class AESKeyGenerator {
         String encodedIv = Base64.getEncoder().encodeToString(iv);
 
         // 출력 (환경 변수에 저장 필요)
-        System.out.println("AES Key: " + encodedKey);
-        System.out.println("IV: " + encodedIv);
     }
 }
