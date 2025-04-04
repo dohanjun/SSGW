@@ -152,7 +152,12 @@ public class MailServiceImpl implements MailService {
 	private String ADMIN_SEND_EMAIL;
 
 	public String sendMailToUser(MailVO vo) {
-
+		if("임시".equals(vo.getMailType())) {
+			
+			mailMapper.mailCreate(vo);
+			return "성공";
+		}
+		
 	    if (vo.getGetUser() == null || vo.getGetUser().isEmpty()) {
 	        return "수신자의 이메일 주소가 유효하지 않습니다.";
 	    }
@@ -173,9 +178,12 @@ public class MailServiceImpl implements MailService {
 			}
 		//}
 		
+		if(!"전달".equals(vo.getMailType())) {
 			//보낸
-		vo.setMailType("보낸");  //   id -> getUser
-		mailMapper.mailCreate(vo);
+			vo.setMailType("보낸");  //   id -> getUser
+			mailMapper.mailCreate(vo);
+		}
+		
 		//받은
 		vo.setMailType("받은");  //
 		mailMapper.mailCreate(vo);

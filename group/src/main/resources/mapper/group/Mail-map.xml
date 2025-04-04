@@ -34,8 +34,7 @@
 						and m.employee_id = #{employeeId}
 					</when>
 					<when test="mailType == '임시'">
-						and (m.mail_type = '받은' and m.get_user = #{getUser}
-						or m.mail_type = '보낸' and m.employee_id = #{employeeId})
+						and m.mail_type = '임시'
 					</when>
 					<when test="mailType == '휴지통'">
 						and m.mail_type = '휴지통'
@@ -48,8 +47,7 @@
 				</choose>
 			</if>
 			<if test="mailType == null">
-				and m.mail_type != '받은'
-				and m.mail_type != '휴지통'
+				and m.mail_type != '임시' 	and m.mail_type != '휴지통'
 			</if>
 			
 		</where>

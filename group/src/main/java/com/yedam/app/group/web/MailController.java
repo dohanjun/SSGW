@@ -124,32 +124,32 @@ public class MailController {
 
 	// 메일등록
 	@PostMapping("/mailInsert")
-	public String insertMail(MailVO vo, @RequestParam("file") MultipartFile file, Model model, @RequestParam("domain") String domain) {
+	public String insertMail(MailVO vo, @RequestParam("file") MultipartFile file, 
+			                 Model model, @RequestParam("domain") String domain) {
 		if(!file.isEmpty()) {
-		try {
-			// 파일 업로드 처리
-			String filename = StringUtils.cleanPath(file.getOriginalFilename()); // 파일 이름 정리
-			Path targetLocation = Paths.get(uploadDir + "/" + filename); // 저장할 경로
-
-			// 디렉토리가 없으면 생성
-			File dir = new File(uploadDir);
-			if (!dir.exists()) {
-				dir.mkdirs();
+			try {
+				// 파일 업로드 처리
+				String filename = StringUtils.cleanPath(file.getOriginalFilename()); // 파일 이름 정리
+				Path targetLocation = Paths.get(uploadDir + "/" + filename); // 저장할 경로
+	
+				// 디렉토리가 없으면 생성
+				File dir = new File(uploadDir);
+				if (!dir.exists()) {
+					dir.mkdirs();
+				}
+	  
+				// 파일을 지정된 경로에 복사
+				Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+	
+				// 업로드된 파일 경로를 MailVO에 포함 (필요한 경우)
+				vo.setAttachedFileName(filename); // 메일 VO에 파일 이름을 설정
+	
+			} catch (IOException e) {
+				// 파일 업로드 실패 시 처리
+				return "redirect:/error"; // 오류 페이지로 리다이렉트 (필요 시)
 			}
-  
-			// 파일을 지정된 경로에 복사
-			Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-
-			// 업로드된 파일 경로를 MailVO에 포함 (필요한 경우)
-			vo.setAttachedFileName(filename); // 메일 VO에 파일 이름을 설정
-
-		} catch (IOException e) {
-			// 파일 업로드 실패 시 처리
-			return "redirect:/error"; // 오류 페이지로 리다이렉트 (필요 시)
 		}
-		}
-		MailVO findVO = mailService.MailSelectInfo(vo);
-		model.addAttribute("mail", findVO);
+
 		// 로그인한 사용자 정보 가져오기
 		EmpVO loggedInUser = empService.getLoggedInUserInfo();
 		vo.setEmployeeNo(loggedInUser.getEmployeeNo());
@@ -204,6 +204,7 @@ public class MailController {
 		vo.setEmployeeNo(loggedInUser.getEmployeeNo());
 
 		// 메일 발송
+		vo.setMailType("전달");
 		mailService.sendMailToUser(vo);
 
 		// 메일 발송 후 mail 목록 페이지로 리다이렉트
