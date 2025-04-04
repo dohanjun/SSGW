@@ -8,19 +8,12 @@
 <title>결재 페이지</title>
 <link th:href="@{/css/approval.css}" rel="stylesheet">
 <style>
-.stamp-placeholder {
-    width: 150px;
-    height: 150px;
-    border: 3px solid red;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    color: red;
-    font-size: 18px;
-    margin: 0 auto;
-}
+    div.p-3 table, 
+    div.p-3 th, 
+    div.p-3 td {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
 </style>
 </head>
 <body>
@@ -113,8 +106,6 @@
 						</table>
 					</div>
 				</div>
-            <!-- 문서 정보 -->
-            <h5 class="mt-4">기안문 정보</h5>
             <table class="table table-bordered">
                 <tr>
                     <th style="width: 150px;">제목</th>
