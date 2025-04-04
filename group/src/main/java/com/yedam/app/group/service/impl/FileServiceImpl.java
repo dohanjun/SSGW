@@ -41,14 +41,11 @@ public class FileServiceImpl implements FileService {
         File directory = new File(uploadDir);
         
         // 절대 경로 출력해서 확인 (디버깅용)
-        System.out.println("현재 설정된 파일 업로드 경로: " + directory.getAbsolutePath());
         
         if (!directory.exists()) {
             boolean created = directory.mkdirs();
             if (created) {
-                System.out.println("파일 저장 기본 폴더 생성됨: " + directory.getAbsolutePath());
             } else {
-                System.out.println("파일 저장 기본 폴더 생성 실패: " + directory.getAbsolutePath());
             }
         }
     }
@@ -59,9 +56,7 @@ public class FileServiceImpl implements FileService {
         if (!backupDirectory.exists()) {
             boolean created = backupDirectory.mkdirs();
             if (created) {
-                System.out.println("백업 폴더 생성됨: " + backupDirectory.getAbsolutePath());
             } else {
-                System.out.println("백업 폴더 생성 실패: " + backupDirectory.getAbsolutePath());
             }
         }
     }
@@ -73,7 +68,6 @@ public class FileServiceImpl implements FileService {
         if (!directory.exists()) {
             boolean created = directory.mkdirs();
             if (created) {
-                System.out.println("자료글 폴더 생성됨: " + directory.getAbsolutePath());
             } else {
                 throw new RuntimeException("자료글 폴더 생성 실패: " + directory.getAbsolutePath());
             }
@@ -120,7 +114,6 @@ public class FileServiceImpl implements FileService {
             fileVO.setCreationDate(new Timestamp(System.currentTimeMillis())); // 업로드 날짜 설정
 
             fileMapper.insertFile(fileVO);
-            System.out.println("파일 등록 완료 - 파일명: " + fileVO.getFileName() + ", 저장 경로: " + postFolderPath);
             
         } catch (IOException e) {
             throw new RuntimeException("파일 업로드 중 오류 발생", e);
@@ -186,9 +179,7 @@ public class FileServiceImpl implements FileService {
                 File backupTarget = new File(backupFolder, originalFile.getName());
                 boolean moved = originalFile.renameTo(backupTarget);
                 if (moved) {
-                    System.out.println("파일 백업 완료: " + backupTarget.getAbsolutePath());
                 } else {
-                    System.out.println("백업 실패: " + originalFile.getAbsolutePath());
                 }
             } catch (Exception e) {
                 throw new RuntimeException("파일 백업 중 오류", e);
@@ -199,7 +190,6 @@ public class FileServiceImpl implements FileService {
     public void restoreFilesByWritingId(Long writingId) {
         File backupFolder = new File(backupDir, String.valueOf(writingId));
         if (!backupFolder.exists()) {
-            System.out.println("백업 폴더 없음, 파일 복원 생략: " + backupFolder.getAbsolutePath());
             return;
         }
 
@@ -213,9 +203,7 @@ public class FileServiceImpl implements FileService {
             File target = new File(restoreFolder, file.getName());
             boolean moved = file.renameTo(target);
             if (moved) {
-                System.out.println("파일 복원 완료: " + target.getAbsolutePath());
             } else {
-                System.out.println("복원 실패: " + file.getAbsolutePath());
             }
         }
     }

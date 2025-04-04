@@ -59,12 +59,9 @@ public class PostController {
         }
 
         if (files != null && files.length > 0) {
-            System.out.println("업로드된 파일 개수: " + files.length);
             for (MultipartFile file : files) {
-                System.out.println("파일 이름: " + file.getOriginalFilename() + ", 크기: " + file.getSize());
             }
         } else {
-            System.out.println("업로드된 파일 없음.");
         }
 
         // repositoryType 값으로 자료실 결정

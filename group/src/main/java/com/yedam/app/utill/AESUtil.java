@@ -17,9 +17,6 @@ public class AESUtil {
         if (SECRET_KEY == null && IV == null) {
             SECRET_KEY = Base64.getDecoder().decode(secretKeyBase64);
             IV = Base64.getDecoder().decode(ivBase64);
-            System.out.println("🔹 AES Keys Set Successfully!");
-            System.out.println("SECRET_KEY Length: " + SECRET_KEY.length);
-            System.out.println("IV Length: " + IV.length);
         }
     }
 

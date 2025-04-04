@@ -16,6 +16,5 @@ public class AESInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) {
         AESUtil.setKeys(aesConfig.getSecretKey(), aesConfig.getIv());
-        System.out.println("✅ AES Keys Initialized Successfully!");
     }
 }
