@@ -190,7 +190,8 @@
 <!-- 단건 휴지통 이동 -->
 	<update id="MailDel" parameterType="int">
 	UPDATE Mail
-	SET mail_type = '휴지통'
+	SET mail_type = '휴지통',
+	expiry_date = sysdate
 	WHERE mail_id = #{mailId}
 	</update>
 
@@ -219,17 +220,15 @@
 	<!-- 임시메일 자동삭제 -->
 	<delete id="deleteExpiredMails">
 		DELETE FROM mail
-		WHERE is_temporary = 1
-		AND expiry_date
-		&lt;= sysdate
+		WHERE sent_date + 7 >= sysdate
+		 and mail_type ='임시'
 	</delete>
 
 	<!-- 휴지통 자동삭제 -->
 	<delete id="deleteCurrentMails">
 		DELETE FROM mail
-		WHERE is_temporary = 1
-		AND expiry_date
-		&lt;= sysdate
+		WHERE  expiry_date + 30 >= sysdate
+		 and mail_type ='휴지통'
 	</delete>
 	
 		<!-- 휴지통 단건조회 -->
