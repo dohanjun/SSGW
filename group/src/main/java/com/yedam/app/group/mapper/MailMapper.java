@@ -70,9 +70,9 @@ public interface MailMapper {
 	public List<MailVO> searchMails(MailVO mailVO);
 	
 	//임시메일함 자동삭제 기능
-	void deleteExpiredMails(LocalDateTime  currentDateTime);
+	void deleteExpiredMails();
 	
 	//휴지통 자동삭제 기능
-	void deleteCurrentMails(LocalDateTime  currentDateTime);
+	void deleteCurrentMails();
 
 }

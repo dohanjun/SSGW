@@ -201,16 +201,12 @@ public class MailServiceImpl implements MailService {
 
 	// 임시메일 자동삭제 기능
 	public void deleteExpiredMails() {
-		LocalDateTime currentDateTime = LocalDateTime.now(); // 현재 시간
-		LocalDateTime expiryDate = currentDateTime.plusDays(7);
-		mailMapper.deleteExpiredMails(expiryDate); // 만료된 메일 삭제
+		mailMapper.deleteExpiredMails(); // 만료된 메일 삭제
 	}
 
 	// 휴지통 자동삭제 기능
 	public void deleteCurrentMails() {
-		LocalDateTime currentDateTime = LocalDateTime.now(); // 현재 시간
-		LocalDateTime expiryDate = currentDateTime.plusDays(30);
-		mailMapper.deleteExpiredMails(expiryDate); // 만료된 메일 삭제
+		mailMapper.deleteCurrentMails(); // 만료된 메일 삭제
 	}
 	
 	// 휴지통상세조회
@@ -219,9 +215,10 @@ public class MailServiceImpl implements MailService {
 			return mailMapper.deleteFindInfo(mailVO.getMailId());
 		}
 
-	@Scheduled(cron = "0 0/1 0 * * ?")
+	@Scheduled(cron = "0 07 18 * * ?")
 	public void scheduledDeleteExpiredMails() {
 		deleteExpiredMails();
+		deleteCurrentMails();
 	}
 	
 	// 메일삭제
