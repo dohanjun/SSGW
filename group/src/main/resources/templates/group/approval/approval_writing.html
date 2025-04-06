@@ -101,6 +101,9 @@
         <div class="modal-content">
             <div class="modal-header"><h5>결재선 등록</h5></div>
             <div class="modal-body">
+            	<div class="d-flex justify-content-end mb-2">
+			        <button class="btn btn-sm btn-outline-secondary" id="toggleAllApprover">전체 펼치기</button>
+			    </div>
                 <input type="text" id="searchApprover" class="form-control mb-2" placeholder="🔍 검색">
                 <ul id="orgTreeApprover" class="list-unstyled"></ul>
             </div>
@@ -118,6 +121,9 @@
         <div class="modal-content">
             <div class="modal-header"><h5>참조자 등록</h5></div>
             <div class="modal-body">
+            	<div class="d-flex justify-content-end mb-2">
+			        <button class="btn btn-sm btn-outline-secondary" id="toggleAllReference">전체 펼치기</button>
+			    </div>		
                 <input type="text" id="searchReference" class="form-control mb-2" placeholder="🔍 검색">
                 <ul id="orgTreeReference" class="list-unstyled"></ul>
             </div>
@@ -150,6 +156,22 @@ document.addEventListener("DOMContentLoaded", function () {
             buildOrgChart(data, "orgTreeReference"); // 참조자용 트리
         })
         .catch(error => console.error("조직도 불러오기 오류:", error));
+    
+    
+    let approverOpen = false;
+    let referenceOpen = false;
+
+    document.getElementById("toggleAllApprover").addEventListener("click", function () {
+        approverOpen = !approverOpen;
+        toggleAllTree("orgTreeApprover", approverOpen);
+        this.textContent = approverOpen ? "전체 닫기" : "전체 펼치기";
+    });
+
+    document.getElementById("toggleAllReference").addEventListener("click", function () {
+        referenceOpen = !referenceOpen;
+        toggleAllTree("orgTreeReference", referenceOpen);
+        this.textContent = referenceOpen ? "전체 닫기" : "전체 펼치기";
+    });
 });
 
 // 회사별로 구분해서 조직도 구성
@@ -757,6 +779,15 @@ document.getElementById("approvalTableBody").addEventListener("click", function 
     }
 });
 
+// 
+function toggleAllTree(treeId, open) {
+    const root = document.getElementById(treeId);
+    const uls = root.querySelectorAll("ul");
+    const toggles = root.querySelectorAll(".toggle-icon");
+
+    uls.forEach(ul => ul.style.display = open ? "block" : "none");
+    toggles.forEach(icon => icon.textContent = open ? "▼" : "▶");
+}
 </script>
 
 </body>
