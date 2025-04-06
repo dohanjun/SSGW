@@ -45,6 +45,7 @@
 								<th>기안자</th>
 								<th>문서제목</th>
 								<th>임시저장일</th>
+								<th></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -54,9 +55,20 @@
 								<td>[[${aprv.employeeName}]]</td>
 								<td>[[${aprv.title}]]</td>
 								<td>[[${#dates.format(aprv.draftDate, 'yyyy년 MM월 dd일')}]]</td>
+								<td>
+									<form th:action="@{/aprv/deletes}" method="post"
+										  th:onsubmit="return confirm('정말 삭제하시겠습니까?');"
+										  th:onclick="event.stopPropagation()">
+										<input type="hidden" name="draftNo" th:value="${aprv.draftNo}" />
+										<input type="hidden" name="aprvStatus" th:value="${aprvStatus}" />
+										<button type="submit" class="btn btn-danger btn-sm">삭제</button>
+									</form>
+								</td>
 							</tr>
 						</tbody>
 					</table>
+					<div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+					<div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 				</div>
 			</div>
 		</div>

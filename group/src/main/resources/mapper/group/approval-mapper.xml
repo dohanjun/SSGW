@@ -524,4 +524,30 @@
         AND d.DRAFT_DATE >= #{draftDate} AND d.DRAFT_DATE <![CDATA[ < ]]> #{draftDate} + 1
     </if>
 </select>
+
+<delete id="deleteRoutesByDraftNo">
+    DELETE FROM aprv_routes WHERE draft_no = #{draftNo}
+</delete>
+
+<delete id="deleteFilesByDraftNo">
+    DELETE FROM aprv_files WHERE draft_no = #{draftNo}
+</delete>
+
+<delete id="deleteVacationRequest">
+    DELETE FROM vacation_request WHERE draft_no = #{draftNo}
+</delete>
+
+<select id="isVacationForm" resultType="int">
+    SELECT COUNT(*)
+    FROM aprv_documents d
+    JOIN basics_form b ON d.basics_form_id = b.basics_form_id
+    WHERE d.draft_no = #{draftNo}
+      AND b.form_type LIKE '%휴가%'
+</select>
+
+<delete id="deleteDraft">
+    DELETE FROM aprv_documents WHERE draft_no = #{draftNo}
+</delete>
+
+
 </mapper>

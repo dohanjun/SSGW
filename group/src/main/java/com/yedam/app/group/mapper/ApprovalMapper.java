@@ -108,4 +108,15 @@ public interface ApprovalMapper {
     // 양식 삭제
 	public int deleteAprvForm(int formId);
 	
+	
+	// '대기' 문서 삭제
+	public void deleteRoutesByDraftNo(int draftNo);
+	
+	public void deleteFilesByDraftNo(int draftNo);
+	
+	public void deleteVacationRequest(int draftNo);
+	
+	public int isVacationForm(int draftNo);
+	
+	public void deleteDraft(int draftNo);
 }
