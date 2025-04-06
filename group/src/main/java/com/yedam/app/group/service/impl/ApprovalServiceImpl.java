@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.yedam.app.group.mapper.ApprovalMapper;
 import com.yedam.app.group.service.ApprovalFormVO;
@@ -312,5 +313,24 @@ public class ApprovalServiceImpl implements ApprovalService {
 	public void removeTemporaryData(Integer draftNo) {
 		approvalMapper.deleteTemporaryData(draftNo);
 	}
+	
+	// '대기' 문서 삭제
+	@Override
+    @Transactional
+    public void deleteDraft(int draftNo) {
+        // 1. 결재선 삭제
+        approvalMapper.deleteRoutesByDraftNo(draftNo);
+
+        // 2. 첨부파일 삭제
+        approvalMapper.deleteFilesByDraftNo(draftNo);
+
+        // 3. 휴가원 여부 확인 후 휴가요청 삭제
+        if (approvalMapper.isVacationForm(draftNo) > 0) {
+            approvalMapper.deleteVacationRequest(draftNo);
+        }
+
+        // 4. 마지막으로 문서 삭제
+        approvalMapper.deleteDraft(draftNo);
+    }
 	
 }

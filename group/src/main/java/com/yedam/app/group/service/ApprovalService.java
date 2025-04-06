@@ -100,4 +100,7 @@ public interface ApprovalService {
     
     // 참조문서
     public int countReferenceList(ApprovalVO aprvVO);
+    
+    // '대기'문서 삭제
+    public void deleteDraft(int draftNo);
 }

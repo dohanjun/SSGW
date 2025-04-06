@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.yedam.app.group.service.AlarmService;
 import com.yedam.app.group.service.AlarmVO;
@@ -919,6 +920,22 @@ public class ApprovalController {
 	    vctVO.setSuberNo(loginUser.getSuberNo());  // 회사번호 기준으로 조회
 
 	    return vacationService.getAllVacationTypes(vctVO);
+	}
+	
+	@PostMapping("/aprv/deletes")
+	public String deleteDraft(@RequestParam("draftNo") int draftNo,
+							  @RequestParam("aprvStatus") String aprvStatus,
+							  RedirectAttributes redirectAttributes) {
+	    try {
+	        approvalService.deleteDraft(draftNo);
+	        redirectAttributes.addFlashAttribute("message", "문서가 성공적으로 삭제되었습니다.");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        redirectAttributes.addFlashAttribute("error", "삭제 중 오류가 발생했습니다.");
+	    }
+	    
+	    String encodedStatus = URLEncoder.encode(aprvStatus, StandardCharsets.UTF_8);
+	    return "redirect:/aprv/request?aprvStatus=" + encodedStatus;
 	}
 	
 
