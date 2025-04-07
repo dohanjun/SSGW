@@ -31,6 +31,9 @@ public interface AddressBookService {
 
 	//주소록 페이지네이션
 	public int pageGetCount(PageListVO vo);
+	
+	//주소록 페이지네이션
+	public int pageGetCounts(PageListVO vo);
 
 
 }

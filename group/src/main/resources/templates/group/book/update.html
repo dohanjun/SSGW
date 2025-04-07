@@ -124,7 +124,7 @@
             <!-- Header Container -->
             <div class="header-container">
                 <div class="btn-container">
-                    <a href="/bookList" class="btn btn-primary back-btn">목록으로</a>
+                    <a href="/myBookList" class="btn btn-primary back-btn">목록으로</a>
                 </div>
                 <h3>개인주소록 수정화면</h3>
             </div>
@@ -189,7 +189,7 @@
                 success: function(response) {
                     if(response === true) {
                         alert("주소가 성공적으로 수정되었습니다.");
-                        location.href = "/bookList"; // 성공 후 리다이렉트
+                        location.href = "/myBookList"; // 성공 후 리다이렉트
                     } else {
                         alert("수정 중 오류가 발생했습니다.");
                         submitButton.prop('disabled', false); // 오류 시 버튼 활성화

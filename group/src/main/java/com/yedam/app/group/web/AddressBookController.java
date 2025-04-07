@@ -50,11 +50,12 @@ public class AddressBookController {
 	 * @return 조회 페이지명
 	 */
 	
-	//주소록목록
+	//부서주소록목록
 		 @GetMapping("bookList")
 		    public String list(Model model, PageListVO vo, Paging paging) {
 			 
 			 EmpVO loggedInUser = empService.getLoggedInUserInfo();
+			 vo.setAddressBookType("부서");
 			 vo.setEmployeeNo(loggedInUser.getEmployeeNo());
 			 
 			 //페이징처리
@@ -63,8 +64,10 @@ public class AddressBookController {
 			 paging.setTotalRecord(addressBookService.pageGetCount(vo));
 			 model.addAttribute("paging", paging);
 			// model.addAttribute("vo", vo);
+			 
 			 List<AddressBookVO> list = addressBookService.AddressBookSelectAll(vo);
 			 model.addAttribute("books", list);
+			 
 		     return "group/book/list";  // mainPage.html을 반환
 		    }	
 		
@@ -73,16 +76,19 @@ public class AddressBookController {
 		    public String myBookList(Model model, PageListVO vo, Paging paging) {
 			 
 			 EmpVO loggedInUser = empService.getLoggedInUserInfo();
+			 vo.setAddressBookType("개인");
 			 vo.setEmployeeId(loggedInUser.getEmployeeId());
 			 
 			 //페이징처리
 			 vo.setStart(paging.getFirst());
 			 vo.setEnd(paging.getLast());
-			 paging.setTotalRecord(addressBookService.pageGetCount(vo));
+			 paging.setTotalRecord(addressBookService.pageGetCounts(vo));
 			 model.addAttribute("paging", paging);
 			// model.addAttribute("vo", vo);
-			 List<AddressBookVO> list = addressBookService.AddressBookSelectAll(vo);
+			 
+			 List<AddressBookVO> list = addressBookService.MyAddressBookSelectAll(vo);
 			 model.addAttribute("books", list);
+			 
 		     return "group/book/myList";  // mainPage.html을 반환
 		    }	
 

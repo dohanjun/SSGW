@@ -110,6 +110,12 @@ public class AddressBookServiceImpl implements AddressBookService {
 	public int pageGetCount(PageListVO pagelistVO) {
 		return addressBookMapper.getCount(pagelistVO);
 	}
+	
+	//주소록 페이지네이션
+	@Override
+	public int pageGetCounts(PageListVO pagelistVO) {
+		return addressBookMapper.getCounts(pagelistVO);
+	}
 
 
 }

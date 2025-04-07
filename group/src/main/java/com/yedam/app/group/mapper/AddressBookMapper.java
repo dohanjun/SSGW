@@ -34,4 +34,7 @@ public interface AddressBookMapper {
 	
 	//주소록 페이지네이션
 	public int getCount(PageListVO pagelistVO);
+	
+	//주소록 페이지네이션
+	public int getCounts(PageListVO pagelistVO);
 }
