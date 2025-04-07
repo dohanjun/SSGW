@@ -22,7 +22,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     public CustomAuthenticationSuccessHandler(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-
+ 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                          Authentication authentication) throws IOException, ServletException {
@@ -43,12 +43,18 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         session.setAttribute("loginUser", userInfo);
         
         try {
-            // ROLE_MANAGER면 IP 검사 생략
             if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_MANAGER"))) {
                 response.sendRedirect("/");
                 return;
             }
-
+            if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_MANAGERUSER"))) {
+                response.sendRedirect("/");
+                return;
+            }
+            if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER"))) {
+                response.sendRedirect("/");
+                return;
+            }
 
 
             // IP 정보 조회
