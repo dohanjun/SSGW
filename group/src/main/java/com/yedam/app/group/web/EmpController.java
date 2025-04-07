@@ -140,7 +140,7 @@ public class EmpController {
 
 	// 사원 상세조회
 	@GetMapping("empInfo")
-	public String empInfo(@RequestParam("employeeNo") int employeeNo, Model model) {
+	public String empInfo(@RequestParam("employeeNo") int employeeNo, EmpserchVO empserchVO, Model model) {
 		// 1) EmpVO 객체 생성 후 employeeNo 설정
 		EmpVO empVO = new EmpVO();
 		empVO.setEmployeeNo(employeeNo);
@@ -158,6 +158,7 @@ public class EmpController {
 
 		// 4) 모델에 데이터 추가
 		model.addAttribute("emp", findVO);
+		model.addAttribute("search", empserchVO);
 
 		return "group/personnel/empInfo";
 	}
@@ -171,7 +172,8 @@ public class EmpController {
 
 	// 사원 정보 수정 페이지 이동
 	@GetMapping("empUpdate")
-	public String empUpdate(@RequestParam("employeeNo") int employeeNo, Model model) {
+	public String empUpdate(@RequestParam("employeeNo") int employeeNo, 
+			                @ModelAttribute("search") EmpserchVO search, Model model) {
 		// 1) 로그인 사용자에서 suberNo 꺼내기
 		EmpVO loginUser = empService.getLoggedInUserInfo();
 		Integer suberNo = loginUser.getSuberNo();
@@ -199,6 +201,7 @@ public class EmpController {
 
 		// 5) 모델에 데이터 추가
 		model.addAttribute("emp", findVO);
+		model.addAttribute("search", search);
 
 		return "group/personnel/empUpdate"; // 뷰 반환
 	}

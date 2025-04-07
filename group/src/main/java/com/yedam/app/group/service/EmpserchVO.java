@@ -4,12 +4,12 @@ import lombok.Data;
 
 @Data
 public class EmpserchVO {
-	private int page =1;
-	private int size =10;
-	private int offset;
+	private Integer page =1;
+	private Integer size =10;
+	private Integer offset;
 	private String employeeName;
-	private String departmentNo;
-	private String rankId;
-	private int suberNo;
+	private Integer departmentNo;
+	private Integer rankId;
+	private Integer suberNo;
 	private String resignationStatus;
 }
