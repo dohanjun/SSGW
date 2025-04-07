@@ -161,7 +161,7 @@
 	      e.SUBER_NO,
 	      e.RANK_ID,
 	      e.RIGHTS_ID,
-	      d.MANAGER,
+	      e.MANAGER,
 	      e.DEPARTMENT_NO,
 	      d.DEPARTMENT_NAME,
 	      e.PROFILE_IMAGE_BLOB

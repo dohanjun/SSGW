@@ -98,8 +98,8 @@
 								<div class="d-inline-flex gap-2">
 									<a onclick="history.back()" class="btn btn-secondary">
 										<i class="fas fa-arrow-left"></i>
-									</a> <a th:if="${isEditable}"
-										th:href="@{/editPost(writingId=${post.writingId})}"
+									</a>
+									<a th:if="${isEditable}" th:href="@{/editPost(writingId=${post.writingId})}"
 										class="btn btn-warning"> <i class="fas fa-edit"></i>
 									</a>
 
@@ -139,7 +139,7 @@
 		window.location.href = '/detailPost/' + writingId;
 	}
 </script>
-	<script>
+<script>
   window.addEventListener('DOMContentLoaded', () => {
     const textareas = document.querySelectorAll('.auto-expand');
     textareas.forEach(textarea => {
