@@ -215,7 +215,7 @@ public class MailServiceImpl implements MailService {
 			return mailMapper.deleteFindInfo(mailVO.getMailId());
 		}
 
-	@Scheduled(cron = "0 07 18 * * ?")
+	@Scheduled(cron = "0 0 0 * * ?")
 	public void scheduledDeleteExpiredMails() {
 		deleteExpiredMails();
 		deleteCurrentMails();

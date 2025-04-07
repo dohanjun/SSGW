@@ -19,12 +19,15 @@
             e.employee_no = #{employeeNo}
         </if>
         <if test="search != null and search != ''">
-            ( a.ADDRESS_BOOK_NAME LIKE '%' || #{search} || '%'
+            and( a.ADDRESS_BOOK_NAME LIKE '%' || #{search} || '%'
             OR a.ADDRESS_BOOK_NUMBER LIKE '%' || #{search} || '%'
             OR a.ADDRESS_BOOK_COMPANY_NAME LIKE '%' || #{search} || '%'
             OR a.ADDRESS_BOOK_COMPANY_NUMBER LIKE '%' || #{search} || '%'
             )
         </if>
+			<if test="addressBookType">
+				and address_book_type = '부서'
+			</if>
     </where>
 </sql>
 
@@ -47,6 +50,7 @@
 	    FROM ADDRESS_BOOK a  JOIN EMPLOYEES e
 	                           ON a.employee_id = e.employee_id
 	    <include refid="bookCondition"></include>
+	    ORDER BY a.ADDRESS_BOOK_ID desc
     ) A ) B WHERE RN BETWEEN #{start} AND #{end}
 </select>
 
@@ -54,41 +58,43 @@
 
 	<!-- 개인주소록 메인화면 -->
 	<sql id="MyBookCondition">
-		<where>
+    <where>
 			<if test="employeeId != null">
-				employee_id = #{employeeId}
+				e.employee_id = #{employeeId}
 			</if>
-			<if test="search != null and search != ''">
-				( ADDRESS_BOOK_NAME LIKE '%' || #{search} || '%'
-				OR ADDRESS_BOOK_NUMBER LIKE '%' || #{search} || '%'
-				OR ADDRESS_BOOK_COMPANY_NAME LIKE '%' || #{search} || '%'
-				OR ADDRESS_BOOK_COMPANY_NUMBER LIKE '%' || #{search} || '%'
-				)
+        <if test="search != null and search != ''">
+            and( a.ADDRESS_BOOK_NAME LIKE '%' || #{search} || '%'
+            OR a.ADDRESS_BOOK_NUMBER LIKE '%' || #{search} || '%'
+            OR a.ADDRESS_BOOK_COMPANY_NAME LIKE '%' || #{search} || '%'
+            OR a.ADDRESS_BOOK_COMPANY_NUMBER LIKE '%' || #{search} || '%'
+            )
+        </if>
+			<if test="addressBookType">
+				and a.address_book_type = '개인'
 			</if>
-
-		</where>
-	</sql>
-
+    </where>
+</sql>
 
 	<select id="MyAddressBookFindAll" resultType="AddressBookVO">
-		SELECT B.* FROM ( SELECT A.*, ROWNUM RN FROM(
-		SELECT
-		ADDRESS_BOOK_ID
-		,ADDRESS_BOOK_NAME
-		,ADDRESS_BOOK_NUMBER
-		,ADDRESS_BOOK_EMAIL
-		,ADDRESS_BOOK_UPDATE_DATE
-		,ADDRESS_BOOK_COMPANY_NAME
-		,ADDRESS_BOOK_COMPANY_NUMBER
-		,EMPLOYEE_ID
-		,ZIP_CODE
-		,STREET_ADDRESS
-		,ADDRESS_BOOK_TYPE
-		,BOOK_RECODE
-		,BOOK_DEPARTMENT_TYPE
-		FROM ADDRESS_BOOK
+    SELECT B.* FROM ( SELECT A.*, ROWNUM RN FROM(
+	    SELECT a.ADDRESS_BOOK_ID
+	    ,a.ADDRESS_BOOK_NAME
+	    ,a.ADDRESS_BOOK_NUMBER
+	    ,a.ADDRESS_BOOK_EMAIL
+	    ,a.ADDRESS_BOOK_UPDATE_DATE
+	    ,a.ADDRESS_BOOK_COMPANY_NAME
+	    ,a.ADDRESS_BOOK_COMPANY_NUMBER
+	    ,a.EMPLOYEE_ID
+	    ,a.ZIP_CODE
+	    ,a.STREET_ADDRESS
+	    ,a.ADDRESS_BOOK_TYPE
+	    ,a.BOOK_RECODE
+	    ,a.BOOK_DEPARTMENT_TYPE
+	    ,e.EMPLOYEE_NO
+	    FROM ADDRESS_BOOK a  JOIN EMPLOYEES e
+	                           ON a.employee_id = e.employee_id
 		<include refid="MyBookCondition"></include>
-		ORDER BY ADDRESS_BOOK_ID desc
+		ORDER BY a.ADDRESS_BOOK_ID desc
 		) A ) B WHERE RN BETWEEN #{start} AND #{end}
 	</select>
 
@@ -200,5 +206,10 @@
 	                           ON a.employee_id = e.employee_id
 		<include refid="bookCondition"></include>
 	</select>
-
+		<select id="getCounts" resultType="int">
+		SELECT COUNT(*)
+		FROM ADDRESS_BOOK a  JOIN EMPLOYEES e
+	                           ON a.employee_id = e.employee_id
+		<include refid="MyBookCondition"></include>
+	</select>
 </mapper>
