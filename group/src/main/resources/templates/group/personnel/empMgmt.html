@@ -144,7 +144,13 @@
             </thead>
             <tbody>
                 <th:block th:each="info : ${emps}">
-                    <tr th:onclick="|location.href='@{/empInfo(employeeNo=${info.employeeNo})}'|">
+                    <tr th:onclick="|location.href='@{/empInfo(employeeNo=${info.employeeNo}, 
+								      page=${empserchVO.page}, 
+								      size=${empserchVO.size}, 
+								      departmentNo=${empserchVO.departmentNo}, 
+								      rankId=${empserchVO.rankId}, 
+								      employeeName=${empserchVO.employeeName}, 
+								      resignationStatus=${empserchVO.resignationStatus})}'|">
                         <td>[[${info.employeeNo}]]</td>
                         <td>[[${info.departmentName}]]</td>
                         <td>[[${info.jobTitleName}]]</td>

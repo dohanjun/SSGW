@@ -214,9 +214,23 @@
                 <!-- 버튼 -->
                 <div class="form-buttons">
                     <button type="button" class="btn btn-primary"
-                            th:onclick="|location.href='@{/empUpdate(employeeNo=${emp.employeeNo})}'|">수정</button>
+                            th:onclick="|location.href='@{/empUpdate(
+								            employeeNo=${emp.employeeNo},
+								            page=${search.page},
+								            size=${search.size},
+								            departmentNo=${search.departmentNo},
+								            rankId=${search.rankId},
+								            employeeName=${search.employeeName},
+								            resignationStatus=${search.resignationStatus})}'|">수정</button>
                     <button type="button" class="btn btn-danger"
-                            th:onclick="|location.href='@{/empMgmt}'|">취소</button>
+                            th:onclick="|location.href='@{/empMgmt(
+									        page=${search.page}, 
+									        size=${search.size}, 
+									        departmentNo=${search.departmentNo}, 
+									        rankId=${search.rankId}, 
+									        employeeName=${search.employeeName}, 
+									        resignationStatus=${search.resignationStatus}
+									    )}'|">취소</button>
                 </div>
             </div>
         </div>
