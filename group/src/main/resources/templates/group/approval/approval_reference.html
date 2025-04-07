@@ -162,6 +162,8 @@
 	    .then(result => {
 	        if (result.success) {
 	            alert("도장이 성공적으로 삭제되었습니다.");
+	            $('#stampModal').modal('hide'); // 모달 닫기
+	            location.reload(); // 페이지 새로고침
 	        } else {
 	            alert("도장 삭제 실패: " + result.message);
 	        }
@@ -190,7 +192,8 @@
     .then(result => {
         if (result.success) {
             alert("도장 수정 성공!");
-
+            $('#stampModal').modal('hide'); // 모달 닫기
+            location.reload(); // 페이지 새로고침
         } else {
             alert("도장 수정 실패!");
         }
@@ -219,7 +222,8 @@ function insertStamp() {
     .then(result => {
         if (result.success) {
             alert("도장 등록 성공!");
-
+            $('#stampModal').modal('hide'); // 모달 닫기
+            location.reload(); // 페이지 새로고침
         } else {
             alert("도장 등록 실패!");
         }
