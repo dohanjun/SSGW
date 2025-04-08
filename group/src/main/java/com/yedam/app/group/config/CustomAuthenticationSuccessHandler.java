@@ -47,15 +47,6 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 response.sendRedirect("/");
                 return;
             }
-            if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_MANAGERUSER"))) {
-                response.sendRedirect("/");
-                return;
-            }
-            if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER"))) {
-                response.sendRedirect("/");
-                return;
-            }
-
 
             // IP 정보 조회
             String companyInfoQuery = "SELECT s.first_ip, s.second_ip, e.temp_ip, s.suber_no " +
