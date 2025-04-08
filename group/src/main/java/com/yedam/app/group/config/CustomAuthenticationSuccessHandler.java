@@ -67,18 +67,14 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             String tempIp = (String) ipInfo.get("temp_ip");
 
             // 1차, 2차 IP 검사
-            if (!currentIp.equals(firstIp) && !currentIp.equals(secondIp)) {
-                if (tempIp == null || tempIp.isEmpty()) {
-                    // tempIp가 없으면 등록 유도
-                    response.sendRedirect("/login?ipRegister=1&ip=" + currentIp + "&employeeId=" + username);
-                    return;
-                } else if (!currentIp.equals(tempIp)) {
-                    // tempIp도 다르면 경고 후 로그인 차단
-                    response.sendRedirect("/login?ipAlert=1&ip=" + currentIp + "&employeeId=" + username);
-                    return;
-                }
-                // tempIp와 같으면 통과
-            }
+			/*
+			 * if (!currentIp.equals(firstIp) && !currentIp.equals(secondIp)) { if (tempIp
+			 * == null || tempIp.isEmpty()) { // tempIp가 없으면 등록 유도
+			 * response.sendRedirect("/login?ipRegister=1&ip=" + currentIp + "&employeeId="
+			 * + username); return; } else if (!currentIp.equals(tempIp)) { // tempIp도 다르면
+			 * 경고 후 로그인 차단 response.sendRedirect("/login?ipAlert=1&ip=" + currentIp +
+			 * "&employeeId=" + username); return; } // tempIp와 같으면 통과 }
+			 */
 
             // 나머지 사용자 정보 세션에 저장
             String query2 = "SELECT s.* FROM suber s JOIN employees e ON s.suber_no = e.suber_no WHERE e.EMPLOYEE_ID = ?";
