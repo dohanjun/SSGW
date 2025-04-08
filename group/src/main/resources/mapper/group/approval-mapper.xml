@@ -433,7 +433,8 @@
 
 	<update id="updateAprvStatus" parameterType="AprvRoutesVO">
     	UPDATE aprv_documents
-    	SET aprv_status = #{aprvStatus}
+    	SET aprv_status = #{aprvStatus},
+    	    aprv_date = sysdate
     	WHERE draft_no = #{draftNo}
 	</update>
 	
