@@ -161,7 +161,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="info-label">직책</label>
+                        <label class="info-label">직급</label>
                         <select id="position" name="rankId" class="form-control"></select>
                     </div>
 
@@ -237,13 +237,13 @@
                         <button type="submit" class="btn btn-primary">수정</button>
                         <button type="button" class="btn btn-danger"
                                 th:onclick="|location.href='@{/empInfo(
-            employeeNo=${emp.employeeNo},
-            page=${search.page},
-            size=${search.size},
-            departmentNo=${search.departmentNo},
-            rankId=${search.rankId},
-            employeeName=${search.employeeName},
-            resignationStatus=${search.resignationStatus})}'|">취소</button>
+					            employeeNo=${emp.employeeNo},
+					            page=${search.page},
+					            size=${search.size},
+					            departmentNo=${search.departmentNo},
+					            rankId=${search.rankId},
+					            employeeName=${search.employeeName},
+					            resignationStatus=${search.resignationStatus})}'|">취소</button>
                     </div>
                 </div>
             </div>
@@ -371,7 +371,7 @@
             });
     }
 
-    // 부서, 직책, 권한 초기 세팅
+    // 부서, 직급, 권한 초기 세팅
     document.addEventListener("DOMContentLoaded", () => {
         loadData("/api/departments", "department", "departmentNo", "departmentName", selectedDepartment);
         loadData("/api/ranks", "position", "rankId", "jobTitleName", selectedRank);
