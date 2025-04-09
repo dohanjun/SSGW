@@ -5,7 +5,7 @@
       layout:fragment="content">
 <head>
     <meta charset="UTF-8">
-    <title>부서/직책 이력 관리</title>
+    <title>부서/직급 이력 관리</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.6.2/css/bootstrap.min.css">
 
     <style>
@@ -109,7 +109,7 @@
 <body>
 <div class="container">
     <div class="card-box">
-        <div class="card-title">부서/직책 이동 이력</div>
+        <div class="card-title">부서/직급 이동 이력</div>
 
         <!--  검색 폼 -->
         <form id="searchForm" action="/deptHist" method="get">
@@ -136,9 +136,9 @@
                 <select name="content">
 				    <option value="">이력 유형</option>
 				    <option value="신규 등록" th:selected="${searchVO.content == '신규 등록'}">신규 등록</option>
-				    <option value="직책 변경" th:selected="${searchVO.content == '직책 변경'}">직책 변경</option>
+				    <option value="직급 변경" th:selected="${searchVO.content == '직급 변경'}">직급 변경</option>
 				    <option value="부서 이동" th:selected="${searchVO.content == '부서 이동'}">부서 이동</option>
-				    <option value="부서/직책 변경" th:selected="${searchVO.content == '부서/직책 변경'}">부서/직책 변경</option>
+				    <option value="부서/직급 변경" th:selected="${searchVO.content == '부서/직급 변경'}">부서/직급 변경</option>
 				</select>
 
                 <input type="text" name="employeeName" placeholder="이름 검색" th:value="${searchVO.employeeName}">
@@ -157,11 +157,11 @@
                     <th class="th이동이력">사원명</th>
                     <th class="th이동이력">이전 부서</th>
                     <th class="th이동이력">이동 부서</th>
-                    <th class="th이동이력">이전 직책</th>
-                    <th class="th이동이력">이동 직책</th>
+                    <th class="th이동이력">이전 직급</th>
+                    <th class="th이동이력">이동 직급</th>
                     <th class="th이동이력">부서 이동일</th>
                     <th class="th이동이력">부서 종료일</th>
-                    <th class="th이동이력">직책 변경일</th>
+                    <th class="th이동이력">직급 변경일</th>
                     <th class="th이동이력">비고</th>
                 </tr>
             </thead>
@@ -176,14 +176,14 @@
 
                     <td th:text="${hist.content != null and (hist.content.contains('부서') or hist.content == '신규 등록')} ? ${#dates.format(hist.moveDate, 'yyyy-MM-dd')} : ''"></td>
                     <td th:text="${hist.content != null and hist.content.contains('부서') and hist.deleteDate != null} ? ${#dates.format(hist.deleteDate, 'yyyy-MM-dd')} : ''"></td>
-                    <td th:text="${hist.content != null and hist.content.contains('직책')} ? ${#dates.format(hist.moveDate, 'yyyy-MM-dd')} : ''"></td>
+                    <td th:text="${hist.content != null and hist.content.contains('직급')} ? ${#dates.format(hist.moveDate, 'yyyy-MM-dd')} : ''"></td>
 
                     <!--  비고 -->
                     <td>
 					    <span th:if="${hist.content == '신규 등록'}" class="badge-style badge-new">신규 등록</span>
-					    <span th:if="${hist.content == '직책 변경'}" class="badge-style badge-rank">직책 변경</span>
+					    <span th:if="${hist.content == '직급 변경'}" class="badge-style badge-rank">직급 변경</span>
 					    <span th:if="${hist.content == '부서 이동'}" class="badge-style badge-dept">부서 이동</span>
-					    <span th:if="${hist.content == '부서/직책 변경'}" class="badge-style badge-both">부서/직책 변경</span>
+					    <span th:if="${hist.content == '부서/직급 변경'}" class="badge-style badge-both">부서/직급 변경</span>
 					</td>
                     
                 </tr>
